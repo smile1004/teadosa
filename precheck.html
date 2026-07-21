@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>사전검토 | 태양광도사</title>
+<style id="taedosa-common-header-style">
+/* ===== 태양광도사 최종 공통 헤더 ===== */
+:root{
+  --logo-orange:#d88422;
+  --logo-green:#77a83d;
+  --logo-green-dark:#4f7f34;
+  --logo-green-soft:#edf6e7;
+  --cream:#fffaf1;
+  --line:#e8eee3;
+  --muted:#68766a;
+}
+*{box-sizing:border-box}
+body{margin:0}
+a{color:inherit;text-decoration:none}
+
+.header{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:1000;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.header *{box-sizing:border-box}
+.header-inner{
+  max-width:1460px;
+  height:88px;
+  margin:0 auto;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  flex:0 0 auto;
+}
+.logo img{
+  width:64px;
+  height:64px;
+  object-fit:contain;
+}
+.logo strong{
+  display:block;
+  font-size:25px;
+  letter-spacing:-1.2px;
+  color:#1f2b24;
+}
+.nav{
+  margin-left:auto!important;
+  flex:0 0 auto!important;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start!important;
+  gap:0!important;
+}
+.nav-item{
+  position:relative;
+  padding:34px 10px!important;
+  font-size:15.5px;
+  font-weight:700;
+  color:#29362d;
+  white-space:nowrap;
+}
+.nav-item:hover{color:var(--logo-green-dark)}
+.nav-item::after{
+  content:"";
+  position:absolute;
+  left:10px;right:10px;bottom:24px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--logo-green),var(--logo-orange));
+  transform:scaleX(0);
+  transition:.22s;
+}
+.nav-item:hover::after{transform:scaleX(1)}
+.nav-link{
+  display:block;
+  color:inherit;
+  text-decoration:none;
+  font:inherit;
+  white-space:nowrap;
+}
+.nav-separator{
+  color:#c8cec8;
+  font-size:15px;
+  font-weight:400;
+  line-height:1;
+  pointer-events:none;
+  user-select:none;
+}
+.sitemap-link{
+  letter-spacing:1px;
+  font-weight:800;
+}
+
+.mega{
+  display:none;
+  position:absolute;
+  top:88px;
+  left:50%;
+  transform:translateX(-50%);
+  width:540px;
+  padding:17px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:0 24px 65px rgba(58,82,49,.14);
+  color:#1f2b24;
+}
+.nav-item:hover .mega{display:block}
+.mega.small{width:430px}
+.mega-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+.mega h4{
+  margin:0 0 13px;
+  font-size:15px;
+  color:var(--logo-green-dark);
+}
+.mega-card{
+  display:block;
+  margin-bottom:10px;
+  padding:15px 16px;
+  border-radius:16px;
+  border:1px solid #dfead6;
+  background:var(--logo-green-soft);
+  transition:.2s;
+}
+.mega-card:hover{
+  background:#e5f1dd;
+  transform:translateY(-2px);
+}
+.mega-card strong{
+  display:block;
+  margin-bottom:5px;
+  font-size:16px;
+}
+.mega-card span{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+.menu-package strong{color:#46762d}
+.menu-package span{color:#6b7d68}
+.menu-single{
+  background:#fffaf1;
+  border-color:#f0dfc0;
+}
+.menu-single:hover{background:#fff3dc}
+.menu-single strong{color:#d88422}
+.menu-single span{color:#8f7252}
+
+.menu-small-card{width:560px!important}
+.menu-small-card .mega-grid{
+  grid-template-columns:1fr 1fr!important;
+  gap:12px!important;
+}
+.menu-small-card h4{
+  margin-bottom:6px!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  white-space:nowrap;
+}
+.menu-small-card .mega-card{
+  margin-bottom:6px!important;
+  padding:12px 14px!important;
+  border-radius:12px!important;
+}
+.menu-small-card .mega-card strong{
+  margin-bottom:2px!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  white-space:nowrap;
+}
+.menu-small-card .mega-card span{
+  font-size:12px!important;
+  line-height:1.35!important;
+}
+
+.precheck-menu{
+  width:300px!important;
+  padding:20px!important;
+}
+.precheck-menu h4{
+  margin-bottom:12px!important;
+  font-size:15px!important;
+  color:var(--logo-green-dark);
+}
+.precheck-list{display:grid;gap:0}
+.precheck-list a{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:13px 4px;
+  border-bottom:1px solid #edf1e8;
+  font-size:15px;
+  font-weight:800;
+  color:#344639;
+  transition:.22s;
+}
+.precheck-list a:last-child{border-bottom:0}
+.precheck-list a span{
+  flex:1 1 auto;
+  min-width:0;
+  text-align:left;
+}
+.precheck-list a em{
+  margin-left:auto;
+  flex:0 0 30px;
+  width:30px;height:30px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#f2f4f1;
+  color:#7d8980;
+  font-size:15px;
+  font-weight:900;
+  font-style:normal;
+  transition:.22s;
+}
+.precheck-list a:hover{
+  color:var(--logo-green-dark);
+  padding-left:6px;
+}
+.precheck-list a:hover em{
+  background:var(--logo-orange);
+  color:#fff;
+  transform:translateX(3px);
+  box-shadow:0 7px 16px rgba(216,132,34,.22);
+}
+
+.coming-mega{
+  width:220px!important;
+  padding:16px!important;
+  text-align:center;
+}
+.coming-card{
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  min-height:155px;
+  padding-bottom:8px;
+  background:#fffdf8;
+  border-radius:14px;
+  transition:transform .2s ease;
+}
+.coming-card:hover{transform:translateY(-2px)}
+.coming-card img{
+  width:140px;
+  display:block;
+  margin:0 auto;
+}
+.coming-card .title{display:none}
+
+.top-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  margin-left:12px!important;
+  padding:10px 13px!important;
+  border-radius:999px;
+  background:#fff;
+  color:var(--logo-orange);
+  border:1px solid #f1dcc0;
+  box-shadow:0 10px 24px rgba(64,92,52,.08);
+  font-size:13px!important;
+  font-weight:900;
+  white-space:nowrap;
+  transition:.22s;
+}
+.top-btn::after{
+  content:"→";
+  width:20px;height:20px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--logo-green-soft);
+  font-size:13px;
+}
+.top-btn:hover{
+  background:var(--cream);
+  transform:translateY(-2px);
+}
+.mobile{
+  display:none;
+  margin-left:auto;
+  font-weight:900;
+}
+
+body.taedo-has-fixed-header{
+  padding-top:88px;
+}
+body.taedo-has-fixed-header main{
+  padding-top:0;
+}
+
+@media(max-width:1350px){
+  .nav-item,.nav-link{font-size:14.5px}
+  .nav-item{
+    padding-left:7px!important;
+    padding-right:7px!important;
+  }
+  .nav-separator{font-size:14px}
+}
+@media(max-width:980px){
+  .header-inner{
+    height:auto;
+    min-height:78px;
+    padding:12px 20px;
+  }
+  .nav,.top-btn{display:none}
+  .mobile{display:block}
+  body.taedo-has-fixed-header{padding-top:78px}
+}
+</style>
+<style id="precheck-main-style">
+:root{
+  --pc-green:#77a83d;
+  --pc-green-dark:#4f7f34;
+  --pc-green-soft:#edf6e7;
+  --pc-orange:#d88422;
+  --pc-cream:#fffaf1;
+  --pc-text:#1f2b24;
+  --pc-muted:#68766a;
+  --pc-line:#e5ecdf;
+  --pc-shadow:0 22px 60px rgba(58,82,49,.11);
+}
+html{scroll-behavior:smooth}
+body{font-family:Pretendard,"Noto Sans KR",Arial,sans-serif;color:var(--pc-text);background:#fff}
+main{overflow:hidden}
+.pc-hero{position:relative;min-height:570px;display:flex;align-items:center;background:linear-gradient(135deg,#f4f9ef 0%,#fff 56%,#fff8ed 100%)}
+.pc-hero:before,.pc-hero:after{content:"";position:absolute;border-radius:50%;filter:blur(2px);pointer-events:none}
+.pc-hero:before{width:420px;height:420px;right:-120px;top:-120px;background:rgba(119,168,61,.11)}
+.pc-hero:after{width:280px;height:280px;left:-100px;bottom:-110px;background:rgba(216,132,34,.10)}
+.pc-hero-inner{position:relative;z-index:1;width:min(1180px,calc(100% - 40px));margin:0 auto;padding:95px 0 125px;text-align:center}
+.pc-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid #d9e8cf;border-radius:999px;background:rgba(255,255,255,.86);color:var(--pc-green-dark);font-size:14px;font-weight:900;box-shadow:0 10px 25px rgba(79,127,52,.07)}
+.pc-badge:before{content:"";width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--pc-green),var(--pc-orange))}
+.pc-hero h1{margin:24px 0 18px;font-size:clamp(38px,5vw,66px);line-height:1.18;letter-spacing:-2.7px}
+.pc-hero h1 span{color:var(--pc-green-dark)}
+.pc-hero p{max-width:760px;margin:0 auto;color:var(--pc-muted);font-size:18px;line-height:1.75;word-break:keep-all}
+.pc-hero-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:32px}
+.pc-primary,.pc-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 24px;border-radius:14px;font-weight:900;transition:.22s}
+.pc-primary{background:linear-gradient(135deg,var(--pc-green-dark),var(--pc-green));color:#fff;box-shadow:0 14px 30px rgba(79,127,52,.22)}
+.pc-secondary{background:#fff;color:var(--pc-orange);border:1px solid #efddc3}
+.pc-primary:hover,.pc-secondary:hover{transform:translateY(-3px)}
+.pc-shortcut{position:relative;z-index:4;width:min(1180px,calc(100% - 40px));margin:-66px auto 0}
+.pc-shortcut-grid{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border:1px solid var(--pc-line);border-radius:24px;box-shadow:var(--pc-shadow);overflow:hidden}
+.pc-shortcut-item{display:flex;align-items:center;gap:18px;padding:27px 25px;transition:.22s}
+.pc-shortcut-item+.pc-shortcut-item{border-left:1px solid var(--pc-line)}
+.pc-shortcut-item:hover{background:#fbfdf9;transform:translateY(-2px)}
+.pc-shortcut-icon{flex:0 0 52px;width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;background:var(--pc-green-soft);font-size:25px}
+.pc-shortcut-item:nth-child(2) .pc-shortcut-icon{background:#fff4e5}
+.pc-shortcut-item:nth-child(3) .pc-shortcut-icon{background:#eef4f6}
+.pc-shortcut-item strong{display:block;margin-bottom:6px;font-size:18px}
+.pc-shortcut-item p{margin:0;color:var(--pc-muted);font-size:13.5px;line-height:1.55}
+.pc-section{width:min(1180px,calc(100% - 40px));margin:0 auto;padding:100px 0}
+.pc-section-title{text-align:center;margin-bottom:48px}
+.pc-section-title .eyebrow{color:var(--pc-orange);font-size:13px;font-weight:900;letter-spacing:1.5px}
+.pc-section-title h2{margin:11px 0 13px;font-size:clamp(30px,4vw,43px);letter-spacing:-1.7px}
+.pc-section-title p{margin:0;color:var(--pc-muted);font-size:16px;line-height:1.7}
+.pc-service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pc-service-card{position:relative;display:flex;flex-direction:column;min-height:390px;padding:32px;border:1px solid var(--pc-line);border-radius:24px;background:#fff;box-shadow:0 14px 38px rgba(58,82,49,.07);transition:.25s;overflow:hidden}
+.pc-service-card:after{content:"";position:absolute;right:-55px;bottom:-65px;width:170px;height:170px;border-radius:50%;background:rgba(119,168,61,.07)}
+.pc-service-card:nth-child(2):after{background:rgba(216,132,34,.08)}
+.pc-service-card:hover{transform:translateY(-7px);box-shadow:0 24px 55px rgba(58,82,49,.13)}
+.pc-card-number{font-size:12px;font-weight:900;letter-spacing:1.3px;color:var(--pc-orange)}
+.pc-card-icon{width:62px;height:62px;margin:20px 0;border-radius:18px;display:flex;align-items:center;justify-content:center;background:var(--pc-green-soft);font-size:29px}
+.pc-service-card:nth-child(2) .pc-card-icon{background:#fff4e5}
+.pc-service-card:nth-child(3) .pc-card-icon{background:#eef5f0}
+.pc-service-card h3{margin:0 0 12px;font-size:23px;letter-spacing:-.7px}
+.pc-service-card>p{margin:0;color:var(--pc-muted);line-height:1.7;font-size:15px}
+.pc-checks{display:grid;gap:9px;margin:23px 0 26px;padding:0;list-style:none}
+.pc-checks li{display:flex;gap:9px;color:#435147;font-size:14px}
+.pc-checks li:before{content:"✓";color:var(--pc-green-dark);font-weight:900}
+.pc-card-btn{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:space-between;margin-top:auto;padding:14px 17px;border-radius:12px;background:#f5f8f2;color:var(--pc-green-dark);font-weight:900;transition:.22s}
+.pc-card-btn:hover{background:var(--pc-green-dark);color:#fff}
+.pc-process-wrap{background:#f7faf5}
+.pc-process{width:min(1180px,calc(100% - 40px));margin:0 auto;padding:100px 0}
+.pc-process-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:15px;position:relative}
+.pc-process-step{position:relative;padding:26px 20px;text-align:center;background:#fff;border:1px solid var(--pc-line);border-radius:18px;box-shadow:0 10px 28px rgba(58,82,49,.05)}
+.pc-process-step em{display:block;margin-bottom:12px;color:var(--pc-orange);font-size:12px;font-style:normal;font-weight:900}
+.pc-process-step strong{font-size:17px}
+.pc-process-step span{display:block;margin-top:8px;color:var(--pc-muted);font-size:13px;line-height:1.5}
+.pc-feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.pc-feature{display:flex;align-items:flex-start;gap:16px;padding:23px;border:1px solid var(--pc-line);border-radius:18px;background:#fff}
+.pc-feature b{flex:0 0 38px;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--pc-green-soft);color:var(--pc-green-dark)}
+.pc-feature strong{display:block;margin-bottom:5px;font-size:17px}
+.pc-feature p{margin:0;color:var(--pc-muted);font-size:14px;line-height:1.6}
+.pc-cta{width:min(1180px,calc(100% - 40px));margin:0 auto 100px;padding:55px 40px;text-align:center;border-radius:28px;background:linear-gradient(135deg,#446f30,#78a940);color:#fff;box-shadow:0 25px 60px rgba(79,127,52,.22)}
+.pc-cta h2{margin:0 0 12px;font-size:clamp(28px,4vw,42px);letter-spacing:-1.4px}
+.pc-cta p{margin:0 0 25px;color:rgba(255,255,255,.83);line-height:1.7}
+.pc-cta a{display:inline-flex;min-height:52px;align-items:center;padding:0 25px;border-radius:13px;background:#fff;color:var(--pc-green-dark);font-weight:900}
+.footer{padding:38px 20px;text-align:center;background:#1f2b24;color:#fff}
+.footer strong{font-size:20px}.footer p{margin:8px 0 0;color:#bdc8bf;font-size:14px}
+@media(max-width:980px){
+  .pc-hero{min-height:auto}.pc-hero-inner{padding:80px 0 115px}
+  .pc-shortcut-grid,.pc-service-grid{grid-template-columns:1fr}
+  .pc-shortcut-item+.pc-shortcut-item{border-left:0;border-top:1px solid var(--pc-line)}
+  .pc-process-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:640px){
+  .pc-hero-inner{width:min(100% - 28px,1180px);padding:65px 0 100px}
+  .pc-hero h1{letter-spacing:-1.7px}.pc-hero p{font-size:16px}
+  .pc-shortcut,.pc-section,.pc-process,.pc-cta{width:calc(100% - 28px)}
+  .pc-section,.pc-process{padding:76px 0}
+  .pc-shortcut-item{padding:22px 18px}
+  .pc-service-card{padding:25px;min-height:360px}
+  .pc-process-grid,.pc-feature-grid{grid-template-columns:1fr}
+  .pc-cta{padding:43px 22px;margin-bottom:70px}
+}
+</style>
+<style id="taedosa-common-layout">
+:root{
+  --logo-orange:#d88422;
+  --logo-orange-light:#f4d39f;
+  --logo-green:#77a83d;
+  --logo-green-dark:#4f7f34;
+  --logo-green-soft:#edf6e7;
+  --cream:#fffaf1;
+  --line:#e8eee3;
+  --text:#1f2b24;
+  --muted:#68766a;
+}
+*{box-sizing:border-box}
+a{text-decoration:none;color:inherit}
+
+/* 공통 Header */
+.header{
+  position:fixed!important;top:0!important;left:0!important;right:0!important;
+  z-index:1000!important;background:rgba(255,255,255,.94)!important;
+  backdrop-filter:blur(14px)!important;-webkit-backdrop-filter:blur(14px)!important;
+  border-bottom:1px solid var(--line)!important;
+}
+.header-inner{
+  max-width:1460px!important;height:88px!important;margin:0 auto!important;
+  padding:0 30px!important;display:flex!important;align-items:center!important;
+  justify-content:flex-start!important;
+}
+.logo{display:flex!important;align-items:center!important;gap:13px!important;flex:0 0 auto!important}
+.logo img{width:64px!important;height:64px!important;object-fit:contain!important}
+.logo strong{display:block!important;font-size:25px!important;letter-spacing:-1.2px!important;color:#1f2b24!important}
+.logo span{display:block!important;margin-top:2px!important;font-size:11px!important;letter-spacing:3px!important;color:#6d6d6d!important}
+.nav{
+  margin-left:auto!important;display:flex!important;align-items:center!important;
+  justify-content:flex-start!important;gap:0!important;flex:0 0 auto!important;transform:none!important;
+}
+.nav-item{
+  position:relative!important;padding:34px 10px!important;font-size:15.5px!important;
+  font-weight:700!important;color:#29362d!important;white-space:nowrap!important;
+}
+.nav-item:hover{color:var(--logo-green-dark)!important}
+.nav-item::after{
+  content:""!important;position:absolute!important;left:10px!important;right:10px!important;
+  bottom:24px!important;height:3px!important;border-radius:999px!important;
+  background:linear-gradient(90deg,var(--logo-green),var(--logo-orange))!important;
+  transform:scaleX(0)!important;transition:.22s!important;
+}
+.nav-item:hover::after{transform:scaleX(1)!important}
+.nav-link{display:block!important;color:inherit!important;font:inherit!important;white-space:nowrap!important}
+.nav-separator{color:#c8cec8!important;font-size:15px!important;font-weight:400!important;pointer-events:none!important;user-select:none!important}
+.sitemap-link{letter-spacing:1px!important;font-weight:800!important}
+.mega{
+  display:none!important;position:absolute!important;top:88px!important;left:50%!important;
+  transform:translateX(-50%)!important;width:540px!important;padding:17px!important;
+  background:#fff!important;border:1px solid var(--line)!important;border-radius:22px!important;
+  box-shadow:0 24px 65px rgba(58,82,49,.14)!important;
+}
+.nav-item:hover .mega{display:block!important}
+.mega.small{width:430px!important}
+.mega-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:22px!important}
+.mega h4{margin:0 0 13px!important;font-size:15px!important;color:var(--logo-green-dark)!important}
+.mega-card{
+  display:block!important;margin-bottom:10px!important;padding:15px 16px!important;
+  border-radius:16px!important;background:var(--logo-green-soft)!important;
+  border:1px solid #dfead6!important;transition:.2s!important;
+}
+.mega-card:hover{background:#e5f1dd!important;transform:translateY(-2px)!important}
+.mega-card strong{display:block!important;font-size:16px!important;margin-bottom:5px!important}
+.mega-card span{color:var(--muted)!important;font-size:13px!important;line-height:1.5!important}
+.menu-package{background:var(--logo-green-soft)!important;border-color:#dfead6!important}
+.menu-package strong{color:#46762d!important}.menu-package span{color:#6b7d68!important}
+.menu-single{background:#fffaf1!important;border-color:#f0dfc0!important}
+.menu-single strong{color:#d88422!important}.menu-single span{color:#8f7252!important}
+.precheck-menu{width:300px!important;padding:20px!important}
+.precheck-menu h4{margin-bottom:12px!important}
+.precheck-list{display:grid!important}
+.precheck-list a{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:18px!important;padding:13px 4px!important;border-bottom:1px solid #edf1e8!important;
+  font-size:15px!important;font-weight:800!important;color:#344639!important;transition:.22s!important;
+}
+.precheck-list a:last-child{border-bottom:0!important}
+.precheck-list a span{flex:1 1 auto!important;min-width:0!important;text-align:left!important}
+.precheck-list a em{
+  margin-left:auto!important;flex:0 0 30px!important;width:30px!important;height:30px!important;
+  border-radius:50%!important;display:inline-flex!important;align-items:center!important;
+  justify-content:center!important;background:#f2f4f1!important;color:#7d8980!important;
+  font-size:15px!important;font-style:normal!important;font-weight:900!important;transition:.22s!important;
+}
+.precheck-list a:hover{color:var(--logo-green-dark)!important;padding-left:8px!important}
+.precheck-list a:hover em{background:var(--logo-orange)!important;color:#fff!important;transform:translateX(3px)!important}
+.business-mega{width:540px!important}
+.business-mega .mega-grid{gap:8px!important}
+.business-mega .mega-card{padding:11px 14px!important;margin-bottom:6px!important;border-radius:12px!important}
+.menu-small-card{width:560px!important}
+.menu-small-card .mega-grid{grid-template-columns:1fr 1fr!important;gap:12px!important}
+.menu-small-card .mega-card{padding:12px 14px!important;margin-bottom:6px!important;border-radius:12px!important}
+.menu-small-card h4,.menu-small-card .mega-card strong{font-size:15px!important;font-weight:800!important;white-space:nowrap!important}
+.menu-small-card .mega-card span{font-size:12px!important;line-height:1.35!important}
+.coming-mega{width:220px!important;padding:16px!important;text-align:center!important}
+.coming-card{
+  display:flex!important;justify-content:center!important;align-items:flex-end!important;
+  min-height:155px!important;padding-bottom:8px!important;background:#fffdf8!important;border-radius:14px!important;
+}
+.coming-card img{width:140px!important;display:block!important;margin:0 auto!important}
+.top-btn{
+  position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  gap:7px!important;padding:10px 13px!important;margin-left:12px!important;border-radius:999px!important;
+  background:#fff!important;color:var(--logo-orange)!important;font-size:13px!important;font-weight:900!important;
+  border:1px solid #f1dcc0!important;box-shadow:0 10px 24px rgba(64,92,52,.08)!important;white-space:nowrap!important;
+}
+.top-btn::after{
+  content:"→"!important;width:20px!important;height:20px!important;border-radius:50%!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  background:var(--logo-green-soft)!important;font-size:13px!important;
+}
+.mobile{display:none!important;font-weight:900!important}
+
+/* 공통 Deep Navy Glass 하단 */
+.bottom-service{
+  position:relative!important;overflow:hidden!important;padding:54px 34px 34px!important;
+  background:
+    radial-gradient(circle at 12% 8%,rgba(120,180,255,.10),transparent 31%),
+    radial-gradient(circle at 90% 22%,rgba(72,126,185,.12),transparent 34%),
+    linear-gradient(145deg,#050B14 0%,#0B1828 42%,#16324C 100%)!important;
+  border-top:1px solid rgba(255,255,255,.12)!important;color:#fff!important;
+}
+.bottom-service::before{
+  content:""!important;display:block!important;position:absolute!important;inset:0!important;
+  background:
+    linear-gradient(115deg,rgba(255,255,255,.08),transparent 18%,transparent 74%,rgba(255,255,255,.02)),
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px)!important;
+  background-size:auto,46px 46px,46px 46px!important;pointer-events:none!important;
+}
+.bottom-service::after{
+  content:""!important;position:absolute!important;top:-110px!important;left:12%!important;
+  width:52%!important;height:250px!important;border-radius:50%!important;
+  background:rgba(90,150,255,.06)!important;filter:blur(70px)!important;pointer-events:none!important;
+}
+.bottom-service-inner{position:relative!important;z-index:2!important;max-width:1260px!important;margin:0 auto!important}
+.bottom-service-head{
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:24px!important;
+  align-items:center!important;padding:20px 24px 22px!important;border:1px solid rgba(255,255,255,.19)!important;
+  border-radius:18px!important;background:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.055))!important;
+  box-shadow:0 24px 60px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  backdrop-filter:blur(22px) saturate(125%)!important;-webkit-backdrop-filter:blur(22px) saturate(125%)!important;
+}
+.bottom-service-identity{display:inline-flex!important;align-items:center!important;gap:16px!important;width:max-content!important}
+.bottom-service-main-logo{width:62px!important;height:62px!important;object-fit:contain!important;flex:0 0 62px!important}
+.bottom-service-name{display:flex!important;flex-direction:column!important}
+.bottom-service-name span{margin-bottom:3px!important;color:rgba(255,255,255,.56)!important;font-size:11px!important;font-weight:800!important;letter-spacing:3px!important}
+.bottom-service-name strong{color:#fff!important;font-size:28px!important;line-height:1.15!important;letter-spacing:-1.2px!important}
+.bottom-channel-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:11px!important}
+.bottom-channel-actions .bottom-action{
+  position:relative!important;overflow:hidden!important;width:46px!important;min-width:46px!important;
+  height:46px!important;min-height:46px!important;padding:0!important;border-radius:14px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border:1px solid rgba(255,255,255,.20)!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.05))!important;
+  box-shadow:0 10px 26px rgba(4,18,32,.20),inset 0 1px 0 rgba(255,255,255,.22)!important;
+  color:#fff!important;backdrop-filter:blur(18px) saturate(125%)!important;
+}
+.bottom-channel-actions .bottom-action::after{display:none!important}
+.bottom-channel-actions .bottom-action svg{width:22px!important;height:22px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.9!important}
+.bottom-channel-actions .channel-home{color:#d9efcf!important}.bottom-channel-actions .channel-blog{color:#78e6a6!important}
+.bottom-channel-actions .channel-youtube{color:#ff9696!important}.bottom-channel-actions .channel-contact{color:#c9d9ff!important}
+.channel-tooltip{
+  position:absolute!important;left:50%!important;bottom:calc(100% + 9px)!important;
+  transform:translate(-50%,4px)!important;padding:6px 9px!important;border-radius:8px!important;
+  background:rgba(7,20,33,.94)!important;color:#fff!important;font-size:11px!important;font-weight:700!important;
+  white-space:nowrap!important;opacity:0!important;visibility:hidden!important;transition:.18s!important;
+}
+.bottom-action:hover .channel-tooltip{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
+.bottom-service-grid{display:grid!important;grid-template-columns:1.18fr repeat(3,1fr)!important;gap:12px!important;margin-top:20px!important}
+.bottom-guide-card,.bottom-brand-card,.bottom-link-card{
+  position:relative!important;overflow:hidden!important;min-height:132px!important;padding:18px 19px!important;
+  border:1px solid rgba(255,255,255,.16)!important;border-radius:16px!important;
+  background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.035))!important;
+  box-shadow:0 18px 46px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.16)!important;
+  backdrop-filter:blur(18px) saturate(120%)!important;-webkit-backdrop-filter:blur(18px) saturate(120%)!important;
+}
+.bottom-guide-head{display:flex!important;align-items:center!important;gap:10px!important;margin-bottom:14px!important}
+.bottom-guide-index{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:54px!important;
+  height:25px!important;padding:0 9px!important;border-radius:999px!important;
+  background:rgba(133,181,224,.16)!important;border:1px solid rgba(162,202,236,.18)!important;
+  color:#d7ecff!important;font-size:10px!important;font-weight:900!important;letter-spacing:1px!important;
+}
+.bottom-guide-head strong,.bottom-brand-title strong,.bottom-link-card h3{color:#fff!important}
+.bottom-guide-steps{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+.bottom-guide-steps a{
+  min-width:0!important;padding:10px 8px!important;border:1px solid rgba(255,255,255,.10)!important;
+  border-radius:11px!important;background:rgba(255,255,255,.055)!important;
+}
+.bottom-guide-steps span{display:block!important;margin-bottom:5px!important;color:#efc27e!important;font-size:10px!important;font-weight:900!important}
+.bottom-guide-steps em{display:block!important;overflow:hidden!important;color:rgba(242,247,252,.84)!important;font-size:12px!important;font-style:normal!important;font-weight:800!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.bottom-link-card h3{margin:0 0 8px!important;font-size:15px!important}
+.bottom-link-card a{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;padding:7px 0!important;
+  color:rgba(240,247,253,.70)!important;font-size:13px!important;border-bottom:1px solid rgba(255,255,255,.075)!important;
+}
+.bottom-link-card a::after{content:"→"!important;color:rgba(201,225,245,.70)!important}
+.bottom-brand-title{display:flex!important;align-items:center!important;gap:10px!important;margin-bottom:10px!important}
+.bottom-brand-logo{width:38px!important;height:38px!important;object-fit:contain!important}
+.bottom-brand-card p{color:rgba(240,247,253,.68)!important;font-size:13px!important;line-height:1.65!important}
+.site-copyright{
+  position:relative!important;padding:17px 20px 19px!important;
+  background:#03070D!important;border-top:1px solid rgba(255,255,255,.075)!important;
+  color:rgba(229,239,247,.56)!important;text-align:center!important;font-size:12px!important;line-height:1.6!important;
+}
+.common-header-spacer{height:88px}
+
+@media(max-width:1350px){
+  .nav-item{padding-left:7px!important;padding-right:7px!important;font-size:14.5px!important}
+  .nav-item::after{left:7px!important;right:7px!important}
+}
+@media(max-width:980px){
+  .header-inner{height:auto!important;padding:14px 20px!important}
+  .nav,.top-btn{display:none!important}.mobile{display:block!important;margin-left:auto!important}
+  .bottom-service-head{grid-template-columns:1fr!important;align-items:start!important}
+  .bottom-channel-actions{justify-content:flex-start!important}
+  .bottom-service-grid{grid-template-columns:repeat(2,1fr)!important}
+  .bottom-guide-steps{grid-template-columns:1fr!important}
+}
+@media(max-width:680px){
+  .bottom-service{padding:42px 20px 26px!important}
+  .bottom-service-head{padding:18px 16px!important}
+  .bottom-service-main-logo{width:52px!important;height:52px!important;flex-basis:52px!important}
+  .bottom-service-name strong{font-size:23px!important}
+  .bottom-service-grid{grid-template-columns:1fr!important;gap:10px!important}
+  .bottom-channel-actions{width:auto!important}
+  .site-copyright{padding:15px 16px 17px!important;font-size:11px!important}
+}
+</style></head>
+<body class="taedo-has-fixed-header">
+<header class="header">
+<div class="header-inner">
+<a class="logo" href="index.html">
+<img alt="태양광도사 로고" src="data:image/png;base64,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"/>
+<div>
+<strong>태양광도사</strong>
+</div>
+</a>
+<nav class="nav">
+<div class="nav-item">
+<a class="nav-link" href="#about">태도사소개</a>
+</div>
+<span class="nav-separator">/</span>
+<div class="nav-item">
+        사전검토
+        <div class="mega small precheck-menu">
+<div>
+<h4>사전검토 서비스</h4>
+<div class="precheck-list">
+<a href="precheck-apply.html"><span>사전검토 신청</span><em>→</em></a>
+<a href="precheck-result.html"><span>검토결과 확인</span><em>→</em></a>
+<a href="precheck-service.html"><span>가능서비스 확인</span><em>→</em></a>
+</div>
+</div>
+</div>
+</div>
+<span class="nav-separator">/</span>
+<div class="nav-item">
+<a class="nav-link" href="start.html">발전사업 시작하기(B2C)</a>
+<div class="mega">
+<div class="mega-grid">
+<div>
+<h4>패키지 서비스</h4>
+<a class="mega-card menu-package" href="start.html"><strong>토지형 발전사업 패키지</strong><span>토지 태양광 발전사업 인허가 절차 지원</span></a>
+<a class="mega-card menu-package" href="start.html"><strong>지붕형 발전사업 패키지</strong><span>공장·창고·축사 지붕형 발전사업 지원</span></a>
+<a class="mega-card menu-package" href="start.html"><strong>건물지원사업 패키지</strong><span>건물지원사업 신청 및 진행 절차 지원</span></a>
+<a class="mega-card menu-package" href="start.html"><strong>금융지원사업 패키지</strong><span>금융지원사업 신청 관련 절차 지원</span></a>
+</div>
+<div>
+<h4>개별 서비스</h4>
+<a class="mega-card menu-single" href="start.html#services"><strong>발전사업허가</strong><span>발전사업 허가 신청 및 관련 행정절차 지원</span></a>
+<a class="mega-card menu-single" href="start.html#services"><strong>개발행위허가</strong><span>개발행위 허가 신청 및 협의 절차 지원</span></a>
+<a class="mega-card menu-single" href="start.html#services"><strong>공사계획신고</strong><span>발전설비 공사 전 신고 절차 지원</span></a>
+<a class="mega-card menu-single" href="start.html#services"><strong>한전PPA접수</strong><span>한전 전력수급계약 접수 절차 지원</span></a>
+<a class="mega-card menu-single" href="start.html#services"><strong>에관공설비신청</strong><span>발전설비 확인 및 등록 신청 지원</span></a>
+<a class="mega-card menu-single" href="start.html#services"><strong>개발행위준공</strong><span>개발행위 준공검사 및 완료 절차 지원</span></a>
+</div>
+</div>
+</div>
+</div>
+<span class="nav-separator">/</span>
+<div class="nav-item">
+<a class="nav-link" href="#enterprise-services">기업전문서비스(B2B)</a>
+<div class="mega small menu-small-card">
+<div class="mega-grid">
+<div>
+<h4>기술지원 서비스</h4>
+<a class="mega-card menu-package" href="#enterprise-services"><strong>기술검토</strong><span>태양광 발전사업 기술 조건 및 적정성 검토</span></a>
+<a class="mega-card menu-package" href="#enterprise-services"><strong>도면설계</strong><span>태양광 설계도면 및 시공도 작성 지원</span></a>
+</div>
+<div>
+<h4>현장시공 서비스</h4>
+<a class="mega-card menu-single" href="#enterprise-services"><strong>현장실사</strong><span>현장 조사 및 시공 가능 여부 확인</span></a>
+<a class="mega-card menu-single" href="#enterprise-services"><strong>공사</strong><span>태양광 발전설비 시공 서비스</span></a>
+</div>
+</div>
+</div>
+</div>
+<span class="nav-separator">/</span>
+<div class="nav-item">
+<a class="nav-link" href="#materials">자재거래</a>
+<div class="mega coming-mega">
+<div class="coming-card">
+<img alt="서비스 준비중" src="assets/images/coming-character.png"/>
+</div>
+</div>
+</div>
+<span class="nav-separator">/</span>
+<div class="nav-item">
+<a class="nav-link" href="#plant-listings">발전소 매물</a>
+<div class="mega coming-mega">
+<div class="coming-card">
+<img alt="서비스 준비중" src="assets/images/coming-character.png"/>
+</div>
+</div>
+</div><span class="nav-separator">/</span><div class="nav-item"><a class="nav-link sitemap-link" href="sitemap.html">SITEMAP</a></div>
+</nav>
+<a class="top-btn top-btn-compact" href="precheck-apply.html">무료사전검토 신청</a>
+<div class="mobile">MENU</div>
+</div>
+</header>
+<main>
+<section class="pc-hero">
+<div class="pc-hero-inner">
+<div class="pc-badge">태양광 발전사업 첫 단계</div>
+<h1>발전사업 시작 전,<br/><span>사전검토부터 확인하세요</span></h1>
+<p>사업 예정지의 기본 조건을 확인하고 검토결과와 진행 가능한 서비스를 순서대로 확인할 수 있습니다. 필요한 페이지를 선택해 간편하게 이용하세요.</p>
+<div class="pc-hero-actions">
+<a class="pc-primary" href="precheck-apply.html">무료 사전검토 신청 →</a>
+<a class="pc-secondary" href="#precheck-services">서비스 안내 보기</a>
+</div>
+</div>
+</section>
+<section class="pc-section" id="precheck-services">
+<div class="pc-section-title">
+<div class="eyebrow">PRE-CHECK SERVICE</div>
+<h2>사전검토 서비스</h2>
+<p>신청부터 결과 확인, 후속 서비스 선택까지 단계별로 구성되어 있습니다.</p>
+</div>
+<div class="pc-service-grid">
+<article class="pc-service-card">
+<div class="pc-card-number">SERVICE 01</div>
+<div class="pc-card-icon">📝</div>
+<h3>무료 사전검토 신청</h3>
+<p>사업 예정지의 위치와 기본 정보를 입력하여 태양광 발전사업 사전검토를 신청합니다.</p>
+<ul class="pc-checks"><li>사업 예정지 기본정보 입력</li><li>검토에 필요한 자료 접수</li><li>온라인 무료 신청</li></ul>
+<a class="pc-card-btn" href="precheck-apply.html"><span>사전검토 신청하기</span><span>→</span></a>
+</article>
+<article class="pc-service-card">
+<div class="pc-card-number">SERVICE 02</div>
+<div class="pc-card-icon">📊</div>
+<h3>검토결과 확인</h3>
+<p>신청한 사업 예정지의 검토 결과와 사업 진행 전 확인할 사항을 조회합니다.</p>
+<ul class="pc-checks"><li>사업지 검토결과 확인</li><li>주요 검토내용 안내</li><li>진행 전 확인사항 확인</li></ul>
+<a class="pc-card-btn" href="precheck-result.html"><span>검토결과 확인하기</span><span>→</span></a>
+</article>
+<article class="pc-service-card">
+<div class="pc-card-number">SERVICE 03</div>
+<div class="pc-card-icon">⚙️</div>
+<h3>가능 서비스 확인</h3>
+<p>사전검토 결과를 기준으로 이용할 수 있는 인허가 및 발전사업 서비스를 확인합니다.</p>
+<ul class="pc-checks"><li>진행 가능 서비스 안내</li><li>패키지 및 개별 서비스 확인</li><li>후속 진행 페이지 연결</li></ul>
+<a class="pc-card-btn" href="precheck-service.html"><span>가능 서비스 확인하기</span><span>→</span></a>
+</article>
+</div>
+</section>
+<section class="pc-process-wrap" id="process">
+<div class="pc-process">
+<div class="pc-section-title">
+<div class="eyebrow">PROCESS</div>
+<h2>사전검토 진행 절차</h2>
+<p>복잡한 절차 없이 필요한 정보를 순서대로 확인할 수 있습니다.</p>
+</div>
+<div class="pc-process-grid">
+<div class="pc-process-step"><em>STEP 01</em><strong>사전검토 신청</strong><span>사업지 정보와 기본자료 입력</span></div>
+<div class="pc-process-step"><em>STEP 02</em><strong>자료 확인</strong><span>입력한 정보와 제출자료를 확인합니다.</span></div>
+<div class="pc-process-step"><em>STEP 03</em><strong>사업지 검토</strong><span>사업 진행에 필요한 기본 조건을 검토합니다.</span></div>
+<div class="pc-process-step"><em>STEP 04</em><strong>검토결과 확인</strong><span>검토된 내용과 확인사항을 조회합니다.</span></div>
+<div class="pc-process-step"><em>STEP 05</em><strong>서비스 선택</strong><span>진행 가능한 후속 서비스를 확인합니다.</span></div>
+</div>
+</div>
+</section>
+<section class="pc-section">
+<div class="pc-section-title">
+<div class="eyebrow">SERVICE FEATURES</div>
+<h2>사전검토 페이지 이용 안내</h2>
+<p>각 단계별 페이지가 연결되어 있어 필요한 기능으로 바로 이동할 수 있습니다.</p>
+</div>
+<div class="pc-feature-grid">
+<div class="pc-feature"><b>01</b><div><strong>온라인 신청</strong><p>별도의 방문 없이 사업 예정지 정보를 온라인으로 접수할 수 있습니다.</p></div></div>
+<div class="pc-feature"><b>02</b><div><strong>단계별 확인</strong><p>신청, 결과 확인, 가능 서비스 안내를 구분하여 쉽게 이용할 수 있습니다.</p></div></div>
+<div class="pc-feature"><b>03</b><div><strong>쉽고 간편한 서비스 이용</strong><p>각 서비스 카드와 버튼을 통해 해당 기능 페이지로 바로 이동합니다.</p></div></div>
+<div class="pc-feature"><b>04</b><div><strong>후속 절차 연계 연계</strong><p>검토결과를 확인한 뒤 발전사업 관련 서비스로 이어서 진행할 수 있습니다.</p></div></div>
+</div>
+</section>
+<section class="pc-cta">
+<h2>사업 예정지 사전검토를 시작해보세요</h2>
+<p>기본정보를 입력하면 사전검토 신청 페이지에서 접수를 진행할 수 있습니다.</p>
+<a href="precheck-apply.html">무료 사전검토 신청 →</a>
+</section>
+</main>
+
+<section aria-labelledby="bottom-service-title" class="bottom-service">
+<div class="bottom-service-inner">
+<div class="bottom-service-head bottom-service-brand-head">
+<a aria-label="태양광도사 홈" class="bottom-service-identity" href="index.html">
+<img alt="태양광도사 로고" class="bottom-service-main-logo" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAydpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDEwLjAtYzAwMCA3OS5kMjBlNDY2MzAsIDIwMjUvMTIvMDktMDI6MTE6MjMgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCAyNy43IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo2MkFCREQ1RjY2MjExMUYxQTg0NEZGNURDOEM3QkUzNCIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo2MkFCREQ2MDY2MjExMUYxQTg0NEZGNURDOEM3QkUzNCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjYyQUJERDVENjYyMTExRjFBODQ0RkY1REM4QzdCRTM0IiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjYyQUJERDVFNjYyMTExRjFBODQ0RkY1REM4QzdCRTM0Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+jr53FQAACTJJREFUeNrs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"/>
+<div class="bottom-service-name">
+<span>TAEDOSA</span>
+<strong id="bottom-service-title">태양광도사</strong>
+</div>
+</a>
+<div aria-label="태양광도사 공식 채널" class="bottom-service-actions bottom-channel-actions">
+<button aria-label="홈페이지" class="bottom-action channel-home" title="홈페이지" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M3 10.8 12 3l9 7.8v9.7a.5.5 0 0 1-.5.5h-5.2v-6.4H8.7V21H3.5a.5.5 0 0 1-.5-.5v-9.7Z"></path><path d="m1.8 11.6 10.2-8.8 10.2 8.8"></path></svg>
+<span class="channel-tooltip">홈페이지</span>
+</button>
+<button aria-label="네이버 블로그" class="bottom-action channel-blog" title="네이버 블로그" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-7l-4.8 4V17H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"></path><path d="M8 8h8M8 12h5"></path></svg>
+<span class="channel-tooltip">네이버 블로그</span>
+</button>
+<button aria-label="유튜브" class="bottom-action channel-youtube" title="유튜브" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24"><rect height="12" rx="4" width="18" x="3" y="6"></rect><path d="m10 9 5 3-5 3V9Z"></path></svg>
+<span class="channel-tooltip">유튜브</span>
+</button>
+<button aria-label="문의하기" class="bottom-action channel-contact" title="문의하기" type="button">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M5 4h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-5 4v-4H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"></path><path d="M8 9h8M8 13h5"></path></svg>
+<span class="channel-tooltip">문의하기</span>
+</button>
+</div>
+</div>
+<div class="bottom-service-grid">
+<div class="bottom-guide-card">
+<div class="bottom-guide-head">
+<span class="bottom-guide-index">GUIDE</span>
+<strong>서비스 이용 안내</strong>
+</div>
+<div class="bottom-guide-steps">
+<a href="precheck-apply.html"><span>01</span><em>사전검토 신청</em></a>
+<a href="start.html"><span>02</span><em>서비스 선택</em></a>
+<a href="start.html#services"><span>03</span><em>온라인 계약</em></a>
+</div>
+</div>
+<div class="bottom-link-card">
+<h3>사전검토</h3>
+<a href="precheck-apply.html">사전검토 신청</a>
+<a href="precheck-result.html">검토결과 확인</a>
+<a href="precheck-service.html">가능서비스 확인</a>
+</div>
+<div class="bottom-link-card">
+<h3>발전사업 서비스</h3>
+<a href="start.html">패키지 서비스</a>
+<a href="start.html#services">개별 서비스</a>
+<a href="start.html">진행절차 안내</a>
+</div>
+<div class="bottom-link-card">
+<h3>바로가기</h3>
+<a href="#enterprise-services">기업 전문서비스</a>
+<a href="sitemap.html">사이트맵</a>
+<a href="#about">맨 위로</a>
+</div>
+</div>
+</div>
+</section><div class="site-copyright">
+Copyrights © TAEDO Co., Ltd All Rights Reserved.
+</div><script>
+document.querySelectorAll('a[href^="#"]').forEach(function(link){
+  link.addEventListener('click',function(e){
+    var target=document.querySelector(this.getAttribute('href'));
+    if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+});
+</script>
+</body>
+</html>
