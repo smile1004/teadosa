@@ -208,7 +208,7 @@ a {
 }
 
 
-.business-mega{width:540px!important;}
+.business-mega{width:500px!important;}
 .business-mega .mega-grid{gap:8px!important;}
 .business-mega h4{
   font-size:15px!important;
@@ -230,16 +230,17 @@ a {
 
 
 .menu-small-card{
-  width:560px!important;
+  width:540px!important;
+  padding:12px!important;
 }
 .menu-small-card h4{
   font-size:14px!important;
   margin-bottom:6px!important;
 }
 .menu-small-card .mega-card{
-  padding:11px 14px!important;
-  margin-bottom:6px!important;
-  border-radius:12px!important;
+  padding: 15px 16px!important;
+  margin-bottom: 10px!important;
+  border-radius: 14px!important;
 }
 .menu-small-card .mega-card strong{
   font-size:14px!important;
@@ -273,14 +274,15 @@ a {
 
 /* B2B menu width adjustment */
 .menu-small-card{
-  width:560px!important;
+  width:540px!important;
+  padding:12px!important;
 }
 .menu-small-card .mega-grid{
   grid-template-columns:1fr 1fr!important;
-  gap:12px!important;
+  gap: 18px!important;
 }
 .menu-small-card .mega-card{
-  padding:12px 14px!important;
+  padding: 15px 16px!important;
 }
 .menu-small-card h4{
   white-space:nowrap;
@@ -307,7 +309,7 @@ a {
 
 .precheck-menu {
   width:300px!important;
-  padding:20px!important;
+  padding:12px!important;
 }
 .precheck-menu h4 {
   font-size:15px!important;
@@ -1013,7 +1015,7 @@ html{
 <style>
 .coming-mega{
 width:220px!important;
-padding:16px!important;
+padding:12px!important;
 text-align:center;
 }
 .coming-card{
@@ -2284,6 +2286,30 @@ display:none;
   .bottom-link-card{
     backdrop-filter:blur(14px) saturate(115%);
     -webkit-backdrop-filter:blur(14px) saturate(115%);
+  }
+}
+</style>
+
+
+<style id="b2b-dropdown-size-final-fix">
+/* 기업전문서비스(B2B) 드롭다운 흰색 배경 최종 확대 */
+.mega.small.menu-small-card{
+  width:540px!important;
+  padding:12px!important;
+}
+.mega.small.menu-small-card .mega-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.mega.small.menu-small-card .mega-card{
+  min-height:86px!important;
+  padding:15px 16px!important;
+  margin-bottom:10px!important;
+  border-radius:14px!important;
+}
+@media(max-width:1180px){
+  .mega.small.menu-small-card{
+    width:500px!important;
   }
 }
 </style>
