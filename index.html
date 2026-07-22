@@ -2314,6 +2314,100 @@ display:none;
 }
 </style>
 
+
+<style id="precheck-dropdown-card-design-final">
+/* 사전검토 드롭다운: 발전사업 시작하기·기업전문서비스와 동일한 카드형 디자인 */
+.mega.small.precheck-menu.precheck-card-menu{
+  width:420px!important;
+  padding:16px!important;
+}
+.precheck-card-menu h4{
+  margin-bottom:13px!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  color:var(--logo-green-dark)!important;
+}
+.precheck-card-menu .mega-card{
+  min-height:76px;
+  margin-bottom:10px!important;
+  padding:15px 16px!important;
+  border-radius:16px!important;
+}
+.precheck-card-menu .mega-card:last-child{
+  margin-bottom:0!important;
+}
+.precheck-card-menu .mega-card strong{
+  display:block;
+  margin-bottom:5px!important;
+  font-size:16px!important;
+  font-weight:800!important;
+}
+.precheck-card-menu .mega-card span{
+  display:block;
+  font-size:13px!important;
+  line-height:1.5!important;
+}
+@media(max-width:1180px){
+  .mega.small.precheck-menu.precheck-card-menu{width:400px!important;}
+}
+</style>
+
+
+<style id="precheck-dropdown-color-size-final">
+/* 사전검토 드롭다운 최종 크기 및 B2C 메뉴 동일 색상 */
+.mega.small.precheck-menu.precheck-card-menu{
+  width:300px!important;
+  padding:14px!important;
+}
+
+.precheck-card-menu .mega-card{
+  width:100%;
+  min-height:76px;
+}
+
+/* 사전검토 신청: B2C 개별서비스(menu-single)와 동일 */
+.precheck-card-menu a.mega-card:nth-of-type(1){
+  background:#fffaf1!important;
+  border-color:#f0dfc0!important;
+}
+.precheck-card-menu a.mega-card:nth-of-type(1) strong{
+  color:#d88422!important;
+}
+.precheck-card-menu a.mega-card:nth-of-type(1) span{
+  color:#8f7252!important;
+}
+.precheck-card-menu a.mega-card:nth-of-type(1):hover{
+  background:#fff3dc!important;
+  border-color:#f0dfc0!important;
+}
+
+/* 검토결과 확인·가능서비스 확인: B2C 패키지(menu-package)와 동일 */
+.precheck-card-menu a.mega-card:nth-of-type(2),
+.precheck-card-menu a.mega-card:nth-of-type(3){
+  background:var(--logo-green-soft)!important;
+  border-color:#dfead6!important;
+}
+.precheck-card-menu a.mega-card:nth-of-type(2) strong,
+.precheck-card-menu a.mega-card:nth-of-type(3) strong{
+  color:#46762d!important;
+}
+.precheck-card-menu a.mega-card:nth-of-type(2) span,
+.precheck-card-menu a.mega-card:nth-of-type(3) span{
+  color:#6b7d68!important;
+}
+.precheck-card-menu a.mega-card:nth-of-type(2):hover,
+.precheck-card-menu a.mega-card:nth-of-type(3):hover{
+  background:#e5f1dd!important;
+  border-color:#dfead6!important;
+}
+
+@media(max-width:1180px){
+  .mega.small.precheck-menu.precheck-card-menu{
+    width:300px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <header class="header">
@@ -2331,14 +2425,12 @@ display:none;
 <span class="nav-separator">/</span>
 <div class="nav-item">
 <a class="nav-link" href="precheck.html">사전검토</a>
-        <div class="mega small precheck-menu">
+<div class="mega small precheck-menu precheck-card-menu">
 <div>
 <h4>사전검토 서비스</h4>
-<div class="precheck-list">
-<a href="precheck-apply.html"><span>사전검토 신청</span><em>→</em></a>
-<a href="precheck-result.html"><span>검토결과 확인</span><em>→</em></a>
-<a href="precheck-service.html"><span>가능서비스 확인</span><em>→</em></a>
-</div>
+<a class="mega-card menu-package" href="precheck-apply.html"><strong>사전검토 신청</strong><span>발전사업 가능여부 검토</span></a>
+<a class="mega-card menu-package" href="precheck-result.html"><strong>검토결과 확인</strong><span>검토 결과보고서 확인</span></a>
+<a class="mega-card menu-package" href="precheck-service.html"><strong>가능서비스 확인</strong><span>진행 가능 서비스 확인 및 신청</span></a>
 </div>
 </div>
 </div>
