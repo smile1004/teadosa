@@ -2313,6 +2313,167 @@ a{color:inherit;text-decoration:none}
 }
 </style>
 
+<style id="index-header-sync-final">
+:root{--logo-orange:#d88422!important;--logo-orange-light:#f4d39f!important;--logo-green:#77a83d!important;--logo-green-dark:#4f7f34!important;--logo-green-soft:#edf6e7!important;--cream:#fffaf1!important;--mint:#f6faf4!important;--bg:#fbfcf8!important;--card:#ffffff!important;--line:#e8eee3!important;--text:#1f2b24!important;--muted:#68766a!important;--shadow:0 18px 45px rgba(64,92,52,.08)!important;}
+.header{position:fixed!important;top:0!important;left:0!important;right:0!important;z-index:100!important;background:rgba(255,255,255,.94)!important;backdrop-filter:blur(14px)!important;border-bottom:1px solid var(--line)!important;}
+.header-inner{max-width:1260px!important;height:88px!important;margin:0 auto!important;padding:0 32px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;}
+.logo{display:flex!important;align-items:center!important;gap:13px!important;}
+.logo img{width:64px!important;height:64px!important;object-fit:contain!important;}
+.logo strong{display:block!important;font-size:25px!important;letter-spacing:-1.2px!important;}
+.logo span{display:block!important;margin-top:2px!important;font-size:11px!important;letter-spacing:3px!important;color:#6d6d6d!important;}
+.nav{display:flex!important;align-items:center!important;gap:6px!important;}
+.nav-item{position:relative!important;padding:34px 17px!important;font-size:15px!important;font-weight:800!important;color:#29362d!important;}
+.nav-item:hover{color:var(--logo-green-dark)!important;}
+.nav-item::after{content:""!important;position:absolute!important;left:17px!important;right:17px!important;bottom:24px!important;height:3px!important;border-radius:999px!important;background:linear-gradient(90deg,var(--logo-green),var(--logo-orange))!important;transform:scaleX(0)!important;transition:.22s!important;}
+.nav-item:hover::after{transform:scaleX(1)!important;}
+.mega{display:none!important;position:absolute!important;top:88px!important;left:50%!important;transform:translateX(-50%)!important;width:540px!important;padding:17px!important;background:#fff!important;border:1px solid var(--line)!important;border-radius:22px!important;box-shadow:0 24px 65px rgba(58,82,49,.14)!important;}
+.nav-item:hover .mega{display:block!important;}
+.mega.small{width:430px!important;}
+.mega-grid{display:grid!important;grid-template-columns:1fr 1fr!important;gap:22px!important;}
+.mega h4{margin-bottom:13px!important;font-size:15px!important;color:var(--logo-green-dark)!important;}
+.mega-card{display:block!important;margin-bottom:10px!important;padding:15px 16px!important;border-radius:16px!important;background:var(--logo-green-soft)!important;border:1px solid #dfead6!important;transition:.2s!important;}
+.mega-card:hover{background:#e5f1dd!important;transform:translateY(-2px)!important;}
+.mega-card strong{display:block!important;font-size:16px!important;margin-bottom:5px!important;}
+.mega-card span{color:var(--muted)!important;font-size:13px!important;line-height:1.5!important;}
+.mega-list a{display:flex!important;justify-content:flex-start!important;padding:11px 12px!important;border-radius:12px!important;font-size:14px!important;}
+.mega-list a:hover{background:var(--cream)!important;}
+.menu-package{background:var(--logo-green-soft)!important;border-color:#dfead6!important;}
+.menu-package:hover{background:#e5f1dd!important;}
+.menu-package strong{color:#46762d!important;}
+.menu-package span{color:#6b7d68!important;}
+.menu-single{background:#fffaf1!important;border-color:#f0dfc0!important;}
+.menu-single:hover{background:#fff3dc!important;}
+.menu-single strong{color:#d88422!important;}
+.menu-single span{color:#8f7252!important;}
+.business-mega{width:700px!important;}
+.business-mega .mega-grid{gap:16px!important;}
+.business-mega .mega-card{padding:17px!important;}
+.business-mega{width:500px!important;}
+.business-mega .mega-grid{gap:8px!important;}
+.business-mega h4{font-size:15px!important;margin-bottom:6px!important;}
+.business-mega .mega-card{padding:11px 14px!important;margin-bottom:6px!important;border-radius:12px!important;}
+.business-mega .mega-card strong{font-size:15px!important;margin-bottom:4px!important;}
+.business-mega .mega-card span{font-size:12px!important;line-height:1.35!important;}
+.menu-small-card{width:540px!important;padding:12px!important;}
+.menu-small-card h4{font-size:14px!important;margin-bottom:6px!important;}
+.menu-small-card .mega-card{padding: 15px 16px!important;margin-bottom: 10px!important;border-radius: 14px!important;}
+.menu-small-card .mega-card strong{font-size:14px!important;margin-bottom:2px!important;}
+.menu-small-card .mega-card span{font-size:11px!important;line-height:1.3!important;}
+.menu-precheck{background:#eef7e8!important;border-color:#d7e8cb!important;}
+.menu-precheck strong{color:#46762d!important;}
+.menu-precheck span{color:#6b7d68!important;}
+.menu-b2b{background:#fff7eb!important;border-color:#f2d7a6!important;}
+.menu-b2b strong{color:#d88422!important;}
+.menu-b2b span{color:#8f7252!important;}
+.menu-small-card{width:540px!important;padding:12px!important;}
+.menu-small-card .mega-grid{grid-template-columns:1fr 1fr!important;gap: 18px!important;}
+.menu-small-card .mega-card{padding: 15px 16px!important;}
+.menu-small-card h4{white-space:nowrap!important;}
+.menu-small-card .mega-card strong{white-space:nowrap!important;}
+.menu-small-card h4{font-size:15px!important;font-weight:800!important;}
+.menu-small-card .mega-card strong{font-size:15px!important;font-weight:800!important;}
+.menu-small-card .mega-card span{font-size:12px!important;line-height:1.35!important;}
+.precheck-menu{width:300px!important;padding:12px!important;}
+.precheck-menu h4{font-size:15px!important;margin-bottom:12px!important;color:var(--logo-green-dark)!important;}
+.precheck-list{display:grid!important;gap:0!important;}
+.precheck-list a{display:flex!important;align-items:center!important;justify-content:flex-start!important;padding:13px 2px!important;border-bottom:1px solid #edf1e8!important;font-size:15px!important;font-weight:800!important;color:#344639!important;transition:.22s!important;}
+.precheck-list a:last-child{border-bottom:0!important;}
+.precheck-list a em{font-style:normal!important;color:#9aa7a0!important;transition:.22s!important;}
+.precheck-list a:hover{color:var(--logo-green-dark)!important;padding-left:6px!important;}
+.precheck-list a:hover em{color:var(--logo-orange)!important;transform:translateX(3px)!important;}
+.nav-link{display:block!important;color:inherit!important;text-decoration:none!important;font:inherit!important;}
+.nav-link:hover{color:var(--logo-green-dark)!important;}
+.top-btn{position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;padding:12px 20px!important;border-radius:999px!important;background:#ffffff!important;color:var(--logo-orange)!important;font-weight:900!important;border:1px solid #f1dcc0!important;box-shadow:0 10px 24px rgba(64,92,52,.08)!important;transition:.22s!important;}
+.top-btn::after{content:"→"!important;width:20px!important;height:20px!important;border-radius:50%!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;background:var(--logo-green-soft)!important;font-size:13px!important;}
+.top-btn:hover{background:var(--cream)!important;transform:translateY(-2px)!important;box-shadow:0 14px 30px rgba(216,132,34,.13)!important;}
+.mobile{display:none!important;font-weight:900!important;}
+@media (max-width:980px){.header-inner{height:auto!important;padding:14px 20px!important;}
+.nav,.top-btn{display:none!important;}
+.mobile{display:block!important;}}
+.header-inner{max-width:1460px!important;padding:0 32px!important;}
+.logo{flex:0 0 auto!important;}
+.nav{margin-left:auto!important;gap:2px!important;transform:translateX(14px)!important;}
+.nav-item{padding-left:9px!important;padding-right:9px!important;font-size:13.5px!important;white-space:nowrap!important;}
+.nav-item::after{left:9px!important;right:9px!important;}
+.nav-link{white-space:nowrap!important;}
+.top-btn-compact{margin-left:18px!important;padding:10px 14px!important;font-size:13px!important;white-space:nowrap!important;}
+@media (max-width:1250px){.nav-item{padding-left:7px!important;padding-right:7px!important;font-size:13px!important;}
+.top-btn-compact{padding:9px 11px!important;font-size:12.5px!important;}}
+.sitemap-link{letter-spacing:1px!important;font-weight:800!important;}
+.nav{margin-left:72px!important;gap:0!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:1!important;}
+.nav-item{padding-left:11px!important;padding-right:11px!important;font-size:15.5px!important;font-weight:700!important;white-space:nowrap!important;}
+.nav-item::after{left:11px!important;right:11px!important;}
+.nav-link{font-size:15.5px!important;font-weight:700!important;white-space:nowrap!important;}
+.nav-separator{color:#c8cec8!important;font-size:15px!important;font-weight:400!important;line-height:1!important;pointer-events:none!important;user-select:none!important;}
+.top-btn-compact{margin-left:10px!important;padding:10px 13px!important;font-size:13px!important;white-space:nowrap!important;}
+@media (max-width:1350px){.nav-item,
+  .nav-link{font-size:14.5px!important;}
+.nav-item{padding-left:8px!important;padding-right:8px!important;}
+.nav-separator{font-size:14px!important;}
+.nav{margin-left:36px!important;}}
+.header-inner{max-width:1460px!important;padding:0 30px!important;}
+.nav{margin-left:auto!important;flex:0 0 auto!important;transform:none!important;justify-content:flex-start!important;gap:0!important;}
+.nav-item{padding-left:10px!important;padding-right:10px!important;}
+.top-btn-compact{margin-left:12px!important;}
+@media (max-width:1350px){.nav{margin-left:auto!important;}
+.nav-item{padding-left:7px!important;padding-right:7px!important;}}
+.precheck-list a{gap:14px!important;}
+.precheck-list a em{flex:0 0 30px!important;width:30px!important;height:30px!important;border-radius:50%!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#f2f4f1!important;color:#7d8980!important;font-size:15px!important;font-weight:900!important;line-height:1!important;transition:background .22s ease,color .22s ease,transform .22s ease,box-shadow .22s ease!important;}
+.precheck-list a:hover em{background:var(--logo-orange)!important;color:#fff!important;transform:translateX(3px)!important;box-shadow:0 7px 16px rgba(216,132,34,.22)!important;}
+.precheck-list a{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;padding:13px 4px!important;}
+.precheck-list a span{flex:1 1 auto!important;min-width:0!important;text-align:left!important;}
+.precheck-list a em{margin-left:auto!important;flex:0 0 30px!important;width:30px!important;height:30px!important;}
+.coming-mega{width:220px!important;padding:12px!important;text-align:center!important;}
+.coming-card{display:flex!important;justify-content:center!important;align-items:flex-end!important;min-height:155px!important;padding-bottom:8px!important;background:#fffdf8!important;border-radius:14px!important;transition:transform .2s ease!important;}
+.coming-card:hover{transform:translateY(-2px)!important;}
+.coming-card img{width:140px!important;display:block!important;margin:0 auto!important;}
+.coming-card .title{display:none!important;}
+.mega.small.menu-small-card{width:540px!important;padding:12px!important;}
+.mega.small.menu-small-card .mega-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;}
+.mega.small.menu-small-card .mega-card{min-height:86px!important;padding:15px 16px!important;margin-bottom:10px!important;border-radius:14px!important;}
+@media (max-width:1180px){.mega.small.menu-small-card{width:500px!important;}}
+.mega.small.precheck-menu.precheck-card-menu{width:420px!important;padding:16px!important;}
+.precheck-card-menu h4{margin-bottom:13px!important;font-size:15px!important;font-weight:800!important;color:var(--logo-green-dark)!important;}
+.precheck-card-menu .mega-card{min-height:76px!important;margin-bottom:10px!important;padding:15px 16px!important;border-radius:16px!important;}
+.precheck-card-menu .mega-card:last-child{margin-bottom:0!important;}
+.precheck-card-menu .mega-card strong{display:block!important;margin-bottom:5px!important;font-size:16px!important;font-weight:800!important;}
+.precheck-card-menu .mega-card span{display:block!important;font-size:13px!important;line-height:1.5!important;}
+@media (max-width:1180px){.mega.small.precheck-menu.precheck-card-menu{width:400px!important;}}
+.mega.small.precheck-menu.precheck-card-menu{width:300px!important;padding:14px!important;}
+.precheck-card-menu .mega-card{width:100%!important;min-height:76px!important;}
+.precheck-card-menu a.mega-card:nth-of-type(1){background:#fffaf1!important;border-color:#f0dfc0!important;}
+.precheck-card-menu a.mega-card:nth-of-type(1) strong{color:#d88422!important;}
+.precheck-card-menu a.mega-card:nth-of-type(1) span{color:#8f7252!important;}
+.precheck-card-menu a.mega-card:nth-of-type(1):hover{background:#fff3dc!important;border-color:#f0dfc0!important;}
+.precheck-card-menu a.mega-card:nth-of-type(2),
+.precheck-card-menu a.mega-card:nth-of-type(3){background:var(--logo-green-soft)!important;border-color:#dfead6!important;}
+.precheck-card-menu a.mega-card:nth-of-type(2) strong,
+.precheck-card-menu a.mega-card:nth-of-type(3) strong{color:#46762d!important;}
+.precheck-card-menu a.mega-card:nth-of-type(2) span,
+.precheck-card-menu a.mega-card:nth-of-type(3) span{color:#6b7d68!important;}
+.precheck-card-menu a.mega-card:nth-of-type(2):hover,
+.precheck-card-menu a.mega-card:nth-of-type(3):hover{background:#e5f1dd!important;border-color:#dfead6!important;}
+@media (max-width:1180px){.mega.small.precheck-menu.precheck-card-menu{width:300px!important;}}
+.business-mega{width:720px!important;}
+.business-mega .mega-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important;}
+.business-mega .mega-card{padding:16px 18px!important;min-height:92px!important;}
+
+/* Header synchronization verification overrides */
+.header{position:fixed!important;top:0!important;left:0!important;right:0!important;z-index:100!important;}
+.header-inner{height:88px!important;margin:0 auto!important;display:flex!important;align-items:center!important;}
+.header .logo{display:flex!important;align-items:center!important;flex:0 0 auto!important;}
+.header .nav{display:flex!important;align-items:center!important;}
+.header .nav-item{position:relative!important;white-space:nowrap!important;}
+.header .mega{position:absolute!important;top:88px!important;}
+.header .nav-item:hover>.mega{display:block!important;}
+.header .mobile{display:none!important;}
+@media(max-width:980px){
+  .header-inner{height:auto!important;}
+  .header .nav,.header .top-btn{display:none!important;}
+  .header .mobile{display:block!important;}
+}
+
+</style>
 </head>
 <body class="taedo-has-fixed-header">
 <header class="header">
@@ -2330,14 +2491,12 @@ a{color:inherit;text-decoration:none}
 <span class="nav-separator">/</span>
 <div class="nav-item">
 <a class="nav-link" href="precheck.html">사전검토</a>
-        <div class="mega small precheck-menu">
+<div class="mega small precheck-menu precheck-card-menu">
 <div>
 <h4>사전검토 서비스</h4>
-<div class="precheck-list">
-<a href="precheck-apply.html"><span>사전검토 신청</span><em>→</em></a>
-<a href="precheck-result.html"><span>검토결과 확인</span><em>→</em></a>
-<a href="precheck-service.html"><span>가능서비스 확인</span><em>→</em></a>
-</div>
+<a class="mega-card menu-package" href="precheck-apply.html"><strong>사전검토 신청</strong><span>발전사업 가능여부 검토</span></a>
+<a class="mega-card menu-package" href="precheck-result.html"><strong>검토결과 확인</strong><span>검토 결과보고서 확인</span></a>
+<a class="mega-card menu-package" href="precheck-service.html"><strong>가능서비스 확인</strong><span>진행 가능 서비스 확인 및 신청</span></a>
 </div>
 </div>
 </div>
@@ -2367,25 +2526,25 @@ a{color:inherit;text-decoration:none}
 </div>
 <span class="nav-separator">/</span>
 <div class="nav-item">
-<a class="nav-link" href="#enterprise-services">기업전문서비스(B2B)</a>
+<a class="nav-link" href="index.html#enterprise-services">기업전문서비스(B2B)</a>
 <div class="mega small menu-small-card">
 <div class="mega-grid">
 <div>
 <h4>기술지원 서비스</h4>
-<a class="mega-card menu-package" href="#enterprise-services"><strong>기술검토</strong><span>태양광 발전사업 기술 조건 및 적정성 검토</span></a>
-<a class="mega-card menu-package" href="#enterprise-services"><strong>도면설계</strong><span>태양광 설계도면 및 시공도 작성 지원</span></a>
+<a class="mega-card menu-package" href="index.html#enterprise-services"><strong>기술검토</strong><span>태양광 발전사업 기술 조건 및 적정성 검토</span></a>
+<a class="mega-card menu-package" href="index.html#enterprise-services"><strong>도면설계</strong><span>태양광 설계도면 및 시공도 작성 지원</span></a>
 </div>
 <div>
 <h4>현장시공 서비스</h4>
-<a class="mega-card menu-single" href="#enterprise-services"><strong>현장실사</strong><span>현장 조사 및 시공 가능 여부 확인</span></a>
-<a class="mega-card menu-single" href="#enterprise-services"><strong>공사</strong><span>태양광 발전설비 시공 서비스</span></a>
+<a class="mega-card menu-single" href="index.html#enterprise-services"><strong>현장실사</strong><span>현장 조사 및 시공 가능 여부 확인</span></a>
+<a class="mega-card menu-single" href="index.html#enterprise-services"><strong>공사</strong><span>태양광 발전설비 시공 서비스</span></a>
 </div>
 </div>
 </div>
 </div>
 <span class="nav-separator">/</span>
 <div class="nav-item">
-<a class="nav-link" href="#materials">자재거래</a>
+<a class="nav-link" href="index.html#materials">자재거래</a>
 <div class="mega coming-mega">
 <div class="coming-card">
 <img alt="서비스 준비중" src="assets/images/coming-character.png"/>
@@ -2394,7 +2553,7 @@ a{color:inherit;text-decoration:none}
 </div>
 <span class="nav-separator">/</span>
 <div class="nav-item">
-<a class="nav-link" href="#plant-listings">발전소 매물</a>
+<a class="nav-link" href="index.html#plant-listings">발전소 매물</a>
 <div class="mega coming-mega">
 <div class="coming-card">
 <img alt="서비스 준비중" src="assets/images/coming-character.png"/>
@@ -2533,7 +2692,7 @@ a{color:inherit;text-decoration:none}
 </div>
 <div class="bottom-link-card">
 <h3>바로가기</h3>
-<a href="#enterprise-services">기업 전문서비스</a>
+<a href="index.html#enterprise-services">기업 전문서비스</a>
 <a href="sitemap.html">사이트맵</a>
 <a href="#about">맨 위로</a>
 </div>
