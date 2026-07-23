@@ -1,0 +1,22 @@
+/** 기업 전문서비스 공통 메뉴 보정 */
+
+/* 기업전문서비스(B2B) 드롭다운 흰색 배경 최종 확대 */
+.mega.small.menu-small-card{
+  width:540px!important;
+  padding:12px!important;
+}
+.mega.small.menu-small-card .mega-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+.mega.small.menu-small-card .mega-card{
+  min-height:86px!important;
+  padding:15px 16px!important;
+  margin-bottom:10px!important;
+  border-radius:14px!important;
+}
+@media(max-width:1180px){
+  .mega.small.menu-small-card{
+    width:500px!important;
+  }
+}

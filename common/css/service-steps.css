@@ -1,0 +1,211 @@
+/** STEP 01·02·03 공통 레이아웃 */
+
+/* STEP 01·02·03 공통 위치 및 형식 */
+body{
+  margin:0 !important;
+}
+
+.step-unified-shell{
+  width:100%;
+  max-width:980px;
+  margin:0 auto;
+  padding:112px 18px 48px;
+}
+
+.step-unified-shell > .service-step-hero{
+  width:100%;
+  max-width:none !important;
+  margin:0 0 28px 0 !important;
+  padding:30px 32px !important;
+  border-radius:24px !important;
+  background:linear-gradient(135deg,#f1f8ec 0%,#fffaf1 100%) !important;
+  border:1px solid #dfead6 !important;
+  box-shadow:0 14px 34px rgba(64,92,52,.08) !important;
+  text-align:left !important;
+}
+
+.step-unified-shell > .service-step-hero .service-step-label{
+  display:inline-flex !important;
+  align-items:center !important;
+  margin:0 0 12px 0 !important;
+  padding:7px 13px !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  border:1px solid #dbe8d2 !important;
+  color:#4f7f34 !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  letter-spacing:.4px !important;
+}
+
+.step-unified-shell > .service-step-hero h1{
+  margin:0 0 10px !important;
+  padding:0 !important;
+  border:0 !important;
+  background:none !important;
+  border-radius:0 !important;
+  color:#2f5f27 !important;
+  font-size:36px !important;
+  line-height:1.25 !important;
+  letter-spacing:-1.7px !important;
+  font-weight:800 !important;
+}
+
+.step-unified-shell > .service-step-hero p{
+  margin:0 !important;
+  color:#68766a !important;
+  font-size:16px !important;
+  line-height:1.7 !important;
+}
+
+.step-unified-content{
+  width:100%;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+/* 기존 개별 페이지의 이중 상단 여백 제거 */
+.precheck-content,
+.step-page-shell,
+.wrap{
+  padding-top:0 !important;
+}
+
+@media(max-width:980px){
+  .step-unified-shell{
+    padding:92px 18px 36px;
+  }
+  .step-unified-shell > .service-step-hero{
+    padding:24px 22px !important;
+    margin-bottom:22px !important;
+  }
+  .step-unified-shell > .service-step-hero h1{
+    font-size:28px !important;
+  }
+}
+
+@media(max-width:760px){
+  .step-unified-shell{
+    padding-left:12px;
+    padding-right:12px;
+  }
+}
+
+/* ===== STEP 01·02·03 공통 정렬 최종 수정 ===== */
+html, body{
+  margin:0 !important;
+  padding:0 !important;
+}
+body{
+  padding-top:88px !important;
+  background:#f7faf8 !important;
+  font-family:'Pretendard','Noto Sans KR',Arial,sans-serif !important;
+  color:#1f2937 !important;
+  line-height:1.45 !important;
+}
+.step-unified-shell{
+  width:100% !important;
+  max-width:980px !important;
+  margin:0 auto !important;
+  padding:60px 18px 48px !important;
+}
+.step-unified-shell > .service-step-hero{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 0 5px !important;
+  padding:30px 32px !important;
+  box-sizing:border-box !important;
+  border:1px solid #dfead6 !important;
+  border-radius:24px !important;
+  background:linear-gradient(135deg,#f1f8ec 0%,#fffaf1 100%) !important;
+  box-shadow:0 14px 34px rgba(64,92,52,.08) !important;
+  text-align:left !important;
+}
+.step-unified-shell > .service-step-hero .service-step-label{
+  display:inline-flex !important;
+  align-items:center !important;
+  margin:0 0 12px !important;
+  padding:7px 13px !important;
+  border:1px solid #dbe8d2 !important;
+  border-radius:999px !important;
+  background:#fff !important;
+  color:#4f7f34 !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  letter-spacing:.4px !important;
+}
+.step-unified-shell > .service-step-hero h1{
+  margin:0 0 10px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:none !important;
+  color:#2f5f27 !important;
+  font-size:36px !important;
+  line-height:1.25 !important;
+  letter-spacing:-1.7px !important;
+  font-weight:800 !important;
+}
+.step-unified-shell > .service-step-hero p{
+  margin:0 !important;
+  color:#68766a !important;
+  font-size:16px !important;
+  line-height:1.7 !important;
+}
+.step-unified-content{
+  width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.step-unified-content > .wrap,
+.step-unified-content > main.wrap,
+.step-unified-content .wrap{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+.precheck-content,
+.step-page-shell,
+.page{
+  margin:0 !important;
+  padding:0 !important;
+}
+.step-unified-content .card,
+.step-unified-content .section{
+  width:100% !important;
+  box-sizing:border-box !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:18px !important;
+  background:#fff !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.04) !important;
+}
+.step-unified-content .summary{
+  margin:0 0 16px !important;
+}
+.step-unified-content .summary-card{
+  box-sizing:border-box !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:16px !important;
+  background:#fff !important;
+  box-shadow:0 6px 18px rgba(15,23,42,.04) !important;
+}
+@media(max-width:980px){
+  body{padding-top:78px !important;}
+  .step-unified-shell{
+    padding:40px 18px 36px !important;
+  }
+  .step-unified-shell > .service-step-hero{
+    padding:24px 22px !important;
+  }
+  .step-unified-shell > .service-step-hero h1{
+    font-size:28px !important;
+  }
+}
+@media(max-width:760px){
+  .step-unified-shell{
+    padding-left:12px !important;
+    padding-right:12px !important;
+  }
+}

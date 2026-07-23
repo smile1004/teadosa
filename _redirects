@@ -1,0 +1,10 @@
+# 기존 주소 호환 리디렉션
+/start.html /start/ 301
+/precheck.html /precheck/ 301
+/precheck-service.html /precheck/service/ 301
+/precheck-apply.html /precheck/apply/ 301
+/precheck-result.html /precheck/result/ 301
+/precheck-apply-result.html /precheck/apply-result/ 301
+/sitemap.html /sitemap/ 301
+/field_inspection_sample_view.html /precheck/samples/field-inspection/ 301
+/structure_review_sample_view.html /precheck/samples/structure-review/ 301

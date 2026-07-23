@@ -1,0 +1,20 @@
+태도사 홈페이지 폴더 구조 확인용
+
+루트
+- index.html
+- common/
+- home/
+- start/
+- precheck/
+- sitemap/
+
+사전검토
+- precheck/index.html
+- precheck/service/index.html
+- precheck/apply/index.html
+- precheck/result/index.html
+- precheck/apply-result/index.html
+- precheck/samples/field-inspection/index.html
+- precheck/samples/structure-review/index.html
+
+각 페이지 폴더 내부에는 필요한 css, js, images 폴더가 배치되어 있습니다.

@@ -1,0 +1,322 @@
+/* ===== taedosa-common-header-style ===== */
+
+/* ===== 태양광도사 최종 공통 헤더 ===== */
+:root{
+  --logo-orange:#d88422;
+  --logo-green:#77a83d;
+  --logo-green-dark:#4f7f34;
+  --logo-green-soft:#edf6e7;
+  --cream:#fffaf1;
+  --line:#e8eee3;
+  --muted:#68766a;
+}
+*{box-sizing:border-box}
+body{margin:0}
+a{color:inherit;text-decoration:none}
+
+.header{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:1000;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.header *{box-sizing:border-box}
+.header-inner{
+  max-width:1460px;
+  height:88px;
+  margin:0 auto;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+}
+.logo{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  flex:0 0 auto;
+}
+.logo img{
+  width:64px;
+  height:64px;
+  object-fit:contain;
+}
+.logo strong{
+  display:block;
+  font-size:25px;
+  letter-spacing:-1.2px;
+  color:#1f2b24;
+}
+.nav{
+  margin-left:auto!important;
+  flex:0 0 auto!important;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start!important;
+  gap:0!important;
+}
+.nav-item{
+  position:relative;
+  padding:34px 10px!important;
+  font-size:15.5px;
+  font-weight:700;
+  color:#29362d;
+  white-space:nowrap;
+}
+.nav-item:hover{color:var(--logo-green-dark)}
+.nav-item::after{
+  content:"";
+  position:absolute;
+  left:10px;right:10px;bottom:24px;
+  height:3px;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--logo-green),var(--logo-orange));
+  transform:scaleX(0);
+  transition:.22s;
+}
+.nav-item:hover::after{transform:scaleX(1)}
+.nav-link{
+  display:block;
+  color:inherit;
+  text-decoration:none;
+  font:inherit;
+  white-space:nowrap;
+}
+.nav-separator{
+  color:#c8cec8;
+  font-size:15px;
+  font-weight:400;
+  line-height:1;
+  pointer-events:none;
+  user-select:none;
+}
+.sitemap-link{
+  letter-spacing:1px;
+  font-weight:800;
+}
+
+.mega{
+  display:none;
+  position:absolute;
+  top:88px;
+  left:50%;
+  transform:translateX(-50%);
+  width:540px;
+  padding:17px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:0 24px 65px rgba(58,82,49,.14);
+  color:#1f2b24;
+}
+.nav-item:hover .mega{display:block}
+.mega.small{width:430px}
+.mega-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:22px;
+}
+.mega h4{
+  margin:0 0 13px;
+  font-size:15px;
+  color:var(--logo-green-dark);
+}
+.mega-card{
+  display:block;
+  margin-bottom:10px;
+  padding:15px 16px;
+  border-radius:16px;
+  border:1px solid #dfead6;
+  background:var(--logo-green-soft);
+  transition:.2s;
+}
+.mega-card:hover{
+  background:#e5f1dd;
+  transform:translateY(-2px);
+}
+.mega-card strong{
+  display:block;
+  margin-bottom:5px;
+  font-size:16px;
+}
+.mega-card span{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+.menu-package strong{color:#46762d}
+.menu-package span{color:#6b7d68}
+.menu-single{
+  background:#fffaf1;
+  border-color:#f0dfc0;
+}
+.menu-single:hover{background:#fff3dc}
+.menu-single strong{color:#d88422}
+.menu-single span{color:#8f7252}
+
+.menu-small-card{width:500px!important;
+  gap:10px!important;
+}
+.menu-small-card h4{
+  margin-bottom:6px!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  white-space:nowrap;
+}
+.menu-small-card .mega-card{
+  margin-bottom: 10px!important;
+  padding: 15px 16px!important;
+  border-radius: 14px!important;
+}
+.menu-small-card .mega-card strong{
+  margin-bottom:2px!important;
+  font-size:15px!important;
+  font-weight:800!important;
+  white-space:nowrap;
+}
+.menu-small-card .mega-card span{
+  font-size:12px!important;
+  line-height:1.35!important;
+}
+
+.precheck-menu{
+  width:300px!important;
+  padding:12px!important;
+}
+.precheck-menu h4{
+  margin-bottom:12px!important;
+  font-size:15px!important;
+  color:var(--logo-green-dark);
+}
+.precheck-list{display:grid;gap:0}
+.precheck-list a{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:13px 4px;
+  border-bottom:1px solid #edf1e8;
+  font-size:15px;
+  font-weight:800;
+  color:#344639;
+  transition:.22s;
+}
+.precheck-list a:last-child{border-bottom:0}
+.precheck-list a span{
+  flex:1 1 auto;
+  min-width:0;
+  text-align:left;
+}
+.precheck-list a em{
+  margin-left:auto;
+  flex:0 0 30px;
+  width:30px;height:30px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:#f2f4f1;
+  color:#7d8980;
+  font-size:15px;
+  font-weight:900;
+  font-style:normal;
+  transition:.22s;
+}
+.precheck-list a:hover{
+  color:var(--logo-green-dark);
+  padding-left:6px;
+}
+.precheck-list a:hover em{
+  background:var(--logo-orange);
+  color:#fff;
+  transform:translateX(3px);
+  box-shadow:0 7px 16px rgba(216,132,34,.22);
+}
+
+.coming-mega{
+  width:220px!important;
+  padding:12px!important;
+  text-align:center;
+}
+.coming-card{
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  min-height:155px;
+  padding-bottom:8px;
+  background:#fffdf8;
+  border-radius:14px;
+  transition:transform .2s ease;
+}
+.coming-card:hover{transform:translateY(-2px)}
+.coming-card img{
+  width:140px;
+  display:block;
+  margin:0 auto;
+}
+.coming-card .title{display:none}
+
+.top-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  margin-left:12px!important;
+  padding:10px 13px!important;
+  border-radius:999px;
+  background:#fff;
+  color:var(--logo-orange);
+  border:1px solid #f1dcc0;
+  box-shadow:0 10px 24px rgba(64,92,52,.08);
+  font-size:13px!important;
+  font-weight:900;
+  white-space:nowrap;
+  transition:.22s;
+}
+.top-btn::after{
+  content:"→";
+  width:20px;height:20px;
+  border-radius:50%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--logo-green-soft);
+  font-size:13px;
+}
+.top-btn:hover{
+  background:var(--cream);
+  transform:translateY(-2px);
+}
+.mobile{
+  display:none;
+  margin-left:auto;
+  font-weight:900;
+}
+
+body.taedo-has-fixed-header{
+  padding-top:88px;
+}
+body.taedo-has-fixed-header main{
+  padding-top:0;
+}
+
+@media(max-width:1350px){
+  .nav-item,.nav-link{font-size:14.5px}
+  .nav-item{
+    padding-left:7px!important;
+    padding-right:7px!important;
+  }
+  .nav-separator{font-size:14px}
+}
+@media(max-width:980px){
+  .header-inner{
+    height:auto;
+    min-height:78px;
+    padding:12px 20px;
+  }
+  .nav,.top-btn{display:none}
+  .mobile{display:block}
+  body.taedo-has-fixed-header{padding-top:78px}
+}
+
