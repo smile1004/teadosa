@@ -1325,3 +1325,39 @@ main{
   }
 }
 
+
+
+/* ===== editable start banner text ===== */
+.pc-start-banner-content{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  width:52%;
+  padding:38px 28px 28px 52px;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+.pc-start-accent{width:38px;height:3px;border-radius:99px;background:#8cc63f;margin-bottom:24px;}
+.pc-start-banner-content h2{margin:0;color:#fff;font-size:31px;line-height:1.35;font-weight:800;letter-spacing:-.04em;}
+.pc-start-banner-content h2 span{color:#9bd34b;}
+.pc-start-banner-content p{margin:23px 0 0;color:rgba(255,255,255,.9);font-size:14px;line-height:1.85;letter-spacing:-.02em;}
+.pc-start-banner-content .pc-start-button{position:static;margin-top:auto;}
+@media(max-width:990px){
+  .pc-start-banner-content{width:54%;padding:4% 3% 3% 5.5%;}
+  .pc-start-accent{width:4vw;max-width:38px;height:3px;margin-bottom:2.2vw;}
+  .pc-start-banner-content h2{font-size:clamp(18px,3.25vw,31px);}
+  .pc-start-banner-content p{margin-top:2vw;font-size:clamp(9px,1.47vw,14px);line-height:1.75;}
+  .pc-start-banner-content .pc-start-button{height:17%;min-width:24.7%;padding:0 2.7%;}
+}
+@media(max-width:640px){
+  .pc-start-banner{aspect-ratio:auto;height:330px;background:#062b50;}
+  .pc-start-banner img{object-position:62% center;}
+  .pc-start-banner-content{width:63%;padding:28px 18px 22px 24px;}
+  .pc-start-accent{width:30px;margin-bottom:18px;}
+  .pc-start-banner-content h2{font-size:22px;}
+  .pc-start-banner-content p{margin-top:16px;font-size:11px;line-height:1.65;}
+  .pc-start-banner-content p br{display:none;}
+  .pc-start-banner-content .pc-start-button{height:48px;margin-top:auto;padding:0 15px;font-size:12px;}
+}
