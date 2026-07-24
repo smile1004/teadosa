@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+
+<html lang="ko">
+<head>
+<base href="./"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>태양광도사 | 태양광 발전사업 온라인 플랫폼</title>
+<link href="common/css/shared-menu.css" rel="stylesheet"/>
+<link href="home/css/style.css" rel="stylesheet"/>
+<style>
+/* =========================================================
+   Hero 영상 → 지정 이미지 교체 전용
+   기존 문구·버튼·진행절차 카드에는 영향을 주지 않음
+   ========================================================= */
+.hero{
+  position:relative !important;
+  overflow:hidden !important;
+  isolation:isolate !important;
+
+  /* style.css 안에 들어 있는 기존 base64 배경 제거 */
+  background:#061a36 !important;
+}
+
+/* style.css의 광범위한 .hero > * 선택자보다 강하게 고정 */
+.hero > .hero-bg-image{
+  display:block !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  width:100% !important;
+  height:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+
+  background-color:#061a36 !important;
+  background-image:url("home/images/hero-main-fixed.png") !important;
+  background-repeat:no-repeat !important;
+  background-size:cover !important;
+  background-position:center center !important;
+
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:none !important;
+  transform:none !important;
+}
+
+/* 기존 콘텐츠 위치와 디자인 유지 */
+.hero > .hero-inner{
+  position:relative !important;
+  z-index:2 !important;
+}
+
+/* 기존 overlay 요소는 현재 사이트 설정대로 숨김 */
+.hero > .hero-video-overlay{
+  display:none !important;
+}
+
+/* 기존 가상 배경 비활성화 */
+.hero::before{
+  content:none !important;
+  background:none !important;
+}
+
+@media (max-width:760px){
+  .hero > .hero-bg-image{
+    background-position:58% center !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   Hero 정리
+   1) 진행절차 카드 반투명 Glass
+   2) Hero 높이 축소
+   3) TaeDoSA 글씨 색상 변경
+   ========================================================= */
+
+/* Hero 높이 */
+.hero{
+  min-height:650px !important;
+  height:auto !important;
+}
+
+.hero > .hero-inner{
+  min-height:650px !important;
+  padding-top:54px !important;
+  padding-bottom:54px !important;
+}
+
+/* TaeDoSA 브랜드 글씨 */
+.hero .brand-highlight{
+  color:#0fbf8f !important;
+  background:linear-gradient(90deg,#0ac98b 0%,#30d6a2 48%,#79e7c0 100%) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  text-shadow:0 4px 20px rgba(0,118,88,.18) !important;
+}
+
+/* 진행절차 카드 외곽 */
+.hero .flow-panel{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.hero .flow-card{
+  position:relative !important;
+  overflow:hidden !important;
+  padding:27px 30px 25px !important;
+  border:1px solid rgba(255,255,255,.42) !important;
+  border-radius:26px !important;
+
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.22),rgba(225,240,255,.10)) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.58),
+    inset 0 -1px 0 rgba(255,255,255,.12),
+    0 18px 44px rgba(0,24,55,.24) !important;
+
+  backdrop-filter:blur(22px) saturate(145%) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(145%) !important;
+}
+
+.hero .flow-card::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  border-radius:inherit !important;
+  background:
+    radial-gradient(circle at 8% 5%,rgba(255,255,255,.28),transparent 29%),
+    linear-gradient(120deg,rgba(255,255,255,.12),transparent 36%) !important;
+}
+
+.hero .flow-card > *{
+  position:relative !important;
+  z-index:1 !important;
+}
+
+.hero .flow-card h3{
+  color:#0d2e53 !important;
+  text-shadow:0 1px 0 rgba(255,255,255,.30) !important;
+}
+
+/* 단계 행도 유리 카드에 자연스럽게 어울리도록 정리 */
+.hero .flow-item{
+  background:rgba(255,255,255,.08) !important;
+  border-color:rgba(255,255,255,.18) !important;
+  box-shadow:none !important;
+}
+
+.hero .flow-item strong{
+  color:#102c4a !important;
+}
+
+.hero .flow-item span{
+  color:rgba(22,52,79,.72) !important;
+}
+
+.hero .flow-item .num{
+  background:rgba(255,255,255,.62) !important;
+  border:1px solid rgba(255,255,255,.72) !important;
+  color:#0872cc !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    0 6px 16px rgba(6,52,96,.12) !important;
+}
+
+/* 태블릿 */
+@media (max-width:1100px){
+  .hero,
+  .hero > .hero-inner{
+    min-height:620px !important;
+  }
+}
+
+/* 모바일 */
+@media (max-width:760px){
+  .hero{
+    min-height:auto !important;
+  }
+
+  .hero > .hero-inner{
+    min-height:auto !important;
+    padding-top:42px !important;
+    padding-bottom:42px !important;
+  }
+
+  .hero .flow-card{
+    padding:23px 21px 21px !important;
+    border-radius:22px !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   진행절차 안내 카드 최종 보완
+   - 딥네이비 Premium Glass Timeline
+   - 텍스트 및 구성 변경 없음
+   ========================================================= */
+
+.hero .flow-panel{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.hero .flow-card{
+  position:relative !important;
+  overflow:hidden !important;
+  padding:28px 30px 24px !important;
+  border-radius:24px !important;
+
+  border:1px solid rgba(255,255,255,.34) !important;
+  background:
+    linear-gradient(145deg,rgba(8,31,61,.46),rgba(18,56,96,.25)) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -1px 0 rgba(255,255,255,.06),
+    0 18px 42px rgba(2,18,40,.28),
+    0 0 0 1px rgba(92,171,255,.08) !important;
+
+  backdrop-filter:blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter:blur(24px) saturate(150%) !important;
+}
+
+.hero .flow-card::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  border-radius:inherit !important;
+  background:
+    radial-gradient(circle at 8% 4%,rgba(255,255,255,.18),transparent 26%),
+    linear-gradient(120deg,rgba(255,255,255,.07),transparent 36%),
+    radial-gradient(circle at 95% 100%,rgba(57,160,255,.10),transparent 32%) !important;
+}
+
+.hero .flow-card::after{
+  content:"" !important;
+  position:absolute !important;
+  inset:1px !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  border-radius:23px !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+}
+
+.hero .flow-card > *{
+  position:relative !important;
+  z-index:1 !important;
+}
+
+.hero .flow-card h3{
+  position:relative !important;
+  margin:0 0 18px !important;
+  padding:0 0 13px !important;
+  color:#fff !important;
+  font-size:26px !important;
+  font-weight:800 !important;
+  letter-spacing:-.045em !important;
+  text-shadow:0 2px 14px rgba(0,0,0,.26) !important;
+}
+
+.hero .flow-card h3::after{
+  content:"" !important;
+  position:absolute !important;
+  left:0 !important;
+  bottom:0 !important;
+  width:52px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  background:linear-gradient(90deg,#46c7ff,#37dfb1) !important;
+  box-shadow:0 0 12px rgba(60,208,213,.30) !important;
+}
+
+.hero .flow-item{
+  position:relative !important;
+  display:grid !important;
+  grid-template-columns:44px minmax(0,1fr) !important;
+  align-items:center !important;
+  column-gap:15px !important;
+  min-height:72px !important;
+  margin:0 !important;
+  padding:9px 0 !important;
+
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+.hero .flow-item:not(:last-child)::after{
+  content:"" !important;
+  position:absolute !important;
+  left:59px !important;
+  right:0 !important;
+  bottom:0 !important;
+  height:1px !important;
+  background:linear-gradient(
+    90deg,
+    rgba(255,255,255,.22),
+    rgba(255,255,255,.07)
+  ) !important;
+}
+
+.hero .flow-item .num{
+  position:relative !important;
+  display:grid !important;
+  place-items:center !important;
+  width:40px !important;
+  height:40px !important;
+  min-width:40px !important;
+  margin:0 !important;
+
+  border:1px solid rgba(255,255,255,.44) !important;
+  border-radius:50% !important;
+  color:#08294a !important;
+  background:
+    radial-gradient(circle at 32% 22%,rgba(255,255,255,.92),rgba(255,255,255,.24) 32%,transparent 34%),
+    linear-gradient(145deg,#d8efff 0%,#7fc7f5 48%,#65e0b4 100%) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.90),
+    inset 0 -4px 8px rgba(33,111,162,.14),
+    0 7px 16px rgba(0,18,44,.22) !important;
+
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1 !important;
+}
+
+.hero .flow-item > div:nth-child(2){
+  min-width:0 !important;
+}
+
+.hero .flow-item strong{
+  display:block !important;
+  margin:0 0 4px !important;
+  color:#fff !important;
+  font-size:17px !important;
+  font-weight:760 !important;
+  line-height:1.28 !important;
+  letter-spacing:-.032em !important;
+  text-shadow:0 1px 10px rgba(0,0,0,.20) !important;
+}
+
+.hero .flow-item span{
+  display:block !important;
+  color:rgba(235,246,255,.80) !important;
+  font-size:13px !important;
+  font-weight:400 !important;
+  line-height:1.45 !important;
+  letter-spacing:-.018em !important;
+}
+
+.hero .flow-item:hover{
+  transform:translateX(2px) !important;
+  transition:transform .2s ease !important;
+}
+
+@media (max-width:760px){
+  .hero .flow-card{
+    padding:24px 22px 21px !important;
+    border-radius:22px !important;
+  }
+
+  .hero .flow-card::after{
+    border-radius:21px !important;
+  }
+
+  .hero .flow-card h3{
+    font-size:22px !important;
+    margin-bottom:14px !important;
+    padding-bottom:11px !important;
+  }
+
+  .hero .flow-item{
+    grid-template-columns:40px minmax(0,1fr) !important;
+    column-gap:13px !important;
+    min-height:68px !important;
+  }
+
+  .hero .flow-item .num{
+    width:37px !important;
+    height:37px !important;
+    min-width:37px !important;
+    font-size:14px !important;
+  }
+
+  .hero .flow-item:not(:last-child)::after{
+    left:53px !important;
+  }
+
+  .hero .flow-item strong{
+    font-size:15.5px !important;
+  }
+
+  .hero .flow-item span{
+    font-size:12px !important;
+  }
+}
+</style>
+
+
+<style>
+/* =========================================================
+   Hero 서비스 버튼 Premium Glass
+   기존 링크·문구·배치 구조는 유지
+   ========================================================= */
+
+.hero .hero-buttons{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:14px !important;
+  width:min(100%,860px) !important;
+  margin-top:26px !important;
+}
+
+.hero .hero-buttons .btn{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:58px !important;
+  padding:0 22px !important;
+  overflow:hidden !important;
+
+  border:1px solid rgba(255,255,255,.34) !important;
+  border-radius:17px !important;
+  background:
+    linear-gradient(145deg,rgba(10,32,64,.50),rgba(255,255,255,.10)) !important;
+
+  color:#fff !important;
+  font-size:15px !important;
+  font-weight:700 !important;
+  letter-spacing:-.025em !important;
+  text-decoration:none !important;
+  text-shadow:0 1px 10px rgba(0,0,0,.22) !important;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -1px 0 rgba(255,255,255,.05),
+    0 12px 26px rgba(0,18,42,.22) !important;
+
+  backdrop-filter:blur(18px) saturate(145%) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(145%) !important;
+
+  transition:
+    transform .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease,
+    background .22s ease !important;
+}
+
+.hero .hero-buttons .btn::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  background:
+    linear-gradient(120deg,rgba(255,255,255,.11),transparent 34%) !important;
+}
+
+.hero .hero-buttons .btn::after{
+  content:"" !important;
+  position:absolute !important;
+  left:18px !important;
+  right:18px !important;
+  bottom:0 !important;
+  height:2px !important;
+  border-radius:999px !important;
+  opacity:.95 !important;
+}
+
+.hero .hero-buttons .btn-primary::after{
+  background:linear-gradient(90deg,#24d49a,#6ee8bd) !important;
+  box-shadow:0 0 12px rgba(36,212,154,.34) !important;
+}
+
+.hero .hero-buttons .btn-outline::after{
+  background:linear-gradient(90deg,#ff9f43,#ffc36b) !important;
+  box-shadow:0 0 12px rgba(255,159,67,.32) !important;
+}
+
+.hero .hero-buttons .btn-gold::after{
+  background:linear-gradient(90deg,#49a9ff,#75c6ff) !important;
+  box-shadow:0 0 12px rgba(73,169,255,.34) !important;
+}
+
+.hero .hero-buttons .btn > *{
+  position:relative !important;
+  z-index:1 !important;
+}
+
+.hero .hero-buttons .btn:hover{
+  transform:translateY(-3px) !important;
+  border-color:rgba(255,255,255,.52) !important;
+  background:
+    linear-gradient(145deg,rgba(14,42,80,.58),rgba(255,255,255,.14)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.34),
+    0 16px 34px rgba(0,18,42,.28) !important;
+}
+
+.hero .hero-buttons .btn:focus-visible{
+  outline:2px solid rgba(121,220,255,.95) !important;
+  outline-offset:3px !important;
+}
+
+@media (max-width:900px){
+  .hero .hero-buttons{
+    width:100% !important;
+    gap:12px !important;
+  }
+
+  .hero .hero-buttons .btn{
+    min-height:55px !important;
+    padding:0 16px !important;
+    font-size:14px !important;
+  }
+}
+
+@media (max-width:680px){
+  .hero .hero-buttons{
+    grid-template-columns:1fr !important;
+    max-width:420px !important;
+  }
+
+  .hero .hero-buttons .btn{
+    width:100% !important;
+    min-height:54px !important;
+  }
+}
+</style>
+
+
+<style>
+/* ===== Premium Brand ===== */
+.hero .brand-highlight{
+background:linear-gradient(180deg,#ffffff 0%,#f8ffff 45%,#bff8e5 100%)!important;
+-webkit-background-clip:text!important;
+background-clip:text!important;
+-webkit-text-fill-color:transparent!important;
+font-weight:900!important;
+letter-spacing:-.03em!important;
+text-shadow:
+0 1px 0 rgba(255,255,255,.45),
+0 10px 24px rgba(23,190,145,.18)!important;
+position:relative;
+}
+.hero .brand-highlight::after{
+content:"";
+display:block;
+height:2px;
+margin-top:8px;
+width:64px;
+border-radius:99px;
+background:linear-gradient(90deg,#2bd8a2,#7de9cf);
+box-shadow:0 0 12px rgba(43,216,162,.35);
+}
+
+/* ===== Pill Buttons ===== */
+.hero .hero-buttons{
+display:flex!important;
+justify-content:flex-start!important;
+align-items:center!important;
+flex-wrap:wrap!important;
+gap:12px!important;
+width:auto!important;
+max-width:none!important;
+}
+.hero .hero-buttons .btn{
+display:inline-flex!important;
+flex:0 0 auto!important;
+width:auto!important;
+min-width:unset!important;
+height:52px!important;
+padding:0 26px!important;
+border-radius:999px!important;
+font-size:15px!important;
+font-weight:700!important;
+background:linear-gradient(145deg,rgba(8,30,60,.52),rgba(255,255,255,.10))!important;
+border:1px solid rgba(255,255,255,.30)!important;
+backdrop-filter:blur(18px)!important;
+-webkit-backdrop-filter:blur(18px)!important;
+box-shadow:0 10px 24px rgba(0,20,45,.22),inset 0 1px 0 rgba(255,255,255,.22)!important;
+}
+.hero .hero-buttons .btn::after{
+left:18px!important;
+right:18px!important;
+height:2px!important;
+}
+.hero .hero-buttons .btn:hover{
+transform:translateY(-2px) scale(1.03)!important;
+}
+@media(max-width:700px){
+.hero .hero-buttons{
+justify-content:center!important;
+}
+}
+</style>
+
+<style>
+/* ===== TaeDoSA Premium Titanium ===== */
+.hero .brand-highlight{
+    background:linear-gradient(180deg,#ffffff 0%,#f7f9fb 55%,#d9e3ea 100%) !important;
+    -webkit-background-clip:text !important;
+    background-clip:text !important;
+    -webkit-text-fill-color:transparent !important;
+    font-weight:900 !important;
+    letter-spacing:-0.02em !important;
+    text-shadow:0 2px 10px rgba(0,0,0,.18) !important;
+    display:inline-block !important;
+}
+
+.hero .brand-highlight::after{
+    display:none !important;
+}
+
+/* DoSA만 아주 은은한 포인트 */
+.hero .brand-highlight .accent,
+.hero .brand-highlight em,
+.hero .brand-highlight strong{
+    background:linear-gradient(180deg,#ffffff 0%,#eefaf6 100%) !important;
+    -webkit-background-clip:text !important;
+    background-clip:text !important;
+    -webkit-text-fill-color:transparent !important;
+}
+
+/* 슬로건 */
+.hero .hero-title,
+.hero .hero-subtitle{
+    text-shadow:0 2px 12px rgba(0,0,0,.20) !important;
+}
+</style>
+
+
+<style>
+/* ===== TaeDoSA : Orange lettering with white outline ===== */
+.hero .brand-highlight{
+    display:inline-block !important;
+    color:#f7931e !important;
+    background:none !important;
+    -webkit-background-clip:initial !important;
+    background-clip:initial !important;
+    -webkit-text-fill-color:#f7931e !important;
+    font-weight:900 !important;
+    letter-spacing:-0.025em !important;
+    -webkit-text-stroke:1.6px rgba(255,255,255,.96) !important;
+    paint-order:stroke fill !important;
+    text-shadow:0 3px 10px rgba(0,0,0,.22) !important;
+}
+
+.hero .brand-highlight::after{
+    display:none !important;
+}
+
+/* ===== New premium outline buttons ===== */
+.hero .hero-buttons{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    flex-wrap:wrap !important;
+    gap:12px !important;
+    width:auto !important;
+    max-width:none !important;
+}
+
+.hero .hero-buttons .btn{
+    position:relative !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    height:50px !important;
+    padding:0 23px !important;
+    border-radius:14px !important;
+    background:rgba(255,255,255,.025) !important;
+    border:1px solid rgba(255,255,255,.78) !important;
+    color:#ffffff !important;
+    font-size:15px !important;
+    font-weight:700 !important;
+    letter-spacing:-0.01em !important;
+    box-shadow:none !important;
+    backdrop-filter:blur(4px) !important;
+    -webkit-backdrop-filter:blur(4px) !important;
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        color .22s ease,
+        background-color .22s ease,
+        box-shadow .22s ease !important;
+    overflow:hidden !important;
+}
+
+.hero .hero-buttons .btn::before{
+    content:"" !important;
+    position:absolute !important;
+    left:0 !important;
+    top:0 !important;
+    width:4px !important;
+    height:100% !important;
+    border-radius:14px 0 0 14px !important;
+    background:#f7931e !important;
+    opacity:.95 !important;
+}
+
+.hero .hero-buttons .btn::after{
+    content:"→" !important;
+    position:static !important;
+    width:auto !important;
+    height:auto !important;
+    margin-left:12px !important;
+    background:none !important;
+    color:#f7931e !important;
+    font-size:17px !important;
+    line-height:1 !important;
+    transform:none !important;
+    opacity:1 !important;
+    box-shadow:none !important;
+    transition:transform .22s ease !important;
+}
+
+.hero .hero-buttons .btn:hover{
+    transform:translateY(-2px) !important;
+    border-color:#f7931e !important;
+    color:#f7931e !important;
+    background:rgba(255,255,255,.07) !important;
+    box-shadow:0 10px 24px rgba(0,0,0,.16) !important;
+}
+
+.hero .hero-buttons .btn:hover::after{
+    transform:translateX(3px) !important;
+}
+
+@media (max-width:700px){
+    .hero .hero-buttons{
+        justify-content:center !important;
+    }
+
+    .hero .hero-buttons .btn{
+        height:48px !important;
+        padding:0 20px !important;
+        font-size:14px !important;
+    }
+}
+</style>
+
+
+<style>
+/* ===== TaeDoSA : Orange + charcoal outline ===== */
+.hero .brand-highlight{
+    display:inline-block !important;
+    color:#f7941d !important;
+    background:none !important;
+    -webkit-background-clip:initial !important;
+    background-clip:initial !important;
+    -webkit-text-fill-color:#f7941d !important;
+    font-weight:900 !important;
+    letter-spacing:-0.025em !important;
+    -webkit-text-stroke:1.7px #1f2937 !important;
+    paint-order:stroke fill !important;
+    text-shadow:0 2px 8px rgba(0,0,0,.18) !important;
+}
+
+.hero .brand-highlight::after{
+    display:none !important;
+}
+
+/* ===== Hero CTA group ===== */
+.hero .hero-buttons{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    flex-wrap:wrap !important;
+    gap:12px !important;
+    width:auto !important;
+    max-width:none !important;
+}
+
+/* Secondary buttons */
+.hero .hero-buttons .btn{
+    position:relative !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    height:52px !important;
+    padding:0 24px !important;
+    border-radius:14px !important;
+    background:rgba(10,24,45,.36) !important;
+    border:1px solid rgba(255,255,255,.42) !important;
+    color:#ffffff !important;
+    font-size:15px !important;
+    font-weight:700 !important;
+    letter-spacing:-0.01em !important;
+    box-shadow:
+        0 10px 22px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.12) !important;
+    backdrop-filter:blur(14px) !important;
+    -webkit-backdrop-filter:blur(14px) !important;
+    transition:
+        transform .22s ease,
+        border-color .22s ease,
+        background-color .22s ease,
+        box-shadow .22s ease !important;
+    overflow:hidden !important;
+}
+
+.hero .hero-buttons .btn::before{
+    content:"" !important;
+    position:absolute !important;
+    inset:0 auto 0 0 !important;
+    width:4px !important;
+    background:#f7941d !important;
+    border-radius:14px 0 0 14px !important;
+}
+
+.hero .hero-buttons .btn::after{
+    content:"→" !important;
+    position:static !important;
+    width:auto !important;
+    height:auto !important;
+    margin-left:11px !important;
+    background:none !important;
+    color:#f7941d !important;
+    font-size:17px !important;
+    line-height:1 !important;
+    opacity:1 !important;
+    box-shadow:none !important;
+    transform:none !important;
+    transition:transform .22s ease !important;
+}
+
+/* Primary button: 발전사업 시작하기 */
+.hero .hero-buttons .btn:nth-child(2){
+    background:linear-gradient(135deg,#f7941d 0%,#ffad42 100%) !important;
+    border-color:rgba(255,255,255,.88) !important;
+    color:#18212f !important;
+    box-shadow:
+        0 12px 28px rgba(247,148,29,.32),
+        inset 0 1px 0 rgba(255,255,255,.38) !important;
+}
+
+.hero .hero-buttons .btn:nth-child(2)::before{
+    display:none !important;
+}
+
+.hero .hero-buttons .btn:nth-child(2)::after{
+    color:#18212f !important;
+}
+
+.hero .hero-buttons .btn:hover{
+    transform:translateY(-2px) !important;
+    background:rgba(15,32,58,.58) !important;
+    border-color:#f7941d !important;
+    box-shadow:
+        0 14px 28px rgba(0,0,0,.24),
+        inset 0 1px 0 rgba(255,255,255,.15) !important;
+}
+
+.hero .hero-buttons .btn:nth-child(2):hover{
+    background:linear-gradient(135deg,#ff9f2f 0%,#ffbb5a 100%) !important;
+    border-color:#ffffff !important;
+    box-shadow:
+        0 16px 32px rgba(247,148,29,.40),
+        inset 0 1px 0 rgba(255,255,255,.45) !important;
+}
+
+.hero .hero-buttons .btn:hover::after{
+    transform:translateX(3px) !important;
+}
+
+@media (max-width:700px){
+    .hero .hero-buttons{
+        justify-content:center !important;
+    }
+
+    .hero .hero-buttons .btn{
+        height:50px !important;
+        padding:0 21px !important;
+        font-size:14px !important;
+    }
+}
+</style>
+
+
+<style>
+/* ===== Hero vertical positioning ===== */
+.hero .hero-content,
+.hero .hero-left,
+.hero .hero-copy {
+    transform: translateY(24px) !important;
+}
+
+.hero .process-card,
+.hero .process-guide,
+.hero .hero-process {
+    transform: translateY(24px) !important;
+}
+
+/* ===== CTA buttons: unified, calmer emphasis ===== */
+.hero .hero-buttons .btn,
+.hero .hero-buttons .btn:nth-child(2) {
+    background: rgba(10,24,45,.38) !important;
+    border: 1px solid rgba(255,255,255,.48) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 10px 24px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+.hero .hero-buttons .btn:nth-child(2)::before {
+    display: block !important;
+    background: #f7941d !important;
+}
+
+.hero .hero-buttons .btn:nth-child(2)::after {
+    color: #f7941d !important;
+}
+
+.hero .hero-buttons .btn:hover,
+.hero .hero-buttons .btn:nth-child(2):hover {
+    background: rgba(18,38,67,.58) !important;
+    border-color: rgba(247,148,29,.90) !important;
+    color: #ffffff !important;
+    box-shadow:
+        0 14px 30px rgba(0,0,0,.24),
+        0 0 0 1px rgba(247,148,29,.08),
+        inset 0 1px 0 rgba(255,255,255,.14) !important;
+}
+
+/* ===== Process card decoration layer ===== */
+.hero .process-card,
+.hero .process-guide,
+.hero .hero-process {
+    position: relative !important;
+    isolation: isolate !important;
+    overflow: visible !important;
+}
+
+/* soft outer glow plate */
+.hero .process-card::before,
+.hero .process-guide::before,
+.hero .hero-process::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: -14px !important;
+    border-radius: 28px !important;
+    background:
+        radial-gradient(circle at 16% 18%, rgba(95,225,190,.12), transparent 30%),
+        radial-gradient(circle at 86% 82%, rgba(247,148,29,.10), transparent 32%),
+        linear-gradient(145deg, rgba(255,255,255,.06), rgba(7,25,48,.08)) !important;
+    border: 1px solid rgba(255,255,255,.10) !important;
+    box-shadow:
+        0 18px 40px rgba(0,18,38,.20),
+        0 0 34px rgba(53,196,160,.06) !important;
+    filter: blur(.2px) !important;
+    z-index: -2 !important;
+    pointer-events: none !important;
+}
+
+/* floating ring */
+.hero .process-card::after,
+.hero .process-guide::after,
+.hero .hero-process::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: -7px !important;
+    border-radius: 24px !important;
+    border: 1px solid rgba(255,255,255,.14) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.025),
+        0 0 20px rgba(255,255,255,.025) !important;
+    z-index: -1 !important;
+    pointer-events: none !important;
+}
+
+/* corner accents */
+.hero .process-card .corner-accent,
+.hero .process-guide .corner-accent,
+.hero .hero-process .corner-accent {
+    position: absolute !important;
+    width: 54px !important;
+    height: 54px !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+    opacity: .52 !important;
+}
+
+.hero .process-card .corner-accent.tl,
+.hero .process-guide .corner-accent.tl,
+.hero .hero-process .corner-accent.tl {
+    top: -8px !important;
+    left: -8px !important;
+    border-top: 2px solid rgba(91,228,189,.55) !important;
+    border-left: 2px solid rgba(91,228,189,.55) !important;
+    border-radius: 16px 0 0 0 !important;
+}
+
+.hero .process-card .corner-accent.br,
+.hero .process-guide .corner-accent.br,
+.hero .hero-process .corner-accent.br {
+    right: -8px !important;
+    bottom: -8px !important;
+    border-right: 2px solid rgba(247,148,29,.48) !important;
+    border-bottom: 2px solid rgba(247,148,29,.48) !important;
+    border-radius: 0 0 16px 0 !important;
+}
+
+@media (max-width: 700px) {
+    .hero .hero-content,
+    .hero .hero-left,
+    .hero .hero-copy,
+    .hero .process-card,
+    .hero .process-guide,
+    .hero .hero-process {
+        transform: translateY(14px) !important;
+    }
+
+    .hero .process-card::before,
+    .hero .process-guide::before,
+    .hero .hero-process::before {
+        inset: -9px !important;
+        border-radius: 22px !important;
+    }
+
+    .hero .process-card::after,
+    .hero .process-guide::after,
+    .hero .hero-process::after {
+        inset: -5px !important;
+        border-radius: 20px !important;
+    }
+}
+</style>
+
+
+<style>
+/* ===== Precise layout adjustment for current markup ===== */
+.hero .hero-inner{
+    transform:translateY(24px) !important;
+}
+
+/* ===== Process guide outer decoration for .flow-panel ===== */
+.hero .flow-character-stage{
+    overflow:visible !important;
+}
+
+.hero .flow-panel{
+    position:relative !important;
+    isolation:isolate !important;
+    overflow:visible !important;
+}
+
+/* translucent decorative plate outside the white card border */
+.hero .flow-panel::before{
+    content:"" !important;
+    position:absolute !important;
+    inset:-15px !important;
+    border-radius:30px !important;
+    background:
+        radial-gradient(circle at 12% 14%, rgba(80,224,185,.14), transparent 29%),
+        radial-gradient(circle at 90% 86%, rgba(247,148,29,.11), transparent 31%),
+        linear-gradient(135deg, rgba(255,255,255,.065), rgba(5,22,43,.12)) !important;
+    border:1px solid rgba(255,255,255,.11) !important;
+    box-shadow:
+        0 22px 46px rgba(0,16,35,.23),
+        0 0 30px rgba(70,220,185,.055) !important;
+    z-index:-2 !important;
+    pointer-events:none !important;
+}
+
+/* thin floating ring between the plate and the card */
+.hero .flow-panel::after{
+    content:"" !important;
+    position:absolute !important;
+    inset:-7px !important;
+    border-radius:25px !important;
+    border:1px solid rgba(255,255,255,.15) !important;
+    background:transparent !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.02),
+        0 0 18px rgba(255,255,255,.025) !important;
+    z-index:-1 !important;
+    pointer-events:none !important;
+}
+
+/* subtle corner lighting on the actual card */
+.hero .flow-card{
+    position:relative !important;
+    overflow:hidden !important;
+}
+
+.hero .flow-card > h3::before{
+    content:"" !important;
+    position:absolute !important;
+    top:0 !important;
+    left:0 !important;
+    width:70px !important;
+    height:2px !important;
+    background:linear-gradient(90deg,rgba(80,224,185,.85),transparent) !important;
+    box-shadow:0 0 12px rgba(80,224,185,.22) !important;
+}
+
+.hero .flow-card > h3::after{
+    content:"" !important;
+    position:absolute !important;
+    right:0 !important;
+    bottom:0 !important;
+    width:70px !important;
+    height:2px !important;
+    background:linear-gradient(270deg,rgba(247,148,29,.75),transparent) !important;
+    box-shadow:0 0 12px rgba(247,148,29,.18) !important;
+}
+
+/* all three CTAs use the same restrained glass style */
+.hero .hero-buttons .btn:nth-child(2){
+    background:rgba(10,24,45,.38) !important;
+    border-color:rgba(255,255,255,.48) !important;
+    color:#fff !important;
+    box-shadow:
+        0 10px 24px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.10) !important;
+}
+
+@media(max-width:700px){
+    .hero .hero-inner{
+        transform:translateY(14px) !important;
+    }
+
+    .hero .flow-panel::before{
+        inset:-9px !important;
+        border-radius:23px !important;
+    }
+
+    .hero .flow-panel::after{
+        inset:-5px !important;
+        border-radius:20px !important;
+    }
+}
+</style>
+
+
+<style>
+/* ===== Hero text visibility on photo background ===== */
+.hero .hero-eyebrow,
+.hero .hero-title,
+.hero .hero-title span,
+.hero .hero-subtitle,
+.hero .hero-description,
+.hero .hero-copy p {
+    text-shadow:
+        0 2px 4px rgba(0,0,0,.55),
+        0 6px 18px rgba(0,0,0,.42) !important;
+}
+
+.hero .hero-eyebrow {
+    text-shadow:
+        0 1px 3px rgba(0,0,0,.62),
+        0 4px 12px rgba(0,0,0,.42) !important;
+}
+
+.hero .hero-title,
+.hero .hero-title span {
+    text-shadow:
+        0 2px 3px rgba(0,0,0,.72),
+        0 7px 20px rgba(0,0,0,.48) !important;
+}
+
+.hero .hero-subtitle,
+.hero .hero-description,
+.hero .hero-copy p {
+    text-shadow:
+        0 1px 3px rgba(0,0,0,.68),
+        0 5px 15px rgba(0,0,0,.45) !important;
+}
+
+/* TaeDoSA keeps orange + charcoal outline, with balanced shadow */
+.hero .brand-highlight {
+    text-shadow:
+        0 2px 3px rgba(0,0,0,.55),
+        0 6px 16px rgba(0,0,0,.34) !important;
+}
+
+/* ===== Process guide accent redesign ===== */
+/* remove previous top/bottom gradient line decorations */
+.hero .flow-card > h3::before,
+.hero .flow-card > h3::after {
+    display:none !important;
+}
+
+/* slim side accent rail instead of horizontal gradient lines */
+.hero .flow-card {
+    position:relative !important;
+}
+
+.hero .flow-card::before {
+    content:"" !important;
+    position:absolute !important;
+    left:0 !important;
+    top:22px !important;
+    bottom:22px !important;
+    width:3px !important;
+    border-radius:0 10px 10px 0 !important;
+    background:
+        linear-gradient(
+            180deg,
+            rgba(76,226,188,.95) 0%,
+            rgba(76,226,188,.20) 36%,
+            rgba(247,148,29,.20) 64%,
+            rgba(247,148,29,.90) 100%
+        ) !important;
+    box-shadow:
+        0 0 10px rgba(76,226,188,.14),
+        0 0 12px rgba(247,148,29,.10) !important;
+}
+
+/* small premium dots at rail ends */
+.hero .flow-card::after {
+    content:"" !important;
+    position:absolute !important;
+    left:-2px !important;
+    top:20px !important;
+    width:7px !important;
+    height:7px !important;
+    border-radius:50% !important;
+    background:#56dfbd !important;
+    box-shadow:
+        0 calc(100% + 1px) 0 #f7941d,
+        0 0 10px rgba(86,223,189,.26) !important;
+}
+
+/* subtle header divider, not a full gradient bar */
+.hero .flow-card h3 {
+    position:relative !important;
+    padding-bottom:14px !important;
+    margin-bottom:14px !important;
+}
+
+.hero .flow-card h3::after {
+    content:"" !important;
+    display:block !important;
+    position:absolute !important;
+    left:0 !important;
+    bottom:0 !important;
+    width:52px !important;
+    height:1px !important;
+    background:rgba(255,255,255,.42) !important;
+    box-shadow:20px 0 0 rgba(255,255,255,.10) !important;
+}
+
+@media(max-width:700px){
+    .hero .hero-title,
+    .hero .hero-title span {
+        text-shadow:
+            0 2px 3px rgba(0,0,0,.68),
+            0 5px 14px rgba(0,0,0,.44) !important;
+    }
+
+    .hero .hero-subtitle,
+    .hero .hero-description,
+    .hero .hero-copy p {
+        text-shadow:
+            0 1px 3px rgba(0,0,0,.66),
+            0 4px 12px rgba(0,0,0,.42) !important;
+    }
+
+    .hero .flow-card::before {
+        top:18px !important;
+        bottom:18px !important;
+    }
+}
+</style>
+
+
+<style>
+/* FINAL HERO FIX */
+
+/* actual selectors */
+.hero h1,
+.hero h1 .accent,
+.hero h1 .brand-highlight{
+ text-shadow:
+   0 3px 6px rgba(0,0,0,.72),
+   0 10px 28px rgba(0,0,0,.55) !important;
+}
+
+.hero > .hero-inner > div > div > p,
+.hero .hero-inner p{
+ color:#fff !important;
+ text-shadow:
+   0 2px 4px rgba(0,0,0,.72),
+   0 8px 22px rgba(0,0,0,.55) !important;
+}
+
+/* remove left accent */
+.hero .flow-card::before{
+    content:none !important;
+    background:none !important;
+    box-shadow:none !important;
+}
+
+/* keep only simple divider */
+.hero .flow-card h3::after{
+    width:64px !important;
+    height:2px !important;
+    left:0 !important;
+    background:rgba(255,255,255,.45) !important;
+    box-shadow:none !important;
+}
+</style>
+
+</head>
+<body>
+<script src="common/js/site-config.js"></script>
+<script src="common/js/components/header.js"></script>
+<main>
+<section class="hero" id="about">
+<div class="hero-bg-image" aria-hidden="true"></div>
+<div aria-hidden="true" class="hero-video-overlay"></div>
+<div class="hero-inner">
+<div>
+<div class="badge">발전사업 종합 서비스</div>
+<h1>태양광의 모든 것,<br/><span class="accent"><span class="brand-highlight">TaeDoSA</span>가 직접 답합니다.</span></h1>
+<p>
+          사전검토부터 발전사업, 기업 전문서비스, 공사까지 필요한 서비스를 쉽고 편리하게 제공
+        </p>
+<div class="hero-buttons">
+<a class="btn btn-primary" href="precheck/index.html">사전검토</a>
+<a class="btn btn-outline" href="start/index.html">발전사업 시작하기</a>
+<a class="btn btn-gold" href="#enterprise-services">기업 전문서비스</a>
+</div>
+</div>
+<div class="flow-character-stage"><div class="flow-panel">
+<div class="flow-card">
+<h3>진행절차 안내</h3>
+<div class="flow-item">
+<div class="num">1</div>
+<div><strong>사전검토 신청</strong><span>주소와 기본정보 입력 후 가능 여부 검토</span></div>
+</div>
+<div class="flow-item">
+<div class="num">2</div>
+<div><strong>가능 서비스 신청</strong><span>패키지 또는 개별 서비스 선택</span></div>
+</div>
+<div class="flow-item">
+<div class="num">3</div>
+<div><strong>계약 및 서류 제출</strong><span>모두싸인 계약, 온라인·우편 서류 접수</span></div>
+</div>
+<div class="flow-item">
+<div class="num">4</div>
+<div><strong>접수·보완·완료 알림</strong><span>접수증, 보완, 허가 완료 단계별 안내</span></div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="section-title">
+<h2>고객 유형별 서비스</h2>
+<p>고객 유형에 맞는 맞춤형 서비스를 제공합니다. </p>
+</div>
+<div class="service-grid">
+<a class="service-card" href="precheck/apply/index.html">
+<div class="icon">🔎</div>
+<h3>사전검토 신청</h3>
+<p>태양광 설치 가능 여부를 먼저 확인하고, 진행 가능한 서비스를 안내합니다.</p>
+</a>
+<a class="service-card" href="start/index.html">
+<div class="icon">⚡</div>
+<h3>발전사업 종합 서비스</h3>
+<p>패키지와 개별 서비스를 선택하여 인허가 절차를 진행할 수 있습니다.</p>
+</a>
+<article class="service-card">
+<div class="icon">🏢</div>
+<h3>기업 전문서비스</h3>
+<p>구조검토, 설계도면, 현장실사, 분석 보고서 등 전문 용역을 제공합니다.</p>
+</article>
+</div>
+</section>
+<section class="package-section">
+<div class="section">
+<div class="section-title">
+<h2>발전사업 패키지</h2>
+<p>패키지를 먼저 선택하고 필요한 경우 개별 서비스를 추가할 수 있습니다.</p>
+</div>
+<div class="package-grid">
+<div class="package"><strong>토지형 발전사업</strong><p>토지 태양광 발전사업을 위한 인허가 절차 지원</p></div>
+<div class="package"><strong>지붕형 발전사업</strong><p>공장·창고·축사 등 건축물 지붕형 발전사업 지원</p></div>
+<div class="package"><strong>건물지원사업</strong><p>지원사업 신청 및 완료 서류 진행 지원</p></div>
+<div class="package"><strong>금융지원사업</strong><p>금융지원 신청과 관련 서류 절차 지원</p></div>
+</div>
+</div>
+</section>
+<section class="individual-section" id="services">
+<div class="section">
+<div class="section-title">
+<h2>개별 서비스</h2>
+<p>필요한 절차만 선택하여 신청할 수 있는 발전사업 개별 서비스입니다.</p>
+</div>
+<div class="individual-grid">
+<div class="individual-card">
+<strong>발전사업 허가</strong>
+<p>발전사업 허가 신청 및 행정절차 지원</p>
+<a class="individual-link" href="#">신청하기 →</a>
+</div>
+<div class="individual-card">
+<strong>개발행위 허가</strong>
+<p>개발행위 허가 신청 및 협의 절차 지원</p>
+<a class="individual-link" href="#">신청하기 →</a>
+</div>
+<div class="individual-card">
+<strong>공사계획 신고</strong>
+<p>발전설비 공사계획 신고 지원</p>
+<a class="individual-link" href="#">신청하기 →</a>
+</div>
+<div class="individual-card">
+<strong>한전PPA 접수</strong>
+<p>한전 PPA 계약 접수 지원</p>
+<a class="individual-link" href="#">신청하기 →</a>
+</div>
+<div class="individual-card">
+<strong>에관공설비 신청</strong>
+<p>에너지공단 설비 등록 신청 지원</p>
+<a class="individual-link" href="#">신청하기 →</a>
+</div>
+<div class="individual-card">
+<strong>개발행위 준공</strong>
+<p>개발행위 준공 및 완료 절차 지원</p>
+<a class="individual-link" href="#">신청하기 →</a>
+</div>
+</div>
+</div>
+</section>
+<section class="enterprise-section" id="enterprise-services">
+<div class="section">
+<div class="section-title">
+<h2>기업 전문서비스</h2>
+<p>시공사, 설계사, 기업 고객을 위한 기술검토 및 보고서 기반 전문 용역 서비스입니다.</p>
+</div>
+<div class="enterprise-grid"><div class="enterprise-card"><strong>기술검토</strong><p>태양광 발전사업 기술검토 및 적정성 검토 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('https://teadosa.pages.dev/structure_review_sample_view','structureReview','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>도면설계</strong><p>설계도면 및 시공도면 작성 서비스를 제공합니다.</p><div class="enterprise-actions"><span class="sample-link sample-disabled">샘플 준비중</span></div></div><div class="enterprise-card"><strong>현장실사</strong><p>현장조사 및 설치 가능 여부를 검토합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('https://teadosa.pages.dev/field_inspection_sample_view','fieldInspection','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>공사</strong><p>태양광 발전설비 시공 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="service-shortcut" href="#">서비스 바로가기</a></div></div></div>
+</div>
+</section>
+<div aria-hidden="true" id="materials"></div>
+<div aria-hidden="true" id="plant-listings"></div>
+</main>
+<script src="common/js/components/footer.js"></script>
+<script src="home/js/script.js"></script></body>
+</html>
