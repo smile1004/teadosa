@@ -1,20 +1,44 @@
-태도사 홈페이지 폴더 구조 확인용
+태양광도사 홈페이지 확정 폴더 구조 v2.0
 
 루트
-- index.html
-- common/
-- home/
-- start/
-- precheck/
-- sitemap/
+├─ index.html                         메인페이지 및 메인 Hero
+├─ common/                            전체 페이지 공통 파일
+├─ home/                              메인페이지 전용 CSS·JS·이미지·영상
+├─ precheck/                          사전검토 메뉴와 하위 서비스
+├─ start/                             발전사업 시작하기
+├─ sitemap/                           사이트맵
+├─ README.md                          프로젝트 개요
+├─ MASTER_GUIDE.md                    공식 개발·운영 가이드
+├─ LOCAL_PREVIEW.md                   로컬 미리보기 안내
+├─ FOLDER_STRUCTURE.txt               현재 폴더 구조 안내
+├─ _headers                           Cloudflare 응답 헤더 설정
+└─ _redirects                         이전 주소 리디렉션
 
-사전검토
-- precheck/index.html
-- precheck/service/index.html
-- precheck/apply/index.html
-- precheck/result/index.html
-- precheck/apply-result/index.html
-- precheck/samples/field-inspection/index.html
-- precheck/samples/structure-review/index.html
+common/
+├─ css/                               공통 스타일
+├─ images/                            공통 이미지
+└─ js/
+   ├─ site-config.js                  메뉴·외부 채널 주소
+   └─ components/
+      ├─ header.js                    공통 Header·Navigation
+      ├─ footer.js                    공통 Footer
+      ├─ floating.js                  공통 Floating UI
+      └─ common.js                    공통 UI 동작
 
-각 페이지 폴더 내부에는 필요한 css, js, images 폴더가 배치되어 있습니다.
+precheck/
+├─ index.html                         사전검토 메인 및 Hero
+├─ css/style.css                      사전검토 메인 전용 스타일
+├─ apply/                             사전검토 신청
+├─ apply-result/                      신청 완료 결과
+├─ result/                            검토결과 확인
+├─ service/                           가능서비스 확인
+└─ samples/                           결과 샘플
+
+start/
+├─ index.html                         발전사업 시작하기 및 Hero
+├─ css/style.css                      페이지 전용 스타일
+└─ js/script.js                       페이지 전용 동작
+
+sitemap/
+├─ index.html                         사이트맵 및 Hero
+└─ css/style.css                      페이지 전용 스타일
