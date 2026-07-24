@@ -18,10 +18,10 @@
 ## 수정 위치
 - 상단 메뉴: `/common/js/components/header.js`
 - 하단 영역: `/common/js/components/footer.js`
-- 공통 Hero: `/common/js/components/hero.js`
+- 페이지별 Hero: 각 메뉴 폴더의 `index.html` 내부에서 직접 관리
 - 공통 Floating: `/common/js/components/floating.js`
 - 공통 스타일: `/common/css/`
-- 페이지별 스타일과 이미지: 각 메뉴 폴더 내부
+- 페이지별 Hero, 본문, 스타일과 이미지: 각 메뉴 폴더 내부
 
 ## 배포
 압축을 해제한 폴더의 내용 전체를 GitHub 저장소 루트에 업로드합니다. `_redirects` 파일은 기존 주소를 새 주소로 연결하므로 삭제하지 않습니다.
