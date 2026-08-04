@@ -9,7 +9,31 @@
 <link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
 <link href="common/css/common.css" rel="stylesheet">
-<link href="sitemap/css/style.css" rel="stylesheet"></head>
+<link href="sitemap/css/style.css" rel="stylesheet">
+<style>
+/* 사이트맵 6개 카드 한 줄 정렬 */
+@media (min-width: 1180px){
+  .sitemap-area{padding-left:24px;padding-right:24px;}
+  .sitemap-grid{
+    grid-template-columns:repeat(6,minmax(0,1fr));
+    gap:18px;
+    max-width:1680px;
+    margin:0 auto;
+  }
+  .sitemap-card{min-width:0;}
+  .sitemap-card h2{font-size:clamp(18px,1.35vw,22px);word-break:keep-all;}
+  .sitemap-card small{display:inline-block;}
+  .sitemap-list a,.sitemap-group-title,.coming-badge{font-size:14px;}
+}
+
+/* 자재거래·발전소 매물 통합 카드 */
+.sitemap-card.coming-services-card{display:flex;flex-direction:column;}
+.coming-service-block{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:112px;text-align:center;}
+.coming-service-block h2{margin:0 0 18px;}
+.coming-service-block .coming-box{margin:0;}
+.coming-services-card .sitemap-divider{margin:22px 0;}
+</style>
+</head>
 <body class="taedo-has-fixed-header">
 <script src="common/js/site-config.js"></script>
 <script src="common/js/components/header.js"></script>
@@ -73,20 +97,22 @@
 <article class="sitemap-card">
 <h2>고객 후기</h2>
 <ul class="sitemap-list">
-<li><a href="reviews/index.html">전체 고객 후기</a></li>
-<li><a href="reviews/index.html#review-list">서비스별 후기</a></li>
+<li><a href="reviews/index.html">고객 후기</a></li>
 </ul>
 </article>
-<article class="sitemap-card">
+<article class="sitemap-card coming-services-card">
+<div class="coming-service-block">
 <h2>자재거래</h2>
 <div class="coming-box">
 <div class="coming-badge">서비스 준비중</div>
 </div>
-</article>
-<article class="sitemap-card">
+</div>
+<div class="sitemap-divider"></div>
+<div class="coming-service-block">
 <h2>발전소 매물</h2>
 <div class="coming-box">
 <div class="coming-badge">서비스 준비중</div>
+</div>
 </div>
 </article>
 </div>
