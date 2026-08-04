@@ -1324,6 +1324,25 @@ justify-content:center!important;
 }
 </style>
 
+
+<style>
+/* 고객 후기 미리보기 최종 조정 */
+.individual-section > .section{padding-bottom:58px;}
+.review-preview-section{padding:0;background:linear-gradient(180deg,#f4f8fb 0%,#fff 100%);}
+.review-preview-section > .section{padding-top:64px;padding-bottom:86px;}
+.review-customer{display:flex;align-items:center;gap:13px;margin-bottom:18px;}
+.review-avatar{width:52px;height:52px;flex:0 0 52px;border-radius:50%;overflow:hidden;box-shadow:0 8px 22px rgba(12,43,70,.14);border:2px solid rgba(255,255,255,.9);}
+.review-avatar svg{display:block;width:100%;height:100%;}
+.review-customer>div:last-child{display:grid;gap:4px;}
+.review-customer strong{font-size:15px;letter-spacing:-.02em;}
+.review-customer span{font-size:12px;color:#7b8999;}
+.featured .review-customer span{color:rgba(255,255,255,.66);}
+.review-preview-card blockquote{margin-top:20px;}
+@media(max-width:640px){
+  .individual-section > .section{padding-bottom:46px;}
+  .review-preview-section > .section{padding-top:52px;padding-bottom:72px;}
+}
+</style>
 </head>
 <body>
 <script src="common/js/site-config.js"></script>
@@ -1453,7 +1472,55 @@ justify-content:center!important;
 <h2>기업 전문서비스</h2>
 <p>시공사, 설계사, 기업 고객을 위한 기술검토 및 보고서 기반 전문 용역 서비스입니다.</p>
 </div>
-<div class="enterprise-grid"><div class="enterprise-card"><strong>기술검토</strong><p>태양광 발전사업 기술검토 및 적정성 검토 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('precheck/samples/structure-review/','structureReview','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>도면설계</strong><p>설계도면 및 시공도면 작성 서비스를 제공합니다.</p><div class="enterprise-actions"><span class="sample-link sample-disabled">샘플 준비중</span></div></div><div class="enterprise-card"><strong>현장실사</strong><p>현장조사 및 설치 가능 여부를 검토합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('precheck/samples/field-inspection/','fieldInspection','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>공사</strong><p>태양광 발전설비 시공 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="service-shortcut" href="#">서비스 바로가기</a></div></div></div>
+<div class="enterprise-grid"><div class="enterprise-card"><strong>기술검토</strong><p>태양광 발전사업 기술검토 및 적정성 검토 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('https://teadosa.pages.dev/structure_review_sample_view','structureReview','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>도면설계</strong><p>설계도면 및 시공도면 작성 서비스를 제공합니다.</p><div class="enterprise-actions"><span class="sample-link sample-disabled">샘플 준비중</span></div></div><div class="enterprise-card"><strong>현장실사</strong><p>현장조사 및 설치 가능 여부를 검토합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('https://teadosa.pages.dev/field_inspection_sample_view','fieldInspection','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>공사</strong><p>태양광 발전설비 시공 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="service-shortcut" href="#">서비스 바로가기</a></div></div></div>
+</div>
+</section>
+<section class="review-preview-section" id="reviews" aria-labelledby="review-preview-title">
+<div class="section">
+<div class="review-preview-head">
+<div class="section-title review-preview-title">
+<span class="review-eyebrow">CUSTOMER STORIES</span>
+<h2 id="review-preview-title">고객의 경험이 증명하는 태도사</h2>
+<p>실제 프로젝트를 완료한 고객들의 경험과 후기를 확인해 보세요.</p>
+</div>
+<a class="review-more" href="reviews/index.html">고객 후기 전체보기 <span>→</span></a>
+</div>
+<div class="review-preview-grid">
+<article class="review-preview-card">
+<div class="review-customer">
+<div class="review-avatar" aria-hidden="true">
+<svg viewBox="0 0 64 64" role="img"><circle cx="32" cy="32" r="32" fill="#dcefe8"/><circle cx="32" cy="25" r="11" fill="#24584a" opacity=".88"/><path d="M14 57c2-13 10-20 18-20s16 7 18 20" fill="#24584a" opacity=".88"/></svg>
+</div>
+<div><strong>김○○ 고객</strong><span>제조공장 대표 고객</span></div>
+</div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“필요한 서류와 다음 절차를 단계별로 안내받아 처음 진행하는 발전사업도 이해하기 쉬웠습니다.”</blockquote>
+<div class="review-meta"><strong>제조공장 지붕형 발전사업</strong><span>인허가 진행 고객</span></div>
+</article>
+<article class="review-preview-card featured">
+<div class="review-customer">
+<div class="review-avatar" aria-hidden="true">
+<svg viewBox="0 0 64 64" role="img"><circle cx="32" cy="32" r="32" fill="#dce8f5"/><circle cx="32" cy="24" r="11" fill="#244f76"/><path d="M13 57c2-13 10-20 19-20s17 7 19 20" fill="#244f76"/></svg>
+</div>
+<div><strong>이○○ 고객</strong><span>창고 운영 고객</span></div>
+</div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“진행 상황을 계속 확인할 수 있어 복잡한 허가 절차도 안심하고 맡길 수 있었습니다.”</blockquote>
+<div class="review-meta"><strong>창고 지붕형 발전사업</strong><span>종합 서비스 고객</span></div>
+</article>
+<article class="review-preview-card">
+<div class="review-customer">
+<div class="review-avatar" aria-hidden="true">
+<svg viewBox="0 0 64 64" role="img"><circle cx="32" cy="32" r="32" fill="#eee7dc"/><circle cx="32" cy="24" r="11" fill="#71563b"/><path d="M13 57c2-13 10-20 19-20s17 7 19 20" fill="#71563b"/></svg>
+</div>
+<div><strong>박○○ 고객</strong><span>기업 담당자</span></div>
+</div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“현장 조건과 검토 결과를 명확하게 설명해 주어 사업 진행 여부를 결정하는 데 도움이 됐습니다.”</blockquote>
+<div class="review-meta"><strong>기업 전문서비스</strong><span>기술검토 고객</span></div>
+</article>
+</div>
+
 </div>
 </section>
 <div aria-hidden="true" id="materials"></div>

@@ -60,6 +60,7 @@
 <div class="bottom-link-card">
 <h3>바로가기</h3>
 <a href="index.html#enterprise-services">기업 전문서비스</a>
+<a href="reviews/index.html">고객 후기</a>
 <a href="sitemap/index.html">사이트맵</a>
 <a href="index.html#about">맨 위로</a>
 </div>
@@ -79,6 +80,7 @@ Copyrights © TAEDO Co., Ltd All Rights Reserved.
     'precheck/service/index.html': routes.precheckService,
     'start/index.html#services': routes.services,
     'start/index.html': routes.start,
+    'reviews/index.html': routes.reviews,
     'sitemap/index.html': routes.sitemap,
     'index.html#about': routes.about,
     'index.html': routes.home

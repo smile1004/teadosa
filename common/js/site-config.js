@@ -20,6 +20,7 @@
       enterprise: 'index.html#enterprise-services',
       materials: 'index.html#materials',
       plantListings: 'index.html#plant-listings',
+      reviews: 'reviews/index.html',
       sitemap: 'sitemap/index.html'
     }),
     channels: Object.freeze({

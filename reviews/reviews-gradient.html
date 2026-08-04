@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base href="../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고객 후기 | 태양광도사</title>
+<meta name="description" content="태양광 발전사업 사전검토, 인허가, 기업 전문서비스 진행 과정에서 고객이 경험한 이야기를 확인하세요.">
+<link href="common/css/shared-menu.css" rel="stylesheet">
+<link href="common/css/common.css" rel="stylesheet">
+<link href="reviews/css/style.css" rel="stylesheet">
+
+<style>
+/* 후기 Hero 우측 프리미엄 고객 네트워크 그래픽 */
+.reviews-hero-visual{position:relative;min-height:390px;display:flex;align-items:center;justify-content:center;isolation:isolate;overflow:visible}
+.reviews-hero-visual:before{content:"";position:absolute;width:390px;height:390px;border-radius:50%;background:radial-gradient(circle at 38% 34%,rgba(255,255,255,.24),rgba(90,224,186,.15) 34%,rgba(24,112,92,.045) 62%,transparent 75%);filter:blur(.2px);z-index:-3}
+.reviews-hero-visual:after{content:"";position:absolute;width:330px;height:330px;border-radius:50%;border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 0 60px rgba(255,255,255,.035),0 30px 90px rgba(0,0,0,.14);background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012));backdrop-filter:blur(6px);z-index:-2}
+.review-network-art{position:relative;width:min(100%,430px);height:330px;transform:perspective(900px) rotateY(-7deg)}
+.network-glow{position:absolute;border-radius:50%;filter:blur(30px);pointer-events:none}.network-glow.one{width:170px;height:170px;left:128px;top:70px;background:rgba(49,214,169,.22)}.network-glow.two{width:110px;height:110px;right:18px;bottom:26px;background:rgba(92,171,255,.12)}
+.network-ring{position:absolute;border-radius:50%;border:1px solid rgba(139,237,207,.22)}.network-ring.r1{width:280px;height:280px;left:62px;top:20px}.network-ring.r2{width:210px;height:210px;left:98px;top:55px;border-style:dashed;opacity:.7}
+.network-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.network-lines path{fill:none;stroke:url(#lineGradient);stroke-width:1.3;stroke-linecap:round;opacity:.7}.network-lines circle{fill:#8fe7ca;filter:drop-shadow(0 0 7px rgba(103,230,191,.75))}
+.network-person{position:absolute;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:linear-gradient(145deg,rgba(255,255,255,.20),rgba(255,255,255,.055));box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 24px 55px rgba(0,0,0,.18);backdrop-filter:blur(16px);overflow:hidden}
+.network-person:after{content:"";position:absolute;inset:8%;border-radius:50%;border:1px solid rgba(255,255,255,.13)}
+.network-person svg{width:56%;height:56%;position:relative;z-index:2;filter:drop-shadow(0 10px 16px rgba(10,89,71,.2))}.network-person.primary{width:176px;height:176px;left:126px;top:76px;background:linear-gradient(145deg,rgba(135,239,207,.30),rgba(255,255,255,.07));box-shadow:inset 0 1px 0 rgba(255,255,255,.38),0 30px 70px rgba(0,0,0,.2),0 0 55px rgba(67,220,174,.11)}.network-person.secondary{width:112px;height:112px;left:26px;top:28px}.network-person.tertiary{width:98px;height:98px;right:18px;top:20px}.network-person.quaternary{width:88px;height:88px;right:40px;bottom:10px}
+.network-person .person-fill{fill:url(#personGradientPremium)}
+.network-badge{position:absolute;right:2px;top:140px;padding:10px 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.075);backdrop-filter:blur(12px);box-shadow:0 12px 30px rgba(0,0,0,.12);font-size:12px;letter-spacing:.12em;color:rgba(255,255,255,.78)}
+.network-quote{position:absolute;left:82px;bottom:12px;font:700 74px/1 Georgia,serif;color:rgba(124,232,198,.38);text-shadow:0 0 28px rgba(76,220,176,.18)}
+.network-dots{position:absolute;left:4px;bottom:38px;width:88px;height:88px;opacity:.5;background-image:radial-gradient(circle,rgba(127,231,199,.55) 1.2px,transparent 1.3px);background-size:12px 12px;mask-image:linear-gradient(135deg,#000,transparent 72%)}
+.intro-copy-divider{width:48px;height:2px;margin:0 0 22px;background:linear-gradient(90deg,#0fbf8f,rgba(15,191,143,.12));border-radius:999px}.intro-grid .intro-copy p+p{margin-top:18px}
+/* 메인페이지와 동일한 후기 카드 구성 */
+.review-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.review-card{display:flex;flex-direction:column;min-height:355px;padding:28px;border:1px solid rgba(19,54,45,.09);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(247,251,249,.94));box-shadow:0 18px 45px rgba(21,65,53,.08);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}.review-card:hover{transform:translateY(-5px);box-shadow:0 24px 55px rgba(21,65,53,.13);border-color:rgba(32,151,117,.18)}.review-card.featured{background:linear-gradient(155deg,rgba(245,252,249,.99),rgba(235,247,243,.96));border-color:rgba(32,151,117,.16)}.review-customer{display:flex;align-items:center;gap:14px}.review-avatar{width:58px;height:58px;flex:0 0 58px;border-radius:50%;overflow:hidden;box-shadow:0 9px 22px rgba(28,82,65,.13)}.review-avatar svg{display:block;width:100%;height:100%}.review-customer strong{display:block;font-size:16px;color:#17352d}.review-customer span{display:block;margin-top:4px;font-size:13px;color:#73847f}.review-stars{margin-top:22px;color:#e9a93d;font-size:17px;letter-spacing:2px}.review-card blockquote{margin:18px 0 28px;padding:0;border:0;font-size:18px;line-height:1.75;font-weight:650;color:#20352f}.review-meta{margin-top:auto;padding-top:20px;border-top:1px solid rgba(24,61,51,.09)}.review-meta strong{display:block;font-size:15px;color:#27473e}.review-meta span{display:block;margin-top:7px;font-size:13px;color:#778680}
+@media(max-width:980px){.reviews-hero-visual{min-height:320px}.review-network-art{height:285px;max-width:400px;transform:none}.network-person.primary{width:150px;height:150px;left:118px;top:72px}.network-person.secondary{width:96px;height:96px}.network-person.tertiary{width:86px;height:86px}.network-person.quaternary{width:76px;height:76px}.network-ring.r1{width:250px;height:250px;left:68px}.network-ring.r2{width:188px;height:188px;left:100px}.review-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.reviews-hero-visual{min-height:250px}.review-network-art{height:225px;max-width:320px}.network-person.primary{width:118px;height:118px;left:100px;top:55px}.network-person.secondary{width:74px;height:74px;left:22px;top:20px}.network-person.tertiary{width:68px;height:68px;right:14px;top:18px}.network-person.quaternary{width:62px;height:62px;right:32px;bottom:6px}.network-ring.r1{width:198px;height:198px;left:60px;top:8px}.network-ring.r2{width:150px;height:150px;left:84px;top:32px}.network-badge{display:none}.network-quote{font-size:54px;left:65px}.network-dots{width:64px;height:64px}.review-grid{grid-template-columns:1fr}.review-card{min-height:auto;padding:24px}.review-card blockquote{font-size:17px}}
+
+/* OUR PROMISE 밝은 섹션: 진한 네이비 Footer와 시각적으로 분리 */
+.review-process{position:relative;background:linear-gradient(180deg,#f7faf9 0%,#ffffff 72%);color:#17352d;border-top:1px solid rgba(24,61,51,.07);overflow:hidden}
+.review-process:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 15%,rgba(37,185,143,.10),transparent 30%),radial-gradient(circle at 82% 78%,rgba(87,151,219,.08),transparent 32%);pointer-events:none}
+.review-process .reviews-container{position:relative;z-index:1}
+.review-process .reviews-eyebrow{color:#15956f}
+.review-process .process-head h2{color:#16392f}
+.review-process .process-head p{color:#667a74}
+.review-process .promise-grid article{background:rgba(255,255,255,.88);border:1px solid rgba(24,61,51,.09);box-shadow:0 18px 44px rgba(22,64,52,.08);backdrop-filter:blur(14px)}
+.review-process .promise-grid article b{color:#20a77d;background:rgba(32,167,125,.10);border:1px solid rgba(32,167,125,.12)}
+.review-process .promise-grid article h3{color:#1b4036}
+.review-process .promise-grid article p{color:#6b7c77}
+@media(min-width:981px){.promise-grid article p{white-space:nowrap;font-size:14px;letter-spacing:-.035em}}
+
+/* OUR PROMISE 카드 강조 */
+.review-process .promise-grid article{position:relative;overflow:hidden;transform:translateY(0);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.review-process .promise-grid article:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#18a878,#5bc9a9)}
+.review-process .promise-grid article:nth-child(2):before{background:linear-gradient(90deg,#18a878,#45b7c8)}
+.review-process .promise-grid article:nth-child(3):before{background:linear-gradient(90deg,#2f8ca8,#315f91)}
+.review-process .promise-grid article:hover{transform:translateY(-6px);box-shadow:0 24px 58px rgba(22,64,52,.14);border-color:rgba(31,158,119,.22)}
+.review-process .promise-grid article b{display:inline-grid;place-items:center;min-width:42px;height:42px;border-radius:14px;font-weight:800;box-shadow:0 8px 18px rgba(32,167,125,.12)}
+.review-process .promise-grid article:nth-child(2) b{color:#198fa0;background:rgba(69,183,200,.11);border-color:rgba(69,183,200,.16)}
+.review-process .promise-grid article:nth-child(3) b{color:#315f91;background:rgba(49,95,145,.10);border-color:rgba(49,95,145,.15)}
+
+/* 발전사업 시작하기 CTA - 프리미엄 그라데이션 버전 */
+.review-start-cta{position:relative;padding:84px 24px;background:linear-gradient(125deg,#061b34 0%,#0b3550 48%,#0c665b 100%);overflow:hidden}
+.review-start-cta:before{content:"";position:absolute;width:520px;height:520px;right:-90px;top:-260px;border-radius:50%;background:radial-gradient(circle,rgba(59,232,180,.34),transparent 66%);filter:blur(8px)}
+.review-start-cta:after{content:"";position:absolute;width:420px;height:420px;left:-130px;bottom:-270px;border-radius:50%;background:radial-gradient(circle,rgba(67,139,226,.28),transparent 68%);filter:blur(10px)}
+.review-start-cta .start-cta-inner{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:52px 58px;border:1px solid rgba(255,255,255,.18);border-radius:32px;background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.035));box-shadow:0 32px 90px rgba(0,0,0,.28);backdrop-filter:blur(18px);display:flex;align-items:center;justify-content:space-between;gap:36px;overflow:hidden}
+.review-start-cta .start-cta-inner:after{content:"";position:absolute;right:6%;top:50%;width:240px;height:240px;transform:translateY(-50%);border-radius:50%;border:1px solid rgba(129,238,205,.22);box-shadow:0 0 0 34px rgba(129,238,205,.045),0 0 0 72px rgba(129,238,205,.025);pointer-events:none}
+.review-start-cta .start-cta-copy{position:relative;z-index:2}
+.review-start-cta .start-cta-copy span{display:block;margin-bottom:12px;font-size:12px;font-weight:800;letter-spacing:.18em;color:#88edcd}
+.review-start-cta .start-cta-copy h2{margin:0;font-size:clamp(32px,4vw,50px);line-height:1.14;letter-spacing:-.04em;color:#fff;text-shadow:0 5px 24px rgba(0,0,0,.20)}
+.review-start-cta .start-cta-copy p{margin:18px 0 0;font-size:17px;line-height:1.7;color:rgba(255,255,255,.78)}
+.review-start-cta .start-cta-button{position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;min-width:196px;height:56px;padding:0 30px;border-radius:999px;background:linear-gradient(135deg,#24bd8b,#3bdaa3);color:#fff;text-decoration:none;font-weight:800;box-shadow:0 16px 34px rgba(22,196,139,.34);transition:transform .2s ease,box-shadow .2s ease}
+.review-start-cta .start-cta-button:hover{transform:translateY(-3px);box-shadow:0 22px 42px rgba(22,196,139,.43)}
+@media(max-width:760px){.review-start-cta{padding:54px 18px}.review-start-cta .start-cta-inner{padding:38px 28px;flex-direction:column;align-items:flex-start}.review-start-cta .start-cta-inner:after{right:-35%;opacity:.7}.review-start-cta .start-cta-button{width:100%}}
+
+</style>
+</head>
+<body class="taedo-has-fixed-header">
+<script src="common/js/site-config.js"></script>
+<script src="common/js/components/header.js"></script>
+<main>
+<section class="reviews-hero" aria-labelledby="reviews-title">
+<div class="reviews-container reviews-hero-inner">
+<div class="reviews-hero-copy">
+<span class="reviews-eyebrow">CUSTOMER STORIES</span>
+<h1 id="reviews-title">고객의 경험이<br><em>태도사의 신뢰</em>가 됩니다</h1>
+<p>사전검토부터 발전사업 인허가와 패키지 서비스까지,<br>고객이 실제 진행 과정에서 중요하게 느낀 경험을 소개합니다.</p>
+<div class="hero-actions"><a class="secondary" href="#review-list">후기 살펴보기</a></div>
+</div>
+<div class="reviews-hero-visual" aria-hidden="true">
+<svg width="0" height="0" aria-hidden="true" focusable="false"><defs><linearGradient id="personGradientPremium" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity=".98"/><stop offset="55%" stop-color="#9cf0d6" stop-opacity=".86"/><stop offset="100%" stop-color="#47b99a" stop-opacity=".72"/></linearGradient><linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ffffff" stop-opacity=".1"/><stop offset="45%" stop-color="#84e8ca" stop-opacity=".9"/><stop offset="100%" stop-color="#7bbcff" stop-opacity=".22"/></linearGradient></defs></svg>
+<div class="review-network-art">
+<div class="network-glow one"></div><div class="network-glow two"></div><div class="network-ring r1"></div><div class="network-ring r2"></div><div class="network-dots"></div><div class="network-quote">“</div>
+<svg class="network-lines" viewBox="0 0 430 330" preserveAspectRatio="none"><path d="M82 84 C145 90 164 126 214 160"/><path d="M346 70 C300 91 279 115 238 154"/><path d="M350 278 C301 242 277 215 239 186"/><path d="M85 278 C131 236 162 208 198 184"/><circle cx="82" cy="84" r="3"/><circle cx="346" cy="70" r="3"/><circle cx="350" cy="278" r="3"/><circle cx="85" cy="278" r="3"/></svg>
+<div class="network-person secondary"><svg viewBox="0 0 64 64"><circle class="person-fill" cx="32" cy="22" r="12"/><path class="person-fill" d="M12 56c1.8-13.2 9.4-20 20-20s18.2 6.8 20 20H12z"/></svg></div>
+<div class="network-person primary"><svg viewBox="0 0 64 64"><circle class="person-fill" cx="32" cy="21" r="12"/><path class="person-fill" d="M11 56c2-13.4 9.8-20.5 21-20.5S51 42.6 53 56H11z"/></svg></div>
+<div class="network-person tertiary"><svg viewBox="0 0 64 64"><circle class="person-fill" cx="32" cy="22" r="12"/><path class="person-fill" d="M12 56c1.8-13.2 9.4-20 20-20s18.2 6.8 20 20H12z"/></svg></div>
+<div class="network-person quaternary"><svg viewBox="0 0 64 64"><circle class="person-fill" cx="32" cy="22" r="12"/><path class="person-fill" d="M12 56c1.8-13.2 9.4-20 20-20s18.2 6.8 20 20H12z"/></svg></div>
+</div>
+</div>
+</div>
+</section>
+<section class="review-intro">
+<div class="reviews-container intro-grid">
+<div><span class="reviews-eyebrow dark">WHY REVIEWS</span><h2>고객의 경험이<br>태도사를 증명합니다.</h2></div>
+<div class="intro-copy"><div class="intro-copy-divider" aria-hidden="true"></div><p>발전사업은 결과보다 진행 과정이 더 중요합니다.</p><p>상담부터 인허가, 프로젝트 진행까지 실제 고객이 경험한 서비스를 통해 태도사의 진행 방식과 전문성을 확인해 보세요.</p></div>
+</div>
+</section>
+<section class="review-list-section" id="review-list" aria-labelledby="review-list-title">
+<div class="reviews-container">
+<div class="list-head"><div><span class="reviews-eyebrow dark">REVIEWS</span><h2 id="review-list-title">고객 후기</h2><p>사업 유형과 이용 서비스를 선택해 비슷한 후기를 확인할 수 있습니다.</p></div><div class="filter-wrap" aria-label="후기 필터"><button class="active" data-filter="all">전체</button><button data-filter="permit">발전사업 인허가</button><button data-filter="precheck">사전검토</button><button data-filter="enterprise">기업 전문서비스</button></div></div>
+<div class="review-grid">
+<article class="review-card" data-category="permit">
+<div class="review-customer"><div class="review-avatar" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#dcefe8"/><circle cx="32" cy="25" r="11" fill="#24584a" opacity=".88"/><path d="M14 57c2-13 10-20 18-20s16 7 18 20" fill="#24584a" opacity=".88"/></svg></div><div><strong>김○○ 고객</strong><span>제조공장 대표 고객</span></div></div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“발전사업허가부터 준공까지 진행 상황을 수시로 안내받아 믿고 맡길 수 있었습니다.”</blockquote>
+<div class="review-meta"><strong>제조공장 지붕형 발전사업</strong><span>인허가 진행 고객</span></div>
+</article>
+<article class="review-card featured" data-category="permit">
+<div class="review-customer"><div class="review-avatar" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#dce8f5"/><circle cx="32" cy="24" r="11" fill="#244f76"/><path d="M13 57c2-13 10-20 19-20s17 7 19 20" fill="#244f76"/></svg></div><div><strong>이○○ 고객</strong><span>창고 운영 고객</span></div></div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“복잡한 인허가 절차를 체계적으로 진행해 주셔서 안심하고 사업을 준비할 수 있었습니다.”</blockquote>
+<div class="review-meta"><strong>창고 지붕형 발전사업</strong><span>종합 서비스 고객</span></div>
+</article>
+<article class="review-card" data-category="enterprise">
+<div class="review-customer"><div class="review-avatar" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#eee7dc"/><circle cx="32" cy="24" r="11" fill="#71563b"/><path d="M13 57c2-13 10-20 19-20s17 7 19 20" fill="#71563b"/></svg></div><div><strong>박○○ 고객</strong><span>기업 담당자</span></div></div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“기술검토 결과를 쉽게 설명해 주셔서 사업성을 판단하는 데 큰 도움이 되었습니다.”</blockquote>
+<div class="review-meta"><strong>기업 전문서비스</strong><span>기술검토 고객</span></div>
+</article>
+<article class="review-card" data-category="precheck">
+<div class="review-customer"><div class="review-avatar" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#f1e7ef"/><circle cx="32" cy="24" r="11" fill="#7a4c72"/><path d="M13 57c2-13 10-20 19-20s17 7 19 20" fill="#7a4c72"/></svg></div><div><strong>최○○ 고객</strong><span>상가 건물주 고객</span></div></div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“사전검토부터 상담까지 친절하게 설명해 주셔서 사업 방향을 결정하는 데 신뢰가 갔습니다.”</blockquote>
+<div class="review-meta"><strong>상가 지붕형 발전사업</strong><span>사전검토 고객</span></div>
+</article>
+<article class="review-card featured" data-category="enterprise">
+<div class="review-customer"><div class="review-avatar" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#e8efe0"/><circle cx="32" cy="24" r="11" fill="#506d3f"/><path d="M13 57c2-13 10-20 19-20s17 7 19 20" fill="#506d3f"/></svg></div><div><strong>정○○ 고객</strong><span>물류시설 운영 고객</span></div></div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“패키지 서비스로 진행해 여러 업체를 따로 알아볼 필요 없이 한 번에 준비할 수 있었습니다.”</blockquote>
+<div class="review-meta"><strong>물류창고 발전사업</strong><span>패키지 서비스 고객</span></div>
+</article>
+<article class="review-card" data-category="permit">
+<div class="review-customer"><div class="review-avatar" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#f3e8dc"/><circle cx="32" cy="24" r="11" fill="#805f3d"/><path d="M13 57c2-13 10-20 19-20s17 7 19 20" fill="#805f3d"/></svg></div><div><strong>한○○ 고객</strong><span>축사 운영 고객</span></div></div>
+<div class="review-stars" aria-label="만족도 5점">★★★★★</div>
+<blockquote>“진행 일정과 준비 서류를 체계적으로 안내해 주셔서 예상보다 수월하게 절차를 마칠 수 있었습니다.”</blockquote>
+<div class="review-meta"><strong>축사 지붕형 발전사업</strong><span>인허가 진행 고객</span></div>
+</article>
+</div>
+<div class="empty-message" hidden>선택한 유형의 후기가 없습니다.</div>
+</div>
+</section>
+<section class="review-process">
+<div class="reviews-container"><div class="process-head"><span class="reviews-eyebrow">OUR PROMISE</span><h2>결과보다<br>과정에 진심을 담습니다.</h2><p>태도사는 상담부터 사전검토, 발전사업 인허가, 패키지 서비스까지 모든 과정을 고객의 입장에서 생각하며 신뢰할 수 있는 서비스를 위해 함께합니다.</p></div><div class="promise-grid"><article><b>01</b><h3>고객 중심 상담</h3><p>사업 조건과 목적을 충분히 이해하고 최적의 방향을 함께 고민합니다.</p></article><article><b>02</b><h3>진행상황 공유</h3><p>접수부터 완료까지 현재 단계와 다음 일정을 투명하게 전달합니다.</p></article><article><b>03</b><h3>책임감 있는 마무리</h3><p>프로젝트 완료까지 최선을 다해 함께합니다.</p></article></div></div>
+</section>
+
+<section class="review-start-cta" aria-labelledby="start-cta-title">
+  <div class="start-cta-inner">
+    <div class="start-cta-copy">
+      <span>NEXT STEP</span>
+      <h2 id="start-cta-title">성공적인 발전사업의 시작</h2>
+      <p>사전검토부터 발전사업 인허가, 패키지 서비스까지 한 번에 진행하세요.</p>
+    </div>
+    <a class="start-cta-button" href="../start/index.html">발전사업 시작하기</a>
+  </div>
+</section>
+
+</main>
+<script src="common/js/components/footer.js"></script>
+<script src="reviews/js/script.js"></script>
+</body>
+</html>
