@@ -1336,13 +1336,66 @@ justify-content:center!important;
 .review-customer>div:last-child{display:grid;gap:4px;}
 .review-customer strong{font-size:15px;letter-spacing:-.02em;}
 .review-customer span{font-size:12px;color:#7b8999;}
-.featured .review-customer span{color:rgba(255,255,255,.66);}
+.featured .review-customer span{color:#806f61;}
 .review-preview-card blockquote{margin-top:20px;}
 @media(max-width:640px){
   .individual-section > .section{padding-bottom:46px;}
   .review-preview-section > .section{padding-top:52px;padding-bottom:72px;}
 }
 </style>
+
+<style>
+/* 메인 고객 후기 카드 상단 포인트 라인 통일 */
+.review-preview-card{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(24,61,51,.09);
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,251,250,.96));
+  box-shadow:0 16px 38px rgba(18,54,45,.08);
+  transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+}
+.review-preview-card::before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:0;
+  height:4px;
+  background:linear-gradient(90deg,#f7941d 0%,#ffad42 58%,#ffc66f 100%);
+  box-shadow:0 3px 14px rgba(247,148,29,.20);
+}
+.review-preview-card:nth-child(1)::before{
+  background:linear-gradient(90deg,#f7941d,#ffb451);
+}
+.review-preview-card:nth-child(2)::before{
+  background:linear-gradient(90deg,#f7941d,#ffad42,#ffc66f);
+  box-shadow:0 3px 16px rgba(247,148,29,.26);
+}
+.review-preview-card:nth-child(3)::before{
+  background:linear-gradient(90deg,#e88716,#ffb65c);
+}
+.review-preview-card.featured{
+  background:linear-gradient(155deg,rgba(255,250,244,.99),rgba(255,243,231,.97)) !important;
+  border-color:rgba(247,148,29,.20) !important;
+  color:#3f2c1d !important;
+  box-shadow:0 20px 46px rgba(126,76,20,.12) !important;
+}
+.review-preview-card.featured .review-customer strong,
+.review-preview-card.featured blockquote,
+.review-preview-card.featured .review-meta strong{
+  color:#3f2c1d !important;
+}
+.review-preview-card.featured .review-customer span,
+.review-preview-card.featured .review-meta span{
+  color:#806f61 !important;
+}
+.review-preview-card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(247,148,29,.24);
+  box-shadow:0 22px 50px rgba(98,61,20,.14);
+}
+</style>
+
 </head>
 <body>
 <script src="common/js/site-config.js"></script>
