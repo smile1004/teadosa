@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="태양광도사 개인 회원가입 페이지입니다.">
+  <title>개인 회원가입 | 태양광도사</title>
+
+  <link href="common/css/shared-layout.css" rel="stylesheet">
+  <link href="common/css/shared-menu.css" rel="stylesheet">
+  <link href="common/css/common.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --join-navy:#0b2748;
+      --join-text:#2d3e50;
+      --join-muted:#748292;
+      --join-line:#dde4ea;
+      --join-soft:#f7f9fb;
+      --join-white:#fff;
+      --join-green:#1f8f63;
+      --join-green-soft:#f2faf6;
+      --join-error:#c84343;
+    }
+
+    *{box-sizing:border-box}
+
+    body.personal-signup-page{
+      margin:0;
+      color:var(--join-text);
+      background:#fff;
+      font-family:Pretendard,"Noto Sans KR",Arial,sans-serif;
+    }
+
+    button,
+    input,
+    select{
+      font:inherit;
+    }
+
+    .personal-signup-main{
+      min-height:calc(100vh - 88px);
+      padding:88px 20px 64px;
+      background:linear-gradient(180deg,#fbfcfd 0,#fff 320px);
+    }
+
+    .personal-signup-wrap{
+      width:min(760px,100%);
+      margin:0 auto;
+      padding-top:42px;
+    }
+
+    .signup-heading{
+      margin-bottom:28px;
+      text-align:center;
+    }
+
+    .signup-kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+      margin-bottom:10px;
+      color:var(--join-green);
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.14em;
+    }
+
+    .signup-kicker::before{
+      content:"";
+      width:6px;
+      height:6px;
+      border-radius:50%;
+      background:var(--join-green);
+    }
+
+    .signup-heading h1{
+      margin:0;
+      color:var(--join-navy);
+      font-size:clamp(30px,4vw,38px);
+      line-height:1.2;
+      letter-spacing:-.045em;
+    }
+
+    .signup-heading p{
+      margin:12px 0 0;
+      color:var(--join-muted);
+      font-size:14px;
+      line-height:1.65;
+      word-break:keep-all;
+    }
+
+    .signup-steps{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      margin:0 0 20px;
+      padding:0;
+      list-style:none;
+      border:1px solid var(--join-line);
+      border-radius:14px;
+      background:#fff;
+      overflow:hidden;
+    }
+
+    .signup-steps li{
+      position:relative;
+      padding:14px 10px;
+      color:#909ba7;
+      text-align:center;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    .signup-steps li+li{
+      border-left:1px solid var(--join-line);
+    }
+
+    .signup-steps .active{
+      color:var(--join-green);
+      background:var(--join-green-soft);
+    }
+
+    .signup-panel{
+      padding:32px;
+      border:1px solid var(--join-line);
+      border-radius:20px;
+      background:#fff;
+      box-shadow:0 14px 40px rgba(19,39,62,.055);
+    }
+
+    .form-section+.form-section{
+      margin-top:30px;
+      padding-top:30px;
+      border-top:1px solid #edf0f3;
+    }
+
+    .section-title-row{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:20px;
+      margin-bottom:18px;
+    }
+
+    .section-title-row h2{
+      margin:0;
+      color:var(--join-navy);
+      font-size:18px;
+      letter-spacing:-.025em;
+    }
+
+    .required-guide{
+      color:#8793a0;
+      font-size:11px;
+    }
+
+    .required-mark{
+      color:var(--join-green);
+    }
+
+    .agreement-all{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height:52px;
+      padding:0 15px;
+      border:1px solid #cfd8e0;
+      border-radius:11px;
+      background:var(--join-soft);
+      cursor:pointer;
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .agreement-list{
+      margin-top:10px;
+      border:1px solid #e3e8ed;
+      border-radius:11px;
+      overflow:hidden;
+    }
+
+    .agreement-item{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      min-height:49px;
+      padding:0 14px;
+      background:#fff;
+    }
+
+    .agreement-item+.agreement-item{
+      border-top:1px solid #edf0f3;
+    }
+
+    .check-label{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      color:#526174;
+      cursor:pointer;
+      font-size:13px;
+    }
+
+    .check-label input{
+      width:17px;
+      height:17px;
+      margin:0;
+      accent-color:var(--join-green);
+    }
+
+    .agreement-view{
+      border:0;
+      color:#7b8794;
+      background:transparent;
+      cursor:pointer;
+      font-size:12px;
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .form-group{
+      display:grid;
+      gap:8px;
+    }
+
+    .form-group.full{
+      grid-column:1/-1;
+    }
+
+    .form-label{
+      color:#3d4d5f;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .input-row{
+      display:flex;
+      gap:8px;
+    }
+
+    .form-input,
+    .form-select{
+      width:100%;
+      height:49px;
+      padding:0 14px;
+      border:1px solid #d7dfe7;
+      border-radius:10px;
+      outline:none;
+      color:var(--join-text);
+      background:#fff;
+      font-size:14px;
+      transition:border-color .2s ease,box-shadow .2s ease;
+    }
+
+    .form-input::placeholder{
+      color:#a2adb8;
+    }
+
+    .form-input:focus,
+    .form-select:focus{
+      border-color:#7ea993;
+      box-shadow:0 0 0 3px rgba(31,143,99,.08);
+    }
+
+    .inline-button{
+      flex:0 0 auto;
+      min-width:96px;
+      height:49px;
+      padding:0 14px;
+      border:1px solid var(--join-green);
+      border-radius:10px;
+      color:var(--join-green);
+      background:#fff;
+      cursor:pointer;
+      font-size:13px;
+      font-weight:800;
+      transition:color .2s ease,background .2s ease;
+    }
+
+    .inline-button:hover{
+      color:#fff;
+      background:var(--join-green);
+    }
+
+    .field-help{
+      margin:0;
+      color:#8a96a2;
+      font-size:11px;
+      line-height:1.55;
+    }
+
+
+    .password-guide{
+      grid-column:1/-1;
+      margin-top:-6px;
+    }
+
+    .password-wrap{
+      position:relative;
+    }
+
+    .password-wrap .form-input{
+      padding-right:50px;
+    }
+
+    .eye-button{
+      position:absolute;
+      top:50%;
+      right:8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:36px;
+      height:34px;
+      padding:0;
+      border:0;
+      border-radius:8px;
+      color:#758392;
+      background:transparent;
+      cursor:pointer;
+      transform:translateY(-50%);
+    }
+
+    .eye-button:hover{
+      color:var(--join-navy);
+      background:#f1f4f6;
+    }
+
+    .eye-button svg{
+      width:19px;
+      height:19px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.8;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .phone-row{
+      display:grid;
+      grid-template-columns:90px 1fr 1fr;
+      gap:8px;
+    }
+
+    .address-row{
+      display:grid;
+      grid-template-columns:1fr 110px;
+      gap:8px;
+    }
+
+    .form-actions{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin-top:30px;
+    }
+
+    .action-button{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width:150px;
+      min-height:50px;
+      padding:0 22px;
+      border-radius:11px;
+      text-decoration:none;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:800;
+      transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+    }
+
+    .action-secondary{
+      border:1px solid #cfd8e0;
+      color:#667586;
+      background:#fff;
+    }
+
+    .action-secondary:hover{
+      border-color:#aab6c1;
+      color:var(--join-navy);
+      background:#f8fafb;
+    }
+
+    .action-primary{
+      border:1px solid var(--join-green);
+      color:#fff;
+      background:var(--join-green);
+    }
+
+    .action-primary:hover{
+      box-shadow:0 10px 24px rgba(31,143,99,.17);
+      transform:translateY(-1px);
+    }
+
+    .login-guide{
+      margin-top:22px;
+      color:#7b8794;
+      text-align:center;
+      font-size:13px;
+    }
+
+    .login-guide a{
+      color:var(--join-navy);
+      font-weight:800;
+      text-decoration:none;
+    }
+
+    @media(max-width:980px){
+      .personal-signup-main{
+        min-height:calc(100vh - 76px);
+        padding-top:76px;
+      }
+    }
+
+    @media(max-width:680px){
+      .personal-signup-main{
+        padding-right:14px;
+        padding-bottom:42px;
+        padding-left:14px;
+      }
+
+      .personal-signup-wrap{
+        padding-top:30px;
+      }
+
+      .signup-panel{
+        padding:24px 20px;
+        border-radius:17px;
+      }
+
+      .form-grid{
+        grid-template-columns:1fr;
+        gap:16px;
+      }
+
+      .form-group.full{
+        grid-column:auto;
+      }
+
+      .section-title-row{
+        align-items:flex-start;
+        flex-direction:column;
+        gap:6px;
+      }
+
+      .input-row{
+        align-items:stretch;
+        flex-direction:column;
+      }
+
+      .inline-button{
+        width:100%;
+      }
+
+      .phone-row{
+        grid-template-columns:82px 1fr 1fr;
+      }
+
+      .address-row{
+        grid-template-columns:1fr;
+      }
+
+      .address-row .inline-button{
+        width:100%;
+      }
+
+      .form-actions{
+        flex-direction:column-reverse;
+      }
+
+      .action-button{
+        width:100%;
+      }
+    }
+
+    @media(max-width:420px){
+      .signup-steps li{
+        padding:12px 4px;
+        font-size:11px;
+      }
+
+      .phone-row{
+        grid-template-columns:1fr;
+      }
+
+      .agreement-item{
+        align-items:flex-start;
+        padding-top:13px;
+        padding-bottom:13px;
+      }
+    }
+  </style>
+</head>
+
+<body class="taedo-has-fixed-header personal-signup-page">
+  <script src="common/js/site-config.js"></script>
+  <script src="common/js/components/header.js"></script>
+
+  <main class="personal-signup-main">
+    <div class="personal-signup-wrap">
+      <header class="signup-heading">
+        <span class="signup-kicker">PERSONAL MEMBER</span>
+        <h1>개인 회원가입</h1>
+        <p>태양광 사전검토와 발전사업 서비스를 이용하기 위한 회원정보를 입력해 주세요.</p>
+      </header>
+
+      <ol class="signup-steps" aria-label="회원가입 절차">
+        <li class="active">01 약관동의</li>
+        <li class="active">02 정보입력</li>
+        <li>03 가입완료</li>
+      </ol>
+
+      <form class="signup-panel" action="#" method="post">
+        <section class="form-section" aria-labelledby="agreement-title">
+          <div class="section-title-row">
+            <h2 id="agreement-title">약관 동의</h2>
+            <span class="required-guide"><span class="required-mark">*</span> 필수 항목</span>
+          </div>
+
+          <label class="agreement-all">
+            <input id="agree-all" type="checkbox">
+            <span>전체 약관에 동의합니다.</span>
+          </label>
+
+          <div class="agreement-list">
+            <div class="agreement-item">
+              <label class="check-label">
+                <input class="required-agree" name="terms-service" type="checkbox" required>
+                <span><span class="required-mark">[필수]</span> 이용약관 동의</span>
+              </label>
+              <button class="agreement-view" type="button">내용보기</button>
+            </div>
+
+            <div class="agreement-item">
+              <label class="check-label">
+                <input class="required-agree" name="privacy" type="checkbox" required>
+                <span><span class="required-mark">[필수]</span> 개인정보 수집 및 이용 동의</span>
+              </label>
+              <button class="agreement-view" type="button">내용보기</button>
+            </div>
+
+            <div class="agreement-item">
+              <label class="check-label">
+                <input name="marketing" type="checkbox">
+                <span>[선택] 서비스 안내 및 마케팅 정보 수신 동의</span>
+              </label>
+              <button class="agreement-view" type="button">내용보기</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="account-title">
+          <div class="section-title-row">
+            <h2 id="account-title">계정 정보</h2>
+            <span class="required-guide"><span class="required-mark">*</span> 필수 입력</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label" for="user-id">아이디 <span class="required-mark">*</span></label>
+              <div class="input-row">
+                <input class="form-input" id="user-id" name="user-id" type="text" autocomplete="username" placeholder="영문, 숫자 조합 6~20자" required>
+                <button class="inline-button" type="button">중복확인</button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="password">비밀번호 <span class="required-mark">*</span></label>
+              <div class="password-wrap">
+                <input class="form-input" id="password" name="password" type="password" autocomplete="new-password" placeholder="비밀번호 입력" required>
+                <button class="eye-button" type="button" data-password-target="password" aria-label="비밀번호 표시" aria-pressed="false">
+                  <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                    <circle cx="12" cy="12" r="2.7"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="password-confirm">비밀번호 확인 <span class="required-mark">*</span></label>
+              <div class="password-wrap">
+                <input class="form-input" id="password-confirm" name="password-confirm" type="password" autocomplete="new-password" placeholder="비밀번호 다시 입력" required>
+                <button class="eye-button" type="button" data-password-target="password-confirm" aria-label="비밀번호 표시" aria-pressed="false">
+                  <svg class="eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                    <circle cx="12" cy="12" r="2.7"></circle>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <p class="field-help password-guide">※ 비밀번호는 영문, 숫자, 특수문자를 포함해 8자 이상 입력해 주세요.</p>
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="personal-title">
+          <div class="section-title-row">
+            <h2 id="personal-title">개인 정보</h2>
+            <span class="required-guide"><span class="required-mark">*</span> 필수 입력</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="member-name">이름 <span class="required-mark">*</span></label>
+              <input class="form-input" id="member-name" name="member-name" type="text" autocomplete="name" placeholder="이름 입력" required>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="email">이메일 <span class="required-mark">*</span></label>
+              <input class="form-input" id="email" name="email" type="email" autocomplete="email" placeholder="example@email.com" required>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label" for="phone-middle">휴대전화 <span class="required-mark">*</span></label>
+              <div class="phone-row">
+                <select class="form-select" name="phone-first" aria-label="휴대전화 앞자리">
+                  <option value="010">010</option>
+                  <option value="011">011</option>
+                  <option value="016">016</option>
+                  <option value="017">017</option>
+                  <option value="018">018</option>
+                  <option value="019">019</option>
+                </select>
+                <input class="form-input" id="phone-middle" name="phone-middle" type="tel" inputmode="numeric" maxlength="4" placeholder="0000" required>
+                <input class="form-input" name="phone-last" type="tel" inputmode="numeric" maxlength="4" placeholder="0000" required>
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label class="form-label" for="postcode">주소</label>
+              <div class="address-row">
+                <input class="form-input" id="postcode" name="postcode" type="text" placeholder="우편번호" readonly>
+                <button class="inline-button" type="button">주소검색</button>
+              </div>
+              <input class="form-input" name="address" type="text" placeholder="기본주소" readonly>
+              <input class="form-input" name="address-detail" type="text" placeholder="상세주소 입력">
+            </div>
+          </div>
+        </section>
+
+        <div class="form-actions">
+          <a class="action-button action-secondary" href="signup/index.html">이전</a>
+          <button class="action-button action-primary" type="submit">개인 회원가입</button>
+        </div>
+      </form>
+
+      <p class="login-guide">
+        이미 회원이신가요? <a href="login/index.html">로그인</a>
+      </p>
+    </div>
+  </main>
+
+  <script src="common/js/components/footer.js"></script>
+
+  <script>
+    (function(){
+      const allAgree = document.getElementById('agree-all');
+      const agreeItems = Array.from(document.querySelectorAll('.agreement-list input[type="checkbox"]'));
+
+      if(allAgree){
+        allAgree.addEventListener('change', function(){
+          agreeItems.forEach(function(item){
+            item.checked = allAgree.checked;
+          });
+        });
+
+        agreeItems.forEach(function(item){
+          item.addEventListener('change', function(){
+            allAgree.checked = agreeItems.every(function(check){
+              return check.checked;
+            });
+          });
+        });
+      }
+
+      document.querySelectorAll('.eye-button').forEach(function(button){
+        button.addEventListener('click', function(){
+          const target = document.getElementById(button.dataset.passwordTarget);
+          if(!target) return;
+
+          const willShow = target.type === 'password';
+          target.type = willShow ? 'text' : 'password';
+          button.setAttribute('aria-pressed', String(willShow));
+          button.setAttribute('aria-label', willShow ? '비밀번호 숨기기' : '비밀번호 표시');
+
+          button.innerHTML = willShow
+            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6 0 9.5 7 9.5 7a16.7 16.7 0 0 1-2.2 3.1"></path><path d="M6.6 6.6C4 8.3 2.5 12 2.5 12s3.5 7 9.5 7a9.7 9.7 0 0 0 4-.8"></path></svg>'
+            : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>';
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base href="../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="태양광도사 개인 회원과 기업 전문 회원 가입 유형 선택 페이지입니다.">
+  <title>회원가입 | 태양광도사</title>
+  <link href="common/css/shared-layout.css" rel="stylesheet">
+  <link href="common/css/shared-menu.css" rel="stylesheet">
+  <link href="common/css/common.css" rel="stylesheet">
+  <link href="signup/css/style.css?v=20260805-5" rel="stylesheet">
+
+  <style>
+    /* 회원 유형 포인트 컬러: 개인 회원 Green / 기업 전문 Orange */
+    :root{
+      --personal-accent:#1f8f63;
+      --personal-soft:#f2faf6;
+      --business-accent:#e57a22;
+      --business-soft:#fff7ef;
+    }
+
+    .member-choice-card::before{
+      background:var(--personal-accent);
+    }
+
+    .member-choice-card.business-card::before{
+      background:var(--business-accent);
+    }
+
+    .member-choice-card:not(.business-card):hover{
+      border-color:rgba(31,143,99,.42);
+      box-shadow:0 16px 36px rgba(31,143,99,.10);
+    }
+
+    .member-choice-card.business-card:hover{
+      border-color:rgba(229,122,34,.44);
+      box-shadow:0 16px 36px rgba(229,122,34,.10);
+    }
+
+    .member-choice-card:not(.business-card) .member-category{
+      border-color:rgba(31,143,99,.18);
+      color:var(--personal-accent);
+      background:var(--personal-soft);
+    }
+
+    .business-card .member-category{
+      border-color:rgba(229,122,34,.20);
+      color:var(--business-accent);
+      background:var(--business-soft);
+    }
+
+    .member-choice-card:not(.business-card) .member-services span::before{
+      background:var(--personal-accent);
+    }
+
+    .business-card .member-services span::before{
+      background:var(--business-accent);
+    }
+
+    .member-choice-card:not(.business-card) .member-join-link{
+      border-color:var(--personal-accent);
+      color:var(--personal-accent);
+    }
+
+    .member-choice-card:not(.business-card) .member-join-link:hover{
+      border-color:var(--personal-accent);
+      color:#fff;
+      background:var(--personal-accent);
+    }
+
+    .business-card .member-join-link{
+      border-color:var(--business-accent);
+      color:var(--business-accent);
+    }
+
+    .business-card .member-join-link:hover{
+      border-color:var(--business-accent);
+      color:#fff;
+      background:var(--business-accent);
+    }
+  </style>
+</head>
+<body class="taedo-has-fixed-header signup-page">
+  <script src="common/js/site-config.js"></script>
+  <script src="common/js/components/header.js"></script>
+
+  <main class="signup-main">
+    <section class="signup-intro-section" aria-labelledby="signup-title">
+      <div class="signup-container">
+        <span class="section-kicker">JOIN</span>
+        <h1 id="signup-title">회원가입</h1>
+        <p>이용 목적에 맞는 회원 유형을 선택해 주세요.</p>
+      </div>
+    </section>
+
+    <section class="member-choice-section" aria-label="회원 유형 선택">
+      <div class="signup-container member-choice-grid">
+        <article class="member-choice-card">
+          <div class="member-card-heading">
+            <span class="member-category">개인 고객</span>
+            <h2>개인 회원</h2>
+            <p>태양광 설치와 발전사업 관련 서비스를 이용하는 개인 고객을 위한 회원 유형입니다.</p>
+          </div>
+
+          <div class="member-services" aria-label="개인 회원 이용 서비스">
+            <span>사전검토 신청</span>
+            <span>발전사업 인허가 신청</span>
+            <span>진행 상태 확인</span>
+            <span>상담·계약 내역 관리</span>
+          </div>
+
+          <a class="member-join-link" href="signup/personal/index.html">
+            <span>개인 회원가입</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </article>
+
+        <article class="member-choice-card business-card">
+          <div class="member-card-heading">
+            <span class="member-category">기업 · 전문사업자</span>
+            <h2>기업 전문 회원</h2>
+            <p>태양광 발전사업을 추진하거나 전문 서비스를 이용하는 기업과 사업자를 위한 회원 유형입니다.</p>
+          </div>
+
+          <div class="member-services" aria-label="기업 전문 회원 이용 서비스">
+            <span>기술검토·현장실사</span>
+            <span>도면설계 의뢰</span>
+            <span>기업 전문서비스</span>
+            <span>견적·계약·진행 관리</span>
+          </div>
+
+          <a class="member-join-link" href="signup/business/index.html">
+            <span>기업 전문 회원가입</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <section class="login-guide" aria-label="로그인 안내">
+      <p>이미 회원이신가요? <a href="login/index.html">로그인</a></p>
+    </section>
+  </main>
+
+  <script src="common/js/components/footer.js"></script>
+</body>
+</html>

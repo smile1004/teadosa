@@ -1,0 +1,263 @@
+:root{
+  --signup-navy:#0b2748;
+  --signup-text:#25364a;
+  --signup-muted:#6f7d8d;
+  --signup-line:#dfe5eb;
+  --signup-soft:#f6f8fa;
+  --signup-white:#ffffff;
+  --personal-accent:#5f7894;
+  --personal-soft:#f4f7fa;
+  --business-accent:#59796f;
+  --business-soft:#f3f7f5;
+}
+
+*{box-sizing:border-box}
+
+body.signup-page{
+  margin:0;
+  background:#fff;
+  color:var(--signup-text);
+  font-family:Pretendard,"Noto Sans KR",Arial,sans-serif;
+}
+
+.signup-main{
+  min-height:calc(100vh - 88px);
+  padding-top:88px;
+  background:
+    linear-gradient(180deg,#fbfcfd 0,#fff 260px);
+}
+
+.signup-container{
+  width:min(920px,calc(100% - 40px));
+  margin:0 auto;
+}
+
+.signup-intro-section{
+  padding:54px 0 30px;
+  text-align:center;
+}
+
+.section-kicker{
+  display:inline-block;
+  margin-bottom:10px;
+  color:#8a96a3;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.18em;
+}
+
+.signup-intro-section h1{
+  margin:0;
+  color:var(--signup-navy);
+  font-size:clamp(30px,3.8vw,38px);
+  line-height:1.18;
+  letter-spacing:-.045em;
+}
+
+.signup-intro-section p{
+  margin:12px 0 0;
+  color:var(--signup-muted);
+  font-size:15px;
+  line-height:1.65;
+}
+
+.member-choice-section{
+  padding:10px 0 18px;
+}
+
+.member-choice-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+}
+
+.member-choice-card{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  min-height:336px;
+  padding:30px 30px 24px;
+  border:1px solid var(--signup-line);
+  border-radius:20px;
+  background:rgba(255,255,255,.96);
+  box-shadow:0 10px 30px rgba(19,39,62,.045);
+  transition:border-color .22s ease,box-shadow .22s ease,transform .22s ease;
+}
+
+.member-choice-card::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:24px;
+  right:24px;
+  height:3px;
+  border-radius:0 0 3px 3px;
+  background:var(--personal-accent);
+  opacity:.72;
+}
+
+.member-choice-card.business-card::before{
+  background:var(--business-accent);
+}
+
+.member-choice-card:hover{
+  transform:translateY(-3px);
+  border-color:#b7c4d1;
+  box-shadow:0 16px 36px rgba(19,39,62,.075);
+}
+
+.member-card-heading{
+  padding-bottom:22px;
+  border-bottom:1px solid #e8edf2;
+}
+
+.member-category{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  min-height:26px;
+  margin-bottom:11px;
+  padding:0 10px;
+  border:1px solid #dde5ec;
+  border-radius:999px;
+  color:var(--personal-accent);
+  background:var(--personal-soft);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+
+.business-card .member-category{
+  border-color:#dce7e2;
+  color:var(--business-accent);
+  background:var(--business-soft);
+}
+
+.member-card-heading h2{
+  margin:0;
+  color:var(--signup-navy);
+  font-size:24px;
+  line-height:1.3;
+  letter-spacing:-.035em;
+}
+
+.member-card-heading p{
+  margin:11px 0 0;
+  color:var(--signup-muted);
+  font-size:14px;
+  line-height:1.68;
+  word-break:keep-all;
+}
+
+.member-services{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px 16px;
+  padding:22px 0 24px;
+}
+
+.member-services span{
+  position:relative;
+  padding-left:13px;
+  color:#465669;
+  font-size:13px;
+  line-height:1.45;
+}
+
+.member-services span::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.63em;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:var(--personal-accent);
+  opacity:.78;
+}
+
+.business-card .member-services span::before{
+  background:var(--business-accent);
+}
+
+.member-join-link{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:auto;
+  min-height:48px;
+  padding:0 17px;
+  border:1px solid var(--signup-navy);
+  border-radius:12px;
+  color:var(--signup-navy);
+  background:#fff;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:700;
+  transition:background .2s ease,color .2s ease,transform .2s ease;
+}
+
+.member-join-link:hover{
+  color:#fff;
+  background:var(--signup-navy);
+  transform:translateY(-1px);
+}
+
+.business-card .member-join-link{
+  border-color:#496c62;
+  color:#496c62;
+}
+
+.business-card .member-join-link:hover{
+  color:#fff;
+  background:#496c62;
+}
+
+.login-guide{
+  padding:10px 20px 46px;
+  text-align:center;
+}
+
+.login-guide p{
+  margin:0;
+  color:#7a8795;
+  font-size:13px;
+}
+
+.login-guide a{
+  margin-left:5px;
+  color:var(--signup-navy);
+  font-weight:700;
+  text-decoration:none;
+  border-bottom:1px solid #aeb8c3;
+}
+
+@media(max-width:980px){
+  .signup-main{padding-top:76px}
+  .signup-intro-section{padding-top:46px}
+  .member-choice-grid{
+    grid-template-columns:1fr;
+    max-width:560px;
+  }
+  .member-choice-card{min-height:auto}
+}
+
+@media(max-width:600px){
+  .signup-container{width:min(100% - 28px,920px)}
+  .signup-intro-section{padding:34px 0 24px}
+  .signup-intro-section h1{font-size:30px}
+  .signup-intro-section p{font-size:14px}
+  .member-choice-card{
+    padding:24px 22px 20px;
+    border-radius:17px;
+  }
+  .member-card-heading h2{font-size:22px}
+  .member-services{
+    grid-template-columns:1fr;
+    gap:8px;
+    padding:19px 0 21px;
+  }
+  .member-join-link{min-height:46px}
+  .login-guide{padding-bottom:38px}
+}

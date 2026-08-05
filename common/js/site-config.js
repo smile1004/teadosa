@@ -21,7 +21,9 @@
       materials: 'index.html#materials',
       plantListings: 'index.html#plant-listings',
       reviews: 'reviews/index.html',
-      sitemap: 'sitemap/index.html'
+      sitemap: 'sitemap/index.html',
+      signup: 'signup/index.html',
+      login: 'login/index.html'
     }),
     channels: Object.freeze({
       homepage: 'https://teadosa.pages.dev/',

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base href="../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="태양광도사 회원 로그인 페이지입니다.">
+  <title>로그인 | 태양광도사</title>
+  <link href="common/css/shared-layout.css" rel="stylesheet">
+  <link href="common/css/shared-menu.css" rel="stylesheet">
+  <link href="common/css/common.css" rel="stylesheet">
+  <style>
+    :root{--login-navy:#0b2748;--login-text:#25364a;--login-muted:#758292;--login-line:#dfe5eb}
+    *{box-sizing:border-box}
+    body.login-page{margin:0;background:#fff;color:var(--login-text);font-family:Pretendard,"Noto Sans KR",Arial,sans-serif}
+    button,input{font:inherit}
+    .login-main{min-height:calc(100vh - 88px);padding:88px 20px 54px;background:linear-gradient(180deg,#fbfcfd 0,#fff 300px)}
+    .login-wrap{width:min(430px,100%);margin:0 auto;padding-top:48px}
+    .login-heading{margin-bottom:28px;text-align:center}
+    .login-kicker{display:inline-block;margin-bottom:10px;color:#8a96a3;font-size:11px;font-weight:700;letter-spacing:.18em}
+    .login-heading h1{margin:0;color:var(--login-navy);font-size:clamp(30px,4vw,38px);line-height:1.18;letter-spacing:-.045em}
+    .login-heading p{margin:12px 0 0;color:var(--login-muted);font-size:14px;line-height:1.65;word-break:keep-all}
+    .login-panel{padding:32px 30px 28px;border:1px solid var(--login-line);border-radius:20px;background:rgba(255,255,255,.98);box-shadow:0 14px 40px rgba(19,39,62,.065)}
+    .login-form{display:grid;gap:18px}.form-group{display:grid;gap:8px}.form-label{color:#34465a;font-size:13px;font-weight:700}.input-wrap{position:relative}
+    .form-input{width:100%;height:50px;padding:0 15px;border:1px solid #d8e0e8;border-radius:11px;outline:none;color:var(--login-text);background:#fff;font-size:14px;transition:border-color .2s ease,box-shadow .2s ease}
+    .form-input::placeholder{color:#a1acb8}.form-input:focus{border-color:#8293a5;box-shadow:0 0 0 3px rgba(11,39,72,.07)}.password-input{padding-right:52px}
+    .password-toggle{position:absolute;top:50%;right:7px;display:flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border:0;border-radius:9px;color:#7b8998;background:transparent;cursor:pointer;transform:translateY(-50%);transition:color .2s ease,background .2s ease}
+    .password-toggle:hover{color:var(--login-navy);background:#f1f4f7}.password-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.eye-off{display:none}.password-toggle[aria-pressed="true"] .eye-on{display:none}.password-toggle[aria-pressed="true"] .eye-off{display:block}
+    .login-options{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:-2px}.save-id{display:inline-flex;align-items:center;gap:8px;color:#647385;cursor:pointer;font-size:13px;user-select:none}.save-id input{width:16px;height:16px;margin:0;accent-color:var(--login-navy)}
+    .find-links{display:flex;align-items:center;gap:8px;font-size:12px}.find-links a{color:#6f7d8d;text-decoration:none}.find-links a:hover{color:var(--login-navy)}.find-links span{color:#d0d6dd}
+    .login-submit{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;margin-top:2px;border:1px solid var(--login-navy);border-radius:11px;color:#fff;background:var(--login-navy);cursor:pointer;font-size:14px;font-weight:800;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}.login-submit:hover{background:#12365f;box-shadow:0 10px 24px rgba(11,39,72,.16);transform:translateY(-1px)}
+    .login-divider{display:flex;align-items:center;gap:12px;margin:25px 0 20px;color:#9aa5b1;font-size:11px}.login-divider::before,.login-divider::after{content:"";flex:1;height:1px;background:#e5eaf0}.signup-guide{text-align:center}.signup-guide p{margin:0 0 13px;color:#778493;font-size:13px}
+    .signup-link{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 16px;border:1px solid #cfd8e2;border-radius:11px;color:var(--login-navy);background:#fff;text-decoration:none;font-size:14px;font-weight:700;transition:border-color .2s ease,background .2s ease,transform .2s ease}.signup-link:hover{border-color:var(--login-navy);background:#f8fafc;transform:translateY(-1px)}
+    @media(max-width:980px){.login-main{min-height:calc(100vh - 76px);padding-top:76px}.login-wrap{padding-top:42px}}
+    @media(max-width:600px){.login-main{padding-right:14px;padding-bottom:38px;padding-left:14px}.login-wrap{padding-top:32px}.login-heading{margin-bottom:23px}.login-heading h1{font-size:30px}.login-panel{padding:26px 21px 23px;border-radius:17px}.login-options{align-items:flex-start;flex-direction:column;gap:12px}.find-links{width:100%;justify-content:flex-end}}
+  </style>
+</head>
+<body class="taedo-has-fixed-header login-page">
+  <script src="common/js/site-config.js"></script>
+  <script src="common/js/components/header.js"></script>
+  <main class="login-main">
+    <div class="login-wrap">
+      <header class="login-heading"><span class="login-kicker">MEMBER LOGIN</span><h1>로그인</h1><p>회원 정보를 입력하고 태도사의 다양한 서비스를 이용해 주세요.</p></header>
+      <section class="login-panel" aria-label="회원 로그인">
+        <form class="login-form" action="#" method="post">
+          <div class="form-group"><label class="form-label" for="login-id">아이디</label><div class="input-wrap"><input class="form-input" id="login-id" name="username" type="text" autocomplete="username" placeholder="아이디를 입력해 주세요" required></div></div>
+          <div class="form-group"><label class="form-label" for="login-password">비밀번호</label><div class="input-wrap"><input class="form-input password-input" id="login-password" name="password" type="password" autocomplete="current-password" placeholder="비밀번호를 입력해 주세요" required><button class="password-toggle" id="password-toggle" type="button" aria-controls="login-password" aria-label="비밀번호 표시" aria-pressed="false"><svg class="eye-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg><svg class="eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18"/><path d="M10.6 6.2A9.7 9.7 0 0 1 12 6c6 0 9.5 6 9.5 6a15.7 15.7 0 0 1-3.1 3.7"/><path d="M6.1 6.1C3.8 7.8 2.5 12 2.5 12s3.5 6 9.5 6a9.8 9.8 0 0 0 3.2-.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div></div>
+          <div class="login-options"><label class="save-id"><input name="remember-id" type="checkbox"><span>아이디 저장</span></label><nav class="find-links" aria-label="회원정보 찾기"><a href="#">아이디 찾기</a><span aria-hidden="true">|</span><a href="#">비밀번호 찾기</a></nav></div>
+          <button class="login-submit" type="submit">로그인</button>
+        </form>
+        <div class="login-divider" aria-hidden="true">또는</div>
+        <div class="signup-guide"><p>아직 태도사 회원이 아니신가요?</p><a class="signup-link" href="signup/index.html"><span>회원가입</span><span aria-hidden="true">→</span></a></div>
+      </section>
+    </div>
+  </main>
+  <script src="common/js/components/footer.js"></script>
+  <script>
+    (function(){
+      const passwordInput=document.getElementById('login-password');
+      const toggleButton=document.getElementById('password-toggle');
+      if(!passwordInput||!toggleButton)return;
+      toggleButton.addEventListener('click',function(){
+        const visible=passwordInput.type==='text';
+        passwordInput.type=visible?'password':'text';
+        toggleButton.setAttribute('aria-pressed',String(!visible));
+        toggleButton.setAttribute('aria-label',visible?'비밀번호 표시':'비밀번호 숨기기');
+      });
+    })();
+  </script>
+</body>
+</html>
