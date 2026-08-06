@@ -232,3 +232,6 @@
   .header-action-group .top-btn-compact{padding-left:10px!important;padding-right:10px!important;}
   .auth-link,.auth-login,.auth-signup{font-size:10.5px!important;}
 }
+
+/* 회원 로그인 상태 Header */
+.auth-logout{font-family:inherit!important;border:0!important;background:transparent!important;cursor:pointer!important}.auth-logout:disabled{cursor:wait!important;opacity:.6!important}.auth-member{max-width:110px!important;overflow:hidden!important;text-overflow:ellipsis!important}.auth-member,.auth-logout{color:#0b2748!important}

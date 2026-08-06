@@ -35,4 +35,46 @@
   var loader = document.currentScript;
   if (!loader) return;
   loader.insertAdjacentHTML('beforebegin', headerHtml);
+
+  var authContainer = document.querySelector('.header-auth');
+  if (!authContainer) return;
+
+  function renderGuest() {
+    var loginHref = routes.login || 'login/index.html';
+    var signupHref = routes.signup || 'signup/index.html';
+    authContainer.innerHTML = '<a class="auth-link auth-login" href="' + loginHref + '">로그인</a><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-signup" href="' + signupHref + '">회원가입</a>';
+  }
+
+  function renderMember(member) {
+    var displayName = (member && member.name) ? member.name : '회원';
+    authContainer.innerHTML = '<a class="auth-link auth-member" href="/mypage/" aria-label="마이페이지로 이동">' + escapeHtml(displayName) + '님</a><span class="auth-divider" aria-hidden="true">|</span><button class="auth-link auth-logout" type="button">로그아웃</button>';
+    var logoutButton = authContainer.querySelector('.auth-logout');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', async function () {
+        logoutButton.disabled = true;
+        try {
+          await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
+        } catch (error) {
+          console.error('로그아웃 요청 오류:', error);
+        } finally {
+          renderGuest();
+          window.location.href = '/';
+        }
+      });
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (character) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[character];
+    });
+  }
+
+  fetch('/api/auth/me', { method: 'GET', credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+    .then(function (response) { return response.ok ? response.json() : null; })
+    .then(function (result) {
+      if (result && result.authenticated && result.member) renderMember(result.member);
+      else renderGuest();
+    })
+    .catch(function () { renderGuest(); });
 })();

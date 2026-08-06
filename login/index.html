@@ -28,7 +28,7 @@
     .password-toggle:hover{color:var(--login-navy);background:#f1f4f7}.password-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.eye-off{display:none}.password-toggle[aria-pressed="true"] .eye-on{display:none}.password-toggle[aria-pressed="true"] .eye-off{display:block}
     .login-options{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:-2px}.save-id{display:inline-flex;align-items:center;gap:8px;color:#647385;cursor:pointer;font-size:13px;user-select:none}.save-id input{width:16px;height:16px;margin:0;accent-color:var(--login-navy)}
     .find-links{display:flex;align-items:center;gap:8px;font-size:12px}.find-links a{color:#6f7d8d;text-decoration:none}.find-links a:hover{color:var(--login-navy)}.find-links span{color:#d0d6dd}
-    .login-submit{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;margin-top:2px;border:1px solid var(--login-navy);border-radius:11px;color:#fff;background:var(--login-navy);cursor:pointer;font-size:14px;font-weight:800;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}.login-submit:hover{background:#12365f;box-shadow:0 10px 24px rgba(11,39,72,.16);transform:translateY(-1px)}
+    .login-message{margin:0;padding:11px 13px;border:1px solid transparent;border-radius:9px;font-size:12px;line-height:1.55;word-break:keep-all}.login-message.error{border-color:#efd0d0;color:#a83d3d;background:#fff6f6}.login-message.info{border-color:#cfe4da;color:#176c4b;background:#f3faf7}.login-submit:disabled{cursor:wait;opacity:.72;transform:none;box-shadow:none}.login-submit{display:flex;align-items:center;justify-content:center;width:100%;min-height:50px;margin-top:2px;border:1px solid var(--login-navy);border-radius:11px;color:#fff;background:var(--login-navy);cursor:pointer;font-size:14px;font-weight:800;transition:transform .2s ease,box-shadow .2s ease,background .2s ease}.login-submit:hover{background:#12365f;box-shadow:0 10px 24px rgba(11,39,72,.16);transform:translateY(-1px)}
     .login-divider{display:flex;align-items:center;gap:12px;margin:25px 0 20px;color:#9aa5b1;font-size:11px}.login-divider::before,.login-divider::after{content:"";flex:1;height:1px;background:#e5eaf0}.signup-guide{text-align:center}.signup-guide p{margin:0 0 13px;color:#778493;font-size:13px}
     .signup-link{display:flex;align-items:center;justify-content:space-between;min-height:48px;padding:0 16px;border:1px solid #cfd8e2;border-radius:11px;color:var(--login-navy);background:#fff;text-decoration:none;font-size:14px;font-weight:700;transition:border-color .2s ease,background .2s ease,transform .2s ease}.signup-link:hover{border-color:var(--login-navy);background:#f8fafc;transform:translateY(-1px)}
     @media(max-width:980px){.login-main{min-height:calc(100vh - 76px);padding-top:76px}.login-wrap{padding-top:42px}}
@@ -46,7 +46,7 @@
           <div class="form-group"><label class="form-label" for="login-id">아이디</label><div class="input-wrap"><input class="form-input" id="login-id" name="username" type="text" autocomplete="username" placeholder="아이디를 입력해 주세요" required></div></div>
           <div class="form-group"><label class="form-label" for="login-password">비밀번호</label><div class="input-wrap"><input class="form-input password-input" id="login-password" name="password" type="password" autocomplete="current-password" placeholder="비밀번호를 입력해 주세요" required><button class="password-toggle" id="password-toggle" type="button" aria-controls="login-password" aria-label="비밀번호 표시" aria-pressed="false"><svg class="eye-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.7"/></svg><svg class="eye-off" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 3 18 18"/><path d="M10.6 6.2A9.7 9.7 0 0 1 12 6c6 0 9.5 6 9.5 6a15.7 15.7 0 0 1-3.1 3.7"/><path d="M6.1 6.1C3.8 7.8 2.5 12 2.5 12s3.5 6 9.5 6a9.8 9.8 0 0 0 3.2-.5"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></button></div></div>
           <div class="login-options"><label class="save-id"><input name="remember-id" type="checkbox"><span>아이디 저장</span></label><nav class="find-links" aria-label="회원정보 찾기"><a href="#">아이디 찾기</a><span aria-hidden="true">|</span><a href="#">비밀번호 찾기</a></nav></div>
-          <button class="login-submit" type="submit">로그인</button>
+          <p id="login-message" class="login-message" role="alert" aria-live="polite" hidden></p><button class="login-submit" type="submit">로그인</button>
         </form>
         <div class="login-divider" aria-hidden="true">또는</div>
         <div class="signup-guide"><p>아직 태도사 회원이 아니신가요?</p><a class="signup-link" href="signup/index.html"><span>회원가입</span><span aria-hidden="true">→</span></a></div>
@@ -56,15 +56,89 @@
   <script src="common/js/components/footer.js"></script>
   <script>
     (function(){
+      const form=document.querySelector('.login-form');
+      const usernameInput=document.getElementById('login-id');
       const passwordInput=document.getElementById('login-password');
       const toggleButton=document.getElementById('password-toggle');
-      if(!passwordInput||!toggleButton)return;
-      toggleButton.addEventListener('click',function(){
-        const visible=passwordInput.type==='text';
-        passwordInput.type=visible?'password':'text';
-        toggleButton.setAttribute('aria-pressed',String(!visible));
-        toggleButton.setAttribute('aria-label',visible?'비밀번호 표시':'비밀번호 숨기기');
+      const submitButton=form&&form.querySelector('.login-submit');
+      const rememberIdCheckbox=form&&form.querySelector('input[name="remember-id"]');
+      const messageElement=document.getElementById('login-message');
+
+      checkExistingLogin();
+
+      const savedUsername=localStorage.getItem('teadosa_saved_username');
+      if(savedUsername&&usernameInput){
+        usernameInput.value=savedUsername;
+        if(rememberIdCheckbox) rememberIdCheckbox.checked=true;
+      }
+
+      if(passwordInput&&toggleButton){
+        toggleButton.addEventListener('click',function(){
+          const visible=passwordInput.type==='text';
+          passwordInput.type=visible?'password':'text';
+          toggleButton.setAttribute('aria-pressed',String(!visible));
+          toggleButton.setAttribute('aria-label',visible?'비밀번호 표시':'비밀번호 숨기기');
+        });
+      }
+
+      if(!form||!usernameInput||!passwordInput||!submitButton) return;
+
+      form.addEventListener('submit',async function(event){
+        event.preventDefault();
+        clearMessage();
+        if(!form.reportValidity()) return;
+
+        const username=usernameInput.value.normalize('NFKC').trim().toLowerCase();
+        const password=passwordInput.value;
+        setSubmitting(true);
+
+        try{
+          const response=await fetch('/api/auth/login',{
+            method:'POST',
+            headers:{'Content-Type':'application/json','Accept':'application/json'},
+            credentials:'same-origin',
+            body:JSON.stringify({username,password})
+          });
+          const result=await response.json();
+          if(!response.ok||!result.success){
+            showMessage(result.message||'로그인할 수 없습니다.','error');
+            if(result.code==='INVALID_CREDENTIALS'){
+              passwordInput.value='';
+              passwordInput.focus();
+            }
+            return;
+          }
+          if(rememberIdCheckbox&&rememberIdCheckbox.checked){
+            localStorage.setItem('teadosa_saved_username',username);
+          }else{
+            localStorage.removeItem('teadosa_saved_username');
+          }
+          showMessage('로그인되었습니다. 메인 페이지로 이동합니다.','info');
+          setTimeout(function(){window.location.href=getSafeNextPath()||'/';},350);
+        }catch(error){
+          console.error('로그인 요청 오류:',error);
+          showMessage('서버와 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.','error');
+        }finally{
+          setSubmitting(false);
+        }
       });
+
+      async function checkExistingLogin(){
+        try{
+          const response=await fetch('/api/auth/me',{credentials:'same-origin',headers:{'Accept':'application/json'}});
+          if(!response.ok) return;
+          const result=await response.json();
+          if(result.authenticated) window.location.replace(getSafeNextPath()||'/');
+        }catch(error){ console.warn('로그인 상태 확인 실패:',error); }
+      }
+      function getSafeNextPath(){
+        const nextPath=new URLSearchParams(window.location.search).get('next');
+        if(!nextPath||!nextPath.startsWith('/')||nextPath.startsWith('//')||nextPath.includes('\\')) return null;
+        return nextPath;
+      }
+      function setSubmitting(state){submitButton.disabled=state;submitButton.textContent=state?'로그인 중...':'로그인';}
+      function showMessage(message,type){messageElement.hidden=false;messageElement.className='login-message '+type;messageElement.textContent=message;}
+      function clearMessage(){messageElement.hidden=true;messageElement.className='login-message';messageElement.textContent='';}
     })();
   </script>
 </body>
