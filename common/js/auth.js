@@ -94,6 +94,10 @@
     return outcome;
   }
 
+  async function changePassword(payload) {
+    return request('/api/auth/password', { method: 'PUT', body: payload });
+  }
+
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
       method: 'POST',
@@ -110,6 +114,7 @@
     requireAuth: requireAuth,
     getCurrentMember: function () { return currentMember; },
     updateProfile: updateProfile,
+    changePassword: changePassword,
     checkDuplicate: checkDuplicate
   });
 })(window);

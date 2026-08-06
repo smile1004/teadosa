@@ -20,6 +20,13 @@
   const saveButton = document.getElementById('save-profile-button');
   const formMessage = document.getElementById('profile-form-message');
   const addressButton = document.getElementById('mypage-address-search');
+  const passwordButton = document.getElementById('change-password-button');
+  const passwordSection = document.getElementById('password-change-section');
+  const passwordForm = document.getElementById('password-change-form');
+  const cancelPasswordButton = document.getElementById('cancel-password-button');
+  const savePasswordButton = document.getElementById('save-password-button');
+  const passwordMessage = document.getElementById('password-form-message');
+  const passwordVisibilityToggle = document.getElementById('password-visibility-toggle');
 
   let currentMember = null;
 
@@ -29,6 +36,10 @@
   cancelButton.addEventListener('click', closeEdit);
   editForm.addEventListener('submit', saveProfile);
   addressButton.addEventListener('click', searchAddress);
+  passwordButton.addEventListener('click', openPasswordChange);
+  cancelPasswordButton.addEventListener('click', closePasswordChange);
+  passwordForm.addEventListener('submit', savePassword);
+  passwordVisibilityToggle.addEventListener('change', togglePasswordVisibility);
 
   loadMember();
 
@@ -82,6 +93,7 @@
 
   function openEdit() {
     if (!currentMember) return;
+    closePasswordChange();
     fillForm(currentMember);
     editSection.hidden = false;
     editButton.hidden = true;
@@ -154,6 +166,96 @@
       saveButton.disabled = false;
       saveButton.textContent = '변경사항 저장';
     }
+  }
+
+  function openPasswordChange() {
+    closeEdit();
+    passwordSection.hidden = false;
+    passwordButton.hidden = true;
+    clearPasswordMessage();
+    passwordSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById('current-password').focus();
+  }
+
+  function closePasswordChange() {
+    passwordSection.hidden = true;
+    passwordButton.hidden = false;
+    passwordForm.reset();
+    togglePasswordVisibility();
+    clearPasswordMessage();
+  }
+
+  function togglePasswordVisibility() {
+    const type = passwordVisibilityToggle.checked ? 'text' : 'password';
+    ['current-password', 'new-password', 'new-password-confirm'].forEach(function (id) {
+      const input = document.getElementById(id);
+      if (input) input.type = type;
+    });
+  }
+
+  async function savePassword(event) {
+    event.preventDefault();
+    clearPasswordMessage();
+
+    const payload = {
+      currentPassword: valueOf('current-password'),
+      newPassword: valueOf('new-password'),
+      newPasswordConfirm: valueOf('new-password-confirm')
+    };
+
+    if (!payload.currentPassword || !payload.newPassword || !payload.newPasswordConfirm) {
+      showPasswordMessage('현재 비밀번호와 새 비밀번호를 모두 입력해 주세요.', true);
+      return;
+    }
+
+    if (!validation.isValidPassword(payload.newPassword)) {
+      showPasswordMessage('새 비밀번호는 8자 이상이며 영문, 숫자, 특수문자를 모두 포함해야 합니다.', true);
+      return;
+    }
+
+    if (payload.newPassword !== payload.newPasswordConfirm) {
+      showPasswordMessage('새 비밀번호 확인이 일치하지 않습니다.', true);
+      return;
+    }
+
+    if (payload.currentPassword === payload.newPassword) {
+      showPasswordMessage('현재 비밀번호와 다른 새 비밀번호를 입력해 주세요.', true);
+      return;
+    }
+
+    savePasswordButton.disabled = true;
+    savePasswordButton.textContent = '변경 중...';
+
+    try {
+      const outcome = await auth.changePassword(payload);
+      const result = outcome.result || {};
+      if (!outcome.response.ok || !result.success) {
+        showPasswordMessage(result.message || '비밀번호를 변경하지 못했습니다.', true);
+        return;
+      }
+
+      passwordForm.reset();
+      togglePasswordVisibility();
+      showPasswordMessage(result.message || '비밀번호가 변경되었습니다.', false);
+      window.setTimeout(closePasswordChange, 1400);
+    } catch (error) {
+      showPasswordMessage(error && error.message ? error.message : '비밀번호 변경 중 오류가 발생했습니다.', true);
+    } finally {
+      savePasswordButton.disabled = false;
+      savePasswordButton.textContent = '비밀번호 변경';
+    }
+  }
+
+  function showPasswordMessage(text, isError) {
+    passwordMessage.textContent = text;
+    passwordMessage.className = 'profile-form-message ' + (isError ? 'error' : 'success');
+    passwordMessage.hidden = false;
+  }
+
+  function clearPasswordMessage() {
+    passwordMessage.textContent = '';
+    passwordMessage.className = 'profile-form-message';
+    passwordMessage.hidden = true;
   }
 
   function collectPayload() {
