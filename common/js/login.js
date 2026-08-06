@@ -2,8 +2,9 @@
   'use strict';
 
   const auth = window.TaeDoSAAuth;
+  const validation = window.TaeDoSAValidation;
   const form = document.querySelector('.login-form');
-  if (!auth || !form) return;
+  if (!auth || !validation || !form) return;
 
   const usernameInput = document.getElementById('login-id');
   const passwordInput = document.getElementById('login-password');
@@ -63,7 +64,7 @@
     clearMessage();
     if (!form.reportValidity()) return;
 
-    const username = String(usernameInput.value || '').normalize('NFKC').trim().toLowerCase();
+    const username = validation.normalizeUsername(usernameInput.value);
     const password = passwordInput.value;
     setSubmitting(true);
 

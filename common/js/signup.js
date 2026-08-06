@@ -2,8 +2,9 @@
   'use strict';
 
   const auth = window.TaeDoSAAuth;
+  const validation = window.TaeDoSAValidation;
   const form = document.querySelector('.signup-panel');
-  if (!auth || !form) return;
+  if (!auth || !validation || !form) return;
 
   const isBusiness = document.body.classList.contains('business-signup-page');
   const memberType = isBusiness ? 'business' : 'personal';
@@ -85,7 +86,7 @@
     });
     usernameButton.addEventListener('click', async function () {
       const value = normalizeUsername(usernameInput.value);
-      if (!/^[a-zA-Z0-9_-]{6,20}$/.test(value)) {
+      if (!validation.isValidUsername(value)) {
         setField(usernameInput, usernameStatus, '아이디는 영문, 숫자, 밑줄, 하이픈을 사용하여 6~20자로 입력해 주세요.', 'error');
         return;
       }
@@ -164,7 +165,7 @@
     });
     businessButton.addEventListener('click', async function () {
       const value = getBusinessNumber();
-      if (!/^\d{10}$/.test(value) || !isValidBusinessNumber(value)) {
+      if (!validation.isValidBusinessNumber(value)) {
         setField(businessInputs[0], businessStatus, '사업자등록번호 10자리를 정확하게 입력해 주세요.', 'error');
         return;
       }
@@ -286,7 +287,7 @@
   function validatePassword() {
     if (!passwordInput || !passwordConfirmInput) return false;
     const value = passwordInput.value;
-    const valid = value.length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
+    const valid = validation.isValidPassword(value);
     if (!value) {
       clearField(passwordInput, passwordStatus, '영문, 숫자, 특수문자를 포함해 8자 이상 입력해 주세요.', 'info');
       return false;
@@ -307,19 +308,10 @@
     return businessInputs.map(function (input) { return digits(input.value); }).join('');
   }
 
-  function isValidBusinessNumber(value) {
-    const numbers = value.split('').map(Number);
-    const weights = [1, 3, 7, 1, 3, 7, 1, 3];
-    let sum = weights.reduce(function (total, weight, index) { return total + numbers[index] * weight; }, 0);
-    const ninth = numbers[8] * 5;
-    sum += Math.floor(ninth / 10) + (ninth % 10);
-    return ((10 - (sum % 10)) % 10) === numbers[9];
-  }
-
-  function normalizeUsername(value) { return String(value || '').normalize('NFKC').trim().toLowerCase(); }
-  function normalizeEmail(value) { return String(value || '').normalize('NFKC').trim().toLowerCase(); }
-  function isValidEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); }
-  function digits(value) { return String(value || '').replace(/\D/g, ''); }
+  function normalizeUsername(value) { return validation.normalizeUsername(value); }
+  function normalizeEmail(value) { return validation.normalizeEmail(value); }
+  function isValidEmail(value) { return validation.isValidEmail(value); }
+  function digits(value) { return validation.digits(value); }
   function valueOf(input) { return input ? String(input.value || '').trim() : ''; }
   function setButtonBusy(button, state, busyText, normalText) { button.disabled = state; button.textContent = state ? busyText : normalText; }
   function setSubmitting(state) { if (submitButton) { submitButton.disabled = state; submitButton.textContent = state ? '가입 처리 중...' : initialSubmitText; } }
