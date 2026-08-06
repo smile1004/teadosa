@@ -42,6 +42,7 @@ export async function onRequestGet(context) {
           sessions.expires_at,
           members.id AS member_id,
           members.member_type,
+          members.role,
           members.username,
           members.email,
           members.name,
@@ -121,6 +122,7 @@ export async function onRequestGet(context) {
         member: {
           id: session.member_id,
           memberType: session.member_type,
+          role: session.role,
           username: session.username,
           email: session.email,
           name: session.name,

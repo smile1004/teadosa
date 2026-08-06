@@ -122,6 +122,7 @@ export async function onRequestPost(context) {
         SELECT
           id,
           member_type,
+          role,
           username,
           email,
           password_hash,
@@ -256,6 +257,7 @@ export async function onRequestPost(context) {
         member: {
           id: member.id,
           memberType: member.member_type,
+          role: member.role,
           username: member.username,
           email: member.email,
           name: member.name,

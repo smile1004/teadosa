@@ -98,6 +98,23 @@
     return request('/api/auth/password', { method: 'PUT', body: payload });
   }
 
+
+  async function getAdminSummary() {
+    return request('/api/admin/summary', { method: 'GET' });
+  }
+
+  async function getAdminMembers(params) {
+    const query = new URLSearchParams(params || {});
+    return request('/api/admin/members?' + query.toString(), { method: 'GET' });
+  }
+
+  async function updateMemberApproval(memberId, approvalStatus) {
+    return request('/api/admin/members/' + encodeURIComponent(memberId) + '/approval', {
+      method: 'PUT',
+      body: { approvalStatus: approvalStatus }
+    });
+  }
+
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
       method: 'POST',
@@ -115,6 +132,9 @@
     getCurrentMember: function () { return currentMember; },
     updateProfile: updateProfile,
     changePassword: changePassword,
+    getAdminSummary: getAdminSummary,
+    getAdminMembers: getAdminMembers,
+    updateMemberApproval: updateMemberApproval,
     checkDuplicate: checkDuplicate
   });
 })(window);
