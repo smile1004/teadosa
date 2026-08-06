@@ -43,6 +43,7 @@
   var loginHref = routes.login || '/login/';
   var signupHref = routes.signup || '/signup/';
   var mypageHref = routes.mypage || '/mypage/';
+  var adminLoginHref = '/admin/login/';
 
   renderLoading();
 
@@ -53,14 +54,14 @@
 
   function renderGuest() {
     authContainer.removeAttribute('aria-busy');
-    authContainer.innerHTML = '<a class="auth-link auth-login" href="' + escapeAttribute(loginHref) + '">로그인</a><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-signup" href="' + escapeAttribute(signupHref) + '">회원가입</a>';
+    authContainer.innerHTML = '<a class="auth-link auth-login" href="' + escapeAttribute(loginHref) + '">로그인</a><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-signup" href="' + escapeAttribute(signupHref) + '">회원가입</a><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-admin" href="' + escapeAttribute(adminLoginHref) + '">관리자</a>';
   }
 
   function renderMember(member) {
     var displayName = (member && member.name) ? member.name : '회원';
     authContainer.removeAttribute('aria-busy');
-    var adminLink = member && member.role === 'admin' ? '<span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-admin" href="/admin/">관리자</a>' : '';
-    authContainer.innerHTML = '<span class="auth-member-name">' + escapeHtml(displayName) + '님</span><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-mypage" href="' + escapeAttribute(mypageHref) + '">마이페이지</a>' + adminLink + '<span class="auth-divider" aria-hidden="true">|</span><button class="auth-link auth-logout" type="button">로그아웃</button>';
+    var adminHref = member && member.role === 'admin' ? '/admin/' : adminLoginHref;
+    authContainer.innerHTML = '<span class="auth-member-name">' + escapeHtml(displayName) + '님</span><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-mypage" href="' + escapeAttribute(mypageHref) + '">마이페이지</a><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-admin" href="' + escapeAttribute(adminHref) + '">관리자</a><span class="auth-divider" aria-hidden="true">|</span><button class="auth-link auth-logout" type="button">로그아웃</button>';
 
     var logoutButton = authContainer.querySelector('.auth-logout');
     if (!logoutButton) return;

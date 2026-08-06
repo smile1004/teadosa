@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base href="../../">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="태양광도사 관리자 전용 로그인 페이지입니다.">
+  <title>관리자 로그인 | 태양광도사</title>
+  <link href="common/css/shared-layout.css" rel="stylesheet">
+  <link href="common/css/shared-menu.css" rel="stylesheet">
+  <link href="common/css/common.css" rel="stylesheet">
+  <link href="admin/login/style.css?v=2.1" rel="stylesheet">
+</head>
+<body class="taedo-has-fixed-header admin-login-page">
+  <script src="common/js/site-config.js?v=2.0"></script>
+  <script src="common/js/api.js?v=2.0"></script>
+  <script src="common/js/auth.js?v=2.0"></script>
+  <script src="common/js/validation.js?v=2.0"></script>
+  <script src="common/js/components/header.js?v=2.1"></script>
+  <main class="admin-login-main">
+    <div class="admin-login-wrap">
+      <header class="admin-login-heading">
+        <span class="admin-login-kicker">ADMIN ACCESS</span>
+        <h1>관리자 로그인</h1>
+        <p>관리자 권한이 부여된 계정으로 로그인해 주세요.</p>
+      </header>
+      <section class="admin-login-panel" aria-label="관리자 로그인">
+        <div class="admin-login-notice"><strong>관리자 전용</strong><span>일반회원 계정으로는 관리자 모드에 접속할 수 없습니다.</span></div>
+        <form class="admin-login-form" action="#" method="post">
+          <div class="form-group"><label for="admin-login-id">아이디</label><input id="admin-login-id" name="username" type="text" autocomplete="username" required placeholder="관리자 아이디"></div>
+          <div class="form-group"><label for="admin-login-password">비밀번호</label><div class="password-wrap"><input id="admin-login-password" name="password" type="password" autocomplete="current-password" required placeholder="비밀번호"><button id="admin-password-toggle" type="button" aria-label="비밀번호 표시">보기</button></div></div>
+          <p id="admin-login-message" class="admin-login-message" role="alert" aria-live="polite" hidden></p>
+          <button class="admin-login-submit" type="submit">관리자 로그인</button>
+        </form>
+        <a class="member-login-link" href="login/">일반회원 로그인으로 돌아가기</a>
+      </section>
+    </div>
+  </main>
+  <script src="common/js/admin-login.js?v=2.1"></script>
+</body>
+</html>
