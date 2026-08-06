@@ -23,6 +23,7 @@
     'sitemap/index.html': routes.sitemap,
     'signup/index.html': routes.signup,
     'login/index.html': routes.login,
+    'mypage/index.html': routes.mypage,
     'index.html#about': routes.about,
     'index.html': routes.home
   };
@@ -39,29 +40,52 @@
   var authContainer = document.querySelector('.header-auth');
   if (!authContainer) return;
 
+  var loginHref = routes.login || '/login/';
+  var signupHref = routes.signup || '/signup/';
+  var mypageHref = routes.mypage || '/mypage/';
+
+  renderLoading();
+
+  function renderLoading() {
+    authContainer.setAttribute('aria-busy', 'true');
+    authContainer.innerHTML = '<span class="auth-status">회원정보 확인 중</span>';
+  }
+
   function renderGuest() {
-    var loginHref = routes.login || 'login/index.html';
-    var signupHref = routes.signup || 'signup/index.html';
-    authContainer.innerHTML = '<a class="auth-link auth-login" href="' + loginHref + '">로그인</a><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-signup" href="' + signupHref + '">회원가입</a>';
+    authContainer.removeAttribute('aria-busy');
+    authContainer.innerHTML = '<a class="auth-link auth-login" href="' + escapeAttribute(loginHref) + '">로그인</a><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-signup" href="' + escapeAttribute(signupHref) + '">회원가입</a>';
   }
 
   function renderMember(member) {
     var displayName = (member && member.name) ? member.name : '회원';
-    authContainer.innerHTML = '<a class="auth-link auth-member" href="/mypage/" aria-label="마이페이지로 이동">' + escapeHtml(displayName) + '님</a><span class="auth-divider" aria-hidden="true">|</span><button class="auth-link auth-logout" type="button">로그아웃</button>';
+    authContainer.removeAttribute('aria-busy');
+    authContainer.innerHTML = '<span class="auth-member-name">' + escapeHtml(displayName) + '님</span><span class="auth-divider" aria-hidden="true">|</span><a class="auth-link auth-mypage" href="' + escapeAttribute(mypageHref) + '">마이페이지</a><span class="auth-divider" aria-hidden="true">|</span><button class="auth-link auth-logout" type="button">로그아웃</button>';
+
     var logoutButton = authContainer.querySelector('.auth-logout');
-    if (logoutButton) {
-      logoutButton.addEventListener('click', async function () {
-        logoutButton.disabled = true;
-        try {
-          await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', headers: { 'Accept': 'application/json' } });
-        } catch (error) {
-          console.error('로그아웃 요청 오류:', error);
-        } finally {
-          renderGuest();
-          window.location.href = '/';
+    if (!logoutButton) return;
+
+    logoutButton.addEventListener('click', async function () {
+      logoutButton.disabled = true;
+      logoutButton.textContent = '처리 중';
+
+      try {
+        if (window.TaeDoSAAuth) {
+          await window.TaeDoSAAuth.logout();
+        } else {
+          await fetch('/api/auth/logout', {
+            method: 'POST',
+            credentials: 'same-origin',
+            cache: 'no-store',
+            headers: { 'Accept': 'application/json' }
+          });
         }
-      });
-    }
+      } catch (error) {
+        console.error('로그아웃 요청 오류:', error);
+      } finally {
+        renderGuest();
+        window.location.replace('/');
+      }
+    });
   }
 
   function escapeHtml(value) {
@@ -70,11 +94,38 @@
     });
   }
 
-  fetch('/api/auth/me', { method: 'GET', credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
-    .then(function (response) { return response.ok ? response.json() : null; })
-    .then(function (result) {
-      if (result && result.authenticated && result.member) renderMember(result.member);
-      else renderGuest();
+  function escapeAttribute(value) {
+    return escapeHtml(value || '');
+  }
+
+  function applyAuthState(detail) {
+    if (detail && detail.authenticated && detail.member) renderMember(detail.member);
+    else renderGuest();
+  }
+
+  window.addEventListener('teadosa:authchange', function (event) {
+    applyAuthState(event.detail || {});
+  });
+
+  if (window.TaeDoSAAuth) {
+    window.TaeDoSAAuth.getSession()
+      .then(function (outcome) {
+        var result = outcome.result || {};
+        applyAuthState({ authenticated: outcome.response.ok && result.authenticated, member: result.member || null });
+      })
+      .catch(function () { renderGuest(); });
+  } else {
+    fetch('/api/auth/me', {
+      method: 'GET',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { 'Accept': 'application/json' }
     })
-    .catch(function () { renderGuest(); });
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (result) {
+        if (result && result.authenticated && result.member) renderMember(result.member);
+        else renderGuest();
+      })
+      .catch(function () { renderGuest(); });
+  }
 })();

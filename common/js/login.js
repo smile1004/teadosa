@@ -14,9 +14,20 @@
   const STORAGE_KEY = 'teadosa_saved_username';
 
   restoreSavedUsername();
+  showRedirectReason();
   bindPasswordToggle();
   checkExistingLogin();
   form.addEventListener('submit', handleSubmit);
+
+
+  function showRedirectReason() {
+    const reason = new URLSearchParams(window.location.search).get('reason');
+    if (reason === 'session-expired') {
+      showMessage('로그인 시간이 만료되었습니다. 다시 로그인해 주세요.', 'error');
+    } else if (reason === 'login-required') {
+      showMessage('마이페이지를 이용하려면 로그인이 필요합니다.', 'info');
+    }
+  }
 
   function restoreSavedUsername() {
     const savedUsername = localStorage.getItem(STORAGE_KEY);

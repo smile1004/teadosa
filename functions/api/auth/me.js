@@ -58,7 +58,7 @@ export async function onRequestGet(context) {
       .first();
 
     if (!session) {
-      return unauthenticatedResponse(true);
+      return unauthenticatedResponse(true, 'INVALID_SESSION');
     }
 
     if (session.expires_at <= nowIso) {
@@ -71,7 +71,7 @@ export async function onRequestGet(context) {
         .bind(session.session_id)
         .run();
 
-      return unauthenticatedResponse(true);
+      return unauthenticatedResponse(true, 'SESSION_EXPIRED');
     }
 
     if (session.approval_status !== "approved") {
@@ -84,7 +84,7 @@ export async function onRequestGet(context) {
         .bind(session.session_id)
         .run();
 
-      return unauthenticatedResponse(true);
+      return unauthenticatedResponse(true, 'ACCOUNT_NOT_APPROVED');
     }
 
     /*
@@ -193,7 +193,7 @@ async function sha256(value) {
     .join("");
 }
 
-function unauthenticatedResponse(clearCookie = false) {
+function unauthenticatedResponse(clearCookie = false, code = "UNAUTHENTICATED") {
   const additionalHeaders = clearCookie
     ? {
         "Set-Cookie": clearSessionCookie(),
@@ -204,8 +204,10 @@ function unauthenticatedResponse(clearCookie = false) {
     {
       success: false,
       authenticated: false,
-      code: "UNAUTHENTICATED",
-      message: "로그인이 필요합니다.",
+      code,
+      message: code === "SESSION_EXPIRED"
+        ? "로그인 시간이 만료되었습니다."
+        : "로그인이 필요합니다.",
     },
     401,
     additionalHeaders

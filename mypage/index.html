@@ -5,14 +5,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>마이페이지 | 태양광도사</title>
-  <link href="common/css/shared-layout.css?v=1.4" rel="stylesheet">
-  <link href="common/css/shared-menu.css?v=1.4" rel="stylesheet">
-  <link href="common/css/common.css?v=1.4" rel="stylesheet">
-  <link href="mypage/css/style.css?v=1.4" rel="stylesheet">
+  <link href="common/css/shared-layout.css?v=1.5" rel="stylesheet">
+  <link href="common/css/shared-menu.css?v=1.5" rel="stylesheet">
+  <link href="common/css/common.css?v=1.5" rel="stylesheet">
+  <link href="mypage/css/style.css?v=1.5" rel="stylesheet">
 </head>
 <body>
-  <script src="common/js/site-config.js?v=1.4"></script>
-  <script src="common/js/components/header.js?v=1.4"></script>
+  <script src="common/js/site-config.js?v=1.5"></script>
+  <script src="common/js/auth.js?v=1.5"></script>
+  <script src="common/js/session.js?v=1.5"></script>
+  <script src="common/js/components/header.js?v=1.5"></script>
 
   <main class="mypage-main">
     <section class="mypage-card">
@@ -23,55 +25,7 @@
     </section>
   </main>
 
-  <script src="common/js/components/footer.js?v=1.4"></script>
-  <script>
-    (async function () {
-      const info = document.getElementById('mypage-info');
-      const message = document.getElementById('mypage-message');
-
-      try {
-        const response = await fetch('/api/auth/me', {
-          credentials: 'same-origin'
-        });
-
-        if (!response.ok) {
-          location.href = '/login/?next=/mypage/';
-          return;
-        }
-
-        const data = await response.json();
-        const member = data.member || {};
-
-        info.innerHTML = [
-          createRow('회원 유형', member.memberType === 'business' ? '기업 전문 회원' : '개인 회원'),
-          createRow('아이디', member.username || ''),
-          createRow('이름', member.name || ''),
-          createRow('이메일', member.email || ''),
-          createRow('승인 상태', member.approvalStatus || '')
-        ].join('');
-
-        info.hidden = false;
-        message.hidden = true;
-      } catch (error) {
-        message.textContent = '회원 정보를 불러오지 못했습니다.';
-      }
-
-      function createRow(label, value) {
-        return '<div class="mypage-row"><span>' + escapeHtml(label) + '</span><span>' + escapeHtml(value) + '</span></div>';
-      }
-
-      function escapeHtml(value) {
-        return String(value).replace(/[&<>"']/g, function (character) {
-          return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-          }[character];
-        });
-      }
-    }());
-  </script>
+  <script src="common/js/components/footer.js?v=1.5"></script>
+  <script src="common/js/mypage.js?v=1.5"></script>
 </body>
 </html>

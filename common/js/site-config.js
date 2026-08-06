@@ -23,7 +23,8 @@
       reviews: 'reviews/index.html',
       sitemap: 'sitemap/index.html',
       signup: 'signup/index.html',
-      login: 'login/index.html'
+      login: 'login/index.html',
+      mypage: 'mypage/index.html'
     }),
     channels: Object.freeze({
       homepage: 'https://teadosa.pages.dev/',

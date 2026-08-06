@@ -250,3 +250,26 @@
 .mega{
   z-index:10010!important;
 }
+
+
+/* 회원 시스템 v1.5: 공통 헤더 로그인 상태 */
+.header-auth {
+  min-height: 18px;
+  white-space: nowrap;
+}
+
+.header-auth .auth-status {
+  color: #7a8798;
+  font-size: 12px;
+}
+
+.header-auth .auth-member-name {
+  color: #17304f;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.header-auth .auth-mypage,
+.header-auth .auth-logout {
+  font: inherit;
+}
