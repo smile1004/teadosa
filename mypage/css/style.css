@@ -52,3 +52,14 @@
     gap: 6px;
   }
 }
+
+/* v1.3: 마이페이지 본문은 공통 헤더보다 아래 레이어 유지 */
+.mypage-main{
+  position:relative;
+  z-index:0;
+  isolation:isolate;
+}
+.mypage-card{
+  position:relative;
+  z-index:0;
+}

@@ -602,3 +602,18 @@ a{color:inherit;text-decoration:none}
     margin-left:auto!important;
   }
 }
+
+/* v1.3: 공통 헤더 드롭다운 레이어 통일 */
+.header{
+  z-index:10000!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+}
+.header-inner,
+.nav,
+.nav-item{
+  overflow:visible!important;
+}
+.mega{
+  z-index:10010!important;
+}

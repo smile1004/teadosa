@@ -235,3 +235,18 @@
 
 /* 회원 로그인 상태 Header */
 .auth-logout{font-family:inherit!important;border:0!important;background:transparent!important;cursor:pointer!important}.auth-logout:disabled{cursor:wait!important;opacity:.6!important}.auth-member{max-width:110px!important;overflow:hidden!important;text-overflow:ellipsis!important}.auth-member,.auth-logout{color:#0b2748!important}
+
+/* v1.3: 공통 헤더 드롭다운 레이어 통일 */
+.header{
+  z-index:10000!important;
+  overflow:visible!important;
+  isolation:isolate!important;
+}
+.header-inner,
+.nav,
+.nav-item{
+  overflow:visible!important;
+}
+.mega{
+  z-index:10010!important;
+}
