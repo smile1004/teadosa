@@ -35,7 +35,7 @@
     elements.refresh.addEventListener('click', loadMembers);
     elements.previous.addEventListener('click', function () { if (state.page > 1) { state.page -= 1; loadMembers(); } });
     elements.next.addEventListener('click', function () { if (state.page < state.totalPages) { state.page += 1; loadMembers(); } });
-    elements.body.addEventListener('click', handleApprovalClick);
+    elements.body.addEventListener('click', handleTableClick);
   }
 
   async function loadMembers() {
@@ -79,13 +79,17 @@
         '<td><span class="member-main">' + escapeHtml(member.companyName || '-') + '</span><span class="member-sub">' + formatBusinessNumber(member.businessNumber) + '</span></td>' +
         '<td><span class="member-main">' + escapeHtml(member.email || '-') + '</span><span class="member-sub">' + formatPhone(member.phone) + '</span></td>' +
         '<td><span class="status-badge ' + status + '">' + (status === 'approved' ? '승인 완료' : '승인 대기') + '</span></td>' +
-        '<td>' + formatDate(member.createdAt) + '</td><td><div class="row-actions">' + action + '</div></td></tr>';
+        '<td>' + formatDate(member.createdAt) + '</td><td><div class="row-actions"><a class="admin-button detail" href="/admin/members/detail/?id=' + encodeURIComponent(member.id) + '">상세보기</a>' + action + '</div></td></tr>';
     }).join('');
   }
 
-  async function handleApprovalClick(event) {
+  function handleTableClick(event) {
     const button = event.target.closest('[data-member-id][data-action]');
     if (!button) return;
+    handleApprovalClick(button);
+  }
+
+  async function handleApprovalClick(button) {
     const memberId = button.dataset.memberId;
     const status = button.dataset.action;
     const member = state.members.find(function (item) { return String(item.id) === String(memberId); });

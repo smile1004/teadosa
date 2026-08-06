@@ -108,6 +108,10 @@
     return request('/api/admin/members?' + query.toString(), { method: 'GET' });
   }
 
+  async function getAdminMember(memberId) {
+    return request('/api/admin/members/' + encodeURIComponent(memberId), { method: 'GET' });
+  }
+
   async function updateMemberApproval(memberId, approvalStatus) {
     return request('/api/admin/members/' + encodeURIComponent(memberId) + '/approval', {
       method: 'PUT',
@@ -134,6 +138,7 @@
     changePassword: changePassword,
     getAdminSummary: getAdminSummary,
     getAdminMembers: getAdminMembers,
+    getAdminMember: getAdminMember,
     updateMemberApproval: updateMemberApproval,
     checkDuplicate: checkDuplicate
   });
