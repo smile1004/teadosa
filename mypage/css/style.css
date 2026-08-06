@@ -1,0 +1,54 @@
+.mypage-main {
+  min-height: 70vh;
+  padding: 150px 20px 80px;
+  background: #f7f9fb;
+}
+
+.mypage-card {
+  width: min(720px, 100%);
+  margin: 0 auto;
+  padding: 36px;
+  border: 1px solid #dfe5eb;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 14px 40px rgba(19, 39, 62, 0.065);
+}
+
+.mypage-card h1 {
+  margin: 0 0 14px;
+  color: #0b2748;
+}
+
+.mypage-info {
+  display: grid;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.mypage-row {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf1f4;
+}
+
+.mypage-row span:first-child {
+  font-weight: 700;
+  color: #647385;
+}
+
+@media (max-width: 640px) {
+  .mypage-main {
+    padding: 120px 16px 60px;
+  }
+
+  .mypage-card {
+    padding: 26px 20px;
+  }
+
+  .mypage-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

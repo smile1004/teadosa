@@ -40,3 +40,8 @@ SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'sessions';
 6. 개인회원 로그인과 새로고침 후 로그인 유지
 7. 로그아웃 후 세션 해제
 8. 기업회원 pending 상태 로그인 차단
+
+## v1.2 마이페이지 공통 헤더 동기화
+- 마이페이지가 전체 페이지와 동일한 `common/js/components/header.js`를 사용하도록 구조를 정리했습니다.
+- 전체 HTML의 공통 헤더 파일에 `v=1.2` 캐시 버전을 적용하여 페이지별 이전 헤더 캐시가 섞이지 않도록 했습니다.
+- 마이페이지 전용 스타일을 `mypage/css/style.css`로 분리했습니다.
