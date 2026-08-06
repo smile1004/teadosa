@@ -663,42 +663,194 @@
   <script src="common/js/components/footer.js"></script>
 
   <script>
-    (function(){
-      const allAgree = document.getElementById('agree-all');
-      const agreeItems = Array.from(document.querySelectorAll('.agreement-list input[type="checkbox"]'));
+  (function(){
+    const form = document.querySelector('.signup-panel');
+    const submitButton = form?.querySelector('button[type="submit"]');
 
-      if(allAgree){
-        allAgree.addEventListener('change', function(){
-          agreeItems.forEach(function(item){
-            item.checked = allAgree.checked;
-          });
-        });
+    const allAgree = document.getElementById('agree-all');
+    const agreeItems = Array.from(
+      document.querySelectorAll(
+        '.agreement-list input[type="checkbox"]'
+      )
+    );
 
+    if(allAgree){
+      allAgree.addEventListener('change', function(){
         agreeItems.forEach(function(item){
-          item.addEventListener('change', function(){
-            allAgree.checked = agreeItems.every(function(check){
-              return check.checked;
-            });
-          });
-        });
-      }
-
-      document.querySelectorAll('.eye-button').forEach(function(button){
-        button.addEventListener('click', function(){
-          const target = document.getElementById(button.dataset.passwordTarget);
-          if(!target) return;
-
-          const willShow = target.type === 'password';
-          target.type = willShow ? 'text' : 'password';
-          button.setAttribute('aria-pressed', String(willShow));
-          button.setAttribute('aria-label', willShow ? '비밀번호 숨기기' : '비밀번호 표시');
-
-          button.innerHTML = willShow
-            ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6 0 9.5 7 9.5 7a16.7 16.7 0 0 1-2.2 3.1"></path><path d="M6.6 6.6C4 8.3 2.5 12 2.5 12s3.5 7 9.5 7a9.7 9.7 0 0 0 4-.8"></path></svg>'
-            : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>';
+          item.checked = allAgree.checked;
         });
       });
-    })();
-  </script>
+
+      agreeItems.forEach(function(item){
+        item.addEventListener('change', function(){
+          allAgree.checked = agreeItems.every(function(check){
+            return check.checked;
+          });
+        });
+      });
+    }
+
+    document.querySelectorAll('.eye-button').forEach(function(button){
+      button.addEventListener('click', function(){
+        const target = document.getElementById(
+          button.dataset.passwordTarget
+        );
+
+        if(!target) return;
+
+        const willShow = target.type === 'password';
+
+        target.type = willShow ? 'text' : 'password';
+
+        button.setAttribute(
+          'aria-pressed',
+          String(willShow)
+        );
+
+        button.setAttribute(
+          'aria-label',
+          willShow
+            ? '비밀번호 숨기기'
+            : '비밀번호 표시'
+        );
+
+        button.innerHTML = willShow
+          ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 10.6a2 2 0 0 0 2.8 2.8"></path><path d="M9.9 5.2A10.7 10.7 0 0 1 12 5c6 0 9.5 7 9.5 7a16.7 16.7 0 0 1-2.2 3.1"></path><path d="M6.6 6.6C4 8.3 2.5 12 2.5 12s3.5 7 9.5 7a9.7 9.7 0 0 0 4-.8"></path></svg>'
+          : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path><circle cx="12" cy="12" r="2.7"></circle></svg>';
+      });
+    });
+
+    if(!form || !submitButton) return;
+
+    form.addEventListener('submit', async function(event){
+      event.preventDefault();
+
+      if(!form.reportValidity()){
+        return;
+      }
+
+      const requiredAgreements = Array.from(
+        form.querySelectorAll(
+          '.agreement-list input[required]'
+        )
+      );
+
+      const allRequiredAgreed =
+        requiredAgreements.every(function(item){
+          return item.checked;
+        });
+
+      if(!allRequiredAgreed){
+        alert('필수 약관에 모두 동의해 주세요.');
+        return;
+      }
+
+      const username =
+        document.getElementById('user-id').value.trim();
+
+      const password =
+        document.getElementById('password').value;
+
+      const passwordConfirm =
+        document.getElementById('password-confirm').value;
+
+      const name =
+        document.getElementById('member-name').value.trim();
+
+      const email =
+        document.getElementById('email').value.trim();
+
+      const phoneFirst =
+        form.querySelector('[name="phone-first"]').value;
+
+      const phoneMiddle =
+        form.querySelector('[name="phone-middle"]')
+          .value
+          .replace(/\D/g, '');
+
+      const phoneLast =
+        form.querySelector('[name="phone-last"]')
+          .value
+          .replace(/\D/g, '');
+
+      const phone =
+        phoneFirst + phoneMiddle + phoneLast;
+
+      if(password !== passwordConfirm){
+        alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+
+        document
+          .getElementById('password-confirm')
+          .focus();
+
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = '가입 처리 중...';
+
+      try{
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            memberType: 'personal',
+            username,
+            email,
+            password,
+            passwordConfirm,
+            name,
+            phone
+          })
+        });
+
+        const result = await response.json();
+
+        if(!response.ok || !result.success){
+          alert(
+            result.message ||
+            '회원가입 처리 중 오류가 발생했습니다.'
+          );
+
+          focusErrorField(result.field);
+
+          return;
+        }
+
+        alert('개인 회원가입이 완료되었습니다.');
+
+        window.location.href = '/login/';
+      }catch(error){
+        console.error('개인회원 가입 오류:', error);
+
+        alert(
+          '서버와 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.'
+        );
+      }finally{
+        submitButton.disabled = false;
+        submitButton.textContent = '개인 회원가입';
+      }
+    });
+
+    function focusErrorField(field){
+      const fieldMap = {
+        username: 'user-id',
+        email: 'email'
+      };
+
+      const targetId = fieldMap[field];
+
+      if(!targetId) return;
+
+      const target = document.getElementById(targetId);
+
+      if(target){
+        target.focus();
+      }
+    }
+  })();
+</script>
 </body>
 </html>
