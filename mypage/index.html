@@ -4,29 +4,68 @@
   <base href="../">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
   <title>마이페이지 | 태양광도사</title>
-  <link href="common/css/shared-layout.css?v=1.6" rel="stylesheet">
-  <link href="common/css/shared-menu.css?v=1.6" rel="stylesheet">
-  <link href="common/css/common.css?v=1.6" rel="stylesheet">
-  <link href="mypage/css/style.css?v=1.6" rel="stylesheet">
+  <link href="common/css/shared-layout.css?v=1.7" rel="stylesheet">
+  <link href="common/css/shared-menu.css?v=1.7" rel="stylesheet">
+  <link href="common/css/common.css?v=1.7" rel="stylesheet">
+  <link href="mypage/css/style.css?v=1.7" rel="stylesheet">
 </head>
 <body>
-  <script src="common/js/site-config.js?v=1.6"></script>
-  <script src="common/js/api.js?v=1.6"></script>
-<script src="common/js/auth.js?v=1.6"></script>
-  <script src="common/js/session.js?v=1.6"></script>
-  <script src="common/js/components/header.js?v=1.6"></script>
+  <script src="common/js/site-config.js?v=1.7"></script>
+  <script src="common/js/api.js?v=1.7"></script>
+  <script src="common/js/auth.js?v=1.7"></script>
+  <script src="common/js/session.js?v=1.7"></script>
+  <script src="common/js/components/header.js?v=1.7"></script>
 
   <main class="mypage-main">
-    <section class="mypage-card">
-      <h1>마이페이지</h1>
-      <p>현재 로그인한 회원의 기본 정보입니다.</p>
-      <div id="mypage-info" class="mypage-info" hidden></div>
-      <p id="mypage-message">회원 정보를 확인하고 있습니다.</p>
-    </section>
+    <div class="mypage-shell">
+      <section class="mypage-hero" aria-labelledby="mypage-title">
+        <p class="mypage-eyebrow">MY PAGE</p>
+        <h1 id="mypage-title">회원정보</h1>
+        <p id="mypage-summary">회원정보를 확인하고 있습니다.</p>
+      </section>
+
+      <p id="mypage-message" class="mypage-message" role="status" aria-live="polite">회원 정보를 불러오고 있습니다.</p>
+
+      <div id="mypage-content" class="mypage-content" hidden>
+        <section class="mypage-card" aria-labelledby="account-title">
+          <div class="mypage-card-head">
+            <div>
+              <p class="mypage-card-kicker">ACCOUNT</p>
+              <h2 id="account-title">기본 회원정보</h2>
+            </div>
+            <span id="member-type-badge" class="mypage-badge"></span>
+          </div>
+          <dl id="account-info" class="mypage-info"></dl>
+        </section>
+
+        <section id="business-section" class="mypage-card" aria-labelledby="business-title" hidden>
+          <div class="mypage-card-head">
+            <div>
+              <p class="mypage-card-kicker">BUSINESS</p>
+              <h2 id="business-title">기업정보</h2>
+            </div>
+            <span id="approval-badge" class="mypage-badge approval"></span>
+          </div>
+          <dl id="business-info" class="mypage-info"></dl>
+        </section>
+
+        <section class="mypage-actions" aria-label="회원정보 관리">
+          <div>
+            <h2>회원정보 관리</h2>
+            <p>회원정보 수정과 비밀번호 변경 기능은 다음 단계에서 연결됩니다.</p>
+          </div>
+          <div class="mypage-action-buttons">
+            <button type="button" class="mypage-button secondary" disabled>회원정보 수정</button>
+            <button type="button" class="mypage-button primary" disabled>비밀번호 변경</button>
+          </div>
+        </section>
+      </div>
+    </div>
   </main>
 
-  <script src="common/js/components/footer.js?v=1.6"></script>
-  <script src="common/js/mypage.js?v=1.6"></script>
+  <script src="common/js/components/footer.js?v=1.7"></script>
+  <script src="common/js/mypage.js?v=1.7"></script>
 </body>
 </html>

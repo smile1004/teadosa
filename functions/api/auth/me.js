@@ -45,8 +45,20 @@ export async function onRequestGet(context) {
           members.username,
           members.email,
           members.name,
+          members.phone,
           members.company_name,
-          members.approval_status
+          members.business_number,
+          members.postal_code,
+          members.address,
+          members.address_detail,
+          members.ceo_name,
+          members.business_type,
+          members.business_item,
+          members.department,
+          members.office_phone,
+          members.approval_status,
+          members.created_at,
+          members.updated_at
         FROM sessions
         INNER JOIN members
           ON members.id = sessions.member_id
@@ -112,8 +124,20 @@ export async function onRequestGet(context) {
           username: session.username,
           email: session.email,
           name: session.name,
+          phone: session.phone,
           companyName: session.company_name,
+          businessNumber: session.business_number,
+          postalCode: session.postal_code,
+          address: session.address,
+          addressDetail: session.address_detail,
+          ceoName: session.ceo_name,
+          businessType: session.business_type,
+          businessItem: session.business_item,
+          department: session.department,
+          officePhone: session.office_phone,
           approvalStatus: session.approval_status,
+          createdAt: session.created_at,
+          updatedAt: session.updated_at,
         },
       },
       200

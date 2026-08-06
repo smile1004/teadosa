@@ -1,83 +1,74 @@
-/* v1.4: 다른 페이지와 동일한 기본 문서/폰트 기준 */
-html {
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth;
-}
+html { margin: 0; padding: 0; scroll-behavior: smooth; }
 
 body {
   margin: 0;
   padding: 0;
   font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
-  color: #1f2b24;
-  background: #f7f9fb;
+  color: #1d2b3a;
+  background: #f5f7fa;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 .mypage-main {
-  min-height: 70vh;
-  padding: 150px 20px 80px;
-  background: #f7f9fb;
-}
-
-.mypage-card {
-  width: min(720px, 100%);
-  margin: 0 auto;
-  padding: 36px;
-  border: 1px solid #dfe5eb;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 14px 40px rgba(19, 39, 62, 0.065);
-}
-
-.mypage-card h1 {
-  margin: 0 0 14px;
-  color: #0b2748;
-}
-
-.mypage-info {
-  display: grid;
-  gap: 12px;
-  margin-top: 26px;
-}
-
-.mypage-row {
-  display: grid;
-  grid-template-columns: 130px 1fr;
-  gap: 18px;
-  padding: 14px 0;
-  border-bottom: 1px solid #edf1f4;
-}
-
-.mypage-row span:first-child {
-  font-weight: 700;
-  color: #647385;
-}
-
-@media (max-width: 640px) {
-  .mypage-main {
-    padding: 120px 16px 60px;
-  }
-
-  .mypage-card {
-    padding: 26px 20px;
-  }
-
-  .mypage-row {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-}
-
-/* 마이페이지 본문은 공통 헤더보다 아래 레이어 유지 */
-.mypage-main {
   position: relative;
   z-index: 0;
   isolation: isolate;
+  min-height: 70vh;
+  padding: 140px 20px 80px;
+  background: linear-gradient(180deg, #f4f7fa 0%, #f8fafb 100%);
 }
 
-.mypage-card {
+.mypage-shell { width: min(980px, 100%); margin: 0 auto; }
+
+.mypage-hero { margin-bottom: 28px; }
+.mypage-eyebrow, .mypage-card-kicker { margin: 0 0 8px; color: #d67825; font-size: 12px; font-weight: 800; letter-spacing: .14em; }
+.mypage-hero h1 { margin: 0; color: #0b2748; font-size: clamp(32px, 4vw, 46px); line-height: 1.2; }
+.mypage-hero > p:last-child { margin: 12px 0 0; color: #657383; font-size: 16px; }
+
+.mypage-message { margin: 0; padding: 20px 22px; border: 1px solid #dfe6ec; border-radius: 16px; background: #fff; color: #526172; }
+.mypage-message.error { border-color: #efc8c8; background: #fff8f8; color: #a33a3a; }
+.mypage-content { display: grid; gap: 22px; }
+
+.mypage-card, .mypage-actions {
   position: relative;
   z-index: 0;
+  padding: 30px 34px;
+  border: 1px solid #dfe5eb;
+  border-radius: 22px;
+  background: rgba(255,255,255,.96);
+  box-shadow: 0 14px 40px rgba(19,39,62,.06);
+}
+
+.mypage-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding-bottom: 22px; border-bottom: 1px solid #edf1f4; }
+.mypage-card-head h2, .mypage-actions h2 { margin: 0; color: #0b2748; font-size: 22px; }
+.mypage-badge { flex: 0 0 auto; padding: 8px 12px; border-radius: 999px; background: #edf5f1; color: #27644c; font-size: 13px; font-weight: 800; }
+.mypage-badge.approval[data-status="pending"] { background: #fff3e7; color: #a85c1f; }
+.mypage-badge.approval[data-status="rejected"] { background: #fff0f0; color: #a23a3a; }
+
+.mypage-info { margin: 0; }
+.mypage-row { display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 24px; padding: 17px 0; border-bottom: 1px solid #edf1f4; }
+.mypage-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.mypage-row dt { color: #697887; font-weight: 700; }
+.mypage-row dd { margin: 0; color: #1f3143; font-weight: 600; overflow-wrap: anywhere; }
+
+.mypage-actions { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.mypage-actions p { margin: 8px 0 0; color: #6b7886; line-height: 1.6; }
+.mypage-action-buttons { display: flex; gap: 10px; flex: 0 0 auto; }
+.mypage-button { min-height: 44px; padding: 0 18px; border-radius: 11px; border: 1px solid transparent; font: inherit; font-weight: 800; }
+.mypage-button.primary { background: #0b2748; color: #fff; }
+.mypage-button.secondary { border-color: #cad4dd; background: #fff; color: #33475a; }
+.mypage-button:disabled { opacity: .48; cursor: not-allowed; }
+
+@media (max-width: 720px) {
+  .mypage-main { padding: 118px 16px 60px; }
+  .mypage-card, .mypage-actions { padding: 25px 20px; border-radius: 18px; }
+  .mypage-card-head, .mypage-actions { align-items: flex-start; flex-direction: column; }
+  .mypage-row { grid-template-columns: 1fr; gap: 6px; padding: 15px 0; }
+  .mypage-action-buttons { width: 100%; }
+  .mypage-button { flex: 1; }
+}
+
+@media (max-width: 430px) {
+  .mypage-action-buttons { flex-direction: column; }
 }
