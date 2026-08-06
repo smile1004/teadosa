@@ -7,7 +7,7 @@ const JSON_HEADERS = {
   "X-Content-Type-Options": "nosniff",
 };
 
-const USERNAME_REGEX = /^[a-zA-Z0-9_-]{4,20}$/;
+const USERNAME_REGEX = /^[a-zA-Z0-9_-]{6,20}$/;
 const SESSION_COOKIE_NAME = "teadosa_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
 
