@@ -6,17 +6,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>마이페이지 | 태양광도사</title>
-  <link href="common/css/shared-layout.css?v=1.7" rel="stylesheet">
-  <link href="common/css/shared-menu.css?v=1.7" rel="stylesheet">
-  <link href="common/css/common.css?v=1.7" rel="stylesheet">
-  <link href="mypage/css/style.css?v=1.7" rel="stylesheet">
+  <link href="common/css/shared-layout.css?v=1.8" rel="stylesheet">
+  <link href="common/css/shared-menu.css?v=1.8" rel="stylesheet">
+  <link href="common/css/common.css?v=1.8" rel="stylesheet">
+  <link href="mypage/css/style.css?v=1.8" rel="stylesheet">
 </head>
 <body>
-  <script src="common/js/site-config.js?v=1.7"></script>
-  <script src="common/js/api.js?v=1.7"></script>
-  <script src="common/js/auth.js?v=1.7"></script>
-  <script src="common/js/session.js?v=1.7"></script>
-  <script src="common/js/components/header.js?v=1.7"></script>
+  <script src="common/js/site-config.js?v=1.8"></script>
+  <script src="common/js/api.js?v=1.8"></script>
+  <script src="common/js/validation.js?v=1.8"></script>
+  <script src="common/js/auth.js?v=1.8"></script>
+  <script src="common/js/session.js?v=1.8"></script>
+  <script src="common/js/components/header.js?v=1.8"></script>
 
   <main class="mypage-main">
     <div class="mypage-shell">
@@ -30,42 +31,66 @@
 
       <div id="mypage-content" class="mypage-content" hidden>
         <section class="mypage-card" aria-labelledby="account-title">
-          <div class="mypage-card-head">
-            <div>
-              <p class="mypage-card-kicker">ACCOUNT</p>
-              <h2 id="account-title">기본 회원정보</h2>
-            </div>
-            <span id="member-type-badge" class="mypage-badge"></span>
-          </div>
+          <div class="mypage-card-head"><div><p class="mypage-card-kicker">ACCOUNT</p><h2 id="account-title">기본 회원정보</h2></div><span id="member-type-badge" class="mypage-badge"></span></div>
           <dl id="account-info" class="mypage-info"></dl>
         </section>
 
         <section id="business-section" class="mypage-card" aria-labelledby="business-title" hidden>
-          <div class="mypage-card-head">
-            <div>
-              <p class="mypage-card-kicker">BUSINESS</p>
-              <h2 id="business-title">기업정보</h2>
-            </div>
-            <span id="approval-badge" class="mypage-badge approval"></span>
-          </div>
+          <div class="mypage-card-head"><div><p class="mypage-card-kicker">BUSINESS</p><h2 id="business-title">기업정보</h2></div><span id="approval-badge" class="mypage-badge approval"></span></div>
           <dl id="business-info" class="mypage-info"></dl>
         </section>
 
         <section class="mypage-actions" aria-label="회원정보 관리">
-          <div>
-            <h2>회원정보 관리</h2>
-            <p>회원정보 수정과 비밀번호 변경 기능은 다음 단계에서 연결됩니다.</p>
-          </div>
+          <div><h2>회원정보 관리</h2><p>연락처, 주소와 기업정보를 최신 상태로 관리할 수 있습니다.</p></div>
           <div class="mypage-action-buttons">
-            <button type="button" class="mypage-button secondary" disabled>회원정보 수정</button>
-            <button type="button" class="mypage-button primary" disabled>비밀번호 변경</button>
+            <button id="edit-profile-button" type="button" class="mypage-button secondary">회원정보 수정</button>
+            <button type="button" class="mypage-button primary" disabled title="다음 단계에서 연결됩니다.">비밀번호 변경</button>
           </div>
+        </section>
+
+        <section id="profile-edit-section" class="mypage-card profile-edit" aria-labelledby="profile-edit-title" hidden>
+          <div class="mypage-card-head"><div><p class="mypage-card-kicker">EDIT PROFILE</p><h2 id="profile-edit-title">회원정보 수정</h2></div></div>
+          <form id="profile-edit-form" novalidate>
+            <div class="profile-form-grid">
+              <label class="profile-field"><span>이름 <em>*</em></span><input id="profile-name" name="name" type="text" maxlength="50" autocomplete="name" required></label>
+              <label class="profile-field"><span>이메일 <em>*</em></span><input id="profile-email" name="email" type="email" maxlength="254" autocomplete="email" required></label>
+              <label class="profile-field"><span>휴대전화 <em>*</em></span><input id="profile-phone" name="phone" type="tel" maxlength="13" autocomplete="tel" required></label>
+            </div>
+
+            <div id="edit-business-fields" class="profile-business-fields" hidden>
+              <div class="profile-divider"><span>기업정보</span></div>
+              <div class="profile-form-grid">
+                <label class="profile-field"><span>기업명 <em>*</em></span><input id="profile-company-name" name="companyName" type="text" maxlength="100"></label>
+                <label class="profile-field"><span>사업자등록번호</span><input id="profile-business-number" type="text" readonly aria-readonly="true"><small>사업자등록번호는 관리자 확인이 필요한 항목으로 직접 변경할 수 없습니다.</small></label>
+                <label class="profile-field"><span>대표자명</span><input id="profile-ceo-name" name="ceoName" type="text" maxlength="50"></label>
+                <label class="profile-field"><span>업태</span><input id="profile-business-type" name="businessType" type="text" maxlength="100"></label>
+                <label class="profile-field"><span>종목</span><input id="profile-business-item" name="businessItem" type="text" maxlength="100"></label>
+                <label class="profile-field"><span>담당 부서</span><input id="profile-department" name="department" type="text" maxlength="100"></label>
+                <label class="profile-field"><span>회사 전화</span><input id="profile-office-phone" name="officePhone" type="tel" maxlength="20"></label>
+              </div>
+            </div>
+
+            <div class="profile-divider"><span>주소정보</span></div>
+            <div class="profile-address-row">
+              <label class="profile-field"><span>우편번호</span><input id="profile-postal-code" name="postalCode" type="text" maxlength="10" readonly></label>
+              <button id="mypage-address-search" type="button" class="mypage-button secondary">주소검색</button>
+            </div>
+            <label class="profile-field full"><span>기본주소</span><input id="profile-address" name="address" type="text" maxlength="200" readonly></label>
+            <label class="profile-field full"><span>상세주소</span><input id="profile-address-detail" name="addressDetail" type="text" maxlength="200" autocomplete="street-address"></label>
+
+            <p id="profile-form-message" class="profile-form-message" role="status" aria-live="polite" hidden></p>
+            <div class="profile-form-actions">
+              <button id="cancel-profile-button" type="button" class="mypage-button secondary">취소</button>
+              <button id="save-profile-button" type="submit" class="mypage-button primary">변경사항 저장</button>
+            </div>
+          </form>
         </section>
       </div>
     </div>
   </main>
 
-  <script src="common/js/components/footer.js?v=1.7"></script>
-  <script src="common/js/mypage.js?v=1.7"></script>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <script src="common/js/components/footer.js?v=1.8"></script>
+  <script src="common/js/mypage.js?v=1.8"></script>
 </body>
 </html>

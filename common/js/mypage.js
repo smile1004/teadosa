@@ -2,6 +2,8 @@
   'use strict';
 
   const session = window.TaeDoSASession;
+  const auth = window.TaeDoSAAuth;
+  const validation = window.TaeDoSAValidation;
   const content = document.getElementById('mypage-content');
   const message = document.getElementById('mypage-message');
   const summary = document.getElementById('mypage-summary');
@@ -10,90 +12,210 @@
   const accountInfo = document.getElementById('account-info');
   const businessInfo = document.getElementById('business-info');
   const businessSection = document.getElementById('business-section');
+  const editButton = document.getElementById('edit-profile-button');
+  const cancelButton = document.getElementById('cancel-profile-button');
+  const editSection = document.getElementById('profile-edit-section');
+  const editForm = document.getElementById('profile-edit-form');
+  const editBusinessFields = document.getElementById('edit-business-fields');
+  const saveButton = document.getElementById('save-profile-button');
+  const formMessage = document.getElementById('profile-form-message');
+  const addressButton = document.getElementById('mypage-address-search');
 
-  if (!session || !content || !message || !accountInfo) return;
+  let currentMember = null;
+
+  if (!session || !auth || !validation || !content || !message || !accountInfo || !editForm) return;
+
+  editButton.addEventListener('click', openEdit);
+  cancelButton.addEventListener('click', closeEdit);
+  editForm.addEventListener('submit', saveProfile);
+  addressButton.addEventListener('click', searchAddress);
 
   loadMember();
 
   async function loadMember() {
     try {
-      const member = await session.require({
-        nextPath: '/mypage/',
-        loginPath: '/login/'
-      });
-
+      const member = await session.require({ nextPath: '/mypage/', loginPath: '/login/' });
       if (!member) return;
-
-      const isBusiness = member.memberType === 'business';
-      const memberTypeText = isBusiness ? '기업 전문 회원' : '개인 회원';
-
-      summary.textContent = (member.name || member.username || '회원') + '님의 가입정보입니다.';
-      memberTypeBadge.textContent = memberTypeText;
-
-      accountInfo.innerHTML = [
-        createRow('회원 유형', memberTypeText),
-        createRow('아이디', displayValue(member.username)),
-        createRow(isBusiness ? '담당자명' : '이름', displayValue(member.name)),
-        createRow('이메일', displayValue(member.email)),
-        createRow('휴대전화', formatPhone(member.phone)),
-        createRow('주소', formatAddress(member)),
-        createRow('가입일', formatDate(member.createdAt))
-      ].join('');
-
-      if (isBusiness && businessSection && businessInfo) {
-        businessInfo.innerHTML = [
-          createRow('기업명', displayValue(member.companyName)),
-          createRow('사업자등록번호', formatBusinessNumber(member.businessNumber)),
-          createRow('대표자명', displayValue(member.ceoName)),
-          createRow('업태', displayValue(member.businessType)),
-          createRow('종목', displayValue(member.businessItem)),
-          createRow('담당 부서', displayValue(member.department)),
-          createRow('회사 전화', formatPhone(member.officePhone)),
-          createRow('승인 상태', approvalText(member.approvalStatus))
-        ].join('');
-
-        approvalBadge.textContent = approvalText(member.approvalStatus);
-        approvalBadge.dataset.status = member.approvalStatus || 'unknown';
-        businessSection.hidden = false;
-      }
-
+      currentMember = member;
+      renderMember(member);
       content.hidden = false;
       message.hidden = true;
     } catch (error) {
-      console.error('마이페이지 회원정보 조회 오류:', error);
-      message.classList.add('error');
-      message.textContent = error && error.message
-        ? error.message
-        : '회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+      showMainError(error && error.message ? error.message : '회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
   }
 
+  function renderMember(member) {
+    const isBusiness = member.memberType === 'business';
+    const memberTypeText = isBusiness ? '기업 전문 회원' : '개인 회원';
+
+    summary.textContent = (member.name || member.username || '회원') + '님의 가입정보입니다.';
+    memberTypeBadge.textContent = memberTypeText;
+    accountInfo.innerHTML = [
+      createRow('회원 유형', memberTypeText),
+      createRow('아이디', displayValue(member.username)),
+      createRow(isBusiness ? '담당자명' : '이름', displayValue(member.name)),
+      createRow('이메일', displayValue(member.email)),
+      createRow('휴대전화', formatPhone(member.phone)),
+      createRow('주소', formatAddress(member)),
+      createRow('가입일', formatDate(member.createdAt))
+    ].join('');
+
+    if (isBusiness && businessSection && businessInfo) {
+      businessInfo.innerHTML = [
+        createRow('기업명', displayValue(member.companyName)),
+        createRow('사업자등록번호', formatBusinessNumber(member.businessNumber)),
+        createRow('대표자명', displayValue(member.ceoName)),
+        createRow('업태', displayValue(member.businessType)),
+        createRow('종목', displayValue(member.businessItem)),
+        createRow('담당 부서', displayValue(member.department)),
+        createRow('회사 전화', formatPhone(member.officePhone)),
+        createRow('승인 상태', approvalText(member.approvalStatus))
+      ].join('');
+      approvalBadge.textContent = approvalText(member.approvalStatus);
+      approvalBadge.dataset.status = member.approvalStatus || 'unknown';
+      businessSection.hidden = false;
+    } else if (businessSection) {
+      businessSection.hidden = true;
+    }
+  }
+
+  function openEdit() {
+    if (!currentMember) return;
+    fillForm(currentMember);
+    editSection.hidden = false;
+    editButton.hidden = true;
+    clearFormMessage();
+    editSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function closeEdit() {
+    editSection.hidden = true;
+    editButton.hidden = false;
+    editForm.reset();
+    clearFormMessage();
+  }
+
+  function fillForm(member) {
+    setValue('profile-name', member.name);
+    setValue('profile-email', member.email);
+    setValue('profile-phone', formatPhone(member.phone) === '미등록' ? '' : formatPhone(member.phone));
+    setValue('profile-postal-code', member.postalCode);
+    setValue('profile-address', member.address);
+    setValue('profile-address-detail', member.addressDetail);
+
+    const isBusiness = member.memberType === 'business';
+    editBusinessFields.hidden = !isBusiness;
+    Array.from(editBusinessFields.querySelectorAll('input')).forEach(function (input) {
+      input.disabled = !isBusiness;
+    });
+
+    if (isBusiness) {
+      setValue('profile-company-name', member.companyName);
+      setValue('profile-business-number', formatBusinessNumber(member.businessNumber));
+      setValue('profile-ceo-name', member.ceoName);
+      setValue('profile-business-type', member.businessType);
+      setValue('profile-business-item', member.businessItem);
+      setValue('profile-department', member.department);
+      setValue('profile-office-phone', formatPhone(member.officePhone) === '미등록' ? '' : formatPhone(member.officePhone));
+    }
+  }
+
+  async function saveProfile(event) {
+    event.preventDefault();
+    clearFormMessage();
+
+    const payload = collectPayload();
+    const validationMessage = validatePayload(payload);
+    if (validationMessage) {
+      showFormMessage(validationMessage, true);
+      return;
+    }
+
+    saveButton.disabled = true;
+    saveButton.textContent = '저장 중...';
+
+    try {
+      const outcome = await auth.updateProfile(payload);
+      const result = outcome.result || {};
+
+      if (!outcome.response.ok || !result.success || !result.member) {
+        showFormMessage(result.message || '회원정보를 수정하지 못했습니다.', true);
+        return;
+      }
+
+      currentMember = result.member;
+      renderMember(currentMember);
+      showFormMessage(result.message || '회원정보가 수정되었습니다.', false);
+      window.setTimeout(closeEdit, 900);
+    } catch (error) {
+      showFormMessage(error && error.message ? error.message : '회원정보 수정 중 오류가 발생했습니다.', true);
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = '변경사항 저장';
+    }
+  }
+
+  function collectPayload() {
+    const payload = {
+      name: valueOf('profile-name'),
+      email: validation.normalizeEmail(valueOf('profile-email')),
+      phone: validation.digits(valueOf('profile-phone')),
+      postalCode: valueOf('profile-postal-code'),
+      address: valueOf('profile-address'),
+      addressDetail: valueOf('profile-address-detail')
+    };
+
+    if (currentMember && currentMember.memberType === 'business') {
+      payload.companyName = valueOf('profile-company-name');
+      payload.ceoName = valueOf('profile-ceo-name');
+      payload.businessType = valueOf('profile-business-type');
+      payload.businessItem = valueOf('profile-business-item');
+      payload.department = valueOf('profile-department');
+      payload.officePhone = valueOf('profile-office-phone');
+    }
+    return payload;
+  }
+
+  function validatePayload(payload) {
+    if (payload.name.length < 2 || payload.name.length > 50) return '이름은 2~50자로 입력해 주세요.';
+    if (!validation.isValidEmail(payload.email)) return '올바른 이메일 주소를 입력해 주세요.';
+    if (!/^\d{9,11}$/.test(payload.phone)) return '휴대전화번호를 정확하게 입력해 주세요.';
+    if (currentMember.memberType === 'business') {
+      if (!payload.companyName) return '기업명을 입력해 주세요.';
+      if (!payload.postalCode || !payload.address) return '사업장 주소를 검색해 입력해 주세요.';
+    }
+    return '';
+  }
+
+  function searchAddress() {
+    if (!window.daum || !window.daum.Postcode) {
+      showFormMessage('주소검색 서비스를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true);
+      return;
+    }
+
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        setValue('profile-postal-code', data.zonecode || '');
+        setValue('profile-address', data.roadAddress || data.jibunAddress || '');
+        document.getElementById('profile-address-detail').focus();
+      }
+    }).open();
+  }
+
   function createRow(label, value) {
-    return '<div class="mypage-row">' +
-      '<dt>' + escapeHtml(label) + '</dt>' +
-      '<dd>' + escapeHtml(value) + '</dd>' +
-      '</div>';
+    return '<div class="mypage-row"><dt>' + escapeHtml(label) + '</dt><dd>' + escapeHtml(value) + '</dd></div>';
   }
-
-  function displayValue(value) {
-    const text = value === null || value === undefined ? '' : String(value).trim();
-    return text || '미등록';
-  }
-
+  function displayValue(value) { const text = displayRaw(value); return text || '미등록'; }
   function formatAddress(member) {
-    const postalCode = displayRaw(member.postalCode);
-    const address = displayRaw(member.address);
-    const detail = displayRaw(member.addressDetail);
     const parts = [];
-    if (postalCode) parts.push('(' + postalCode + ')');
-    if (address) parts.push(address);
-    if (detail) parts.push(detail);
+    if (displayRaw(member.postalCode)) parts.push('(' + displayRaw(member.postalCode) + ')');
+    if (displayRaw(member.address)) parts.push(displayRaw(member.address));
+    if (displayRaw(member.addressDetail)) parts.push(displayRaw(member.addressDetail));
     return parts.length ? parts.join(' ') : '미등록';
   }
-
   function formatPhone(value) {
-    const original = displayRaw(value);
-    if (!original) return '미등록';
+    const original = displayRaw(value); if (!original) return '미등록';
     const digits = original.replace(/\D/g, '');
     if (digits.length === 11) return digits.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
     if (digits.length === 10 && digits.startsWith('02')) return digits.replace(/(\d{2})(\d{4})(\d{4})/, '$1-$2-$3');
@@ -101,40 +223,19 @@
     if (digits.length === 9 && digits.startsWith('02')) return digits.replace(/(\d{2})(\d{3})(\d{4})/, '$1-$2-$3');
     return original;
   }
-
-  function formatBusinessNumber(value) {
-    const digits = displayRaw(value).replace(/\D/g, '');
-    if (digits.length !== 10) return digits || '미등록';
-    return digits.replace(/(\d{3})(\d{2})(\d{5})/, '$1-$2-$3');
-  }
-
+  function formatBusinessNumber(value) { const digits = displayRaw(value).replace(/\D/g, ''); return digits.length === 10 ? digits.replace(/(\d{3})(\d{2})(\d{5})/, '$1-$2-$3') : (digits || '미등록'); }
   function formatDate(value) {
-    const raw = displayRaw(value);
-    if (!raw) return '미등록';
+    const raw = displayRaw(value); if (!raw) return '미등록';
     const normalized = /Z$|[+-]\d{2}:?\d{2}$/.test(raw) ? raw : raw.replace(' ', 'T') + 'Z';
-    const date = new Date(normalized);
-    if (Number.isNaN(date.getTime())) return raw;
-    return new Intl.DateTimeFormat('ko-KR', {
-      year: 'numeric', month: '2-digit', day: '2-digit'
-    }).format(date);
+    const date = new Date(normalized); if (Number.isNaN(date.getTime())) return raw;
+    return new Intl.DateTimeFormat('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date);
   }
-
-  function approvalText(status) {
-    if (status === 'approved') return '승인 완료';
-    if (status === 'pending') return '승인 대기';
-    if (status === 'rejected') return '승인 반려';
-    return displayValue(status);
-  }
-
-  function displayRaw(value) {
-    return value === null || value === undefined ? '' : String(value).trim();
-  }
-
-  function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, function (character) {
-      return {
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
-      }[character];
-    });
-  }
+  function approvalText(status) { if (status === 'approved') return '승인 완료'; if (status === 'pending') return '승인 대기'; if (status === 'rejected') return '승인 반려'; return displayValue(status); }
+  function displayRaw(value) { return value === null || value === undefined ? '' : String(value).trim(); }
+  function setValue(id, value) { const element = document.getElementById(id); if (element) element.value = displayRaw(value); }
+  function valueOf(id) { const element = document.getElementById(id); return element ? element.value.normalize('NFKC').trim() : ''; }
+  function showFormMessage(text, isError) { formMessage.hidden = false; formMessage.textContent = text; formMessage.classList.toggle('error', Boolean(isError)); formMessage.classList.toggle('success', !isError); }
+  function clearFormMessage() { formMessage.hidden = true; formMessage.textContent = ''; formMessage.classList.remove('error', 'success'); }
+  function showMainError(text) { console.error(text); message.hidden = false; message.classList.add('error'); message.textContent = text; }
+  function escapeHtml(value) { return String(value).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]; }); }
 })();

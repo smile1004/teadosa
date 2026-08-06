@@ -85,6 +85,15 @@
     return null;
   }
 
+  async function updateProfile(payload) {
+    const outcome = await request('/api/auth/profile', { method: 'PUT', body: payload });
+    if (outcome.response.ok && outcome.result && outcome.result.success && outcome.result.member) {
+      sessionPromise = null;
+      announce(outcome.result.member, 'PROFILE_UPDATED');
+    }
+    return outcome;
+  }
+
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
       method: 'POST',
@@ -100,6 +109,7 @@
     getSession: getSession,
     requireAuth: requireAuth,
     getCurrentMember: function () { return currentMember; },
+    updateProfile: updateProfile,
     checkDuplicate: checkDuplicate
   });
 })(window);

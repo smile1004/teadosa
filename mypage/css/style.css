@@ -72,3 +72,30 @@ body {
 @media (max-width: 430px) {
   .mypage-action-buttons { flex-direction: column; }
 }
+
+/* v1.8 회원정보 수정 폼 */
+.profile-edit { scroll-margin-top: 110px; }
+.profile-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 22px; padding-top: 24px; }
+.profile-field { display: flex; flex-direction: column; gap: 8px; color: #31475b; font-size: 14px; font-weight: 800; }
+.profile-field.full { margin-top: 16px; }
+.profile-field span em { color: #d16b21; font-style: normal; }
+.profile-field input { width: 100%; min-height: 48px; box-sizing: border-box; padding: 0 14px; border: 1px solid #ccd6df; border-radius: 11px; background: #fff; color: #1d3043; font: inherit; font-weight: 600; outline: none; transition: border-color .2s, box-shadow .2s; }
+.profile-field input:focus { border-color: #315f85; box-shadow: 0 0 0 3px rgba(49,95,133,.12); }
+.profile-field input[readonly] { background: #f3f6f8; color: #637181; cursor: default; }
+.profile-field small { color: #778492; font-size: 12px; font-weight: 500; line-height: 1.5; }
+.profile-divider { display: flex; align-items: center; gap: 12px; margin-top: 30px; color: #0b2748; font-size: 14px; font-weight: 900; }
+.profile-divider::after { content: ""; height: 1px; flex: 1; background: #e5eaee; }
+.profile-address-row { display: grid; grid-template-columns: minmax(180px, 280px) auto; align-items: end; gap: 12px; margin-top: 18px; }
+.profile-address-row .mypage-button { min-height: 48px; }
+.profile-form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 26px; }
+.profile-form-message { margin: 22px 0 0; padding: 13px 15px; border-radius: 10px; font-size: 14px; font-weight: 700; }
+.profile-form-message.error { background: #fff1f1; color: #a13a3a; }
+.profile-form-message.success { background: #edf8f2; color: #286348; }
+
+@media (max-width: 720px) {
+  .profile-form-grid { grid-template-columns: 1fr; }
+  .profile-address-row { grid-template-columns: 1fr; }
+  .profile-address-row .mypage-button { width: 100%; }
+  .profile-form-actions { flex-direction: column-reverse; }
+  .profile-form-actions .mypage-button { width: 100%; }
+}
