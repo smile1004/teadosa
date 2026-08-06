@@ -6,7 +6,7 @@ const JSON_HEADERS = {
   "X-Content-Type-Options": "nosniff",
 };
 
-const USERNAME_REGEX = /^[a-zA-Z0-9_-]{4,20}$/;
+const USERNAME_REGEX = /^[a-zA-Z0-9_-]{6,20}$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[0-9]{9,11}$/;
 const BUSINESS_NUMBER_REGEX = /^[0-9]{10}$/;
@@ -136,6 +136,17 @@ export async function onRequestPost(context) {
         body.businessRegistrationNumber
     );
 
+    const postalCode = normalizeText(body.postalCode ?? body.postcode);
+    const address = normalizeText(body.address);
+    const addressDetail = normalizeText(body.addressDetail ?? body.address_detail);
+    const ceoName = normalizeText(body.ceoName ?? body.ceo_name);
+    const businessType = normalizeText(body.businessType ?? body.business_type);
+    const businessItem = normalizeText(body.businessItem ?? body.business_item);
+    const department = normalizeText(body.department);
+    const officePhone = normalizeText(body.officePhone ?? body.office_phone)
+      .replace(/[^0-9-]/g, "")
+      .slice(0, 20);
+
     /*
      * 5. 개인회원 / 기업회원 구분
      */
@@ -173,7 +184,7 @@ export async function onRequestPost(context) {
           success: false,
           code: "INVALID_USERNAME",
           message:
-            "아이디는 영문, 숫자, 밑줄, 하이픈을 사용하여 4~20자로 입력해 주세요.",
+            "아이디는 영문, 숫자, 밑줄, 하이픈을 사용하여 6~20자로 입력해 주세요.",
         },
         400
       );
@@ -276,16 +287,28 @@ export async function onRequestPost(context) {
         );
       }
 
-      if (!BUSINESS_NUMBER_REGEX.test(businessNumber)) {
+      if (!BUSINESS_NUMBER_REGEX.test(businessNumber) || !isValidBusinessNumber(businessNumber)) {
         return jsonResponse(
           {
             success: false,
             code: "INVALID_BUSINESS_NUMBER",
+            field: "businessNumber",
             message: "사업자등록번호 10자리를 정확하게 입력해 주세요.",
           },
           400
         );
       }
+
+      if (!postalCode || !address) {
+        return jsonResponse(
+          { success: false, code: "BUSINESS_ADDRESS_REQUIRED", field: "address", message: "사업장 주소를 검색해 입력해 주세요." },
+          400
+        );
+      }
+    }
+
+    if (postalCode.length > 10 || address.length > 200 || addressDetail.length > 200) {
+      return jsonResponse({ success: false, code: "INVALID_ADDRESS", field: "address", message: "주소 입력값이 너무 깁니다." }, 400);
     }
 
     /*
@@ -397,11 +420,19 @@ export async function onRequestPost(context) {
           phone,
           company_name,
           business_number,
+          postal_code,
+          address,
+          address_detail,
+          ceo_name,
+          business_type,
+          business_item,
+          department,
+          office_phone,
           approval_status,
           created_at,
           updated_at
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `
     )
       .bind(
@@ -413,6 +444,14 @@ export async function onRequestPost(context) {
         phone,
         savedCompanyName,
         savedBusinessNumber,
+        postalCode || null,
+        address || null,
+        addressDetail || null,
+        memberType === "business" ? (ceoName || null) : null,
+        memberType === "business" ? (businessType || null) : null,
+        memberType === "business" ? (businessItem || null) : null,
+        memberType === "business" ? (department || null) : null,
+        memberType === "business" ? (officePhone || null) : null,
         approvalStatus,
         createdAt,
         createdAt
@@ -552,6 +591,15 @@ function normalizeDigits(value) {
   }
 
   return String(value).replace(/\D/g, "");
+}
+
+function isValidBusinessNumber(value) {
+  const digits = value.split("").map(Number);
+  const weights = [1, 3, 7, 1, 3, 7, 1, 3];
+  let sum = weights.reduce((total, weight, index) => total + digits[index] * weight, 0);
+  const ninth = digits[8] * 5;
+  sum += Math.floor(ninth / 10) + (ninth % 10);
+  return ((10 - (sum % 10)) % 10) === digits[9];
 }
 
 function isValidPassword(password) {
