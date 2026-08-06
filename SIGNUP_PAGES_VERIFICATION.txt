@@ -1,0 +1,29 @@
+태도사 회원가입 페이지 검증 기록
+검증일: 2026-08-06
+
+검증 대상
+- signup/personal/index.html
+- signup/business/index.html
+- functions/api/auth/check-duplicate.js
+- functions/api/auth/signup.js
+
+개인회원 페이지
+- 아이디 중복확인 버튼 및 상태 영역 확인
+- 이메일 중복확인 상태 영역 확인
+- 비밀번호 규칙 및 일치 검증 확인
+- 주소검색 버튼 확인
+- 회원가입 API 호출 코드 확인
+
+기업회원 페이지
+- 아이디 중복확인 버튼 및 상태 영역 확인
+- 사업자등록번호 중복확인 버튼 id 연결 수정
+- 사업자등록번호 상태 메시지 영역 추가
+- 이메일 중복확인 상태 영역 확인
+- 비밀번호 규칙 및 일치 검증 확인
+- 주소검색 버튼 확인
+- 회원가입 API 호출 코드 확인
+
+정적 검증
+- 두 페이지의 HTML id 중복 없음
+- JavaScript 문법 검사 통과
+- 폼 및 submit 버튼 존재 확인
