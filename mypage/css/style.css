@@ -1,3 +1,20 @@
+/* v1.4: 다른 페이지와 동일한 기본 문서/폰트 기준 */
+html {
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+  color: #1f2b24;
+  background: #f7f9fb;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
 .mypage-main {
   min-height: 70vh;
   padding: 150px 20px 80px;
@@ -53,13 +70,14 @@
   }
 }
 
-/* v1.3: 마이페이지 본문은 공통 헤더보다 아래 레이어 유지 */
-.mypage-main{
-  position:relative;
-  z-index:0;
-  isolation:isolate;
+/* 마이페이지 본문은 공통 헤더보다 아래 레이어 유지 */
+.mypage-main {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
 }
-.mypage-card{
-  position:relative;
-  z-index:0;
+
+.mypage-card {
+  position: relative;
+  z-index: 0;
 }
