@@ -13,7 +13,7 @@
 <body class="">
 <script src="common/js/site-config.js"></script>
 <script src="common/js/api.js?v=2.0"></script>
-<script src="common/js/auth.js?v=2.0"></script>
+<script src="common/js/auth.js?v=2.1"></script>
 <script src="common/js/components/header.js?v=2.1"></script><main class="step-unified-shell"><section class="service-step-hero">
 <div class="service-step-label">STEP 01</div>
 <h1>사전검토 신청서</h1>
@@ -66,55 +66,21 @@
 </div>
 <div class="field full">
 <label for="memo">추가 요청사항</label>
-<textarea id="memo" name="memo" placeholder="검토에 참고할 내용이 있다면 입력해 주세요"></textarea>
+<textarea id="memo" name="memo" maxlength="2000" placeholder="검토에 참고할 내용이 있다면 입력해 주세요"></textarea>
 </div>
 </div>
 <div class="guide">
             신청 내용은 사전 확인용으로 활용되며, 실제 설치 가능 여부는 현장 여건·건축물 상태·한전 계통 여건 등에 따라 달라질 수 있습니다.
           </div>
+<p id="formMessage" class="form-message" role="status" aria-live="polite" hidden></p>
 <div class="form-buttons">
 <button class="btn-submit" type="submit">신청하기</button>
 <button class="btn-reset" type="reset">초기화</button>
 </div>
 </form>
 </section>
-<section aria-live="polite" class="result" id="resultBox">
-<div class="result-title">
-<h3>신청 결과</h3>
-<span class="status">접수 정보 확인</span>
-</div>
-<div class="result-list">
-<div class="result-item">
-<strong>이름</strong>
-<span id="resultName"></span>
-</div>
-<div class="result-item">
-<strong>연락처</strong>
-<span id="resultPhone"></span>
-</div>
-<div class="result-item full">
-<strong>설치주소</strong>
-<span id="resultAddress"></span>
-</div>
-<div class="result-item">
-<strong>사업지 유형</strong>
-<span id="resultSiteType"></span>
-</div>
-<div class="result-item">
-<strong>용도</strong>
-<span id="resultPurpose"></span>
-</div>
-<div class="result-item full">
-<strong>추가 요청사항</strong>
-<span id="resultMemo"></span>
-</div>
-</div>
-<p class="result-note">입력하신 내용을 확인 후 필요 시 상세 검토를 위한 추가 안내가 진행됩니다.</p>
-<div class="result-actions">
-<button class="btn-result-check" onclick="checkResult()" type="button">결과 확인하기</button>
-</div>
-</section>
+
 </div></div></main>
 <script src="common/js/components/footer.js"></script>
-<script src="precheck/apply/js/script.js"></script></body>
+<script src="precheck/apply/js/script.js?v=2.1"></script></body>
 </html>

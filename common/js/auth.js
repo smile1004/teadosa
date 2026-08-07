@@ -119,6 +119,10 @@
     });
   }
 
+  async function createPrecheckRequest(payload) {
+    return request('/api/precheck/create', { method: 'POST', body: payload });
+  }
+
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
       method: 'POST',
@@ -140,6 +144,7 @@
     getAdminMembers: getAdminMembers,
     getAdminMember: getAdminMember,
     updateMemberApproval: updateMemberApproval,
+    createPrecheckRequest: createPrecheckRequest,
     checkDuplicate: checkDuplicate
   });
 })(window);

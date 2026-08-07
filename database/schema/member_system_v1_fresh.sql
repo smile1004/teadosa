@@ -65,74 +65,95 @@ CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
 
 CREATE TABLE IF NOT EXISTS precheck_requests (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  request_no TEXT NOT NULL,
+  request_no TEXT NOT NULL UNIQUE,
   member_id INTEGER NOT NULL,
 
   applicant_name TEXT NOT NULL,
-  applicant_phone TEXT NOT NULL,
-  applicant_email TEXT,
+  phone TEXT NOT NULL,
+  email TEXT,
   company_name TEXT,
 
+  site_type TEXT,
+  purpose TEXT,
+
+  postcode TEXT,
   site_address TEXT NOT NULL,
-  site_type TEXT NOT NULL CHECK (site_type IN ('land', 'building')),
-  purpose TEXT NOT NULL CHECK (purpose IN ('self_consumption', 'power_business')),
+  site_address_detail TEXT,
+
   request_note TEXT,
 
   status TEXT NOT NULL DEFAULT 'received'
-    CHECK (status IN ('received', 'reviewing', 'supplement_required', 'completed')),
+    CHECK (
+      status IN (
+        'received',
+        'reviewing',
+        'supplement_required',
+        'completed'
+      )
+    ),
 
-  submitted_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL,
+  submitted_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE RESTRICT
+  FOREIGN KEY (member_id)
+    REFERENCES members(id)
+    ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_precheck_requests_request_no_unique
-  ON precheck_requests(request_no);
 CREATE INDEX IF NOT EXISTS idx_precheck_requests_member_id
-  ON precheck_requests(member_id);
+ON precheck_requests(member_id);
+
 CREATE INDEX IF NOT EXISTS idx_precheck_requests_status
-  ON precheck_requests(status);
+ON precheck_requests(status);
+
 CREATE INDEX IF NOT EXISTS idx_precheck_requests_submitted_at
-  ON precheck_requests(submitted_at);
+ON precheck_requests(submitted_at);
 
 CREATE TABLE IF NOT EXISTS precheck_reviews (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  request_id INTEGER NOT NULL,
+  request_id INTEGER NOT NULL UNIQUE,
 
   installation_possible TEXT NOT NULL DEFAULT 'undetermined'
-    CHECK (installation_possible IN ('undetermined', 'possible', 'conditional', 'not_possible')),
-  expected_capacity_kw REAL,
+    CHECK (
+      installation_possible IN (
+        'undetermined',
+        'possible',
+        'conditional',
+        'not_possible'
+      )
+    ),
+
+  expected_capacity REAL,
 
   shading_review TEXT,
   structure_review TEXT,
   grid_review TEXT,
   ordinance_review TEXT,
 
-  expected_annual_generation_kwh REAL,
-  expected_project_cost_krw INTEGER,
+  expected_generation REAL,
+  expected_cost INTEGER,
 
   overall_opinion TEXT,
   customer_notice TEXT,
+
   internal_memo TEXT,
 
   reviewed_by INTEGER,
   reviewed_at TEXT,
   published_at TEXT,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  FOREIGN KEY (request_id) REFERENCES precheck_requests(id) ON DELETE CASCADE,
-  FOREIGN KEY (reviewed_by) REFERENCES members(id) ON DELETE SET NULL,
+  FOREIGN KEY (request_id)
+    REFERENCES precheck_requests(id)
+    ON DELETE CASCADE,
 
-  CHECK (expected_capacity_kw IS NULL OR expected_capacity_kw >= 0),
-  CHECK (expected_annual_generation_kwh IS NULL OR expected_annual_generation_kwh >= 0),
-  CHECK (expected_project_cost_krw IS NULL OR expected_project_cost_krw >= 0)
+  FOREIGN KEY (reviewed_by)
+    REFERENCES members(id)
+    ON DELETE SET NULL
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS idx_precheck_reviews_request_id_unique
-  ON precheck_reviews(request_id);
 CREATE INDEX IF NOT EXISTS idx_precheck_reviews_reviewed_by
-  ON precheck_reviews(reviewed_by);
+ON precheck_reviews(reviewed_by);
+
 CREATE INDEX IF NOT EXISTS idx_precheck_reviews_published_at
-  ON precheck_reviews(published_at);
+ON precheck_reviews(published_at);

@@ -991,3 +991,28 @@ body.taedo-has-fixed-header main{
   body.taedo-has-fixed-header{padding-top:78px}
 }
 
+
+/* STEP2: 실제 접수 상태 안내 */
+.form-message{
+  margin:18px 0 0;
+  padding:14px 16px;
+  border-radius:14px;
+  font-size:14px;
+  font-weight:700;
+  line-height:1.55;
+}
+.form-message.error{
+  color:#9a3d2d;
+  background:#fff3ef;
+  border:1px solid #f2cfc5;
+}
+.form-message.success{
+  color:#3f6e31;
+  background:#f1f8ec;
+  border:1px solid #d7e9cb;
+}
+.btn-submit:disabled{
+  opacity:.62;
+  cursor:not-allowed;
+  transform:none!important;
+}

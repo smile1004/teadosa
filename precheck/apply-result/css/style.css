@@ -1588,3 +1588,15 @@ main{
   .apply-result-primary,.apply-result-secondary{width:100%;min-width:0}
 }
 
+
+/* STEP2: 신청번호 강조 */
+.request-number-item dd{
+  font-weight:900;
+  letter-spacing:.02em;
+  color:#3f6e31;
+}
+.apply-result-secondary{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
