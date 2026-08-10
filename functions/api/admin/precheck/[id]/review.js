@@ -2,6 +2,7 @@ import { requireAdmin, jsonResponse } from '../../../../_lib/admin-auth.js';
 
 const INSTALLATION_STATUS = ['undetermined', 'possible', 'conditional', 'not_possible'];
 const ITEM_STATUS = ['info', 'ok', 'conditional', 'hold', 'not_possible'];
+const DEFAULT_CUSTOMER_NOTICE = "1. 인허가 및 지자체 조례 검토\n• 본 검토는 검토 시점에 확인 가능한 지자체 도시계획 조례 및 관련 법령을 기준으로 작성되었습니다.\n• 실제 사업 진행 시 관계기관 협의, 개발행위 심의, 민원 발생 등에 따라 검토 결과가 변경될 수 있습니다.\n• 최종 허가 여부는 해당 행정기관의 심사 결과를 기준으로 결정됩니다.\n\n2. 한국전력 계통연계 검토\n• 본 검토는 한국전력에서 제공하는 계통정보와 검토 시점에 확인 가능한 자료를 기준으로 작성되었습니다.\n• 계통연계 가능 여부와 여유 용량은 다른 접수 건, 전력계통 운영 상황 및 설비계획 변경 등에 따라 실제 접수 시 변경될 수 있습니다.\n• 최종 계통연계 가능 여부 및 연계 조건은 한국전력의 계통연계 검토 결과를 기준으로 결정됩니다.";
 
 export async function onRequestPut(context) {
   const { request, env, params } = context;
@@ -31,7 +32,7 @@ export async function onRequestPut(context) {
     const installationPossible = enumValue(body?.installationPossible, INSTALLATION_STATUS, 'undetermined');
     const expectedCapacity = nullableNumber(body?.expectedCapacity);
     const overallOpinion = textValue(body?.overallOpinion, 5000);
-    const customerNotice = textValue(body?.customerNotice, 5000);
+    const customerNotice = textValue(body?.customerNotice, 5000) || DEFAULT_CUSTOMER_NOTICE;
     const internalMemo = textValue(body?.internalMemo, 5000);
     const items = normalizeItems(body?.items);
     const publish = Boolean(body?.publish);

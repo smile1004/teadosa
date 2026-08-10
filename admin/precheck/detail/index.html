@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>사전검토 신청 상세 | 태양광도사 관리자</title>
-  <link href="admin/css/style.css?v=2.4" rel="stylesheet">
+  <link href="admin/css/style.css?v=2.5" rel="stylesheet">
 </head>
 <body class="admin-body">
   <div class="admin-app">
@@ -86,13 +86,37 @@
               </div>
 
               <div class="review-items-head">
-                <div><h3>검토 항목</h3><p>조례, 한전 계통연계, 현장조건 등 필요한 항목을 구성합니다.</p></div>
-                <button id="add-review-item" class="admin-button secondary" type="button">검토항목 추가</button>
+                <div><h3>검토 항목</h3><p>아래 3개 항목을 각각 확인하고 검토결과를 입력합니다.</p></div>
               </div>
-              <div id="review-items" class="review-items"></div>
+
+              <div id="review-items" class="review-items fixed-review-items">
+                <section class="review-fixed-section" data-review-key="ordinance">
+                  <div class="review-fixed-title"><span>01</span><div><h4>조례 검토</h4><p>지자체 조례, 입지제한, 인허가 관련 검토내용을 입력합니다.</p></div></div>
+                  <select class="review-item-status" aria-label="조례 검토 상태">
+                    <option value="info">검토</option><option value="ok">적합/가능</option><option value="conditional">조건부</option><option value="hold">추가확인</option><option value="not_possible">어려움</option>
+                  </select>
+                  <textarea class="review-item-content" rows="5" maxlength="3000" placeholder="조례 및 인허가 관련 검토결과와 확인사항을 입력해 주세요."></textarea>
+                </section>
+
+                <section class="review-fixed-section" data-review-key="grid">
+                  <div class="review-fixed-title"><span>02</span><div><h4>한전 계통연계 검토</h4><p>한전 계통정보, 여유용량, 연계조건 등의 검토내용을 입력합니다.</p></div></div>
+                  <select class="review-item-status" aria-label="한전 계통연계 검토 상태">
+                    <option value="info">검토</option><option value="ok">적합/가능</option><option value="conditional">조건부</option><option value="hold">추가확인</option><option value="not_possible">어려움</option>
+                  </select>
+                  <textarea class="review-item-content" rows="5" maxlength="3000" placeholder="한전 계통연계 관련 검토결과와 확인사항을 입력해 주세요."></textarea>
+                </section>
+
+                <section class="review-fixed-section" data-review-key="site">
+                  <div class="review-fixed-title"><span>03</span><div><h4>현장조건 검토</h4><p>사업지 형태, 주변환경, 건축물·부지 상태 등 현장조건을 입력합니다.</p></div></div>
+                  <select class="review-item-status" aria-label="현장조건 검토 상태">
+                    <option value="info">검토</option><option value="ok">적합/가능</option><option value="conditional">조건부</option><option value="hold">추가확인</option><option value="not_possible">어려움</option>
+                  </select>
+                  <textarea class="review-item-content" rows="5" maxlength="3000" placeholder="현장조건 관련 검토결과와 추가 확인사항을 입력해 주세요."></textarea>
+                </section>
+              </div>
 
               <label class="review-field full"><span>종합 의견</span><textarea id="overall-opinion" rows="6" maxlength="5000" placeholder="회원에게 제공할 종합 검토의견을 입력해 주세요."></textarea></label>
-              <label class="review-field full"><span>고객 안내사항</span><textarea id="customer-notice" rows="5" maxlength="5000" placeholder="회원에게 안내할 중요사항을 입력해 주세요."></textarea></label>
+              <label class="review-field full"><span>고객 안내사항 <small class="auto-label">자동 입력</small></span><textarea id="customer-notice" rows="10" maxlength="5000"></textarea></label>
               <label class="review-field full internal"><span>관리자 내부 메모</span><textarea id="internal-memo" rows="4" maxlength="5000" placeholder="회원에게 공개되지 않는 내부 메모입니다."></textarea></label>
 
               <div class="review-actions">
@@ -109,6 +133,6 @@
   <script src="common/js/api.js?v=2.4"></script>
   <script src="common/js/auth.js?v=2.4"></script>
   <script src="common/js/admin-layout.js?v=2.4"></script>
-  <script src="common/js/admin-precheck-detail.js?v=2.4"></script>
+  <script src="common/js/admin-precheck-detail.js?v=2.5"></script>
 </body>
 </html>

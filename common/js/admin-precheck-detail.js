@@ -34,7 +34,6 @@
     el.installationPossible = document.getElementById('installation-possible');
     el.expectedCapacity = document.getElementById('expected-capacity');
     el.items = document.getElementById('review-items');
-    el.addItem = document.getElementById('add-review-item');
     el.overallOpinion = document.getElementById('overall-opinion');
     el.customerNotice = document.getElementById('customer-notice');
     el.internalMemo = document.getElementById('internal-memo');
@@ -43,15 +42,6 @@
   }
 
   function bindEvents() {
-    el.addItem.addEventListener('click', function () {
-      appendReviewItem({ status: 'info' });
-    });
-
-    el.items.addEventListener('click', function (event) {
-      const button = event.target.closest('[data-remove-review-item]');
-      if (button) button.closest('.review-item-editor')?.remove();
-    });
-
     el.save.addEventListener('click', function () { saveReview(false); });
     el.publish.addEventListener('click', function () {
       if (!window.confirm('검토결과를 저장하고 회원에게 공개하시겠습니까?')) return;
@@ -121,53 +111,59 @@
     }).join('');
   }
 
+  const DEFAULT_CUSTOMER_NOTICE = "1. 인허가 및 지자체 조례 검토\n• 본 검토는 검토 시점에 확인 가능한 지자체 도시계획 조례 및 관련 법령을 기준으로 작성되었습니다.\n• 실제 사업 진행 시 관계기관 협의, 개발행위 심의, 민원 발생 등에 따라 검토 결과가 변경될 수 있습니다.\n• 최종 허가 여부는 해당 행정기관의 심사 결과를 기준으로 결정됩니다.\n\n2. 한국전력 계통연계 검토\n• 본 검토는 한국전력에서 제공하는 계통정보와 검토 시점에 확인 가능한 자료를 기준으로 작성되었습니다.\n• 계통연계 가능 여부와 여유 용량은 다른 접수 건, 전력계통 운영 상황 및 설비계획 변경 등에 따라 실제 접수 시 변경될 수 있습니다.\n• 최종 계통연계 가능 여부 및 연계 조건은 한국전력의 계통연계 검토 결과를 기준으로 결정됩니다.";
+
   function renderReview() {
     const review = state.review || {};
 
     el.installationPossible.value = review.installationPossible || 'undetermined';
     el.expectedCapacity.value = review.expectedCapacity ?? '';
     el.overallOpinion.value = review.overallOpinion || '';
-    el.customerNotice.value = review.customerNotice || '';
+    el.customerNotice.value = review.customerNotice || DEFAULT_CUSTOMER_NOTICE;
     el.internalMemo.value = review.internalMemo || '';
 
     el.publishStatus.textContent = review.publishedAt ? '회원 공개됨' : '미공개';
     el.publishStatus.className = 'admin-inline-badge' + (review.publishedAt ? ' published' : '');
 
-    el.items.innerHTML = '';
-    const items = review.resultData?.items || [];
+    const savedItems = review.resultData?.items || [];
+    const byId = {};
+    savedItems.forEach(function (item) {
+      byId[item.id] = item;
+    });
 
-    if (items.length) {
-      items.forEach(appendReviewItem);
-    } else {
-      appendReviewItem({ title: '지자체 조례 및 인허가 검토', status: 'info', content: '' });
-      appendReviewItem({ title: '한국전력 계통연계 검토', status: 'info', content: '' });
-    }
+    setFixedItem('ordinance', byId.ordinance || findByTitle(savedItems, '조례'));
+    setFixedItem('grid', byId.grid || findByTitle(savedItems, '한전'));
+    setFixedItem('site', byId.site || findByTitle(savedItems, '현장'));
   }
 
-  function appendReviewItem(item) {
-    const row = document.createElement('div');
-    row.className = 'review-item-editor';
-    row.innerHTML =
-      '<div class="review-item-top">' +
-        '<input class="review-item-title" type="text" maxlength="100" placeholder="검토 항목명" value="' + escapeAttr(item?.title || '') + '">' +
-        '<select class="review-item-status">' + statusOptions(item?.status || 'info') + '</select>' +
-        '<button type="button" class="review-item-remove" data-remove-review-item>삭제</button>' +
-      '</div>' +
-      '<textarea class="review-item-content" rows="4" maxlength="3000" placeholder="검토 결과와 근거를 입력해 주세요.">' + escapeHtml(item?.content || '') + '</textarea>';
+  function findByTitle(items, keyword) {
+    return items.find(function (item) {
+      return String(item.title || '').includes(keyword);
+    }) || null;
+  }
 
-    el.items.appendChild(row);
+  function setFixedItem(key, item) {
+    const section = el.items.querySelector('[data-review-key="' + key + '"]');
+    if (!section) return;
+    section.querySelector('.review-item-status').value = item?.status || 'info';
+    section.querySelector('.review-item-content').value = item?.content || '';
   }
 
   function collectItems() {
-    return Array.from(el.items.querySelectorAll('.review-item-editor')).map(function (row, index) {
+    const specs = [
+      ['ordinance', '조례 검토'],
+      ['grid', '한전 계통연계 검토'],
+      ['site', '현장조건 검토']
+    ];
+
+    return specs.map(function (spec) {
+      const section = el.items.querySelector('[data-review-key="' + spec[0] + '"]');
       return {
-        id: 'item-' + (index + 1),
-        title: row.querySelector('.review-item-title').value.trim(),
-        status: row.querySelector('.review-item-status').value,
-        content: row.querySelector('.review-item-content').value.trim()
+        id: spec[0],
+        title: spec[1],
+        status: section.querySelector('.review-item-status').value,
+        content: section.querySelector('.review-item-content').value.trim()
       };
-    }).filter(function (item) {
-      return item.title || item.content;
     });
   }
 
@@ -215,7 +211,7 @@
   }
 
   function setBusy(active) {
-    [el.save, el.publish, el.addItem].forEach(function (node) {
+    [el.save, el.publish].forEach(function (node) {
       if (node) node.disabled = active;
     });
   }
@@ -227,17 +223,6 @@
     el.message.classList.toggle('error', Boolean(error));
   }
 
-  function statusOptions(selected) {
-    return [
-      ['info', '일반'],
-      ['ok', '적합/가능'],
-      ['conditional', '조건부'],
-      ['hold', '추가확인'],
-      ['not_possible', '어려움']
-    ].map(function (item) {
-      return '<option value="' + item[0] + '"' + (selected === item[0] ? ' selected' : '') + '>' + item[1] + '</option>';
-    }).join('');
-  }
 
   function statusLabel(value) {
     return ({ received: '접수', reviewing: '검토중', supplement_required: '보완요청', completed: '검토완료' })[value] || value || '-';
