@@ -27,6 +27,8 @@
   const savePasswordButton = document.getElementById('save-password-button');
   const passwordMessage = document.getElementById('password-form-message');
   const passwordVisibilityToggle = document.getElementById('password-visibility-toggle');
+  const precheckHistoryMessage = document.getElementById('precheck-history-message');
+  const precheckHistoryList = document.getElementById('precheck-history-list');
 
   let currentMember = null;
 
@@ -51,6 +53,7 @@
       renderMember(member);
       content.hidden = false;
       message.hidden = true;
+      await loadPrecheckHistory();
     } catch (error) {
       showMainError(error && error.message ? error.message : '회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
@@ -89,6 +92,98 @@
     } else if (businessSection) {
       businessSection.hidden = true;
     }
+  }
+
+  async function loadPrecheckHistory() {
+    if (!precheckHistoryMessage || !precheckHistoryList || !auth.getMyPrecheckRequests) return;
+
+    precheckHistoryMessage.hidden = false;
+    precheckHistoryMessage.classList.remove('error');
+    precheckHistoryMessage.textContent = '신청내역을 확인하고 있습니다.';
+    precheckHistoryList.hidden = true;
+
+    try {
+      const outcome = await auth.getMyPrecheckRequests();
+      const result = outcome.result || {};
+
+      if (!outcome.response.ok || !result.success) {
+        throw new Error(result.message || '사전검토 신청내역을 불러오지 못했습니다.');
+      }
+
+      renderPrecheckHistory(result.requests || []);
+    } catch (error) {
+      precheckHistoryMessage.textContent = error && error.message ? error.message : '사전검토 신청내역을 불러오지 못했습니다.';
+      precheckHistoryMessage.classList.add('error');
+    }
+  }
+
+  function renderPrecheckHistory(requests) {
+    if (!requests.length) {
+      precheckHistoryList.innerHTML = '<div class="precheck-history-empty"><strong>사전검토 신청내역이 없습니다.</strong><p>사업지 사전검토가 필요한 경우 신청서를 작성해 주세요.</p><a href="/precheck/apply/">사전검토 신청하기</a></div>';
+      precheckHistoryList.hidden = false;
+      precheckHistoryMessage.hidden = true;
+      return;
+    }
+
+    precheckHistoryList.innerHTML = requests.map(function (item) {
+      const resultButton = item.resultAvailable
+        ? '<a class="precheck-result-button available" href="/precheck/result/?id=' + encodeURIComponent(item.id) + '">결과확인</a>'
+        : '<span class="precheck-result-button disabled" aria-disabled="true">' + pendingResultLabel(item.status) + '</span>';
+
+      return '<article class="precheck-history-item">' +
+        '<div class="precheck-history-main">' +
+          '<div class="precheck-history-top">' +
+            '<strong class="precheck-request-no">' + escapeHtml(item.requestNo || '-') + '</strong>' +
+            '<span class="precheck-status ' + escapeHtml(item.status || 'received') + '">' + escapeHtml(precheckStatusLabel(item.status)) + '</span>' +
+          '</div>' +
+          '<p class="precheck-site-address">' + escapeHtml(item.siteAddress || '설치주소 미등록') + '</p>' +
+          '<div class="precheck-history-meta">' +
+            '<span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span>' +
+            '<span>사업지 ' + escapeHtml(precheckSiteTypeLabel(item.siteType)) + '</span>' +
+            (item.resultAvailable ? '<span>결과 ' + escapeHtml(possibilityLabel(item.installationPossible)) + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="precheck-history-action">' + resultButton + '</div>' +
+      '</article>';
+    }).join('');
+
+    precheckHistoryList.hidden = false;
+    precheckHistoryMessage.hidden = true;
+  }
+
+  function precheckStatusLabel(value) {
+    return ({
+      received: '접수',
+      reviewing: '검토중',
+      supplement_required: '보완요청',
+      completed: '검토완료'
+    })[value] || value || '-';
+  }
+
+  function pendingResultLabel(status) {
+    if (status === 'completed') return '공개 준비중';
+    if (status === 'supplement_required') return '보완 필요';
+    if (status === 'reviewing') return '검토중';
+    return '접수완료';
+  }
+
+  function precheckSiteTypeLabel(value) {
+    return ({ land: '토지', building: '건물', mixed: '복합(토지+건물)' })[value] || value || '-';
+  }
+
+  function possibilityLabel(value) {
+    return ({ possible: '진행 가능', conditional: '조건부 가능', not_possible: '진행 어려움', undetermined: '판정 전' })[value] || value || '-';
+  }
+
+  function formatPrecheckDate(value) {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    }).format(date);
   }
 
   function openEdit() {

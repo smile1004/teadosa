@@ -148,6 +148,10 @@
     return request('/api/precheck/result' + query, { method: 'GET' });
   }
 
+  async function getMyPrecheckRequests() {
+    return request('/api/precheck/my-requests', { method: 'GET' });
+  }
+
   async function createPrecheckRequest(payload) {
     return request('/api/precheck/create', { method: 'POST', body: payload });
   }
@@ -178,6 +182,7 @@
     getAdminPrecheckDetail: getAdminPrecheckDetail,
     saveAdminPrecheckReview: saveAdminPrecheckReview,
     getPrecheckResult: getPrecheckResult,
+    getMyPrecheckRequests: getMyPrecheckRequests,
     createPrecheckRequest: createPrecheckRequest,
     checkDuplicate: checkDuplicate
   });
