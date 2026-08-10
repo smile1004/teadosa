@@ -1375,3 +1375,17 @@ main{
   .pc-address-row{grid-template-columns:1fr}
   .pc-address-button{width:100%}
 }
+
+
+/* ===== Login / signup application notice ===== */
+.pc-login-notice{
+  margin:12px 0 0;
+  color:#69766b;
+  font-size:12.5px;
+  line-height:1.6;
+  text-align:center;
+}
+.pc-login-notice strong{
+  color:var(--start-green);
+  font-weight:800;
+}

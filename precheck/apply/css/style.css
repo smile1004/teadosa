@@ -1066,3 +1066,21 @@ body.taedo-has-fixed-header main{
 .btn-address-search:focus-visible{outline:3px solid rgba(31,122,69,.18);outline-offset:2px}
 .textarea-meta{justify-content:flex-end}
 @media(max-width:640px){.address-search-row{flex-direction:column}.btn-address-search{min-height:46px;width:100%}}
+
+
+/* ===== Login / signup application notice ===== */
+.precheck-login-guide{
+  margin:14px 0 0;
+  padding:12px 14px;
+  border:1px solid #dce8d6;
+  border-radius:11px;
+  background:#f6faf3;
+  color:#637161;
+  font-size:13px;
+  line-height:1.65;
+  text-align:center;
+}
+.precheck-login-guide strong{
+  color:#3f733b;
+  font-weight:800;
+}
