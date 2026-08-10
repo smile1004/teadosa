@@ -1084,3 +1084,21 @@ body.taedo-has-fixed-header main{
   color:#3f733b;
   font-weight:800;
 }
+
+
+/* ===== Top login notice ===== */
+.precheck-top-login-notice{
+  margin:0 0 20px;
+  padding:13px 15px;
+  border:1px solid #dbe8d5;
+  border-radius:12px;
+  background:#f6faf3;
+  color:#5f6f62;
+  font-size:13px;
+  line-height:1.6;
+  text-align:center;
+}
+.precheck-top-login-notice strong{
+  color:#3f733b;
+  font-weight:800;
+}

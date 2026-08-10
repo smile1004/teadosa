@@ -1389,3 +1389,21 @@ main{
   color:var(--start-green);
   font-weight:800;
 }
+
+
+/* ===== Top login notice ===== */
+.pc-top-login-notice{
+  margin:0 0 18px;
+  padding:13px 15px;
+  border:1px solid #dbe8d5;
+  border-radius:12px;
+  background:#f6faf3;
+  color:#5f6f62;
+  font-size:13px;
+  line-height:1.6;
+  text-align:center;
+}
+.pc-top-login-notice strong{
+  color:var(--start-green);
+  font-weight:800;
+}
