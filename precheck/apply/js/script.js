@@ -13,15 +13,20 @@
   init();
 
   async function init() {
-    setSubmitting(true, '회원정보 확인 중...');
+    // 신청서 화면은 비회원도 열 수 있습니다.
+    // 로그인 상태인 경우에만 회원정보를 조회해 이름/연락처를 자동 입력합니다.
+    setSubmitting(false);
 
     try {
-      const member = await auth.requireAuth({
-        loginPath: '/login/',
-        nextPath: '/precheck/apply/'
-      });
+      const outcome = await auth.getSession({ force: true });
+      const member = outcome && outcome.response && outcome.response.ok
+        ? (outcome.result && outcome.result.member)
+        : null;
 
-      if (!member) return;
+      if (!member) {
+        clearMessage();
+        return;
+      }
 
       if (nameInput && !nameInput.value) {
         nameInput.value = member.name || '';
@@ -32,10 +37,9 @@
         phoneInput.defaultValue = phoneInput.value;
       }
       clearMessage();
-      setSubmitting(false);
     } catch (error) {
-      showMessage(error.message || '회원정보를 확인하지 못했습니다.', 'error');
-      setSubmitting(false);
+      // 세션 확인 실패가 신청서 열람을 막아서는 안 됩니다.
+      clearMessage();
     }
   }
 

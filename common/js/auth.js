@@ -119,6 +119,19 @@
     });
   }
 
+
+  async function getAdminPrecheckRequests(params) {
+    const query = new URLSearchParams(params || {});
+    return request('/api/admin/precheck?' + query.toString(), { method: 'GET' });
+  }
+
+  async function updateAdminPrecheckStatus(requestId, status) {
+    return request('/api/admin/precheck/' + encodeURIComponent(requestId) + '/status', {
+      method: 'PUT',
+      body: { status: status }
+    });
+  }
+
   async function createPrecheckRequest(payload) {
     return request('/api/precheck/create', { method: 'POST', body: payload });
   }
@@ -144,6 +157,8 @@
     getAdminMembers: getAdminMembers,
     getAdminMember: getAdminMember,
     updateMemberApproval: updateMemberApproval,
+    getAdminPrecheckRequests: getAdminPrecheckRequests,
+    updateAdminPrecheckStatus: updateAdminPrecheckStatus,
     createPrecheckRequest: createPrecheckRequest,
     checkDuplicate: checkDuplicate
   });
