@@ -175,6 +175,17 @@
   const addressButton = document.getElementById('quickAddressSearch');
   const addressInput = document.getElementById('quick-address');
   const phoneInput = document.getElementById('quick-phone');
+  const nameInput = document.getElementById('quick-name');
+  let loginNoticeShown = false;
+
+  if (nameInput) {
+    nameInput.addEventListener('focus', function(){
+      if (loginNoticeShown) return;
+      loginNoticeShown = true;
+      window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+    });
+  }
+
 
   if (phoneInput) {
     phoneInput.addEventListener('input', function(){

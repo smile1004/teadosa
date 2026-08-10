@@ -3,6 +3,9 @@
 
   const auth = window.TaeDoSAAuth;
   const form = document.getElementById('preCheckForm');
+  const loginNoticeNameInput = document.getElementById('name');
+  let loginNoticeShown = false;
+
   const submitButton = form ? form.querySelector('.btn-submit') : null;
   const formMessage = document.getElementById('formMessage');
   const nameInput = document.getElementById('name');
@@ -14,6 +17,16 @@
   if (!auth || !form) return;
 
   updateMemoCount();
+
+  if (loginNoticeNameInput) {
+    loginNoticeNameInput.addEventListener('focus', function () {
+      if (loginNoticeShown) return;
+      loginNoticeShown = true;
+      window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+    });
+  }
+
+
   init();
 
   async function init() {
