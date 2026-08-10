@@ -17,6 +17,7 @@
       precheckService: 'precheck/service/index.html',
       start: 'start/index.html',
       services: 'start/index.html#services',
+      generationLicense: 'start/license/index.html',
       enterprise: 'index.html#enterprise-services',
       materials: 'index.html#materials',
       plantListings: 'index.html#plant-listings',
