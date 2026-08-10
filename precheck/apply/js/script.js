@@ -3,6 +3,7 @@
 
   const auth = window.TaeDoSAAuth;
   const form = document.getElementById('preCheckForm');
+  const precheckLoginNotice = document.getElementById('precheck-login-notice');
 
   const submitButton = form ? form.querySelector('.btn-submit') : null;
   const formMessage = document.getElementById('formMessage');
@@ -35,8 +36,14 @@
           outcome.result.authenticated &&
           outcome.result.member
         );
+        if (precheckLoginNotice) {
+          precheckLoginNotice.hidden = applicationAuthState.authenticated;
+        }
       } catch (error) {
         applicationAuthState.authenticated = false;
+        if (precheckLoginNotice) {
+          precheckLoginNotice.hidden = false;
+        }
       } finally {
         applicationAuthState.checked = true;
         applicationAuthState.checking = null;
