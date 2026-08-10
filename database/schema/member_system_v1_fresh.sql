@@ -82,6 +82,9 @@ CREATE TABLE IF NOT EXISTS precheck_requests (
 
   request_note TEXT,
 
+  form_version TEXT,
+  form_data TEXT,
+
   status TEXT NOT NULL DEFAULT 'received'
     CHECK (
       status IN (
@@ -108,6 +111,9 @@ ON precheck_requests(status);
 
 CREATE INDEX IF NOT EXISTS idx_precheck_requests_submitted_at
 ON precheck_requests(submitted_at);
+
+CREATE INDEX IF NOT EXISTS idx_precheck_requests_form_version
+ON precheck_requests(form_version);
 
 CREATE TABLE IF NOT EXISTS precheck_reviews (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

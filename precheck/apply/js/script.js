@@ -7,14 +7,16 @@
   const formMessage = document.getElementById('formMessage');
   const nameInput = document.getElementById('name');
   const phoneInput = document.getElementById('phone');
+  const emailInput = document.getElementById('email');
+  const memoInput = document.getElementById('memo');
+  const memoCount = document.getElementById('memoCount');
 
   if (!auth || !form) return;
 
+  updateMemoCount();
   init();
 
   async function init() {
-    // 신청서 화면은 비회원도 열 수 있습니다.
-    // 로그인 상태인 경우에만 회원정보를 조회해 이름/연락처를 자동 입력합니다.
     setSubmitting(false);
 
     try {
@@ -28,17 +30,11 @@
         return;
       }
 
-      if (nameInput && !nameInput.value) {
-        nameInput.value = member.name || '';
-        nameInput.defaultValue = nameInput.value;
-      }
-      if (phoneInput && !phoneInput.value) {
-        phoneInput.value = formatPhone(member.phone || '');
-        phoneInput.defaultValue = phoneInput.value;
-      }
+      setDefaultValue(nameInput, member.name || '');
+      setDefaultValue(phoneInput, formatPhone(member.phone || ''));
+      setDefaultValue(emailInput, member.email || '');
       clearMessage();
     } catch (error) {
-      // 세션 확인 실패가 신청서 열람을 막아서는 안 됩니다.
       clearMessage();
     }
   }
@@ -50,11 +46,18 @@
     if (!form.reportValidity()) return;
 
     const payload = {
+      formVersion: 'PRECHECK_V2',
       name: valueOf('name'),
       phone: valueOf('phone'),
+      email: valueOf('email'),
       address: valueOf('address'),
       siteType: radioValue('siteType'),
       purpose: radioValue('purpose'),
+      plannedCapacity: numberValue('plannedCapacity'),
+      siteArea: numberValue('siteArea'),
+      landCategory: valueOf('landCategory'),
+      zoningArea: valueOf('zoningArea'),
+      ownership: radioValue('ownership'),
       memo: valueOf('memo')
     };
 
@@ -75,7 +78,7 @@
           next: '/precheck/apply/',
           reason: result.code === 'SESSION_EXPIRED' ? 'session-expired' : 'login-required'
         });
-        window.location.replace('/login/?' + params.toString());
+        window.location.assign('/login/?' + params.toString());
         return;
       }
 
@@ -90,9 +93,15 @@
         status: result.request.status,
         name: result.request.applicantName,
         phone: formatPhone(result.request.phone),
+        email: result.request.email || payload.email,
         address: result.request.siteAddress,
         siteType: displaySiteType(result.request.siteType),
         purpose: displayPurpose(result.request.purpose),
+        plannedCapacity: result.request.plannedCapacity,
+        siteArea: result.request.siteArea,
+        landCategory: result.request.landCategory || payload.landCategory,
+        zoningArea: result.request.zoningArea || payload.zoningArea,
+        ownership: result.request.ownership || payload.ownership,
         memo: result.request.requestNote || '입력 내용 없음',
         submittedAt: result.request.submittedAt
       };
@@ -112,6 +121,7 @@
 
   form.addEventListener('reset', function () {
     window.setTimeout(function () {
+          updateMemoCount();
       clearMessage();
     }, 0);
   });
@@ -122,12 +132,17 @@
     });
   }
 
+  if (memoInput) memoInput.addEventListener('input', updateMemoCount);
+
   function validate(payload) {
     if (!payload.name) return '이름을 입력해 주세요.';
     if (!/^\d{9,11}$/.test(digits(payload.phone))) return '연락처를 정확하게 입력해 주세요.';
+    if (payload.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) return '이메일 형식을 확인해 주세요.';
     if (!payload.address) return '설치주소를 입력해 주세요.';
     if (!payload.siteType) return '사업지 유형을 선택해 주세요.';
     if (!payload.purpose) return '용도를 선택해 주세요.';
+    if (payload.plannedCapacity !== null && payload.plannedCapacity < 0) return '설치 예정 용량을 확인해 주세요.';
+    if (payload.siteArea !== null && payload.siteArea < 0) return '부지면적을 확인해 주세요.';
     if (payload.memo.length > 2000) return '추가 요청사항은 2,000자 이내로 입력해 주세요.';
     return '';
   }
@@ -135,6 +150,13 @@
   function valueOf(id) {
     const element = document.getElementById(id);
     return element ? element.value.trim() : '';
+  }
+
+  function numberValue(id) {
+    const text = valueOf(id);
+    if (text === '') return null;
+    const number = Number(text);
+    return Number.isFinite(number) ? number : null;
   }
 
   function radioValue(name) {
@@ -155,17 +177,30 @@
   }
 
   function displaySiteType(value) {
-    return value === 'land' ? '토지' : value === 'building' ? '건물' : value;
+    const map = { land: '토지', building: '건물', mixed: '복합(토지+건물)' };
+    return map[value] || value;
   }
 
   function displayPurpose(value) {
-    return value === 'self_consumption' ? '자가소비' : value === 'power_business' ? '발전사업' : value;
+    const map = { self_consumption: '자가소비', power_business: '발전사업(매전)', undecided: '미정 · 상담희망' };
+    return map[value] || value;
+  }
+
+  function setDefaultValue(input, value) {
+    if (!input || input.value || !value) return;
+    input.value = value;
+    input.defaultValue = value;
+  }
+
+  function updateMemoCount() {
+    if (!memoInput || !memoCount) return;
+    memoCount.textContent = memoInput.value.length.toLocaleString('ko-KR') + ' / 2,000';
   }
 
   function setSubmitting(active, label) {
     if (!submitButton) return;
     submitButton.disabled = active;
-    submitButton.textContent = active ? (label || '처리 중...') : '신청하기';
+    submitButton.textContent = active ? (label || '처리 중...') : '사전검토 신청하기';
   }
 
   function showMessage(message, type) {

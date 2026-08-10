@@ -1,86 +1,184 @@
 <!DOCTYPE html>
-
 <html lang="ko">
 <head>
 <base href="../../">
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>무료 사전 검토 신청</title>
-<link href="common/css/service-steps.css" rel="stylesheet"><link href="common/css/shared-layout.css" rel="stylesheet">
+<title>무료 사전검토 신청 | 태양광도사</title>
+<meta content="태양광 설치 및 발전사업 사전검토 신청서입니다." name="description">
+<link href="common/css/service-steps.css" rel="stylesheet">
+<link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
 <link href="common/css/common.css" rel="stylesheet">
-<link href="precheck/apply/css/style.css" rel="stylesheet"></head>
-<body class="">
+<link href="precheck/apply/css/style.css" rel="stylesheet">
+
+
+</head>
+<body>
 <script src="common/js/site-config.js"></script>
 <script src="common/js/api.js?v=2.0"></script>
 <script src="common/js/auth.js?v=2.1"></script>
-<script src="common/js/components/header.js?v=2.1"></script><main class="step-unified-shell"><section class="service-step-hero">
-<div class="service-step-label">STEP 01</div>
-<h1>사전검토 신청서</h1>
-<p>태양광 설치 가능 여부 확인을 위해 기본 정보를 입력해 주세요.</p>
-</section><div class="step-unified-content"><div class="wrap">
-<section class="card">
-<div class="form-head">
-<h2>신청 정보 입력</h2>
-<p>입력하신 정보를 기준으로 설치 가능 여부 검토에 필요한 기본 확인이 진행됩니다.</p>
-</div>
-<form id="preCheckForm">
-<div class="grid">
-<div class="field">
-<label for="name">이름 <span class="required">*</span></label>
-<input id="name" name="name" placeholder="이름을 입력해 주세요" required="" type="text">
-</div>
-<div class="field">
-<label for="phone">연락처 <span class="required">*</span></label>
-<input id="phone" name="phone" placeholder="010-0000-0000" required="" type="tel">
-</div>
-<div class="field full">
-<label for="address">설치주소 <span class="required">*</span></label>
-<input id="address" name="address" placeholder="태양광 설치를 검토할 주소를 입력해 주세요" required="" type="text">
-</div>
-<div class="field">
-<label>사업지 유형 <span class="required">*</span></label>
-<div class="choice-row">
-<label class="choice">
-<input name="siteType" required="" type="radio" value="토지">
-<span>토지</span>
-</label>
-<label class="choice">
-<input name="siteType" type="radio" value="건물">
-<span>건물</span>
-</label>
-</div>
-</div>
-<div class="field">
-<label>용도 <span class="required">*</span></label>
-<div class="choice-row">
-<label class="choice">
-<input name="purpose" required="" type="radio" value="자가소비">
-<span>자가소비</span>
-</label>
-<label class="choice">
-<input name="purpose" type="radio" value="발전사업">
-<span>발전사업</span>
-</label>
-</div>
-</div>
-<div class="field full">
-<label for="memo">추가 요청사항</label>
-<textarea id="memo" name="memo" maxlength="2000" placeholder="검토에 참고할 내용이 있다면 입력해 주세요"></textarea>
-</div>
-</div>
-<div class="guide">
-            신청 내용은 사전 확인용으로 활용되며, 실제 설치 가능 여부는 현장 여건·건축물 상태·한전 계통 여건 등에 따라 달라질 수 있습니다.
-          </div>
-<p id="formMessage" class="form-message" role="status" aria-live="polite" hidden></p>
-<div class="form-buttons">
-<button class="btn-submit" type="submit">신청하기</button>
-<button class="btn-reset" type="reset">초기화</button>
-</div>
-</form>
-</section>
+<script src="common/js/components/header.js?v=2.1"></script>
 
-</div></div></main>
+<main class="step-unified-shell">
+  <section class="service-step-hero">
+    <div class="service-step-label">STEP 01</div>
+    <h1>사전검토 신청서</h1>
+    <p>태양광 설치 가능 여부 확인을 위해 기본 정보를 입력해 주세요.</p>
+  </section>
+
+  <div class="step-unified-content">
+    <div class="wrap precheck-apply-wrap">
+      <section class="card precheck-form-card">
+        <form id="preCheckForm">
+          <section class="form-section" aria-labelledby="sectionApplicant">
+            <div class="section-title-row">
+              <span class="section-number">01</span>
+              <div>
+                <h3 id="sectionApplicant">신청인 기본정보</h3>
+                <p>신청 확인 및 검토결과 안내에 필요한 정보입니다.</p>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="field">
+                <label for="name">이름 <span class="required">*</span></label>
+                <input id="name" name="name" placeholder="이름을 입력해 주세요" required type="text" maxlength="50" autocomplete="name">
+              </div>
+              <div class="field">
+                <label for="phone">연락처 <span class="required">*</span></label>
+                <input id="phone" name="phone" placeholder="010-0000-0000" required type="tel" maxlength="13" autocomplete="tel">
+              </div>
+              <div class="field">
+                <label for="email">이메일</label>
+                <input id="email" name="email" placeholder="example@email.com" type="email" maxlength="254" autocomplete="email">
+              </div>
+              <div class="field full">
+                <label for="address">설치주소 <span class="required">*</span></label>
+                <div class="address-search-row">
+                  <input id="address" name="address" placeholder="주소검색 버튼을 눌러 설치주소를 입력해 주세요" required type="text" maxlength="250" autocomplete="street-address">
+                  <button class="btn-address-search" id="addressSearchButton" type="button">주소검색</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="sectionSite">
+            <div class="section-title-row">
+              <span class="section-number">02</span>
+              <div>
+                <h3 id="sectionSite">사업지 개요</h3>
+              </div>
+            </div>
+
+            <div class="grid">
+              <div class="field full">
+                <label>사업지 유형 <span class="required">*</span></label>
+                <div class="choice-row choice-row-3">
+                  <label class="choice"><input name="siteType" required type="radio" value="토지"><span>토지</span></label>
+                  <label class="choice"><input name="siteType" type="radio" value="건물"><span>건물</span></label>
+                  <label class="choice"><input name="siteType" type="radio" value="복합(토지+건물)"><span>복합(토지+건물)</span></label>
+                </div>
+              </div>
+
+              <div class="field full">
+                <label>용도 <span class="required">*</span></label>
+                <div class="choice-row choice-row-3">
+                  <label class="choice"><input name="purpose" required type="radio" value="자가소비"><span>자가소비</span></label>
+                  <label class="choice"><input name="purpose" type="radio" value="발전사업"><span>발전사업(매전)</span></label>
+                  <label class="choice"><input name="purpose" type="radio" value="미정"><span>미정 · 상담희망</span></label>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="plannedCapacity">설치 예정 용량</label>
+                <div class="input-with-unit">
+                  <input id="plannedCapacity" name="plannedCapacity" inputmode="decimal" min="0" step="0.1" placeholder="예: 100" type="number">
+                  <span>kW</span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="siteArea">부지면적</label>
+                <div class="input-with-unit">
+                  <input id="siteArea" name="siteArea" inputmode="decimal" min="0" step="0.01" placeholder="예: 1500" type="number">
+                  <span>㎡</span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="landCategory">지목</label>
+                <input id="landCategory" name="landCategory" placeholder="예: 전, 답, 대, 공장용지" type="text" maxlength="50">
+              </div>
+              <div class="field">
+                <label for="zoningArea">용도지역</label>
+                <input id="zoningArea" name="zoningArea" placeholder="예: 계획관리지역" type="text" maxlength="100">
+              </div>
+
+              <div class="field full">
+                <label>소유관계</label>
+                <div class="choice-row choice-row-4">
+                  <label class="choice"><input name="ownership" type="radio" value="본인 소유"><span>본인 소유</span></label>
+                  <label class="choice"><input name="ownership" type="radio" value="임차(임대인 동의 확보)"><span>임차(임대인 동의 확보)</span></label>
+                  <label class="choice"><input name="ownership" type="radio" value="사용동의 확보 예정"><span>사용동의 확보 예정</span></label>
+                  <label class="choice"><input name="ownership" type="radio" value="기타"><span>기타</span></label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="sectionRequest">
+            <div class="section-title-row">
+              <span class="section-number">03</span>
+              <div>
+                <h3 id="sectionRequest">추가 요청사항</h3>
+                <p>검토 시 참고가 필요한 내용이나 궁금한 점을 자유롭게 작성해 주세요.</p>
+              </div>
+            </div>
+            <div class="field full">
+              <label for="memo">추가 요청사항</label>
+              <textarea id="memo" name="memo" maxlength="2000" placeholder="예: 검토에 참고할 내용이 있다면 입력해 주세요. (예: 인접 부지 발전소 유무, 희망 일정, 기존 전기시설 유무 등)"></textarea>
+              <div class="textarea-meta"><span id="memoCount">0 / 2,000</span></div>
+            </div>
+          </section>
+
+          <div class="guide">
+            <strong>안내사항</strong>
+            <span>*신청 내용은 사전 확인용으로 활용되며, 실제 설치 가능 여부는 현장 여건·건축물 상태·한전 계통연계 여건 등에 따라 달라질 수 있습니다.</span>
+          </div>
+
+          <p id="formMessage" class="form-message" role="status" aria-live="polite" hidden></p>
+          <div class="form-buttons">
+            <button class="btn-submit" type="submit">사전검토 신청하기</button>
+            <button class="btn-reset" type="reset">초기화</button>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</main>
+
 <script src="common/js/components/footer.js"></script>
-<script src="precheck/apply/js/script.js?v=2.1"></script></body>
+<script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+(function(){
+  const button = document.getElementById('addressSearchButton');
+  const addressInput = document.getElementById('address');
+  if (!button || !addressInput) return;
+  button.addEventListener('click', function(){
+    if (!window.daum || !window.daum.Postcode) {
+      alert('주소검색 서비스를 불러오지 못했습니다. 인터넷 연결 상태를 확인해 주세요.');
+      return;
+    }
+    new window.daum.Postcode({
+      oncomplete: function(data){
+        const selectedAddress = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+        addressInput.value = selectedAddress || data.address || '';
+        addressInput.focus();
+        addressInput.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }).open();
+  });
+})();
+</script>
+<script src="precheck/apply/js/script.js?v=2.2"></script>
+</body>
 </html>
