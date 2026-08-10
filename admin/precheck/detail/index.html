@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>사전검토 신청 상세 | 태양광도사 관리자</title>
-  <link href="admin/css/style.css?v=2.5" rel="stylesheet">
+  <link href="admin/css/style.css?v=2.6" rel="stylesheet">
 </head>
 <body class="admin-body">
   <div class="admin-app">
@@ -119,6 +119,7 @@
               <label class="review-field full"><span>고객 안내사항 <small class="auto-label">자동 입력</small></span><textarea id="customer-notice" rows="10" maxlength="5000"></textarea></label>
               <label class="review-field full internal"><span>관리자 내부 메모</span><textarea id="internal-memo" rows="4" maxlength="5000" placeholder="회원에게 공개되지 않는 내부 메모입니다."></textarea></label>
 
+              <p id="review-action-message" class="review-action-message" role="status" hidden></p>
               <div class="review-actions">
                 <button id="save-review" class="admin-button secondary" type="button">임시저장</button>
                 <button id="publish-review" class="admin-button primary" type="button">검토완료 · 회원에게 공개</button>
@@ -133,6 +134,6 @@
   <script src="common/js/api.js?v=2.4"></script>
   <script src="common/js/auth.js?v=2.4"></script>
   <script src="common/js/admin-layout.js?v=2.4"></script>
-  <script src="common/js/admin-precheck-detail.js?v=2.5"></script>
+  <script src="common/js/admin-precheck-detail.js?v=2.6"></script>
 </body>
 </html>

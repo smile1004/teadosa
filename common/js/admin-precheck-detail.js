@@ -26,6 +26,7 @@
 
   function mapElements() {
     el.message = document.getElementById('detail-message');
+    el.actionMessage = document.getElementById('review-action-message');
     el.basic = document.getElementById('request-basic-info');
     el.formData = document.getElementById('request-form-data');
     el.requestStatus = document.getElementById('request-status-badge');
@@ -179,16 +180,16 @@
     };
 
     if (publish && payload.installationPossible === 'undetermined') {
-      showMessage('회원 공개 전 종합 판정을 선택해 주세요.', true);
+      showActionMessage('회원 공개 전 종합 판정을 선택해 주세요.', true);
       return;
     }
     if (publish && !payload.overallOpinion) {
-      showMessage('회원 공개 전 종합 의견을 입력해 주세요.', true);
+      showActionMessage('회원 공개 전 종합 의견을 입력해 주세요.', true);
       return;
     }
 
     setBusy(true);
-    showMessage(publish ? '검토결과를 저장하고 공개하고 있습니다.' : '검토결과를 저장하고 있습니다.');
+    showActionMessage(publish ? '검토결과를 저장하고 회원에게 공개하고 있습니다.' : '검토결과를 임시 저장하고 있습니다.');
 
     try {
       const outcome = await auth.saveAdminPrecheckReview(state.requestId, payload);
@@ -202,9 +203,17 @@
       if (state.request && result.request) state.request.status = result.request.status;
       renderRequest();
       renderReview();
-      showMessage(result.message || '저장되었습니다.');
+
+      if (publish) {
+        showActionMessage(result.message || '검토결과가 회원에게 공개되었습니다.');
+        window.setTimeout(function () {
+          window.location.href = '/admin/precheck/';
+        }, 900);
+      } else {
+        showActionMessage(result.message || '검토결과가 임시 저장되었습니다.');
+      }
     } catch (error) {
-      showMessage(error.message || '검토결과를 저장하지 못했습니다.', true);
+      showActionMessage(error.message || '검토결과를 저장하지 못했습니다.', true);
     } finally {
       setBusy(false);
     }
@@ -214,6 +223,16 @@
     [el.save, el.publish].forEach(function (node) {
       if (node) node.disabled = active;
     });
+  }
+
+  function showActionMessage(message, error) {
+    if (!el.actionMessage) return;
+    el.actionMessage.textContent = message || '';
+    el.actionMessage.hidden = !message;
+    el.actionMessage.classList.toggle('error', Boolean(error));
+    if (message) {
+      el.actionMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
   }
 
   function showMessage(message, error) {
