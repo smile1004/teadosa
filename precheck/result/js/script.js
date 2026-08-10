@@ -46,9 +46,15 @@
 
   function render(request, review) {
     setText('summary-possibility', possibilityLabel(review.installationPossible));
+    const serviceButton = document.getElementById('available-service-button');
+    if (serviceButton) {
+      serviceButton.onclick = function () {
+        const query = request && request.id ? ('?id=' + encodeURIComponent(request.id)) : '';
+        window.location.href = '/precheck/service/' + query;
+      };
+    }
     setText('summary-request-no', request.requestNo || '-');
     setText('summary-published-at', formatDate(review.publishedAt));
-    setText('result-version', review.resultVersion || '');
 
     const data = request.formData || {};
     const rows = [
@@ -75,7 +81,9 @@
             '<h3>' + escapeHtml(item.title || '검토 항목') + '</h3>' +
             '<span class="result-status status-' + escapeHtml(item.status || 'info') + '">' + escapeHtml(itemStatusLabel(item.status)) + '</span>' +
           '</div>' +
-          '<div class="result-item-content">' + escapeHtml(item.content || '-').replace(/\n/g, '<br>') + '</div>' +
+          '<div class="result-item-content' + (!item.content ? ' is-empty' : '') + '">' +
+            (item.content ? escapeHtml(item.content).replace(/\n/g, '<br>') : '세부 내용은 추가 확인이 필요합니다.') +
+          '</div>' +
         '</article>';
       }).join('');
     }

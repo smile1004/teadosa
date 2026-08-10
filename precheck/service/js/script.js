@@ -1,19 +1,139 @@
+(function (window, document) {
+  'use strict';
 
-const data={
-  land:{label:'토지형',total:'7,600,000원 ~ 9,800,000원',services:[
-    ['발전사업허가','500,000 ~ 800,000원',''],['개발행위허가','4,000,000 ~ 5,000,000원','토목설계 포함'],['사업자등록증 신청','150,000 ~ 200,000원','세무서 신고'],['한전 PPA 접수','300,000 ~ 500,000원',''],['공사계획신고','1,500,000 ~ 1,700,000원','전기감리 포함'],['사용전검사 신청','200,000 ~ 300,000원','한국전기안전공사'],['사업개시신고','150,000 ~ 200,000원','발전사업 개시 신고'],['에너지관리공단 설비신청','300,000 ~ 400,000원','RPS 설비확인 신청'],['장기계약 신청','500,000 ~ 700,000원','20년 고정가격계약 입찰 대행']
-  ],packages:[['BASIC 기본형','A-1, A-2, A-3','4,185,000 ~ 5,400,000원'],['STANDARD 완료형','A-1, A-2, A-3, A-4, A-5, A-6','5,984,000 ~ 7,656,000원'],['PREMIUM 프리미엄형','A-1, A-2, A-3, A-4, A-5, A-6, A-7, A-8, A-9','6,460,000 ~ 8,330,000원']]},
-  building:{label:'건물형',total:'8,100,000원 ~ 10,800,000원',services:[
-    ['발전사업허가','500,000 ~ 800,000원',''],['개발행위허가','1,500,000 ~ 2,000,000원','건축물 상부, 도면 있는 경우'],['개발행위허가','3,000,000 ~ 4,000,000원','건축물 상부, 도면 없는 경우 / 실측 포함'],['사업자등록증 신청','150,000 ~ 200,000원','세무서 신고'],['한전 PPA 접수','300,000 ~ 500,000원',''],['공사계획신고','1,500,000 ~ 1,700,000원','전기감리 포함'],['사용전검사 신청','200,000 ~ 300,000원','한국전기안전공사'],['사업개시신고','150,000 ~ 200,000원','발전사업 개시 신고'],['에너지관리공단 설비신청','300,000 ~ 400,000원','RPS 설비확인 신청'],['장기계약 신청','500,000 ~ 700,000원','20년 고정가격계약 입찰 대행']
-  ],packages:[['BASIC 기본형','A-1, A-2, A-3, A-4','4,635,000 ~ 6,300,000원'],['STANDARD 완료형','A-1, A-2, A-3, A-4, A-5, A-6, A-7','6,424,000 ~ 8,536,000원'],['PREMIUM 프리미엄형','A-1, A-2, A-3, A-4, A-5, A-6, A-7, A-8, A-9','6,885,000 ~ 9,180,000원']]}
-};
-function render(type){
-  document.getElementById('summaryType').textContent=data[type].label;
-  document.getElementById('totalPrice').textContent=data[type].total;
-  document.getElementById('serviceList').innerHTML=data[type].services.map((s,i)=>`<article class="service-card"><div class="service-title"><span class="check">✓</span><div><span class="service-code">A-${i+1}</span>${s[0]}${s[2]?`<span class="sub">${s[2]}</span>`:''}</div></div><div class="price">${s[1]}</div><button class="apply-btn" onclick="showToast('A-${i+1} ${s[0]} 신청으로 연결됩니다.')">신청하기</button></article>`).join('');
-  document.getElementById('packageTable').innerHTML=`<thead><tr><th>${data[type].label} 패키지</th><th>항목</th><th>가격</th></tr></thead><tbody>${data[type].packages.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td><td><div class="package-price-cell"><span>${p[2]}</span><button class="package-apply-btn" onclick="showToast('${p[0]} 패키지 신청으로 연결됩니다.')">신청하기</button></div></td></tr>`).join('')}</tbody>`;
-}
-document.querySelectorAll('.type-btn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render(btn.dataset.type)}));
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
-render('land');
+  const auth = window.TaeDoSAAuth;
+  if (!auth) return;
 
+  const SERVICE_CATALOG = [
+    { code: 'POWER_PERMIT', name: '발전사업허가', desc: '발전사업 추진을 위한 허가 절차를 검토합니다.', href: '/start/' },
+    { code: 'DEVELOPMENT_PERMIT', name: '개발행위허가', desc: '사업지 여건과 지자체 기준에 따라 개발행위허가 필요 여부와 진행 범위를 확인합니다.', href: '/start/' },
+    { code: 'FIELD_INSPECTION', name: '현장실사', desc: '사업지와 건축물·주변환경을 현장에서 확인합니다.', href: '/precheck/' },
+    { code: 'STRUCTURE_REVIEW', name: '구조검토', desc: '건물형 또는 구조 검토가 필요한 경우 구조 안전성과 설치 조건을 확인합니다.', href: '/precheck/' },
+    { code: 'DESIGN', name: '태양광 도면설계', desc: '검토 결과와 현장 조건을 바탕으로 설계 업무를 진행합니다.', href: '/start/' }
+  ];
+
+  const message = document.getElementById('service-message');
+  const content = document.getElementById('service-content');
+
+  init();
+
+  async function init() {
+    try {
+      const member = await auth.requireAuth({ redirect: false });
+      if (!member) {
+        const params = new URLSearchParams({
+          next: window.location.pathname + window.location.search,
+          reason: 'login-required'
+        });
+        window.location.replace('/login/?' + params.toString());
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const requestId = params.get('id') || '';
+      const outcome = await auth.getPrecheckResult(requestId);
+      const result = outcome.result || {};
+
+      if (!outcome.response.ok || !result.success) {
+        throw new Error(result.message || '사전검토 결과를 불러오지 못했습니다.');
+      }
+
+      render(result.request, result.review);
+      showMessage('');
+      content.hidden = false;
+    } catch (error) {
+      showMessage(error.message || '가능서비스 정보를 불러오지 못했습니다.', true);
+    }
+  }
+
+  function render(request, review) {
+    const data = request.formData || {};
+    const siteType = data.siteType || request.siteType || '';
+    const possibility = review.installationPossible || 'undetermined';
+
+    setText('service-result', possibilityLabel(possibility));
+    setText('summaryType', siteTypeLabel(siteType));
+    setText('service-request-no', request.requestNo || '-');
+
+    const list = document.getElementById('serviceList');
+    const services = selectServices(siteType, possibility);
+
+    list.innerHTML = services.map(function (service) {
+      return '<article class="service-card dynamic-service-card">' +
+        '<div class="service-title"><span class="check">✓</span><div>' +
+          '<span class="service-code">' + escapeHtml(service.codeLabel) + '</span>' +
+          escapeHtml(service.name) +
+          '<span class="sub">' + escapeHtml(service.desc) + '</span>' +
+        '</div></div>' +
+        '<div class="service-state ' + escapeHtml(service.stateClass) + '">' + escapeHtml(service.stateLabel) + '</div>' +
+        '<a class="apply-btn" href="' + escapeHtml(service.href) + '">' + escapeHtml(service.actionLabel) + '</a>' +
+      '</article>';
+    }).join('');
+
+    const items = review.resultData?.items || [];
+    const ref = document.getElementById('reviewReference');
+    ref.innerHTML = items.map(function (item) {
+      return '<div class="review-reference-row"><strong>' + escapeHtml(item.title || '검토 항목') + '</strong><span>' +
+        escapeHtml(itemStatusLabel(item.status)) + '</span></div>';
+    }).join('') || '<p>등록된 세부 검토항목이 없습니다.</p>';
+
+    const back = document.getElementById('back-result-button');
+    back.onclick = function () {
+      window.location.href = '/precheck/result/?id=' + encodeURIComponent(request.id);
+    };
+  }
+
+  function selectServices(siteType, possibility) {
+    return SERVICE_CATALOG.filter(function (service) {
+      if (service.code === 'STRUCTURE_REVIEW' && siteType === 'land') return false;
+      return true;
+    }).map(function (service, index) {
+      let stateLabel = '상담 후 진행';
+      let stateClass = 'state-consult';
+      let actionLabel = '상담하기';
+
+      if (possibility === 'possible') {
+        stateLabel = '진행 검토 가능';
+        stateClass = 'state-available';
+        actionLabel = '서비스 확인';
+      } else if (possibility === 'conditional') {
+        stateLabel = '조건 확인 필요';
+        stateClass = 'state-conditional';
+      } else if (possibility === 'not_possible') {
+        stateLabel = '추가 검토 필요';
+        stateClass = 'state-hold';
+      }
+
+      return Object.assign({}, service, {
+        codeLabel: 'S-' + String(index + 1).padStart(2, '0'),
+        stateLabel: stateLabel,
+        stateClass: stateClass,
+        actionLabel: actionLabel
+      });
+    });
+  }
+
+  function showMessage(text, error) {
+    message.textContent = text || '';
+    message.hidden = !text;
+    message.classList.toggle('error', Boolean(error));
+  }
+  function setText(id, value) {
+    const node = document.getElementById(id);
+    if (node) node.textContent = value;
+  }
+  function possibilityLabel(value) {
+    return ({ undetermined: '판정 전', possible: '진행 가능', conditional: '조건부 가능', not_possible: '진행 어려움' })[value] || value || '-';
+  }
+  function siteTypeLabel(value) {
+    return ({ land: '토지', building: '건물', mixed: '복합(토지+건물)' })[value] || value || '-';
+  }
+  function itemStatusLabel(value) {
+    return ({ info: '검토', ok: '적합/가능', conditional: '조건부', hold: '추가확인', not_possible: '어려움' })[value] || '검토';
+  }
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, function (char) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char];
+    });
+  }
+})(window, document);

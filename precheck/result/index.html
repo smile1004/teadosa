@@ -9,7 +9,7 @@
   <link href="common/css/shared-layout.css" rel="stylesheet">
   <link href="common/css/shared-menu.css" rel="stylesheet">
   <link href="common/css/common.css" rel="stylesheet">
-  <link href="precheck/result/css/style.css?v=2.4" rel="stylesheet">
+  <link href="precheck/result/css/style.css?v=2.6" rel="stylesheet">
 </head>
 <body>
   <script src="common/js/site-config.js"></script>
@@ -41,7 +41,7 @@
           </section>
 
           <section class="card">
-            <div class="result-section-head"><h2>검토 결과</h2><span id="result-version" class="result-version"></span></div>
+            <div class="result-section-head"><h2>검토 결과</h2></div>
             <div id="result-items" class="result-items"></div>
           </section>
 
@@ -57,7 +57,7 @@
 
           <div class="btns">
             <button class="btn primary" type="button" onclick="window.print()">검토 결과 인쇄</button>
-            <button class="btn service" type="button" onclick="location.href='precheck/service/index.html'">가능서비스 확인</button>
+            <button id="available-service-button" class="btn service" type="button">가능서비스 확인</button>
           </div>
         </div>
       </main>
@@ -65,6 +65,6 @@
   </main>
 
   <script src="common/js/components/footer.js"></script>
-  <script src="precheck/result/js/script.js?v=2.4"></script>
+  <script src="precheck/result/js/script.js?v=2.5"></script>
 </body>
 </html>
