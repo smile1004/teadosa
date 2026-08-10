@@ -179,22 +179,3 @@ a{color:inherit;text-decoration:none}
   .service-step-hero h1{font-size:28px}
 }
 
-
-
-/* ===== Dynamic possible-services page ===== */
-.service-system-message{max-width:980px;margin:0 auto 16px;padding:14px 16px;border-radius:12px;background:#f5f8fa;color:#5e6875;font-size:14px}
-.service-system-message.error{background:#fff1f0;color:#a9342e}
-.dynamic-service-card{grid-template-columns:minmax(0,1fr) auto auto}
-.service-state{display:inline-flex;align-items:center;justify-content:center;min-width:100px;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
-.state-available{background:#e8f7ee;color:#198a4d}
-.state-conditional{background:#fff5df;color:#a86400}
-.state-consult{background:#edf4fb;color:#2f6190}
-.state-hold{background:#fff0ed;color:#b14a3d}
-.review-reference{display:grid;gap:10px;margin-top:14px}
-.review-reference-row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:13px 15px;border:1px solid #e5e7eb;border-radius:12px;background:#fafbfc}
-.review-reference-row strong{font-size:14px}
-.review-reference-row span{font-size:12px;color:#687384;font-weight:800}
-.service-bottom-actions{display:flex;justify-content:center;margin:20px 0 8px}
-.back-result-btn{border:1px solid #d7dee5;background:#fff;color:#314052;border-radius:10px;padding:11px 18px;font-weight:800;cursor:pointer}
-.back-result-btn:hover{background:#f7f9fb}
-@media(max-width:760px){.dynamic-service-card{grid-template-columns:1fr}.service-state{justify-self:start}.apply-btn{justify-self:start}}
