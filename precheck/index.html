@@ -175,16 +175,87 @@
   const addressButton = document.getElementById('quickAddressSearch');
   const addressInput = document.getElementById('quick-address');
   const phoneInput = document.getElementById('quick-phone');
-  const nameInput = document.getElementById('quick-name');
-  let loginNoticeShown = false;
+  const auth = window.TaeDoSAAuth;
+  let authState = { checked: false, authenticated: false, checking: null };
 
-  if (nameInput) {
-    nameInput.addEventListener('focus', function(){
-      if (loginNoticeShown) return;
-      loginNoticeShown = true;
-      window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
-    });
+  async function checkQuickFormAuth() {
+    if (authState.checked) return authState.authenticated;
+    if (authState.checking) return authState.checking;
+
+    authState.checking = (async function(){
+      try {
+        if (!auth || typeof auth.getSession !== 'function') {
+          authState.authenticated = false;
+        } else {
+          const outcome = await auth.getSession({ force: true });
+          authState.authenticated = Boolean(
+            outcome &&
+            outcome.response &&
+            outcome.response.ok &&
+            outcome.result &&
+            outcome.result.authenticated &&
+            outcome.result.member
+          );
+        }
+      } catch (error) {
+        authState.authenticated = false;
+      } finally {
+        authState.checked = true;
+        authState.checking = null;
+      }
+      return authState.authenticated;
+    })();
+
+    return authState.checking;
   }
+
+  async function blockQuickFormIfLoggedOut(event) {
+    const allowed = await checkQuickFormAuth();
+    if (allowed) return;
+
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+
+    const next = '/precheck/';
+    window.location.href = '/login/?next=' + encodeURIComponent(next) + '&reason=login-required';
+  }
+
+  if (form) {
+    form.addEventListener('pointerdown', async function(event){
+      const target = event.target.closest('input, select, textarea, button');
+      if (!target) return;
+
+      const allowed = await checkQuickFormAuth();
+      if (allowed) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+      window.location.href = '/login/?next=' + encodeURIComponent('/precheck/') + '&reason=login-required';
+    }, true);
+
+    form.addEventListener('keydown', async function(event){
+      if (!event.target.matches('input, select, textarea')) return;
+
+      const allowed = await checkQuickFormAuth();
+      if (allowed) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+      window.location.href = '/login/?next=' + encodeURIComponent('/precheck/') + '&reason=login-required';
+    }, true);
+  }
+
+  // 페이지 표시 시 세션 상태를 미리 확인해 첫 클릭 지연을 줄입니다.
+  checkQuickFormAuth();
+
 
 
   if (phoneInput) {

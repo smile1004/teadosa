@@ -3,8 +3,6 @@
 
   const auth = window.TaeDoSAAuth;
   const form = document.getElementById('preCheckForm');
-  const loginNoticeNameInput = document.getElementById('name');
-  let loginNoticeShown = false;
 
   const submitButton = form ? form.querySelector('.btn-submit') : null;
   const formMessage = document.getElementById('formMessage');
@@ -16,15 +14,88 @@
 
   if (!auth || !form) return;
 
+  let applicationAuthState = {
+    checked: false,
+    authenticated: false,
+    checking: null
+  };
+
+  async function checkApplicationAuth() {
+    if (applicationAuthState.checked) return applicationAuthState.authenticated;
+    if (applicationAuthState.checking) return applicationAuthState.checking;
+
+    applicationAuthState.checking = (async function () {
+      try {
+        const outcome = await auth.getSession({ force: true });
+        applicationAuthState.authenticated = Boolean(
+          outcome &&
+          outcome.response &&
+          outcome.response.ok &&
+          outcome.result &&
+          outcome.result.authenticated &&
+          outcome.result.member
+        );
+      } catch (error) {
+        applicationAuthState.authenticated = false;
+      } finally {
+        applicationAuthState.checked = true;
+        applicationAuthState.checking = null;
+      }
+
+      return applicationAuthState.authenticated;
+    })();
+
+    return applicationAuthState.checking;
+  }
+
+  async function requireLoginBeforeInput(event) {
+    const allowed = await checkApplicationAuth();
+    if (allowed) return true;
+
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+
+    const next = '/precheck/apply/';
+    window.location.href = '/login/?next=' + encodeURIComponent(next) + '&reason=login-required';
+    return false;
+  }
+
+  form.addEventListener('pointerdown', async function (event) {
+    const target = event.target.closest('input, select, textarea, button');
+    if (!target) return;
+
+    const allowed = await checkApplicationAuth();
+    if (allowed) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+    window.location.href = '/login/?next=' + encodeURIComponent('/precheck/apply/') + '&reason=login-required';
+  }, true);
+
+  form.addEventListener('keydown', async function (event) {
+    if (!event.target.matches('input, select, textarea')) return;
+
+    const allowed = await checkApplicationAuth();
+    if (allowed) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
+    window.location.href = '/login/?next=' + encodeURIComponent('/precheck/apply/') + '&reason=login-required';
+  }, true);
+
+  checkApplicationAuth();
+
+
   updateMemoCount();
 
-  if (loginNoticeNameInput) {
-    loginNoticeNameInput.addEventListener('focus', function () {
-      if (loginNoticeShown) return;
-      loginNoticeShown = true;
-      window.alert('사전검토 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
-    });
-  }
 
 
   init();
@@ -55,6 +126,9 @@
 
   form.addEventListener('submit', async function (event) {
     event.preventDefault();
+
+    if (!(await requireLoginBeforeInput(event))) return;
+
     clearMessage();
 
     if (!form.reportValidity()) return;
