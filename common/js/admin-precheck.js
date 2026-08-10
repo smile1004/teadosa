@@ -95,14 +95,33 @@
 
     const item = state.requests.find(function (row) { return String(row.id) === String(requestId); });
     const label = statusLabel(nextStatus);
-    if (!window.confirm((item?.requestNo || '선택 신청') + '의 처리상태를 [' + label + ']로 변경하시겠습니까?')) {
+    let supplementNote = '';
+
+    if (nextStatus === 'supplement_required') {
+      supplementNote = window.prompt(
+        (item?.requestNo || '선택 신청') + '의 보완요청 내용을 입력해 주세요.\n회원 마이페이지에 그대로 표시됩니다.',
+        item?.supplementNote || ''
+      );
+
+      if (supplementNote === null) {
+        select.value = previousStatus;
+        return;
+      }
+
+      supplementNote = supplementNote.trim();
+      if (!supplementNote) {
+        window.alert('보완요청 내용을 입력해야 합니다.');
+        select.value = previousStatus;
+        return;
+      }
+    } else if (!window.confirm((item?.requestNo || '선택 신청') + '의 처리상태를 [' + label + ']로 변경하시겠습니까?')) {
       select.value = previousStatus;
       return;
     }
 
     select.disabled = true;
     try {
-      const outcome = await auth.updateAdminPrecheckStatus(requestId, nextStatus);
+      const outcome = await auth.updateAdminPrecheckStatus(requestId, nextStatus, supplementNote);
       const result = outcome.result || {};
       if (!outcome.response.ok || !result.success) throw new Error(result.message || '처리상태를 변경하지 못했습니다.');
       select.dataset.originalStatus = nextStatus;

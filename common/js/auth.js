@@ -125,10 +125,13 @@
     return request('/api/admin/precheck?' + query.toString(), { method: 'GET' });
   }
 
-  async function updateAdminPrecheckStatus(requestId, status) {
+  async function updateAdminPrecheckStatus(requestId, status, supplementNote) {
     return request('/api/admin/precheck/' + encodeURIComponent(requestId) + '/status', {
       method: 'PUT',
-      body: { status: status }
+      body: {
+        status: status,
+        supplementNote: supplementNote || ''
+      }
     });
   }
 

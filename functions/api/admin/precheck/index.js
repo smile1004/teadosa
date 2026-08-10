@@ -53,6 +53,8 @@ export async function onRequestGet(context) {
         r.company_name,
         r.site_address,
         r.status,
+        r.supplement_note,
+        r.supplement_requested_at,
         r.submitted_at,
         r.updated_at,
         m.member_type,
@@ -101,6 +103,8 @@ function mapRequest(row) {
     companyName: row.company_name,
     siteAddress: row.site_address,
     status: row.status,
+    supplementNote: row.supplement_note || '',
+    supplementRequestedAt: row.supplement_requested_at,
     submittedAt: row.submitted_at,
     updatedAt: row.updated_at,
   };

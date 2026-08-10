@@ -31,6 +31,9 @@
     el.formData = document.getElementById('request-form-data');
     el.requestStatus = document.getElementById('request-status-badge');
     el.formVersion = document.getElementById('form-version-badge');
+    el.supplementPanel = document.getElementById('admin-supplement-panel');
+    el.supplementDate = document.getElementById('admin-supplement-date');
+    el.supplementNote = document.getElementById('admin-supplement-note');
     el.publishStatus = document.getElementById('publish-status-badge');
     el.installationPossible = document.getElementById('installation-possible');
     el.expectedCapacity = document.getElementById('expected-capacity');
@@ -110,6 +113,17 @@
     el.formData.innerHTML = rows.map(function (row) {
       return '<div class="precheck-form-row"><span>' + escapeHtml(row[0]) + '</span><strong>' + escapeHtml(row[1]) + '</strong></div>';
     }).join('');
+
+    if (el.supplementPanel) {
+      const hasSupplement = Boolean(r.supplementNote);
+      el.supplementPanel.hidden = !hasSupplement;
+      if (hasSupplement) {
+        el.supplementDate.textContent = r.supplementRequestedAt
+          ? '요청일 ' + formatDateTime(r.supplementRequestedAt)
+          : '';
+        el.supplementNote.textContent = r.supplementNote;
+      }
+    }
   }
 
   const DEFAULT_CUSTOMER_NOTICE = "1. 인허가 및 지자체 조례 검토\n• 본 검토는 검토 시점에 확인 가능한 지자체 도시계획 조례 및 관련 법령을 기준으로 작성되었습니다.\n• 실제 사업 진행 시 관계기관 협의, 개발행위 심의, 민원 발생 등에 따라 검토 결과가 변경될 수 있습니다.\n• 최종 허가 여부는 해당 행정기관의 심사 결과를 기준으로 결정됩니다.\n\n2. 한국전력 계통연계 검토\n• 본 검토는 한국전력에서 제공하는 계통정보와 검토 시점에 확인 가능한 자료를 기준으로 작성되었습니다.\n• 계통연계 가능 여부와 여유 용량은 다른 접수 건, 전력계통 운영 상황 및 설비계획 변경 등에 따라 실제 접수 시 변경될 수 있습니다.\n• 최종 계통연계 가능 여부 및 연계 조건은 한국전력의 계통연계 검토 결과를 기준으로 결정됩니다.";

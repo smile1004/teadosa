@@ -140,3 +140,11 @@ body {
   .precheck-history-item{align-items:flex-start;flex-direction:column;gap:14px;padding:16px}
   .precheck-history-action,.precheck-result-button{width:100%}
 }
+
+
+/* ===== 보완요청사항 ===== */
+.precheck-supplement-box{margin-top:14px;padding:14px 16px;border:1px solid #efcfc8;border-radius:12px;background:#fff7f5}
+.precheck-supplement-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.precheck-supplement-head strong{color:#a1493d;font-size:13px}
+.precheck-supplement-head span{color:#9a817c;font-size:11px}
+.precheck-supplement-box p{margin:8px 0 0;color:#5e4541;font-size:14px;line-height:1.75}

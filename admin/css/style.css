@@ -74,3 +74,10 @@
 /* ===== Precheck publish feedback ===== */
 .review-action-message{margin:2px 0 -4px;padding:12px 14px;border-radius:10px;background:#eaf7ef;color:#197b46;font-size:13px;font-weight:700;line-height:1.5}
 .review-action-message.error{background:#fff0ef;color:#b13b34}
+
+
+/* ===== Supplement request ===== */
+.admin-inline-badge.supplement{background:#fff0ed;color:#a94d3f}
+.supplement-admin-panel{border-color:#f0d1ca}
+.supplement-admin-date{margin:-8px 0 12px;color:#8a6f69;font-size:12px}
+.supplement-admin-note{padding:15px 17px;border-radius:12px;background:#fff6f4;color:#5d3e39;font-size:14px;line-height:1.8;white-space:pre-wrap}

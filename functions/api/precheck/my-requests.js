@@ -15,6 +15,8 @@ export async function onRequestGet(context) {
         r.site_type,
         r.purpose,
         r.status,
+        r.supplement_note,
+        r.supplement_requested_at,
         r.submitted_at,
         r.updated_at,
         pr.id AS review_id,
@@ -38,13 +40,19 @@ export async function onRequestGet(context) {
         siteType: row.site_type,
         purpose: row.purpose,
         status: row.status,
+        supplementNote: row.supplement_note || '',
+        supplementRequestedAt: row.supplement_requested_at,
         submittedAt: row.submitted_at,
         updatedAt: row.updated_at,
         reviewId: row.review_id,
         installationPossible: row.installation_possible,
         reviewedAt: row.reviewed_at,
         publishedAt: row.published_at,
-        resultAvailable: Boolean(row.review_id && row.published_at)
+        resultAvailable: Boolean(
+          row.status === 'completed' &&
+          row.review_id &&
+          row.published_at
+        )
       }))
     });
   } catch (error) {

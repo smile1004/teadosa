@@ -126,7 +126,8 @@
     }
 
     precheckHistoryList.innerHTML = requests.map(function (item) {
-      const resultButton = item.resultAvailable
+      const canViewResult = Boolean(item.resultAvailable && item.status === 'completed');
+      const resultButton = canViewResult
         ? '<a class="precheck-result-button available" href="/precheck/result/?id=' + encodeURIComponent(item.id) + '">결과확인</a>'
         : '<span class="precheck-result-button disabled" aria-disabled="true">' + pendingResultLabel(item.status) + '</span>';
 
@@ -140,8 +141,13 @@
           '<div class="precheck-history-meta">' +
             '<span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span>' +
             '<span>사업지 ' + escapeHtml(precheckSiteTypeLabel(item.siteType)) + '</span>' +
-            (item.resultAvailable ? '<span>결과 ' + escapeHtml(possibilityLabel(item.installationPossible)) + '</span>' : '') +
+            (canViewResult ? '<span>결과 ' + escapeHtml(possibilityLabel(item.installationPossible)) + '</span>' : '') +
           '</div>' +
+          (item.status === 'supplement_required' && item.supplementNote
+            ? '<div class="precheck-supplement-box"><div class="precheck-supplement-head"><strong>보완요청사항</strong>' +
+              (item.supplementRequestedAt ? '<span>' + escapeHtml(formatPrecheckDate(item.supplementRequestedAt)) + '</span>' : '') +
+              '</div><p>' + escapeHtml(item.supplementNote).replace(/\n/g, '<br>') + '</p></div>'
+            : '') +
         '</div>' +
         '<div class="precheck-history-action">' + resultButton + '</div>' +
       '</article>';

@@ -61,6 +61,9 @@ export async function onRequestGet(context) {
         formVersion: row.form_version,
         formData: parseJson(row.form_data, {}),
         status: row.status,
+        supplementNote: row.supplement_note || '',
+        supplementRequestedAt: row.supplement_requested_at,
+        supplementRequestedBy: row.supplement_requested_by,
         submittedAt: row.submitted_at,
         updatedAt: row.updated_at
       },
