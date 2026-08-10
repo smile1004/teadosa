@@ -52,18 +52,98 @@
 </section>
 <section aria-labelledby="apply-title" class="pc-section pc-form-section" id="apply">
 <div class="pc-container pc-form-shell reveal">
-<div class="pc-form-info"><div class="pc-eyebrow">FREE PRE-CHECK</div><h2 id="apply-title">무료 사전검토 신청</h2><p>기본정보를 입력하고 사전검토를 신청하시면 검토 결과와 진행가능한 서비스를 확인할 수 있습니다.</p><div class="pc-info-list"><div><b>01</b><p><strong>간편한 온라인 접수</strong><span>방문 없이 기본정보를 입력해 신청합니다.</span></p></div><div><b>02</b><p><strong>전문가 관점의 기본 검토</strong><span>사업지 조건과 확인사항을 체계적으로 살펴봅니다.</span></p></div><div><b>03</b><p><strong>후속 서비스 연결</strong><span>검토 후 진행 가능한 절차를 확인할 수 있습니다.</span></p></div></div></div>
-<form action="precheck/apply-result/index.html" class="pc-form-card" method="get" target="_blank">
-<div class="pc-form-grid">
-<div class="pc-field"><label for="name">이름 *</label><input autocomplete="name" id="name" name="name" placeholder="이름을 입력하세요" required="" type="text"></div>
-<div class="pc-field"><label for="phone">연락처 *</label><input autocomplete="tel" id="phone" inputmode="tel" name="phone" placeholder="010-0000-0000" required="" type="tel"></div>
-<div class="pc-field"><label for="region">지역 *</label><input id="region" name="region" placeholder="예: 전북 전주시" required="" type="text"></div>
-<div class="pc-field"><label for="building-type">건축물 유형 *</label><select id="building-type" name="building_type" required=""><option value="">선택하세요</option><option>공장</option><option>창고</option><option>축사</option><option>상가</option><option>건물 옥상</option><option>유휴부지</option><option>기타</option></select></div>
-<div class="pc-field full"><label for="address">주소 *</label><input id="address" name="address" placeholder="검토할 사업 예정지 주소를 입력하세요" required="" type="text"></div>
-<div class="pc-field full"><label for="message">문의내용</label><textarea id="message" name="message" placeholder="설치 예정 면적, 건물 또는 토지 현황 등 참고할 내용을 입력하세요"></textarea></div>
+<div class="pc-form-info">
+  <div class="pc-eyebrow">FREE PRE-CHECK</div>
+  <h2 id="apply-title">무료 사전검토 신청</h2>
+  <p>실제 사전검토 신청서와 동일한 기준으로 기본정보와 사업지 정보를 입력합니다.</p>
+  <div class="pc-info-list">
+    <div><b>01</b><p><strong>신청인 기본정보</strong><span>이름, 연락처와 설치주소를 확인합니다.</span></p></div>
+    <div><b>02</b><p><strong>사업지 개요</strong><span>사업지 유형과 용도, 알고 있는 범위의 정보를 입력합니다.</span></p></div>
+    <div><b>03</b><p><strong>추가 요청사항</strong><span>검토에 참고할 내용을 함께 작성할 수 있습니다.</span></p></div>
+  </div>
 </div>
-<label class="pc-consent"><input name="privacy" required="" type="checkbox"><span>사전검토 신청을 위한 개인정보 수집 및 이용에 동의합니다. *</span></label>
-<button class="pc-submit" type="submit">무료 사전검토 신청</button><p class="pc-form-note"></p>
+
+<form id="compactPrecheckForm" class="pc-form-card">
+  <div class="pc-form-grid">
+    <div class="pc-field">
+      <label for="quick-name">이름 *</label>
+      <input autocomplete="name" id="quick-name" name="name" placeholder="이름을 입력해 주세요" required type="text">
+    </div>
+    <div class="pc-field">
+      <label for="quick-phone">연락처 *</label>
+      <input autocomplete="tel" id="quick-phone" name="phone" placeholder="010-0000-0000" required type="tel">
+    </div>
+
+    <div class="pc-field full">
+      <label for="quick-email">이메일</label>
+      <input autocomplete="email" id="quick-email" name="email" placeholder="example@email.com" type="email">
+    </div>
+
+    <div class="pc-field full">
+      <label for="quick-address">설치주소 *</label>
+      <div class="pc-address-row">
+        <input id="quick-address" name="address" placeholder="주소검색 버튼을 눌러 설치주소를 입력해 주세요" required type="text">
+        <button id="quickAddressSearch" class="pc-address-button" type="button">주소검색</button>
+      </div>
+    </div>
+
+    <div class="pc-field">
+      <label for="quick-site-type">사업지 유형 *</label>
+      <select id="quick-site-type" name="siteType" required>
+        <option value="">선택하세요</option>
+        <option value="토지">토지</option>
+        <option value="건물">건물</option>
+        <option value="복합(토지+건물)">복합(토지+건물)</option>
+      </select>
+    </div>
+    <div class="pc-field">
+      <label for="quick-purpose">용도 *</label>
+      <select id="quick-purpose" name="purpose" required>
+        <option value="">선택하세요</option>
+        <option value="자가소비">자가소비</option>
+        <option value="발전사업">발전사업(매전)</option>
+        <option value="미정">미정 · 상담희망</option>
+      </select>
+    </div>
+
+    <div class="pc-field">
+      <label for="quick-capacity">설치 예정 용량</label>
+      <input id="quick-capacity" name="plannedCapacity" min="0" step="0.1" placeholder="예: 100kW" type="number">
+    </div>
+    <div class="pc-field">
+      <label for="quick-area">부지면적</label>
+      <input id="quick-area" name="siteArea" min="0" step="0.01" placeholder="예: 1500㎡" type="number">
+    </div>
+
+    <div class="pc-field">
+      <label for="quick-land-category">지목</label>
+      <input id="quick-land-category" name="landCategory" placeholder="예: 전, 답, 대, 공장용지" type="text">
+    </div>
+    <div class="pc-field">
+      <label for="quick-zoning-area">용도지역</label>
+      <input id="quick-zoning-area" name="zoningArea" placeholder="예: 계획관리지역" type="text">
+    </div>
+
+    <div class="pc-field full">
+      <label for="quick-ownership">소유관계</label>
+      <select id="quick-ownership" name="ownership">
+        <option value="">선택하세요</option>
+        <option value="본인 소유">본인 소유</option>
+        <option value="임차(임대인 동의 확보)">임차(임대인 동의 확보)</option>
+        <option value="사용동의 확보 예정">사용동의 확보 예정</option>
+        <option value="기타">기타</option>
+      </select>
+    </div>
+
+    <div class="pc-field full">
+      <label for="quick-memo">추가 요청사항</label>
+      <textarea id="quick-memo" name="memo" maxlength="2000" placeholder="검토에 참고할 내용이 있다면 입력해 주세요. (예: 인접 부지 발전소 유무, 희망 일정, 기존 전기시설 유무 등)"></textarea>
+    </div>
+  </div>
+
+  <div class="pc-compact-guide">*신청 내용은 사전 확인용으로 활용되며, 실제 설치 가능 여부는 현장 여건·건축물 상태·한전 계통연계 여건 등에 따라 달라질 수 있습니다.</div>
+  <button class="pc-submit" type="submit">사전검토 신청서 계속 작성</button>
+  <p class="pc-form-note">입력한 내용은 다음 신청서 화면에 그대로 이어집니다.</p>
 </form>
 </div>
 </section>
@@ -88,6 +168,62 @@
 </div>
 </section>
 </main>
+<script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script>
+(function(){
+  const form = document.getElementById('compactPrecheckForm');
+  const addressButton = document.getElementById('quickAddressSearch');
+  const addressInput = document.getElementById('quick-address');
+  const phoneInput = document.getElementById('quick-phone');
+
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function(){
+      const digits = phoneInput.value.replace(/\D/g, '').slice(0, 11);
+      if (digits.length <= 3) phoneInput.value = digits;
+      else if (digits.length <= 7) phoneInput.value = digits.replace(/(\d{3})(\d+)/, '$1-$2');
+      else phoneInput.value = digits.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
+    });
+  }
+
+  if (addressButton && addressInput) {
+    addressButton.addEventListener('click', function(){
+      if (!window.daum || !window.daum.Postcode) {
+        alert('주소검색 서비스를 불러오지 못했습니다. 인터넷 연결 상태를 확인해 주세요.');
+        return;
+      }
+      new window.daum.Postcode({
+        oncomplete: function(data){
+          const selected = data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress;
+          addressInput.value = selected || data.address || '';
+          addressInput.focus();
+        }
+      }).open();
+    });
+  }
+
+  if (form) {
+    form.addEventListener('submit', function(event){
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const fd = new FormData(form);
+      const prefill = {};
+      ['name','phone','email','address','siteType','purpose','plannedCapacity','siteArea','landCategory','zoningArea','ownership','memo']
+        .forEach(function(key){
+          const value = fd.get(key);
+          if (value !== null && String(value).trim() !== '') prefill[key] = String(value).trim();
+        });
+
+      try {
+        sessionStorage.setItem('teadosa:precheckPrefill', JSON.stringify(prefill));
+      } catch (error) {
+        console.warn('사전검토 입력내용 임시저장 실패:', error);
+      }
+      window.location.href = '/precheck/apply/';
+    });
+  }
+})();
+</script>
 <script src="common/js/components/footer.js"></script><script src="common/js/components/common.js"></script>
 </body>
 </html>

@@ -1361,3 +1361,17 @@ main{
   .pc-start-banner-content p br{display:none;}
   .pc-start-banner-content .pc-start-button{height:48px;margin-top:auto;padding:0 15px;font-size:12px;}
 }
+
+
+/* ===== compact V2 precheck form ===== */
+.pc-address-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+.pc-address-button{min-height:48px;padding:0 16px;border:1px solid #cfdcc9;border-radius:12px;background:#f6faf3;color:var(--start-green);font:inherit;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
+.pc-address-button:hover{background:#edf6e7}
+.pc-compact-guide{margin:16px 0 14px;padding:12px 14px;border:1px solid #ecd9ae;border-radius:11px;background:#fffaf0;color:#7b6948;font-size:12.5px;line-height:1.65}
+#compactPrecheckForm .pc-form-grid{gap:14px 16px!important}
+#compactPrecheckForm textarea{min-height:92px!important}
+#compactPrecheckForm .pc-submit{margin-top:0!important}
+@media(max-width:640px){
+  .pc-address-row{grid-template-columns:1fr}
+  .pc-address-button{width:100%}
+}

@@ -18,6 +18,7 @@
 
   async function init() {
     setSubmitting(false);
+    applyPrefill();
 
     try {
       const outcome = await auth.getSession({ force: true });
@@ -133,6 +134,51 @@
   }
 
   if (memoInput) memoInput.addEventListener('input', updateMemoCount);
+
+  function applyPrefill() {
+    let prefill = null;
+    try {
+      const raw = window.sessionStorage.getItem('teadosa:precheckPrefill');
+      if (raw) {
+        prefill = JSON.parse(raw);
+        window.sessionStorage.removeItem('teadosa:precheckPrefill');
+      }
+    } catch (error) {
+      console.warn('사전검토 입력내용 불러오기 실패:', error);
+    }
+    if (!prefill || typeof prefill !== 'object') return;
+
+    setInput('name', prefill.name);
+    setInput('phone', formatPhone(prefill.phone || ''));
+    setInput('email', prefill.email);
+    setInput('address', prefill.address);
+    setInput('plannedCapacity', prefill.plannedCapacity);
+    setInput('siteArea', prefill.siteArea);
+    setInput('landCategory', prefill.landCategory);
+    setInput('zoningArea', prefill.zoningArea);
+    setInput('memo', prefill.memo);
+    setRadio('siteType', prefill.siteType);
+    setRadio('purpose', prefill.purpose);
+    setRadio('ownership', prefill.ownership);
+    updateMemoCount();
+  }
+
+  function setInput(id, value) {
+    if (value === undefined || value === null || value === '') return;
+    const input = document.getElementById(id);
+    if (input) input.value = value;
+  }
+
+  function setRadio(name, value) {
+    if (!value) return;
+    const radio = form.querySelector('input[name="' + name + '"][value="' + cssEscape(value) + '"]');
+    if (radio) radio.checked = true;
+  }
+
+  function cssEscape(value) {
+    if (window.CSS && typeof window.CSS.escape === 'function') return window.CSS.escape(String(value));
+    return String(value).replace(/["\\]/g, '\\$&');
+  }
 
   function validate(payload) {
     if (!payload.name) return '이름을 입력해 주세요.';
