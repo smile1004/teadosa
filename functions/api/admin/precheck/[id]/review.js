@@ -53,8 +53,10 @@ export async function onRequestPut(context) {
 
     const publishedAt = publish ? nowIso : (existingReview?.published_at || null);
 
+    let reviewWriteResult;
+
     if (existingReview) {
-      await env.DB.prepare(`
+      reviewWriteResult = await env.DB.prepare(`
         UPDATE precheck_reviews
         SET installation_possible = ?,
             expected_capacity = ?,
@@ -83,7 +85,7 @@ export async function onRequestPut(context) {
         requestId
       ).run();
     } else {
-      await env.DB.prepare(`
+      reviewWriteResult = await env.DB.prepare(`
         INSERT INTO precheck_reviews (
           request_id,
           installation_possible,
@@ -114,9 +116,53 @@ export async function onRequestPut(context) {
       ).run();
     }
 
+    if (!reviewWriteResult?.success) {
+      throw new Error('사전검토 결과 저장에 실패했습니다.');
+    }
+
+    if (existingReview) {
+      const changed = Number(reviewWriteResult.meta?.changes || 0);
+      if (changed < 1) {
+        throw new Error('사전검토 결과가 갱신되지 않았습니다.');
+      }
+    } else {
+      const insertedId = Number(reviewWriteResult.meta?.last_row_id || 0);
+      if (!insertedId) {
+        throw new Error('사전검토 결과 저장 ID를 확인할 수 없습니다.');
+      }
+    }
+
+    const savedReview = await env.DB.prepare(`
+      SELECT
+        id,
+        request_id,
+        installation_possible,
+        expected_capacity,
+        overall_opinion,
+        customer_notice,
+        internal_memo,
+        result_version,
+        result_data,
+        reviewed_at,
+        published_at,
+        updated_at
+      FROM precheck_reviews
+      WHERE request_id = ?
+      LIMIT 1
+    `).bind(requestId).first();
+
+    if (!savedReview?.id) {
+      throw new Error('저장된 사전검토 결과를 다시 확인할 수 없습니다.');
+    }
+
     const nextStatus = publish ? 'completed' : 'reviewing';
-    await env.DB.prepare('UPDATE precheck_requests SET status = ?, updated_at = ? WHERE id = ?')
-      .bind(nextStatus, nowIso, requestId).run();
+    const requestUpdateResult = await env.DB.prepare(
+      'UPDATE precheck_requests SET status = ?, updated_at = ? WHERE id = ?'
+    ).bind(nextStatus, nowIso, requestId).run();
+
+    if (!requestUpdateResult?.success || Number(requestUpdateResult.meta?.changes || 0) !== 1) {
+      throw new Error('사전검토 신청 상태 변경에 실패했습니다.');
+    }
 
     return jsonResponse({
       success: true,
@@ -128,15 +174,17 @@ export async function onRequestPut(context) {
         status: nextStatus
       },
       review: {
-        installationPossible,
-        expectedCapacity,
-        overallOpinion,
-        customerNotice,
-        internalMemo,
-        resultVersion,
-        resultData: { items },
-        reviewedAt: nowIso,
-        publishedAt
+        id: savedReview.id,
+        installationPossible: savedReview.installation_possible || 'undetermined',
+        expectedCapacity: savedReview.expected_capacity,
+        overallOpinion: savedReview.overall_opinion || '',
+        customerNotice: savedReview.customer_notice || '',
+        internalMemo: savedReview.internal_memo || '',
+        resultVersion: savedReview.result_version || resultVersion,
+        resultData: parseJson(savedReview.result_data, { items: [] }),
+        reviewedAt: savedReview.reviewed_at,
+        publishedAt: savedReview.published_at,
+        updatedAt: savedReview.updated_at
       }
     });
   } catch (error) {
@@ -166,6 +214,11 @@ function normalizeItems(items) {
     content: textValue(item?.content, 3000)
   })).filter((item) => item.title || item.content);
 }
+function parseJson(value, fallback) {
+  if (!value) return fallback;
+  try { return JSON.parse(value); } catch { return fallback; }
+}
+
 function methodNotAllowed() {
   return jsonResponse({ success: false, code: 'METHOD_NOT_ALLOWED', message: 'PUT 방식으로 요청해 주세요.' }, 405, { Allow: 'PUT' });
 }
