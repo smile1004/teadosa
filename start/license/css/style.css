@@ -27,12 +27,12 @@
 
 /* Service flow diagram */
 .service-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 34px;margin-top:38px;counter-reset:flow}
-.flow-step{position:relative;min-height:205px;padding:26px 24px 24px;border:1px solid var(--lic-line);border-radius:18px;background:#fff}
+.flow-step{position:relative;min-height:170px;padding:20px 22px 18px;border:1px solid var(--lic-line);border-radius:18px;background:#fff}
 .flow-step:not(:nth-child(3n))::after{content:'→';position:absolute;right:-27px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:800;color:#a9b5ad}
 .flow-step:nth-child(3),.flow-step:nth-child(6){margin-bottom:16px}
 .flow-step:nth-child(3)::before,.flow-step:nth-child(6)::before{content:'↓';position:absolute;left:50%;bottom:-36px;transform:translateX(-50%);font-size:24px;font-weight:800;color:#a9b5ad}
-.flow-no{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;margin-bottom:16px;border-radius:50%;background:#fff4e7;color:var(--lic-orange);font-size:13px;font-weight:900}
-.flow-step strong{display:block;margin-bottom:9px;font-size:19px;line-height:1.35;color:var(--lic-navy)}
+.flow-no{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;margin-bottom:12px;border-radius:50%;background:#fff4e7;color:var(--lic-orange);font-size:13px;font-weight:900}
+.flow-step strong{display:block;margin-bottom:7px;font-size:19px;line-height:1.35;color:var(--lic-navy)}
 .flow-step p{margin:0;font-size:16px;line-height:1.7;color:#66736c}
 .flow-step a{display:inline-block;margin-top:12px;font-size:15px;font-weight:800;color:var(--lic-green);text-decoration:none}
 .flow-step a:hover{text-decoration:underline}
