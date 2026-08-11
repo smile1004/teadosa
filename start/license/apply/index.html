@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base href="../../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="태도사 발전사업허가 서비스 신청 페이지입니다.">
+<title>발전사업허가 서비스 신청 | 태양광도사</title>
+<link href="common/css/taedo1_start.css" rel="stylesheet">
+<link href="common/css/shared-layout.css" rel="stylesheet">
+<link href="common/css/shared-menu.css" rel="stylesheet">
+<link href="common/css/common.css" rel="stylesheet">
+<link href="start/license/apply/css/style.css" rel="stylesheet">
+</head>
+<body class="taedo-has-fixed-header license-apply-page">
+<script src="common/js/site-config.js"></script>
+<script src="common/js/api.js?v=2.0"></script>
+<script src="common/js/auth.js?v=2.0"></script>
+<script src="common/js/components/header.js?v=2.1"></script>
+
+<main>
+  <section class="apply-hero" aria-labelledby="applyTitle">
+    <div class="apply-container">
+      <div class="apply-badge">발전사업 시작하기 · 개별 서비스</div>
+      <h1 id="applyTitle">발전사업허가 서비스 신청</h1>
+      <p>사전검토 결과를 바탕으로 발전사업허가 업무 신청에 필요한 기본정보를 입력해 주세요.</p>
+    </div>
+  </section>
+
+  <section class="apply-body">
+    <div class="apply-container apply-layout">
+      <div class="apply-main">
+        <div class="apply-intro" role="note">
+          <strong>신청 전 확인해 주세요.</strong>
+          <p>발전사업허가 서비스는 <span>사전검토 결과를 확인한 후</span> 신청할 수 있습니다. 신청내용을 확인한 뒤 담당자가 연락하여 상담 및 전자계약 절차를 안내합니다.</p>
+        </div>
+
+        <div id="loginNotice" class="login-notice" hidden>
+          발전사업허가 신청은 <strong>회원가입 및 로그인 후</strong> 이용할 수 있습니다.
+        </div>
+
+        <form id="licenseApplyForm" class="apply-form" novalidate>
+          <section class="form-section" aria-labelledby="applicantHeading">
+            <div class="form-section-head">
+              <span>01</span>
+              <div><h2 id="applicantHeading">신청자 정보</h2><p>회원정보를 기준으로 신청자 정보를 확인합니다.</p></div>
+            </div>
+            <div class="form-grid three-col">
+              <label class="field"><span>회원명</span><input type="text" id="applicantName" name="applicantName" readonly></label>
+              <label class="field"><span>연락처</span><input type="tel" id="applicantPhone" name="applicantPhone" readonly></label>
+              <label class="field"><span>이메일</span><input type="email" id="applicantEmail" name="applicantEmail" readonly></label>
+            </div>
+            <div class="choice-group compact-choice" role="group" aria-labelledby="applicantTypeLabel">
+              <span class="choice-label" id="applicantTypeLabel">신청자 구분</span>
+              <label><input type="radio" name="applicantType" value="personal" required><span>개인</span></label>
+              <label><input type="radio" name="applicantType" value="business" required><span>법인</span></label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="precheckHeading">
+            <div class="form-section-head">
+              <span>02</span>
+              <div><h2 id="precheckHeading">사전검토 결과 선택</h2><p>검토가 완료되어 결과가 공개된 사전검토 건을 선택해 주세요.</p></div>
+            </div>
+            <label class="field full"><span>사전검토 신청내역 <em>필수</em></span>
+              <select id="precheckRequest" name="precheckRequest" required>
+                <option value="">사전검토 결과를 불러오는 중입니다.</option>
+              </select>
+            </label>
+            <div id="precheckStatus" class="precheck-status" aria-live="polite"></div>
+          </section>
+
+          <section class="form-section" aria-labelledby="siteHeading">
+            <div class="form-section-head">
+              <span>03</span>
+              <div><h2 id="siteHeading">사업 예정지 정보</h2><p>허가를 신청할 발전사업 예정지의 기본정보를 입력합니다.</p></div>
+            </div>
+            <div class="choice-row">
+              <div class="choice-group" role="group" aria-labelledby="siteTypeLabel">
+                <span class="choice-label" id="siteTypeLabel">설치 형태 <em>필수</em></span>
+                <label><input type="radio" name="siteType" value="land" required><span>토지</span></label>
+                <label><input type="radio" name="siteType" value="building" required><span>건축물</span></label>
+              </div>
+              <div class="choice-group" role="group" aria-labelledby="ownershipLabel">
+                <span class="choice-label" id="ownershipLabel">소유 구분 <em>필수</em></span>
+                <label><input type="radio" name="ownership" value="self" required><span>본인 소유</span></label>
+                <label><input type="radio" name="ownership" value="other" required><span>타인 소유</span></label>
+              </div>
+            </div>
+            <label class="field full"><span>사업 예정지 주소 <em>필수</em></span><input type="text" id="siteAddress" name="siteAddress" maxlength="200" placeholder="사전검토 선택 시 주소가 자동으로 입력됩니다." required></label>
+          </section>
+
+          <section class="form-section" aria-labelledby="projectHeading">
+            <div class="form-section-head">
+              <span>04</span>
+              <div><h2 id="projectHeading">발전사업 기본정보</h2><p>현재 계획 중인 내용을 기준으로 입력해 주세요. 상담 과정에서 변경할 수 있습니다.</p></div>
+            </div>
+            <div class="form-grid three-col">
+              <label class="field"><span>예상 발전용량(kW) <em>필수</em></span><input type="number" id="plannedCapacity" name="plannedCapacity" min="1" step="0.1" inputmode="decimal" placeholder="예: 99.9" required></label>
+              <label class="field"><span>설치 예정 모듈</span><input type="text" id="plannedModule" name="plannedModule" maxlength="100" placeholder="미정인 경우 비워두세요."></label>
+              <label class="field"><span>설치 예정 인버터</span><input type="text" id="plannedInverter" name="plannedInverter" maxlength="100" placeholder="미정인 경우 비워두세요."></label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="consultHeading">
+            <div class="form-section-head">
+              <span>05</span>
+              <div><h2 id="consultHeading">상담 및 전달사항</h2><p>담당자 상담 방법과 추가로 전달할 내용을 입력해 주세요.</p></div>
+            </div>
+            <div class="choice-group compact-choice" role="group" aria-labelledby="consultMethodLabel">
+              <span class="choice-label" id="consultMethodLabel">희망 상담 방법 <em>필수</em></span>
+              <label><input type="radio" name="consultMethod" value="phone" required><span>전화 상담</span></label>
+              <label><input type="radio" name="consultMethod" value="online" required><span>온라인 상담</span></label>
+            </div>
+            <label class="field full"><span>문의 및 전달사항</span><textarea id="requestNote" name="requestNote" maxlength="1500" rows="5" placeholder="담당자에게 미리 전달할 내용이 있다면 입력해 주세요."></textarea><small id="noteCount">0 / 1,500</small></label>
+          </section>
+
+          <section class="form-section agreement-section" aria-labelledby="agreementHeading">
+            <div class="form-section-head">
+              <span>06</span>
+              <div><h2 id="agreementHeading">확인 및 동의</h2><p>신청 전 입력내용과 개인정보 수집·이용 동의를 확인해 주세요.</p></div>
+            </div>
+            <label class="agreement"><input type="checkbox" id="privacyAgree" required><span>발전사업허가 서비스 상담 및 업무 진행을 위한 개인정보 수집·이용에 동의합니다. <em>(필수)</em></span></label>
+            <label class="agreement"><input type="checkbox" id="contentConfirm" required><span>입력한 신청내용을 확인했으며, 사업 조건에 따라 추가 자료가 필요할 수 있음을 확인했습니다. <em>(필수)</em></span></label>
+          </section>
+
+          <p id="formMessage" class="form-message" role="status" aria-live="polite" hidden></p>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">발전사업허가 신청하기</button>
+            <a href="start/license/" class="cancel-btn">취소</a>
+          </div>
+        </form>
+      </div>
+
+      <aside class="apply-side" aria-label="신청 진행 안내">
+        <div class="side-card">
+          <h2>신청 후 진행</h2>
+          <ol>
+            <li><span>1</span><div><strong>신청내용 확인</strong><p>담당자가 신청정보와 사전검토 결과를 확인합니다.</p></div></li>
+            <li><span>2</span><div><strong>담당자 상담</strong><p>업무 범위와 필요한 준비사항을 안내합니다.</p></div></li>
+            <li><span>3</span><div><strong>전자계약</strong><p>개인정보 동의 후 전자계약을 체결합니다.</p></div></li>
+            <li><span>4</span><div><strong>서류 준비</strong><p>계약 후 필요한 서류 준비와 허가 업무를 진행합니다.</p></div></li>
+          </ol>
+        </div>
+        <div class="side-note">
+          <strong>준비서류는 신청 후 안내합니다.</strong>
+          <p>신청 단계에서는 기본 사업정보만 입력하며, 발전사업허가 제출서류는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<script src="common/js/components/footer.js"></script>
+<script src="start/license/apply/js/script.js?v=1.0"></script>
+</body>
+</html>

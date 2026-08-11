@@ -163,3 +163,10 @@
 
 /* v2.0: keep the utility-pole photo method readable on one line on desktop */
 @media(min-width:901px){#documents .agency-panel .doc-table td.no-wrap-method{white-space:nowrap;letter-spacing:-0.45px;font-size:15px}}
+
+/* 발전사업허가 신청 CTA */
+.hero-apply-actions{margin-top:28px}
+.license-apply-btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 24px;border:1px solid #cf7c1d;border-radius:12px;background:#d88422;color:#fff!important;font-size:15px;font-weight:800;letter-spacing:-.2px;text-decoration:none;box-shadow:0 8px 20px rgba(216,132,34,.13);transition:background .18s ease,border-color .18s ease,transform .18s ease}
+.license-apply-btn:hover{background:#c87518;border-color:#c87518;transform:translateY(-1px)}
+.license-apply-btn:focus-visible{outline:3px solid rgba(216,132,34,.25);outline-offset:3px}
+@media(max-width:640px){.hero-apply-actions{margin-top:22px}.license-apply-btn{width:100%;max-width:330px;min-height:46px}}
