@@ -9,6 +9,8 @@
   const note = document.getElementById('requestNote');
   const noteCount = document.getElementById('noteCount');
   const formMessage = document.getElementById('formMessage');
+  const personalFields = document.getElementById('personalFields');
+  const businessFields = document.getElementById('businessFields');
 
   if (!auth || !form) return;
 
@@ -18,6 +20,7 @@
 
   async function init(){
     updateNoteCount();
+    bindApplicantType();
     const member = await requireMember();
     if (!member) return;
     fillMember(member);
@@ -42,12 +45,30 @@
   }
 
   function fillMember(member){
-    setValue('applicantName', member.name || '');
+    setValue('applicantName', member.name || member.companyName || member.company_name || '');
     setValue('applicantPhone', formatPhone(member.phone || ''));
     setValue('applicantEmail', member.email || '');
     const memberType = String(member.memberType || member.member_type || member.type || '').toLowerCase();
-    if (memberType.includes('business') || memberType.includes('company') || memberType.includes('corporate')) setRadio('applicantType','business');
-    else setRadio('applicantType','personal');
+    if (memberType.includes('business') || memberType.includes('company') || memberType.includes('corporate')) {
+      setRadio('applicantType','business');
+      setValue('corporationName', member.companyName || member.company_name || member.name || '');
+      setValue('representativeName', member.representativeName || member.representative_name || '');
+    } else {
+      setRadio('applicantType','personal');
+    }
+    updateApplicantFields();
+  }
+
+  function bindApplicantType(){
+    document.querySelectorAll('input[name="applicantType"]').forEach(function(el){
+      el.addEventListener('change', updateApplicantFields);
+    });
+  }
+
+  function updateApplicantFields(){
+    const type = radioValue('applicantType');
+    if (personalFields) personalFields.hidden = type !== 'personal';
+    if (businessFields) businessFields.hidden = type !== 'business';
   }
 
   async function loadPrechecks(){
@@ -87,8 +108,9 @@
     if (!selected) return;
     setValue('siteAddress', selected.siteAddress || '');
     if (selected.siteType) {
-      const mapped = String(selected.siteType).toLowerCase().includes('land') || String(selected.siteType).includes('토지') ? 'land' : 'building';
-      setRadio('siteType', mapped);
+      const raw = String(selected.siteType).toLowerCase();
+      if (raw.includes('land') || String(selected.siteType).includes('토지')) setRadio('siteType', 'land');
+      else if (raw.includes('building') || String(selected.siteType).includes('건물') || String(selected.siteType).includes('지붕')) setRadio('siteType', 'building');
     }
   });
 
@@ -107,23 +129,38 @@
     if (!form.reportValidity()) return;
 
     const payload = {
-      formVersion:'GENERATION_LICENSE_APPLY_V1',
+      formVersion:'GENERATION_LICENSE_APPLY_V2',
+      applicantType:radioValue('applicantType'),
       applicantName:valueOf('applicantName'),
       applicantPhone:valueOf('applicantPhone'),
       applicantEmail:valueOf('applicantEmail'),
-      applicantType:radioValue('applicantType'),
+      personalAddress:valueOf('personalAddress'),
+      registeredDomicile:valueOf('registeredDomicile'),
+      representativeName:valueOf('representativeName'),
+      corporationName:valueOf('corporationName'),
+      corporationRegistrationNumber:valueOf('corporationRegistrationNumber'),
+      headOfficeAddress:valueOf('headOfficeAddress'),
       precheckRequestId:Number(precheckSelect.value),
       precheckRequestNo:precheckSelect.options[precheckSelect.selectedIndex] ? precheckSelect.options[precheckSelect.selectedIndex].dataset.requestNo || '' : '',
       siteType:radioValue('siteType'),
-      ownership:radioValue('ownership'),
       siteAddress:valueOf('siteAddress'),
-      plannedCapacity:numberValue('plannedCapacity'),
-      plannedModule:valueOf('plannedModule'),
-      plannedInverter:valueOf('plannedInverter'),
-      consultMethod:radioValue('consultMethod'),
+      businessPurpose:radioValue('businessPurpose'),
+      desiredCapacity:valueOf('desiredCapacity'),
+      desiredSchedule:valueOf('desiredSchedule'),
+      ownership:radioValue('ownership'),
+      collateralStatus:radioValue('collateralStatus'),
+      contractorStatus:radioValue('contractorStatus'),
+      totalProjectCost:numberValue('totalProjectCost'),
+      costPerKw:valueOf('costPerKw'),
+      ownFundingPlan:checkedValues('ownFundingPlan'),
+      ownFundingAmount:numberValue('ownFundingAmount'),
+      loanFundingPlan:checkedValues('loanFundingPlan'),
+      loanAmount:numberValue('loanAmount'),
+      lender:valueOf('lender'),
       requestNote:valueOf('requestNote')
     };
 
+    // 주민등록번호는 온라인 임시저장 데이터에 포함하지 않습니다.
     try{ window.sessionStorage.setItem('teadosa:generationLicenseDraft', JSON.stringify(payload)); }catch(error){}
     showMessage('신청서 입력내용이 확인되었습니다. 실제 접수 저장 및 관리자 연동은 다음 단계에서 연결합니다.','info');
   });
@@ -133,6 +170,7 @@
   function valueOf(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
   function numberValue(id){ const v=valueOf(id); return v ? Number(v) : null; }
   function radioValue(name){ const el=document.querySelector('input[name="'+name+'"]:checked'); return el ? el.value : ''; }
+  function checkedValues(name){ return Array.from(document.querySelectorAll('input[name="'+name+'"]:checked')).map(function(el){ return el.value; }); }
   function setRadio(name,value){ const el=document.querySelector('input[name="'+name+'"][value="'+value+'"]'); if(el) el.checked=true; }
   function formatPhone(value){ const d=String(value||'').replace(/\D/g,'').slice(0,11); if(d.length<4)return d; if(d.length<8)return d.slice(0,3)+'-'+d.slice(3); return d.slice(0,3)+'-'+d.slice(3,d.length===10?6:7)+'-'+d.slice(d.length===10?6:7); }
   function showMessage(message,type){ if(!formMessage)return; formMessage.hidden=false; formMessage.className='form-message '+(type||'info'); formMessage.textContent=message; formMessage.scrollIntoView({behavior:'smooth',block:'center'}); }
