@@ -29,6 +29,8 @@
   const passwordVisibilityToggle = document.getElementById('password-visibility-toggle');
   const precheckHistoryMessage = document.getElementById('precheck-history-message');
   const precheckHistoryList = document.getElementById('precheck-history-list');
+  const licenseHistoryMessage = document.getElementById('license-history-message');
+  const licenseHistoryList = document.getElementById('license-history-list');
 
   let currentMember = null;
 
@@ -54,10 +56,36 @@
       content.hidden = false;
       message.hidden = true;
       await loadPrecheckHistory();
+      await loadLicenseHistory();
     } catch (error) {
       showMainError(error && error.message ? error.message : '회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
   }
+
+  async function loadLicenseHistory() {
+    if (!licenseHistoryMessage || !licenseHistoryList || !auth.getMyLicenseRequests) return;
+    licenseHistoryMessage.hidden = false; licenseHistoryMessage.classList.remove('error'); licenseHistoryMessage.textContent = '신청내역을 확인하고 있습니다.'; licenseHistoryList.hidden = true;
+    try {
+      const outcome = await auth.getMyLicenseRequests(); const result = outcome.result || {};
+      if (!outcome.response.ok || !result.success) throw new Error(result.message || '발전사업허가 신청내역을 불러오지 못했습니다.');
+      renderLicenseHistory(result.requests || []);
+    } catch (error) { licenseHistoryMessage.textContent = error.message || '발전사업허가 신청내역을 불러오지 못했습니다.'; licenseHistoryMessage.classList.add('error'); }
+  }
+
+  function renderLicenseHistory(requests) {
+    if (!requests.length) {
+      licenseHistoryList.innerHTML = '<div class="precheck-history-empty"><strong>발전사업허가 신청내역이 없습니다.</strong><p>완료된 사전검토 결과가 있다면 서비스를 신청할 수 있습니다.</p><a href="/start/license/apply/">발전사업허가 신청하기</a></div>';
+    } else {
+      licenseHistoryList.innerHTML = requests.map(function(item){
+        return '<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">' + escapeHtml(item.requestNo || '-') + '</strong><span class="precheck-status license-' + escapeHtml(item.status || 'received') + '">' + escapeHtml(licenseStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress || '설치주소 미등록') + '</p><div class="precheck-history-meta"><span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatPrecheckDate(item.updatedAt)) + '</span></div>' + (item.customerNotice ? '<div class="license-customer-notice"><strong>담당자 안내</strong><p>' + escapeHtml(item.customerNotice).replace(/\n/g,'<br>') + '</p></div>' : '') + '</div><div class="license-progress" aria-label="' + escapeHtml(licenseStatusLabel(item.status)) + '"><span>' + escapeHtml(licenseProgress(item.status)) + '</span></div></article>';
+      }).join('');
+    }
+    licenseHistoryList.hidden = false; licenseHistoryMessage.hidden = true;
+    if (new URLSearchParams(window.location.search).get('section') === 'license') document.getElementById('license-history-section')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function licenseStatusLabel(value) { return ({received:'접수',consulting:'상담중',contracted:'계약완료',documents:'서류준비',submitted:'허가접수',supplement_required:'보완요청',completed:'허가완료',cancelled:'취소'})[value] || value || '-'; }
+  function licenseProgress(value) { return ({received:'1 / 7',consulting:'2 / 7',contracted:'3 / 7',documents:'4 / 7',submitted:'5 / 7',supplement_required:'6 / 7',completed:'7 / 7',cancelled:'진행 종료'})[value] || '-'; }
 
   function renderMember(member) {
     const isBusiness = member.memberType === 'business';

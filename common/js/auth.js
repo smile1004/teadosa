@@ -159,6 +159,12 @@
     return request('/api/precheck/create', { method: 'POST', body: payload });
   }
 
+  async function createLicenseRequest(payload) { return request('/api/license/create', { method: 'POST', body: payload }); }
+  async function getMyLicenseRequests() { return request('/api/license/my-requests', { method: 'GET' }); }
+  async function getAdminLicenseRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/license?' + query.toString(), { method: 'GET' }); }
+  async function getAdminLicenseDetail(requestId) { return request('/api/admin/license/' + encodeURIComponent(requestId), { method: 'GET' }); }
+  async function updateAdminLicenseStatus(requestId, payload) { return request('/api/admin/license/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
+
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
       method: 'POST',
@@ -187,6 +193,11 @@
     getPrecheckResult: getPrecheckResult,
     getMyPrecheckRequests: getMyPrecheckRequests,
     createPrecheckRequest: createPrecheckRequest,
+    createLicenseRequest: createLicenseRequest,
+    getMyLicenseRequests: getMyLicenseRequests,
+    getAdminLicenseRequests: getAdminLicenseRequests,
+    getAdminLicenseDetail: getAdminLicenseDetail,
+    updateAdminLicenseStatus: updateAdminLicenseStatus,
     checkDuplicate: checkDuplicate
   });
 })(window);

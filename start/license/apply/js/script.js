@@ -183,9 +183,20 @@
       applicationConfirmed:document.getElementById('applicationConfirmation').checked
     };
 
-    // 주민등록번호는 온라인 임시저장 데이터에 포함하지 않습니다.
-    try{ window.sessionStorage.setItem('teadosa:generationLicenseDraft', JSON.stringify(payload)); }catch(error){}
-    showMessage('신청서 입력내용이 확인되었습니다. 실제 접수 저장 및 관리자 연동은 다음 단계에서 연결합니다.','info');
+    const submitButton = form.querySelector('.submit-btn');
+    if (submitButton) { submitButton.disabled = true; submitButton.textContent = '신청 접수 중...'; }
+    try {
+      const outcome = await auth.createLicenseRequest(payload);
+      const result = outcome.result || {};
+      if (!outcome.response.ok || !result.success) throw new Error(result.message || '신청을 접수하지 못했습니다.');
+      try { window.sessionStorage.removeItem('teadosa:generationLicenseDraft'); } catch(error) {}
+      showMessage((result.request && result.request.requestNo ? result.request.requestNo + '번으로 ' : '') + '신청이 정상 접수되었습니다. 마이페이지에서 진행상황을 확인할 수 있습니다.','info');
+      window.setTimeout(function(){ window.location.href = '/mypage/?section=license'; }, 1200);
+    } catch (error) {
+      showMessage(error.message || '신청을 접수하는 중 오류가 발생했습니다.','error');
+    } finally {
+      if (submitButton) { submitButton.disabled = false; submitButton.textContent = '발전사업허가 신청하기'; }
+    }
   });
 
   function updateNoteCount(){ if (note && noteCount) noteCount.textContent = note.value.length.toLocaleString('ko-KR') + ' / 1,500'; }

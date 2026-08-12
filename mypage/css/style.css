@@ -148,3 +148,7 @@ body {
 .precheck-supplement-head strong{color:#a1493d;font-size:13px}
 .precheck-supplement-head span{color:#9a817c;font-size:11px}
 .precheck-supplement-box p{margin:8px 0 0;color:#5e4541;font-size:14px;line-height:1.75}
+
+/* 발전사업허가 진행상황 */
+.license-history-item{align-items:flex-start}.license-progress{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-width:76px;min-height:42px;padding:0 12px;border-radius:10px;background:#eef5e9;color:#4d7a36;font-size:13px;font-weight:900}.license-customer-notice{margin-top:14px;padding:13px 15px;border:1px solid #dce7d7;border-radius:11px;background:#f7fbf4}.license-customer-notice strong{color:#4c7437;font-size:13px}.license-customer-notice p{margin:6px 0 0;color:#50604f;font-size:14px;line-height:1.7}.precheck-status.license-consulting,.precheck-status.license-submitted{background:#eaf4ff;color:#2467a3}.precheck-status.license-contracted,.precheck-status.license-documents{background:#f1efff;color:#6652a3}.precheck-status.license-supplement_required{background:#fff0ee;color:#ac443b}.precheck-status.license-completed{background:#e9f7ef;color:#208451}.precheck-status.license-cancelled{background:#eef1f3;color:#6d7881}
+@media(max-width:720px){.license-progress{width:100%}}
