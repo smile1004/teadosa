@@ -48,3 +48,10 @@
 .documents-modal-body{display:grid;min-height:0;overflow:visible}
 .documents-modal-actions{position:relative}
 @media(max-width:700px){.documents-modal{padding:24px 0 0}.documents-modal-panel{height:auto;max-height:none;margin-top:auto;border-radius:20px 20px 0 0}}
+
+/* v3.5: precheck prerequisite emphasis */
+.compact-head>span{background:var(--orange)}
+.precheck-apply-link{display:inline-flex;align-items:center;justify-content:center;min-height:38px;margin-top:10px;padding:0 14px;border:1px solid #df963f;border-radius:9px;background:#fff8ed;color:#a96113;font-size:13px;font-weight:900;text-decoration:none;transition:background .16s ease,border-color .16s ease,transform .16s ease}
+.precheck-apply-link:hover{border-color:#d88422;background:#fff1dd;transform:translateY(-1px)}
+.precheck-apply-link:focus-visible{outline:3px solid rgba(216,132,34,.2);outline-offset:2px}
+@media(max-width:700px){.precheck-apply-link{width:100%;margin-top:12px}}
