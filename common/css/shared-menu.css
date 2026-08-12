@@ -119,12 +119,17 @@
   .header .mobile:focus-visible{outline:3px solid rgba(216,132,34,.28)!important;outline-offset:2px!important}
   .header.mobile-menu-open .mobile{border-color:#d88422!important;color:#c9781b!important}
   .header.mobile-menu-open .nav{
-    position:fixed!important;
-    top:72px!important;
+    position:absolute!important;
+    top:100%!important;
     right:0!important;
-    bottom:0!important;
+    bottom:auto!important;
     left:0!important;
     z-index:10020!important;
+    width:100%!important;
+    height:calc(100vh - 72px)!important;
+    height:calc(100dvh - 72px)!important;
+    max-height:calc(100vh - 72px)!important;
+    max-height:calc(100dvh - 72px)!important;
     display:flex!important;
     flex-direction:column!important;
     align-items:stretch!important;
