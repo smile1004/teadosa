@@ -11,7 +11,7 @@
 <link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
 <link href="common/css/common.css" rel="stylesheet">
-<link href="start/license/apply/css/style.css?v=3.6" rel="stylesheet">
+<link href="start/license/apply/css/style.css?v=3.7" rel="stylesheet">
 </head>
 <body class="taedo-has-fixed-header license-apply-page">
 <script src="common/js/site-config.js"></script>
@@ -46,16 +46,16 @@
               <span>✓</span>
               <div><h2 id="precheckHeading">사전검토 결과 확인</h2><p>발전사업허가 서비스는 완료된 사전검토 결과가 있어야 신청할 수 있습니다.</p></div>
             </div>
-            <div id="precheckActionGuide" class="precheck-action-guide" hidden>
-              <div><strong>사전검토를 아직 완료하지 않으셨나요?</strong><p>먼저 사업지 사전검토를 신청하고 완료된 결과를 확인해 주세요.</p></div>
-              <a class="precheck-apply-link" href="precheck/apply/">사전검토 신청하기 <span aria-hidden="true">→</span></a>
-            </div>
             <label class="field full"><span>사전검토 신청내역 <em>필수</em></span>
               <select id="precheckRequest" name="precheckRequest" required>
                 <option value="">사전검토 결과를 불러오는 중입니다.</option>
               </select>
             </label>
             <div id="precheckStatus" class="precheck-status" aria-live="polite"></div>
+            <div id="precheckActionGuide" class="precheck-action-guide">
+              <div><strong>새 사업지의 사전검토가 필요하신가요?</strong><p>사전검토를 신청한 후 완료된 결과로 발전사업허가 서비스를 신청할 수 있습니다.</p></div>
+              <a class="precheck-apply-link" href="precheck/apply/">사전검토 신청하기 <span aria-hidden="true">→</span></a>
+            </div>
           </section>
 
           <section class="form-section" aria-labelledby="typeHeading">
@@ -281,6 +281,6 @@
 
 <script src="common/js/components/footer.js"></script>
 <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="start/license/apply/js/script.js?v=3.6"></script>
+<script src="start/license/apply/js/script.js?v=3.7"></script>
 </body>
 </html>
