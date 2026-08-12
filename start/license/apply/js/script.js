@@ -6,6 +6,7 @@
   const loginNotice = document.getElementById('loginNotice');
   const precheckSelect = document.getElementById('precheckRequest');
   const precheckStatus = document.getElementById('precheckStatus');
+  const precheckActionGuide = document.getElementById('precheckActionGuide');
   const note = document.getElementById('requestNote');
   const noteCount = document.getElementById('noteCount');
   const formMessage = document.getElementById('formMessage');
@@ -126,6 +127,7 @@
       completedPrechecks = (result.requests || []).filter(function(item){ return item.resultAvailable; });
 
       if (!completedPrechecks.length){
+        if (precheckActionGuide) precheckActionGuide.hidden = false;
         precheckSelect.disabled = true;
         precheckStatus.className = 'precheck-status warning';
         precheckStatus.innerHTML = '신청 가능한 사전검토 완료 내역이 없습니다. 먼저 <a href="/precheck/apply/">사전검토를 신청</a>하고 결과 확인을 완료해 주세요.';
@@ -139,9 +141,11 @@
         option.dataset.requestNo = item.requestNo || '';
         precheckSelect.appendChild(option);
       });
+      if (precheckActionGuide) precheckActionGuide.hidden = true;
       precheckStatus.className = 'precheck-status';
       precheckStatus.textContent = '완료된 사전검토 결과 ' + completedPrechecks.length + '건을 불러왔습니다.';
     }catch(error){
+      if (precheckActionGuide) precheckActionGuide.hidden = false;
       precheckSelect.disabled = true;
       precheckStatus.className = 'precheck-status warning';
       precheckStatus.textContent = error.message || '사전검토 내역을 불러오지 못했습니다.';
