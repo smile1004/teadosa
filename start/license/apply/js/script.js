@@ -11,6 +11,7 @@
   const formMessage = document.getElementById('formMessage');
   const personalFields = document.getElementById('personalFields');
   const businessFields = document.getElementById('businessFields');
+  const personalAddressSearch = document.getElementById('personalAddressSearch');
 
   if (!auth || !form) return;
 
@@ -21,10 +22,28 @@
   async function init(){
     updateNoteCount();
     bindApplicantType();
+    bindAddressSearch();
     const member = await requireMember();
     if (!member) return;
     fillMember(member);
     await loadPrechecks();
+  }
+
+  function bindAddressSearch(){
+    if (!personalAddressSearch) return;
+    personalAddressSearch.addEventListener('click', function(){
+      if (!window.daum || !window.daum.Postcode) {
+        window.alert('주소검색 서비스를 불러오지 못했습니다. 인터넷 연결 상태를 확인해 주세요.');
+        return;
+      }
+      new window.daum.Postcode({
+        oncomplete:function(data){
+          setValue('personalAddress', data.roadAddress || data.jibunAddress || '');
+          const input = document.getElementById('personalAddress');
+          if (input) input.focus();
+        }
+      }).open({popupTitle:'태도사 주소검색'});
+    });
   }
 
   async function requireMember(){
@@ -157,7 +176,8 @@
       loanFundingPlan:checkedValues('loanFundingPlan'),
       loanAmount:numberValue('loanAmount'),
       lender:valueOf('lender'),
-      requestNote:valueOf('requestNote')
+      requestNote:valueOf('requestNote'),
+      applicationConfirmed:document.getElementById('applicationConfirmation').checked
     };
 
     // 주민등록번호는 온라인 임시저장 데이터에 포함하지 않습니다.

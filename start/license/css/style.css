@@ -170,3 +170,7 @@
 .license-apply-btn:hover{background:#c87518;border-color:#c87518;transform:translateY(-1px)}
 .license-apply-btn:focus-visible{outline:3px solid rgba(216,132,34,.25);outline-offset:3px}
 @media(max-width:640px){.hero-apply-actions{margin-top:22px}.license-apply-btn{width:100%;max-width:330px;min-height:46px}}
+
+/* Keep SECTION 04 visible below the fixed common header when linked directly. */
+#documents{scroll-margin-top:88px}
+@media(max-width:980px){#documents{scroll-margin-top:84px}}
