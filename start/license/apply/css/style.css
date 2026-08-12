@@ -32,3 +32,10 @@
 .submit-btn{order:2}.cancel-btn{order:1;min-width:120px}.submit-btn{min-width:220px}
 @media(max-width:980px){.license-apply-page main{padding-top:84px}}
 @media(max-width:700px){.apply-hero{padding:50px 0 40px}.address-input-row{grid-template-columns:1fr}.address-search-btn{width:100%}.form-actions{padding-top:8px}.submit-btn{order:1}.cancel-btn{order:2}}
+
+/* v3.3: laptop-safe document modal scrolling */
+.documents-modal-panel{height:min(820px,calc(100dvh - 48px));max-height:calc(100vh - 48px)}
+.documents-modal-head{flex:0 0 auto}
+.documents-modal-body{min-height:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior:contain;scrollbar-gutter:stable;-webkit-overflow-scrolling:touch}
+.documents-modal-actions{position:relative;z-index:2;flex:0 0 auto}
+@media(max-width:700px){.documents-modal-panel{height:92dvh;max-height:92vh}}
