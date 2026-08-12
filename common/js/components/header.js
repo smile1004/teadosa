@@ -9,7 +9,7 @@
   if (!loader) return;
 
   (function ensureHeaderStylesheet() {
-    var stylesheetHref = new URL('../../css/shared-menu.css?v=2.5', loader.src).href;
+    var stylesheetHref = new URL('../../css/shared-menu.css?v=2.6', loader.src).href;
     var stylesheet = document.querySelector('link[rel="stylesheet"][href*="shared-menu.css"]');
     if (!stylesheet) {
       stylesheet = document.createElement('link');

@@ -136,7 +136,7 @@
     justify-content:flex-start!important;
     gap:0!important;
     margin:0!important;
-    padding:14px 20px 34px!important;
+    padding:14px 20px 128px!important;
     overflow-x:hidden!important;
     overflow-y:auto!important;
     background:#fff!important;
@@ -156,6 +156,46 @@
   }
   .header.mobile-menu-open .nav-item::after,
   .header.mobile-menu-open .mega{display:none!important}
+  .header.mobile-menu-open .header-action-group{
+    position:absolute!important;
+    top:calc(100vh - 104px)!important;
+    top:calc(100dvh - 104px)!important;
+    right:0!important;
+    left:0!important;
+    z-index:10030!important;
+    display:flex!important;
+    width:100%!important;
+    min-height:104px!important;
+    margin:0!important;
+    padding:12px 20px 16px!important;
+    border-top:1px solid #e6ece3!important;
+    background:#fff!important;
+    box-shadow:0 -8px 18px rgba(31,48,35,.07)!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:center!important;
+    gap:10px!important;
+  }
+  .header.mobile-menu-open .header-action-group .top-btn{
+    display:flex!important;
+    width:100%!important;
+    min-height:40px!important;
+    margin:0!important;
+    align-items:center!important;
+    justify-content:center!important;
+  }
+  .header.mobile-menu-open .header-auth{
+    display:flex!important;
+    min-height:26px!important;
+    justify-content:center!important;
+    gap:9px!important;
+  }
+  .header.mobile-menu-open .header-auth .auth-link,
+  .header.mobile-menu-open .header-auth .auth-member-name,
+  .header.mobile-menu-open .header-auth .auth-status{
+    font-size:12px!important;
+    line-height:1.4!important;
+  }
 }
 
 /* Dropdown containment authority v2.3
