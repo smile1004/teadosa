@@ -11,7 +11,7 @@
 <link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
 <link href="common/css/common.css" rel="stylesheet">
-<link href="start/license/apply/css/style.css?v=2.6" rel="stylesheet">
+<link href="start/license/apply/css/style.css?v=3.0" rel="stylesheet">
 </head>
 <body class="taedo-has-fixed-header license-apply-page">
 <script src="common/js/site-config.js"></script>
@@ -204,7 +204,7 @@
           <div class="document-notice" role="note">
             <strong>준비서류는 신청 후 안내합니다.</strong>
             <p>신청 단계에서는 기본 사업정보만 입력하며, 발전사업허가 제출서류는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
-            <a class="document-list-link" href="start/license/#documents" target="_blank" rel="noopener noreferrer">준비서류 리스트 확인 →</a>
+            <button class="document-list-link" type="button" data-documents-open>준비서류 리스트 확인 →</button>
           </div>
 
           <section class="form-section" aria-labelledby="requestHeading">
@@ -251,15 +251,32 @@
         <div class="side-note">
           <strong>준비서류는 신청 후 안내합니다.</strong>
           <p>신청 단계에서는 기본 사업정보만 입력하며, 발전사업허가 제출서류는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
-          <a class="side-document-link" href="start/license/#documents" target="_blank" rel="noopener noreferrer">준비서류 리스트 확인 →</a>
+          <button class="side-document-link" type="button" data-documents-open>준비서류 리스트 확인 →</button>
         </div>
       </aside>
     </div>
   </section>
 </main>
 
+<div id="documentsModal" class="documents-modal" hidden>
+  <div class="documents-modal-backdrop" data-documents-close></div>
+  <section class="documents-modal-panel" role="dialog" aria-modal="true" aria-labelledby="documentsModalTitle" tabindex="-1">
+    <header class="documents-modal-head">
+      <div><span>발전사업허가</span><h2 id="documentsModalTitle">준비서류 리스트</h2><p>신청 단계에서는 제출하지 않으며, 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p></div>
+      <button type="button" class="documents-modal-close" data-documents-close aria-label="준비서류 안내 닫기">×</button>
+    </header>
+    <div class="documents-modal-body">
+      <article class="documents-group owner-documents"><div class="documents-group-title"><b>01</b><div><h3>사업주 준비</h3><p>사업주가 직접 발급·작성하는 서류</p></div></div><ul><li>인감증명서</li><li>주민등록등본·가족관계증명서</li><li>법인 사업자등록증·정관·재무제표</li><li>통장 잔액증명서·통장 사본</li><li>위임장·신원조회동의서</li></ul></article>
+      <article class="documents-group agency-documents"><div class="documents-group-title"><b>02</b><div><h3>태도사 작성·발급</h3><p>태도사가 작성·발급·현장 확인하는 서류</p></div></div><ul><li>발전사업허가 신청서·사업계획서</li><li>단선결선도·배치도·측면도</li><li>건축물대장·토지대장·지적도</li><li>토지·건물·법인 등기부등본</li><li>이용계획확인서·연계선로 전주 사진</li></ul></article>
+      <article class="documents-group conditional-documents"><div class="documents-group-title"><b>03</b><div><h3>조건부 준비서류</h3><p>사업 조건에 해당할 때 준비하는 서류</p></div></div><ul><li>대출의향서·사전확인서</li><li>사용인감계</li><li>토지·건물 사용승낙서</li></ul></article>
+      <p class="documents-modal-note">※ 실제 제출서류는 개인·법인 여부, 소유관계와 자금조달 방식 등에 따라 달라질 수 있습니다.</p>
+    </div>
+    <footer class="documents-modal-actions"><a href="start/license/#documents" target="_blank" rel="noopener noreferrer">전체 준비서류 상세보기</a><button type="button" data-documents-close>신청서 계속 작성</button></footer>
+  </section>
+</div>
+
 <script src="common/js/components/footer.js"></script>
 <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="start/license/apply/js/script.js?v=2.7"></script>
+<script src="start/license/apply/js/script.js?v=3.0"></script>
 </body>
 </html>

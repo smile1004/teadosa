@@ -13,6 +13,9 @@
   const businessFields = document.getElementById('businessFields');
   const personalAddressSearch = document.getElementById('personalAddressSearch');
   const siteAddressSearch = document.getElementById('siteAddressSearch');
+  const documentsModal = document.getElementById('documentsModal');
+  const documentsModalPanel = documentsModal && documentsModal.querySelector('.documents-modal-panel');
+  let documentsReturnFocus = null;
 
   if (!auth || !form) return;
 
@@ -25,10 +28,31 @@
     bindApplicantType();
     bindAddressSearch(personalAddressSearch, 'personalAddress');
     bindAddressSearch(siteAddressSearch, 'siteAddress');
+    bindDocumentsModal();
     const member = await requireMember();
     if (!member) return;
     fillMember(member);
     await loadPrechecks();
+  }
+
+  function bindDocumentsModal(){
+    if (!documentsModal) return;
+    document.querySelectorAll('[data-documents-open]').forEach(function(button){ button.addEventListener('click', openDocumentsModal); });
+    documentsModal.querySelectorAll('[data-documents-close]').forEach(function(button){ button.addEventListener('click', closeDocumentsModal); });
+    document.addEventListener('keydown', function(event){ if (event.key === 'Escape' && !documentsModal.hidden) closeDocumentsModal(); });
+  }
+
+  function openDocumentsModal(event){
+    documentsReturnFocus = event.currentTarget;
+    documentsModal.hidden = false;
+    document.body.classList.add('documents-modal-open');
+    if (documentsModalPanel) documentsModalPanel.focus();
+  }
+
+  function closeDocumentsModal(){
+    documentsModal.hidden = true;
+    document.body.classList.remove('documents-modal-open');
+    if (documentsReturnFocus) documentsReturnFocus.focus();
   }
 
   function bindAddressSearch(button, inputId){
