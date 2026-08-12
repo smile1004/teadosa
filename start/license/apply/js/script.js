@@ -12,6 +12,7 @@
   const personalFields = document.getElementById('personalFields');
   const businessFields = document.getElementById('businessFields');
   const personalAddressSearch = document.getElementById('personalAddressSearch');
+  const siteAddressSearch = document.getElementById('siteAddressSearch');
 
   if (!auth || !form) return;
 
@@ -22,24 +23,25 @@
   async function init(){
     updateNoteCount();
     bindApplicantType();
-    bindAddressSearch();
+    bindAddressSearch(personalAddressSearch, 'personalAddress');
+    bindAddressSearch(siteAddressSearch, 'siteAddress');
     const member = await requireMember();
     if (!member) return;
     fillMember(member);
     await loadPrechecks();
   }
 
-  function bindAddressSearch(){
-    if (!personalAddressSearch) return;
-    personalAddressSearch.addEventListener('click', function(){
+  function bindAddressSearch(button, inputId){
+    if (!button) return;
+    button.addEventListener('click', function(){
       if (!window.daum || !window.daum.Postcode) {
         window.alert('주소검색 서비스를 불러오지 못했습니다. 인터넷 연결 상태를 확인해 주세요.');
         return;
       }
       new window.daum.Postcode({
         oncomplete:function(data){
-          setValue('personalAddress', data.roadAddress || data.jibunAddress || '');
-          const input = document.getElementById('personalAddress');
+          setValue(inputId, data.roadAddress || data.jibunAddress || '');
+          const input = document.getElementById(inputId);
           if (input) input.focus();
         }
       }).open({popupTitle:'태도사 주소검색'});
@@ -177,6 +179,7 @@
       loanAmount:numberValue('loanAmount'),
       lender:valueOf('lender'),
       requestNote:valueOf('requestNote'),
+      privacyConsent:document.getElementById('privacyConsent').checked,
       applicationConfirmed:document.getElementById('applicationConfirmation').checked
     };
 

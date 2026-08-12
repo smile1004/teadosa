@@ -11,7 +11,7 @@
 <link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
 <link href="common/css/common.css" rel="stylesheet">
-<link href="start/license/apply/css/style.css?v=2.5" rel="stylesheet">
+<link href="start/license/apply/css/style.css?v=2.6" rel="stylesheet">
 </head>
 <body class="taedo-has-fixed-header license-apply-page">
 <script src="common/js/site-config.js"></script>
@@ -113,7 +113,7 @@
               <label><input type="radio" name="siteType" value="unknown" required><span>잘 모르겠음(상담 희망)</span></label>
             </div>
 
-            <label class="field full top-gap"><span>설치 희망 주소 <em>필수</em></span><input type="text" id="siteAddress" name="siteAddress" maxlength="200" placeholder="태양광을 설치하실 부지/건물 주소를 입력해 주세요." required></label>
+            <label class="field full top-gap"><span>설치 희망 주소 <em>필수</em></span><span class="address-input-row"><input type="text" id="siteAddress" name="siteAddress" maxlength="200" autocomplete="street-address" placeholder="주소 검색 버튼을 눌러 설치 희망 주소를 입력해 주세요" required><button type="button" id="siteAddressSearch" class="address-search-btn">주소 검색</button></span></label>
 
             <div class="choice-group choice-wide top-gap" role="group" aria-labelledby="purposeLabel">
               <span class="choice-label" id="purposeLabel">사업 목적 <em>필수</em></span>
@@ -204,7 +204,7 @@
           <div class="document-notice" role="note">
             <strong>준비서류는 신청 후 안내합니다.</strong>
             <p>신청 단계에서는 기본 사업정보만 입력하며, 발전사업허가 제출서류는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
-            <a class="document-list-link" href="start/license/#documents">준비서류 리스트 확인 →</a>
+            <a class="document-list-link" href="start/license/#documents" target="_blank" rel="noopener noreferrer">준비서류 리스트 확인 →</a>
           </div>
 
           <section class="form-section" aria-labelledby="requestHeading">
@@ -218,9 +218,12 @@
           <section class="form-section confirmation-section" aria-labelledby="confirmationHeading">
             <div class="form-section-head">
               <span>07</span>
-              <div><h2 id="confirmationHeading">확인 및 동의</h2><p>신청 전 입력 내용과 이후 안내 절차를 확인해 주세요.</p></div>
+              <div><h2 id="confirmationHeading">확인 및 동의</h2><p>신청 전 입력내용과 개인정보 수집·이용 동의를 확인해 주세요.</p></div>
             </div>
-            <label class="confirmation-check"><input type="checkbox" id="applicationConfirmation" name="applicationConfirmation" required><span>입력한 신청 내용이 사실과 다름없으며, 담당자 확인 및 상담 후 신청서 작성과 제출 절차가 진행됨을 확인합니다. <em>필수</em></span></label>
+            <div class="confirmation-list">
+              <label class="confirmation-check"><input type="checkbox" id="privacyConsent" name="privacyConsent" required><span>발전사업허가 서비스 상담 및 업무 진행을 위한 개인정보 수집·이용에 동의합니다. <em>(필수)</em></span></label>
+              <label class="confirmation-check"><input type="checkbox" id="applicationConfirmation" name="applicationConfirmation" required><span>입력한 신청내용을 확인했으며, 사업 조건에 따라 추가 자료가 필요할 수 있음을 확인했습니다. <em>(필수)</em></span></label>
+            </div>
           </section>
 
           <div class="final-guide" role="note">
@@ -248,7 +251,7 @@
         <div class="side-note">
           <strong>준비서류는 신청 후 안내합니다.</strong>
           <p>신청 단계에서는 기본 사업정보만 입력하며, 발전사업허가 제출서류는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
-          <a class="side-document-link" href="start/license/#documents">준비서류 리스트 확인 →</a>
+          <a class="side-document-link" href="start/license/#documents" target="_blank" rel="noopener noreferrer">준비서류 리스트 확인 →</a>
         </div>
       </aside>
     </div>
@@ -257,6 +260,6 @@
 
 <script src="common/js/components/footer.js"></script>
 <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="start/license/apply/js/script.js?v=2.5"></script>
+<script src="start/license/apply/js/script.js?v=2.6"></script>
 </body>
 </html>
