@@ -39,3 +39,12 @@
 .documents-modal-body{min-height:0;overflow-x:hidden;overflow-y:scroll;overscroll-behavior:contain;scrollbar-gutter:stable;-webkit-overflow-scrolling:touch}
 .documents-modal-actions{position:relative;z-index:2;flex:0 0 auto}
 @media(max-width:700px){.documents-modal-panel{height:92dvh;max-height:92vh}}
+
+/* v3.4: scroll the whole overlay for reliable laptop visibility */
+.documents-modal{display:block;padding:24px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+.documents-modal-backdrop{position:fixed}
+.documents-modal-panel{display:block;height:auto;min-height:0;max-height:none;margin:0 auto;overflow:visible}
+.documents-modal-head{position:relative}
+.documents-modal-body{display:grid;min-height:0;overflow:visible}
+.documents-modal-actions{position:relative}
+@media(max-width:700px){.documents-modal{padding:24px 0 0}.documents-modal-panel{height:auto;max-height:none;margin-top:auto;border-radius:20px 20px 0 0}}
