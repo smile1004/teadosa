@@ -9,7 +9,7 @@
   if (!loader) return;
 
   (function ensureHeaderStylesheet() {
-    var stylesheetHref = new URL('../../css/shared-menu.css?v=2.2', loader.src).href;
+    var stylesheetHref = new URL('../../css/shared-menu.css?v=2.4', loader.src).href;
     var stylesheet = document.querySelector('link[rel="stylesheet"][href*="shared-menu.css"]');
     if (!stylesheet) {
       stylesheet = document.createElement('link');
@@ -49,6 +49,49 @@
   });
 
   loader.insertAdjacentHTML('beforebegin', headerHtml);
+
+  var header = document.querySelector('.header');
+  var mobileMenuButton = header && header.querySelector('.mobile');
+  var mobileNavigation = header && header.querySelector('.nav');
+
+  if (mobileMenuButton && mobileNavigation) {
+    mobileMenuButton.setAttribute('role', 'button');
+    mobileMenuButton.setAttribute('tabindex', '0');
+    mobileMenuButton.setAttribute('aria-label', '모바일 메뉴 열기');
+    mobileMenuButton.setAttribute('aria-expanded', 'false');
+
+    function setMobileMenu(open) {
+      header.classList.toggle('mobile-menu-open', open);
+      document.body.classList.toggle('mobile-menu-active', open);
+      mobileMenuButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+      mobileMenuButton.setAttribute('aria-label', open ? '모바일 메뉴 닫기' : '모바일 메뉴 열기');
+      mobileMenuButton.textContent = open ? 'CLOSE' : 'MENU';
+    }
+
+    function toggleMobileMenu() {
+      setMobileMenu(!header.classList.contains('mobile-menu-open'));
+    }
+
+    mobileMenuButton.addEventListener('click', toggleMobileMenu);
+    mobileMenuButton.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggleMobileMenu();
+      }
+    });
+
+    mobileNavigation.addEventListener('click', function (event) {
+      if (event.target.closest('a')) setMobileMenu(false);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') setMobileMenu(false);
+    });
+
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 980) setMobileMenu(false);
+    });
+  }
 
   var authContainer = document.querySelector('.header-auth');
   if (!authContainer) return;
