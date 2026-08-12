@@ -102,6 +102,11 @@
 @media (max-width:980px){
   body.mobile-menu-active{overflow:hidden!important}
   .header .mobile{
+    appearance:none!important;
+    -webkit-appearance:none!important;
+    font-family:inherit!important;
+    line-height:1!important;
+    touch-action:manipulation!important;
     min-width:64px!important;
     padding:12px 10px!important;
     border:1px solid #dfe7dc!important;
