@@ -33,6 +33,8 @@
   const licenseHistoryList = document.getElementById('license-history-list');
 
   let currentMember = null;
+  let currentPrecheckRequests = [];
+  let currentLicenseRequests = [];
 
   if (!session || !auth || !validation || !content || !message || !accountInfo || !editForm) return;
 
@@ -44,8 +46,21 @@
   cancelPasswordButton.addEventListener('click', closePasswordChange);
   passwordForm.addEventListener('submit', savePassword);
   passwordVisibilityToggle.addEventListener('change', togglePasswordVisibility);
+  initSectionNavigation();
 
   loadMember();
+
+  function initSectionNavigation() {
+    const links = Array.from(document.querySelectorAll('.mypage-section-nav a'));
+    if (!links.length || !('IntersectionObserver' in window)) return;
+    const sections = links.map(function (link) { return document.querySelector(new URL(link.href).hash); }).filter(Boolean);
+    const observer = new IntersectionObserver(function (entries) {
+      const visible = entries.filter(function (entry) { return entry.isIntersecting; }).sort(function (a, b) { return a.boundingClientRect.top - b.boundingClientRect.top; })[0];
+      if (!visible) return;
+      links.forEach(function (link) { link.classList.toggle('active', new URL(link.href).hash === '#' + visible.target.id); });
+    }, { rootMargin: '-140px 0px -55% 0px', threshold: 0 });
+    sections.forEach(function (section) { observer.observe(section); });
+  }
 
   async function loadMember() {
     try {
@@ -73,6 +88,8 @@
   }
 
   function renderLicenseHistory(requests) {
+    currentLicenseRequests = requests;
+    updateProgressOverview();
     if (!requests.length) {
       licenseHistoryList.innerHTML = '<div class="precheck-history-empty"><strong>발전사업허가 신청내역이 없습니다.</strong><p>완료된 사전검토 결과가 있다면 서비스를 신청할 수 있습니다.</p><a href="/start/license/apply/">발전사업허가 신청하기</a></div>';
     } else {
@@ -104,7 +121,7 @@
     const isBusiness = member.memberType === 'business';
     const memberTypeText = isBusiness ? '기업 전문 회원' : '개인 회원';
 
-    summary.textContent = (member.name || member.username || '회원') + '님의 가입정보입니다.';
+    summary.textContent = (member.name || member.username || '회원') + '님, 신청한 서비스의 진행상황과 담당자 안내를 확인해 주세요.';
     memberTypeBadge.textContent = memberTypeText;
     accountInfo.innerHTML = [
       createRow('회원 유형', memberTypeText),
@@ -159,6 +176,8 @@
   }
 
   function renderPrecheckHistory(requests) {
+    currentPrecheckRequests = requests;
+    updateProgressOverview();
     if (!requests.length) {
       precheckHistoryList.innerHTML = '<div class="precheck-history-empty"><strong>사전검토 신청내역이 없습니다.</strong><p>사업지 사전검토가 필요한 경우 신청서를 작성해 주세요.</p><a href="/precheck/apply/">사전검토 신청하기</a></div>';
       precheckHistoryList.hidden = false;
@@ -206,6 +225,20 @@
       completed: '검토완료'
     })[value] || value || '-';
   }
+
+  function updateProgressOverview() {
+    const activePrecheck = currentPrecheckRequests.filter(function (item) { return item.status !== 'completed'; }).length;
+    const activeLicense = currentLicenseRequests.filter(function (item) { return item.status !== 'completed' && item.status !== 'cancelled'; }).length;
+    setText('mypage-active-count', activePrecheck + activeLicense);
+    setText('mypage-precheck-count', currentPrecheckRequests.length);
+    setText('mypage-license-count', currentLicenseRequests.length);
+    setText('mypage-precheck-nav-count', currentPrecheckRequests.length);
+    setText('mypage-license-nav-count', currentLicenseRequests.length);
+    setText('mypage-precheck-latest', currentPrecheckRequests.length ? '최근 상태 · ' + precheckStatusLabel(currentPrecheckRequests[0].status) : '신청내역 없음');
+    setText('mypage-license-latest', currentLicenseRequests.length ? '최근 상태 · ' + licenseStatusLabel(currentLicenseRequests[0].status) : '신청내역 없음');
+  }
+
+  function setText(id, value) { const element = document.getElementById(id); if (element) element.textContent = value; }
 
   function pendingResultLabel(status) {
     if (status === 'completed') return '공개 준비중';
