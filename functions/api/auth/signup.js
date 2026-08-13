@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { createAdminNotification } from '../../_lib/admin-notification.js';
 
 const JSON_HEADERS = {
   "Content-Type": "application/json; charset=utf-8",
@@ -462,6 +463,15 @@ export async function onRequestPost(context) {
       throw new Error("회원정보 저장에 실패했습니다.");
     }
 
+    const memberId = Number(insertResult.meta?.last_row_id || 0);
+    await createAdminNotification(env, {
+      type: 'member_signup',
+      title: memberType === 'business' ? '새 기업회원 가입' : '새 개인회원 가입',
+      message: (name || username) + ' 회원이 가입했습니다.',
+      linkUrl: '/admin/members/detail/?id=' + encodeURIComponent(memberId),
+      entityType: 'member', entityId: memberId
+    });
+
     /*
      * 비밀번호 해시 등 민감한 정보는 응답하지 않습니다.
      */
@@ -474,7 +484,7 @@ export async function onRequestPost(context) {
             ? "회원가입이 완료되었습니다."
             : "기업회원 가입 신청이 완료되었습니다. 관리자 승인 후 로그인할 수 있습니다.",
         member: {
-          id: insertResult.meta?.last_row_id ?? null,
+          id: memberId || null,
           memberType,
           username,
           email,

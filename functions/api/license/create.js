@@ -1,4 +1,5 @@
 import { requireMember, jsonResponse } from '../../_lib/member-auth.js';
+import { createAdminNotification } from '../../_lib/admin-notification.js';
 
 export async function onRequestPost({ request, env }) {
   try {
@@ -57,6 +58,13 @@ export async function onRequestPost({ request, env }) {
     if (!updated.success || Number(updated.meta?.changes || 0) !== 1) throw new Error('신청번호 생성에 실패했습니다.');
     await env.DB.prepare(`INSERT INTO generation_license_status_history (request_id, from_status, to_status, customer_notice, changed_by, changed_at) VALUES (?, NULL, 'received', ?, ?, ?)`)
       .bind(id, '발전사업허가 신청이 정상적으로 접수되었습니다.', auth.member.member_id, nowIso).run();
+
+    await createAdminNotification(env, {
+      type: 'license_request', title: '새 발전사업허가 신청',
+      message: applicantName + '님의 발전사업허가 신청이 접수되었습니다. (' + requestNo + ')',
+      linkUrl: '/admin/license/detail/?id=' + encodeURIComponent(id),
+      entityType: 'license', entityId: id, createdAt: nowIso
+    });
 
     return jsonResponse({ success: true, code: 'LICENSE_REQUEST_CREATED', message: '발전사업허가 신청이 접수되었습니다.', request: { id, requestNo, status: 'received', submittedAt: nowIso } }, 201);
   } catch (err) {

@@ -1,4 +1,5 @@
 import { requireMember, jsonResponse } from '../../_lib/member-auth.js';
+import { createAdminNotification } from '../../_lib/admin-notification.js';
 
 const SITE_TYPE_MAP = Object.freeze({
   '토지': 'land',
@@ -153,6 +154,13 @@ export async function onRequestPost(context) {
         .run();
       throw new Error('사전검토 신청번호 생성에 실패했습니다.');
     }
+
+    await createAdminNotification(env, {
+      type: 'precheck_request', title: '새 사전검토 신청',
+      message: applicantName + '님의 사전검토 신청이 접수되었습니다. (' + requestNo + ')',
+      linkUrl: '/admin/precheck/detail/?id=' + encodeURIComponent(requestId),
+      entityType: 'precheck', entityId: requestId, createdAt: nowIso
+    });
 
     return jsonResponse({
       success: true,
