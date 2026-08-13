@@ -77,7 +77,14 @@
       licenseHistoryList.innerHTML = '<div class="precheck-history-empty"><strong>발전사업허가 신청내역이 없습니다.</strong><p>완료된 사전검토 결과가 있다면 서비스를 신청할 수 있습니다.</p><a href="/start/license/apply/">발전사업허가 신청하기</a></div>';
     } else {
       licenseHistoryList.innerHTML = requests.map(function(item){
-        return '<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">' + escapeHtml(item.requestNo || '-') + '</strong><span class="precheck-status license-' + escapeHtml(item.status || 'received') + '">' + escapeHtml(licenseStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress || '설치주소 미등록') + '</p><div class="precheck-history-meta"><span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatPrecheckDate(item.updatedAt)) + '</span></div>' + (item.customerNotice ? '<div class="license-customer-notice"><strong>담당자 안내</strong><p>' + escapeHtml(item.customerNotice).replace(/\n/g,'<br>') + '</p></div>' : '') + '</div><div class="license-progress" aria-label="' + escapeHtml(licenseStatusLabel(item.status)) + '"><span>' + escapeHtml(licenseProgress(item.status)) + '</span></div></article>';
+        var history = Array.isArray(item.statusHistory) ? item.statusHistory : [];
+        if (!history.length && item.submittedAt) {
+          history = [{ status: 'received', customerNotice: '', changedAt: item.submittedAt }];
+        }
+        var timeline = history.length ? '<div class="license-status-timeline" aria-label="진행상태 변경 이력">' + history.map(function(entry){
+          return '<div class="license-timeline-item"><span class="license-timeline-marker" aria-hidden="true"></span><div class="license-timeline-content"><div class="license-timeline-head"><strong>' + escapeHtml(licenseStatusLabel(entry.status)) + '</strong><time datetime="' + escapeHtml(entry.changedAt || '') + '">' + escapeHtml(formatLicenseDateTime(entry.changedAt)) + '</time></div>' + (entry.customerNotice ? '<p>' + escapeHtml(entry.customerNotice).replace(/\n/g,'<br>') + '</p>' : '') + '</div></div>';
+        }).join('') + '</div>' : '<p class="license-timeline-empty">저장된 진행 이력이 없습니다.</p>';
+        return '<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">' + escapeHtml(item.requestNo || '-') + '</strong><span class="precheck-status license-' + escapeHtml(item.status || 'received') + '">' + escapeHtml(licenseStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress || '설치주소 미등록') + '</p><div class="precheck-history-meta"><span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatPrecheckDate(item.updatedAt)) + '</span></div>' + timeline + '</div><div class="license-progress" aria-label="' + escapeHtml(licenseStatusLabel(item.status)) + '"><span>' + escapeHtml(licenseProgress(item.status)) + '</span></div></article>';
       }).join('');
     }
     licenseHistoryList.hidden = false; licenseHistoryMessage.hidden = true;
@@ -86,6 +93,12 @@
 
   function licenseStatusLabel(value) { return ({received:'접수',consulting:'상담중',contracted:'계약완료',documents:'서류준비',submitted:'허가접수',supplement_required:'보완요청',completed:'허가완료',cancelled:'취소'})[value] || value || '-'; }
   function licenseProgress(value) { return ({received:'1 / 7',consulting:'2 / 7',contracted:'3 / 7',documents:'4 / 7',submitted:'5 / 7',supplement_required:'6 / 7',completed:'7 / 7',cancelled:'진행 종료'})[value] || '-'; }
+  function formatLicenseDateTime(value) {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return new Intl.DateTimeFormat('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).format(date);
+  }
 
   function renderMember(member) {
     const isBusiness = member.memberType === 'business';

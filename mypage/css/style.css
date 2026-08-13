@@ -152,3 +152,18 @@ body {
 /* 발전사업허가 진행상황 */
 .license-history-item{align-items:flex-start}.license-progress{flex:0 0 auto;display:flex;align-items:center;justify-content:center;min-width:76px;min-height:42px;padding:0 12px;border-radius:10px;background:#eef5e9;color:#4d7a36;font-size:13px;font-weight:900}.license-customer-notice{margin-top:14px;padding:13px 15px;border:1px solid #dce7d7;border-radius:11px;background:#f7fbf4}.license-customer-notice strong{color:#4c7437;font-size:13px}.license-customer-notice p{margin:6px 0 0;color:#50604f;font-size:14px;line-height:1.7}.precheck-status.license-consulting,.precheck-status.license-submitted{background:#eaf4ff;color:#2467a3}.precheck-status.license-contracted,.precheck-status.license-documents{background:#f1efff;color:#6652a3}.precheck-status.license-supplement_required{background:#fff0ee;color:#ac443b}.precheck-status.license-completed{background:#e9f7ef;color:#208451}.precheck-status.license-cancelled{background:#eef1f3;color:#6d7881}
 @media(max-width:720px){.license-progress{width:100%}}
+
+/* 발전사업허가 진행 이력 타임라인 */
+.license-status-timeline{position:relative;margin-top:18px;padding:2px 0 2px 7px}
+.license-timeline-item{position:relative;display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:12px;padding-bottom:18px}
+.license-timeline-item:last-child{padding-bottom:0}
+.license-timeline-item::before{content:"";position:absolute;left:8px;top:17px;bottom:-1px;width:2px;background:#e2e9de}
+.license-timeline-item:last-child::before{display:none}
+.license-timeline-marker{position:relative;z-index:1;width:18px;height:18px;margin-top:2px;border:4px solid #fff;border-radius:50%;background:#d88422;box-shadow:0 0 0 2px #f1c48f}
+.license-timeline-content{min-width:0}
+.license-timeline-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.license-timeline-head strong{color:#354634;font-size:14px}
+.license-timeline-head time{flex:0 0 auto;color:#7b877a;font-size:12px}
+.license-timeline-content p{margin:7px 0 0;padding:10px 12px;border-radius:9px;background:#f7f9f6;color:#536052;font-size:13px;line-height:1.65}
+.license-timeline-empty{margin-top:16px;padding:13px 15px;border-radius:10px;background:#f7f9f6;color:#657064;font-size:13px;line-height:1.6}
+@media(max-width:720px){.license-timeline-head{align-items:flex-start;flex-direction:column;gap:3px}.license-timeline-head time{font-size:11.5px}}

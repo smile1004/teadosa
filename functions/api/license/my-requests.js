@@ -9,10 +9,29 @@ export async function onRequestGet({ request, env }) {
       FROM generation_license_requests WHERE member_id = ?
       ORDER BY submitted_at DESC, id DESC LIMIT 100
     `).bind(auth.member.member_id).all();
+    const historyRows = await env.DB.prepare(`
+      SELECT h.request_id, h.from_status, h.to_status, h.customer_notice, h.changed_at
+      FROM generation_license_status_history h
+      INNER JOIN generation_license_requests r ON r.id = h.request_id
+      WHERE r.member_id = ?
+      ORDER BY h.changed_at ASC, h.id ASC
+    `).bind(auth.member.member_id).all();
+    const historyByRequest = (historyRows.results || []).reduce((map, row) => {
+      const key = String(row.request_id);
+      if (!map[key]) map[key] = [];
+      map[key].push({
+        fromStatus: row.from_status || null,
+        status: row.to_status,
+        customerNotice: row.customer_notice || '',
+        changedAt: row.changed_at
+      });
+      return map;
+    }, {});
     return jsonResponse({ success: true, code: 'MY_LICENSE_REQUESTS_LOADED', requests: (rows.results || []).map(row => ({
       id: row.id, requestNo: row.request_no, precheckRequestId: row.precheck_request_id,
       siteAddress: row.site_address, status: row.status, customerNotice: row.customer_notice || '',
-      submittedAt: row.submitted_at, updatedAt: row.updated_at
+      submittedAt: row.submitted_at, updatedAt: row.updated_at,
+      statusHistory: historyByRequest[String(row.id)] || []
     })) });
   } catch (err) {
     console.error('마이페이지 발전사업허가 조회 오류:', err);
