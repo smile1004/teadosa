@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>회원 상세 | 태양광도사 관리자</title>
-  <link href="admin/css/style.css?v=3.0" rel="stylesheet">
+  <link href="admin/css/style.css?v=3.1" rel="stylesheet">
 </head>
 <body class="admin-body">
   <div class="admin-app">
@@ -40,7 +40,8 @@
               <section class="admin-panel detail-card"><div class="panel-head"><div><p class="panel-kicker">ACCOUNT</p><h2>기본 회원정보</h2></div></div><dl class="detail-list"><div><dt>아이디</dt><dd id="detail-account-username">-</dd></div><div><dt>이름·담당자</dt><dd id="detail-account-name">-</dd></div><div><dt>이메일</dt><dd id="detail-email">-</dd></div><div><dt>휴대전화</dt><dd id="detail-phone">-</dd></div><div><dt>회원 유형</dt><dd id="detail-type-text">-</dd></div><div><dt>권한</dt><dd id="detail-role-text">-</dd></div></dl></section>
               <section class="admin-panel detail-card"><div class="panel-head"><div><p class="panel-kicker">ADDRESS</p><h2>주소정보</h2></div></div><dl class="detail-list"><div><dt>우편번호</dt><dd id="detail-postal-code">-</dd></div><div class="detail-wide"><dt>기본주소</dt><dd id="detail-address">-</dd></div><div class="detail-wide"><dt>상세주소</dt><dd id="detail-address-detail">-</dd></div></dl></section>
               <section id="business-detail-card" class="admin-panel detail-card detail-full" hidden><div class="panel-head"><div><p class="panel-kicker">BUSINESS</p><h2>기업정보</h2></div></div><dl class="detail-list business-detail-list"><div><dt>기업명</dt><dd id="detail-company-name">-</dd></div><div><dt>사업자등록번호</dt><dd id="detail-business-number">-</dd></div><div><dt>대표자명</dt><dd id="detail-ceo-name">-</dd></div><div><dt>업태</dt><dd id="detail-business-type">-</dd></div><div><dt>종목</dt><dd id="detail-business-item">-</dd></div><div><dt>담당 부서</dt><dd id="detail-department">-</dd></div><div><dt>회사 전화</dt><dd id="detail-office-phone">-</dd></div><div><dt>승인 상태</dt><dd id="detail-approval-text">-</dd></div></dl></section>
-              <section class="admin-panel detail-card detail-full"><div class="panel-head"><div><p class="panel-kicker">SYSTEM</p><h2>시스템 정보</h2></div></div><dl class="detail-list"><div><dt>가입일</dt><dd id="detail-created-at">-</dd></div><div><dt>최종 수정일</dt><dd id="detail-updated-at">-</dd></div><div><dt>현재 로그인 세션</dt><dd><span id="detail-session-count">0</span>개</dd></div></dl></section>
+              <section class="admin-panel detail-card detail-full member-services-card"><div class="panel-head"><div><p class="panel-kicker">SERVICE APPLICATIONS</p><h2>이용 서비스 현황</h2><p class="member-services-desc">회원의 사전검토와 발전사업허가 신청 및 현재 처리상태를 확인합니다.</p></div></div><div class="member-service-summary"><article><span>전체 신청</span><strong id="detail-service-total">0</strong></article><article><span>진행 중</span><strong id="detail-service-active">0</strong></article><article><span>완료</span><strong id="detail-service-completed">0</strong></article><article><span>최근 신청일</span><strong id="detail-service-latest">-</strong></article></div><div id="detail-service-list" class="member-service-list"><p class="empty-row">신청내역을 확인하고 있습니다.</p></div></section>
+              <section class="admin-panel detail-card detail-full"><div class="panel-head"><div><p class="panel-kicker">SYSTEM</p><h2>시스템 정보</h2></div></div><dl class="detail-list"><div><dt>가입일</dt><dd id="detail-created-at">-</dd></div><div><dt>최종 수정일</dt><dd id="detail-updated-at">-</dd></div><div><dt>최종 로그인 일시</dt><dd id="detail-last-login-at">로그인 기록 없음</dd></div></dl></section>
             </div>
           </div>
         </div>
@@ -50,6 +51,6 @@
   <script src="common/js/api.js?v=2.2"></script>
   <script src="common/js/auth.js?v=2.2"></script>
   <script src="common/js/admin-layout.js?v=2.5"></script>
-  <script src="common/js/admin-member-detail.js?v=2.2"></script>
+  <script src="common/js/admin-member-detail.js?v=2.4"></script>
 </body>
 </html>

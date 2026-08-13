@@ -249,6 +249,10 @@ export async function onRequestPost(context) {
       throw new Error("세션 저장에 실패했습니다.");
     }
 
+    await env.DB.prepare('UPDATE members SET last_login_at = ? WHERE id = ?')
+      .bind(nowIso, member.id)
+      .run();
+
     return jsonResponse(
       {
         success: true,

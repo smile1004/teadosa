@@ -16,7 +16,7 @@ export async function onRequestGet(context) {
         id, member_type, username, name, email, phone,
         company_name, business_number, postal_code, address, address_detail,
         ceo_name, business_type, business_item, department, office_phone,
-        approval_status, role, created_at, updated_at
+        approval_status, role, last_login_at, created_at, updated_at
       FROM members
       WHERE id = ?
       LIMIT 1
@@ -26,17 +26,34 @@ export async function onRequestGet(context) {
       return jsonResponse({ success: false, code: 'MEMBER_NOT_FOUND', message: '회원을 찾을 수 없습니다.' }, 404);
     }
 
-    const nowIso = new Date().toISOString();
-    const sessionCount = await env.DB.prepare(`
-      SELECT COUNT(*) AS total
-      FROM sessions
-      WHERE member_id = ? AND expires_at > ?
-    `).bind(memberId, nowIso).first();
+    const prechecks = await env.DB.prepare(`
+      SELECT id, request_no, site_address, status, submitted_at, updated_at
+      FROM precheck_requests WHERE member_id = ?
+      ORDER BY submitted_at DESC, id DESC
+    `).bind(memberId).all();
+    const licenses = await env.DB.prepare(`
+      SELECT id, request_no, site_address, status, customer_notice, submitted_at, updated_at
+      FROM generation_license_requests WHERE member_id = ?
+      ORDER BY submitted_at DESC, id DESC
+    `).bind(memberId).all();
+    const serviceApplications = [
+      ...(prechecks.results || []).map(row => mapService(row, 'precheck')),
+      ...(licenses.results || []).map(row => mapService(row, 'license'))
+    ].sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    const completedCount = serviceApplications.filter(item => item.status === 'completed').length;
+    const activeCount = serviceApplications.filter(item => item.status !== 'completed' && item.status !== 'cancelled').length;
 
     return jsonResponse({
       success: true,
       code: 'ADMIN_MEMBER_DETAIL_LOADED',
-      member: mapMember(member, Number(sessionCount?.total || 0)),
+      member: mapMember(member),
+      serviceSummary: {
+        totalCount: serviceApplications.length,
+        activeCount,
+        completedCount,
+        latestSubmittedAt: serviceApplications[0]?.submittedAt || null
+      },
+      serviceApplications,
     });
   } catch (error) {
     console.error('관리자 회원상세 오류:', error);
@@ -44,12 +61,26 @@ export async function onRequestGet(context) {
   }
 }
 
+function mapService(row, type) {
+  return {
+    id: row.id,
+    type,
+    requestNo: row.request_no,
+    siteAddress: row.site_address,
+    status: row.status,
+    customerNotice: row.customer_notice || '',
+    submittedAt: row.submitted_at,
+    updatedAt: row.updated_at,
+    detailUrl: type === 'precheck' ? `/admin/precheck/detail/?id=${row.id}` : `/admin/license/detail/?id=${row.id}`
+  };
+}
+
 export function onRequestPost() { return methodNotAllowed(); }
 export function onRequestPut() { return methodNotAllowed(); }
 export function onRequestPatch() { return methodNotAllowed(); }
 export function onRequestDelete() { return methodNotAllowed(); }
 
-function mapMember(row, activeSessionCount) {
+function mapMember(row) {
   return {
     id: row.id,
     memberType: row.member_type,
@@ -69,7 +100,7 @@ function mapMember(row, activeSessionCount) {
     officePhone: row.office_phone,
     approvalStatus: row.approval_status,
     role: row.role,
-    activeSessionCount,
+    lastLoginAt: row.last_login_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

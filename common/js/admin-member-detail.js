@@ -24,9 +24,29 @@
       if (!outcome.response.ok || !result.success || !result.member) throw new Error(result.message || '회원정보를 불러오지 못했습니다.');
       member = result.member;
       renderMember(member);
+      renderServices(result.serviceSummary || {}, result.serviceApplications || []);
       message.hidden = true;
       content.hidden = false;
     } catch (error) { showError(error.message || '회원정보를 불러오지 못했습니다.'); }
+  }
+
+  function renderServices(summary, applications) {
+    setText('detail-service-total', summary.totalCount || 0);
+    setText('detail-service-active', summary.activeCount || 0);
+    setText('detail-service-completed', summary.completedCount || 0);
+    setText('detail-service-latest', summary.latestSubmittedAt ? formatDateTime(summary.latestSubmittedAt) : '신청내역 없음');
+    const list = document.getElementById('detail-service-list');
+    if (!list) return;
+    list.innerHTML = applications.length ? applications.map(function (item) {
+      const typeLabel = item.type === 'precheck' ? '사전검토 신청' : '발전사업허가 신청';
+      return '<article class="member-service-item"><div class="member-service-top"><div><span class="member-service-type ' + item.type + '">' + typeLabel + '</span><strong>' + escapeHtml(item.requestNo || '-') + '</strong></div><span class="status-badge ' + escapeHtml(item.status || '') + '">' + escapeHtml(serviceStatusLabel(item.type, item.status)) + '</span></div><p class="member-service-address">' + escapeHtml(item.siteAddress || '주소 미등록') + '</p><div class="member-service-meta"><span>신청일 ' + escapeHtml(formatDateTime(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatDateTime(item.updatedAt)) + '</span></div>' + (item.customerNotice ? '<div class="member-service-notice"><strong>최근 고객 안내</strong><p>' + escapeHtml(item.customerNotice).replace(/\n/g, '<br>') + '</p></div>' : '') + '<a class="admin-button detail member-service-detail" href="' + escapeHtml(item.detailUrl) + '">상세보기</a></article>';
+    }).join('') : '<p class="empty-row member-service-empty">이 회원의 서비스 신청내역이 없습니다.</p>';
+  }
+
+  function serviceStatusLabel(type, status) {
+    const precheck = { received:'접수', reviewing:'검토중', supplement_required:'보완요청', completed:'검토완료' };
+    const license = { received:'접수', consulting:'상담중', contracted:'계약완료', documents:'서류준비', submitted:'허가접수', supplement_required:'보완요청', completed:'허가완료', cancelled:'취소' };
+    return (type === 'precheck' ? precheck : license)[status] || status || '-';
   }
 
   function renderMember(item) {
@@ -46,7 +66,7 @@
     setText('detail-address-detail', item.addressDetail);
     setText('detail-created-at', formatDateTime(item.createdAt));
     setText('detail-updated-at', formatDateTime(item.updatedAt));
-    setText('detail-session-count', item.activeSessionCount || 0);
+    setText('detail-last-login-at', item.lastLoginAt ? formatDateTime(item.lastLoginAt) : '로그인 기록 없음');
 
     const typeBadge = document.getElementById('detail-member-type');
     typeBadge.textContent = isBusiness ? '기업회원' : '개인회원';
@@ -101,4 +121,5 @@
   function formatDateTime(value) { if (!value) return '미등록'; const date = new Date(value); return Number.isNaN(date.getTime()) ? String(value) : new Intl.DateTimeFormat('ko-KR', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }).format(date); }
   function formatPhone(value) { const digits = String(value || '').replace(/\D/g, ''); if (!digits) return '미등록'; if (digits.length === 11) return digits.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3'); if (digits.length === 10) return digits.replace(/(\d{2,3})(\d{3,4})(\d{4})/, '$1-$2-$3'); return String(value); }
   function formatBusinessNumber(value) { const digits = String(value || '').replace(/\D/g, ''); return digits.length === 10 ? digits.replace(/(\d{3})(\d{2})(\d{5})/, '$1-$2-$3') : (value || '미등록'); }
+  function escapeHtml(value) { return String(value ?? '').replace(/[&<>"']/g, function (c) { return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[c]; }); }
 })(window, document);
