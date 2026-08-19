@@ -4,13 +4,56 @@
 <base href="../../">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="태양광 발전사업허가 서비스의 진행 절차와 준비서류를 안내합니다.">
+<meta name="description" content="태양광 발전사업허가 서비스의 진행 절차와 지원 내용을 안내합니다.">
 <title>발전사업허가 | 태양광도사</title>
 <link href="common/css/taedo1_start.css" rel="stylesheet">
 <link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
 <link href="common/css/common.css" rel="stylesheet">
 <link href="start/license/css/style.css" rel="stylesheet">
+<style>
+/* 서비스 진행 절차: PC는 순서가 이어지는 뱀형, 노트북·모바일은 세로형 */
+@media (min-width:961px){
+  .service-flow .flow-step::before,
+  .service-flow .flow-step::after{content:none}
+  .service-flow .flow-step:nth-child(4){grid-column:3;grid-row:2}
+  .service-flow .flow-step:nth-child(5){grid-column:2;grid-row:2}
+  .service-flow .flow-step:nth-child(6){grid-column:1;grid-row:2}
+  .service-flow .flow-step:nth-child(7){grid-column:1;grid-row:3}
+  .service-flow .flow-step:nth-child(8){grid-column:2;grid-row:3}
+  .service-flow .flow-step:nth-child(9){grid-column:3;grid-row:3}
+  .service-flow .flow-step:nth-child(1)::after,
+  .service-flow .flow-step:nth-child(2)::after,
+  .service-flow .flow-step:nth-child(7)::after,
+  .service-flow .flow-step:nth-child(8)::after{
+    content:'→';position:absolute;right:-27px;top:50%;transform:translateY(-50%);
+    font-size:24px;font-weight:800;color:#a9b5ad
+  }
+  .service-flow .flow-step:nth-child(4)::after,
+  .service-flow .flow-step:nth-child(5)::after{
+    content:'←';position:absolute;left:-27px;top:50%;transform:translateY(-50%);
+    font-size:24px;font-weight:800;color:#a9b5ad
+  }
+  .service-flow .flow-step:nth-child(3)::before,
+  .service-flow .flow-step:nth-child(6)::before{
+    content:'↓';position:absolute;left:50%;bottom:-36px;transform:translateX(-50%);
+    font-size:24px;font-weight:800;color:#a9b5ad
+  }
+  .service-flow .flow-step:nth-child(3),
+  .service-flow .flow-step:nth-child(6){margin-bottom:16px}
+}
+@media (max-width:960px){
+  .service-flow{grid-template-columns:1fr;gap:32px}
+  .service-flow .flow-step{grid-column:auto!important;grid-row:auto!important;min-height:auto;margin-bottom:0!important}
+  .service-flow .flow-step::before{content:none!important}
+  .service-flow .flow-step::after{
+    content:'↓'!important;position:absolute!important;right:auto!important;left:50%!important;
+    top:auto!important;bottom:-29px!important;transform:translateX(-50%)!important;
+    font-size:21px!important;font-weight:800!important;color:#a9b5ad!important
+  }
+  .service-flow .flow-step:last-child::after{content:none!important}
+}
+</style>
 </head>
 <body class="taedo-has-fixed-header license-page">
 <script src="common/js/site-config.js"></script>
@@ -62,7 +105,7 @@
         <div class="flow-step"><span class="flow-no">02</span><strong>서비스 신청</strong><p>홈페이지에서 발전사업허가 서비스를 신청합니다.</p></div>
         <div class="flow-step"><span class="flow-no">03</span><strong>담당자 확인 및 상담</strong><p>신청내용을 확인한 후 담당자가 고객과 상담하여 업무 범위와 필요한 사항을 안내합니다.</p></div>
         <div class="flow-step"><span class="flow-no">04</span><strong>계약 체결</strong><p>개인정보 동의 후 전자계약을 체결합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">05</span><strong>필요서류 준비</strong><p>고객 준비서류와 태도사 작성·발급서류를 구분하여 준비합니다.</p><a href="#documents">준비서류 확인 →</a></div>
+        <div class="flow-step"><span class="flow-no">05</span><strong>필요서류 준비</strong><p>사업 조건을 확인한 후 실제 필요한 서류를 개별 안내하고 함께 준비합니다.</p></div>
         <div class="flow-step"><span class="flow-no">06</span><strong>허가 신청</strong><p>신청서와 첨부서류를 최종 검토한 후 관할기관에 접수합니다.</p></div>
         <div class="flow-step"><span class="flow-no">07</span><strong>심사 및 보완 대응</strong><p>관할기관 심사가 진행되며, 보완 요청이 있을 경우 필요한 자료를 준비하여 제출합니다.</p></div>
         <div class="flow-step"><span class="flow-no">08</span><strong>허가 완료</strong><p>최종 허가 결과를 확인하고 허가증 발급 절차를 안내합니다.</p></div>
@@ -71,63 +114,9 @@
     </div>
   </section>
 
-  <section class="license-section soft" id="documents">
-    <div class="license-container">
-      <div class="section-kicker">SECTION 04</div>
-      <h2>발전사업허가 신청 준비서류</h2>
-      <div class="documents-notice" role="note">
-        <strong>준비서류를 먼저 확인해주세요.</strong>
-        <p>사업주가 직접 준비할 서류와 태도사가 작성·발급하는 서류를 구분해 안내합니다. 사업 형태와 신청 조건에 따라 실제 준비서류는 달라질 수 있습니다.</p>
-      </div>
-
-      <div class="doc-overview-grid">
-        <div class="doc-panel owner-panel">
-          <div class="doc-panel-head"><span class="doc-icon" aria-hidden="true">01</span><div><h3>사업주 준비</h3><p>사업주가 직접 발급·작성하여 제출하는 서류</p></div></div>
-          <div class="doc-table-wrap"><table class="doc-table two-col"><thead><tr><th>서류명</th><th>준비 방법</th></tr></thead><tbody>
-            <tr><td>인감증명서 (개인/법인)</td><td>주민센터·상업등기소 직접 방문 발급</td></tr>
-            <tr><td>주민등록등본</td><td>정부24 또는 주민센터 발급</td></tr>
-            <tr><td>가족관계증명서</td><td>정부24 또는 주민센터 발급</td></tr>
-            <tr><td>법인 사업자등록증</td><td>법인 스캔 사본 제출</td></tr>
-            <tr><td>법인 재무제표</td><td>법인 국세청 홈택스 직접 발급</td></tr>
-            <tr><td>법인 정관</td><td>법인 스캔 사본 제출</td></tr>
-            <tr><td>주주 서면결의서</td><td>법인 작성 후 스캔 제출</td></tr>
-            <tr><td>통장 잔액증명서·통장 사본</td><td>은행 방문 발급 후 스캔 제출</td></tr>
-            <tr><td>위임장</td><td>원본 직인</td></tr>
-            <tr><td>신원조회동의서</td><td>원본 직인</td></tr>
-          </tbody></table></div>
-        </div>
-
-        <div class="doc-panel agency-panel">
-          <div class="doc-panel-head"><span class="doc-icon" aria-hidden="true">02</span><div><h3>태도사 작성·발급</h3><p>태도사가 작성·발급·현장 확인하여 처리하는 서류</p></div></div>
-          <div class="doc-table-wrap"><table class="doc-table two-col"><thead><tr><th>서류명</th><th>처리 방법</th></tr></thead><tbody>
-            <tr><td>발전사업허가 신청서</td><td>신청서 전량 작성</td></tr>
-            <tr><td>사업계획서</td><td>HWP 형식 전량 작성</td></tr>
-            <tr><td>단선결선도 (송전관계일람도)</td><td>CAD 작성</td></tr>
-            <tr><td>배치도·측면도</td><td>CAD 작성</td></tr>
-            <tr><td>건축물대장</td><td>정부24 온라인 발급</td></tr>
-            <tr><td>토지대장·지적도</td><td>정부24 온라인 발급</td></tr>
-            <tr><td>등기부등본 (토지·건물)</td><td>인터넷등기소 온라인 발급</td></tr>
-            <tr><td>이용계획확인서</td><td>정부24 온라인 발급</td></tr>
-            <tr><td>법인 등기부등본</td><td>인터넷등기소 발급</td></tr>
-            <tr><td>연계선로 전주 사진</td><td class="no-wrap-method">현장 방문 촬영 또는 사업주 직접 촬영</td></tr>
-          </tbody></table></div>
-        </div>
-      </div>
-
-      <div class="doc-group conditional-group">
-        <div class="doc-panel-head conditional-head"><span class="doc-icon" aria-hidden="true">03</span><div><h3>조건부 준비서류</h3><p>서류의 종류와 업무 조건에 따라 사업주가 직접 준비하거나 태도사가 작성·발급하는 서류입니다.</p></div></div>
-        <div class="doc-table-wrap"><table class="doc-table conditional-table"><thead><tr><th>서류명</th><th>사업주 준비</th><th>태도사 지원</th><th>적용 조건</th></tr></thead><tbody>
-          <tr><td>대출의향서·사전확인서</td><td>금융기관 방문 발급</td><td>양식 제공, 금융기관 안내</td><td>융자 활용 시</td></tr>
-          <tr><td>사용인감계</td><td>법인·해당 시 원본 직인</td><td>양식 작성 후 사업주 날인 요청</td><td>조건부</td></tr>
-          <tr><td>토지·건물 사용승낙서</td><td>타인 토지의 경우 토지주 서명·직인</td><td>양식 제공·작성 보조</td><td>소유주가 다를 경우</td></tr>
-        </tbody></table></div>
-      </div>
-    </div>
-  </section>
-
   <section class="license-section" id="before">
     <div class="license-container">
-      <div class="section-kicker">SECTION 05</div><h2>신청 전 확인사항</h2>
+      <div class="section-kicker">SECTION 04</div><h2>신청 전 확인사항</h2>
       <ul class="caution-list">
         <li>발전사업허가 외에도 사업 조건에 따라 별도의 인허가와 전력계통 관련 절차가 필요할 수 있습니다.</li>
         <li>발전설비 용량과 소재지 등에 따라 접수·처리기관 및 제출자료의 범위가 달라질 수 있습니다.</li>
@@ -139,12 +128,11 @@
 
   <section class="license-section soft" id="faq">
     <div class="license-container">
-      <div class="section-kicker">SECTION 06</div><h2>자주 묻는 질문</h2>
+      <div class="section-kicker">SECTION 05</div><h2>자주 묻는 질문</h2>
       <div class="faq-list">
         <details><summary>발전사업허가는 반드시 받아야 하나요?</summary><p>전기를 생산하여 공급하는 발전사업을 하려는 경우 「전기사업법」에 따른 전기사업 허가 절차가 필요합니다. 구체적인 적용 여부는 사업 형태와 설비 조건을 확인해 판단해야 합니다.</p></details>
         <details><summary>개인도 발전사업허가를 신청할 수 있나요?</summary><p>정부24의 전기사업 허가 민원은 신청자격을 누구나 신청 가능으로 안내하고 있습니다. 다만 실제 허가 심사에서는 사업계획과 법령상 허가기준 등을 검토합니다.</p></details>
         <details><summary>발전사업허가를 받으면 바로 공사를 시작할 수 있나요?</summary><p>아닙니다. 사업 조건에 따라 개발행위허가, PPA, 공사계획신고 등 후속 절차가 필요할 수 있으므로 공사 착수 전에 해당 절차를 별도로 확인해야 합니다.</p></details>
-        <details><summary>모든 준비서류를 제가 직접 발급해야 하나요?</summary><p>아닙니다. 사업주가 직접 준비해야 하는 자료와 태도사가 작성·발급을 지원하는 자료를 구분해 안내합니다. 사업 조건을 확인한 후 실제 필요한 목록을 개별 안내합니다.</p></details>
       </div>
     </div>
   </section>
