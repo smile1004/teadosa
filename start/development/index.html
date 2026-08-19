@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base href="../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="태양광 개발행위허가 서비스의 진행 절차와 지원 내용을 안내합니다.">
+<title>개발행위허가 | 태양광도사</title>
+<link href="common/css/taedo1_start.css" rel="stylesheet">
+<link href="common/css/shared-layout.css" rel="stylesheet">
+<link href="common/css/shared-menu.css" rel="stylesheet">
+<link href="common/css/common.css" rel="stylesheet">
+<link href="start/license/css/style.css" rel="stylesheet">
+<style>
+/* SECTION 구분: 발전사업허가 페이지의 Clean/Premium 톤 유지 */
+.development-page .license-section{position:relative;border-top:1px solid #e7ece9}
+.development-page #overview{background:#fff}
+.development-page #target{background:#f7faf8}
+.development-page #type-guide{background:#fff;padding-bottom:76px}
+.development-page #scope{background:#f7f9fb;padding-top:76px}
+.development-page #before{background:#fff}
+.development-page #faq{background:#f7faf8}
+
+/* 유형별 개발행위허가 설명 */
+.type-guide-intro{max-width:980px;margin:0 0 26px;color:#536579;font-size:16px;line-height:1.8;letter-spacing:-.25px;word-break:keep-all}
+.type-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.type-guide-card{min-height:198px;padding:26px 22px;border:1px solid #dfe4e1;border-radius:12px;background:#fff}
+.type-guide-badge{display:inline-flex;align-items:center;min-height:25px;padding:0 11px;border-radius:999px;font-size:13px;font-weight:800;line-height:1}
+.type-guide-card.land .type-guide-badge{background:#eaf4fb;color:#2872a8}
+.type-guide-card.roof .type-guide-badge{background:#fff0df;color:#e56e17}
+.type-guide-card h3{margin:14px 0 8px!important;color:#132f47!important;font-size:18px!important;font-weight:800!important;letter-spacing:-.35px!important}
+.type-guide-card p{margin:0;color:#536579;font-size:14px;line-height:1.75;letter-spacing:-.2px;word-break:keep-all}
+.type-guide-law{display:inline-flex;align-items:center;min-height:27px;margin-top:12px;padding:0 10px;border-radius:5px;background:#f2f4f3;color:#23394a;font-size:12px;font-weight:800}
+.type-guide-notice{width:100%;box-sizing:border-box;margin-top:18px;padding:16px 18px;border:1px solid #f0c988;border-radius:9px;background:#fff7ea;color:#9b5716;font-size:14px;line-height:1.7;letter-spacing:-.2px;word-break:keep-all}
+.type-guide-notice strong{color:#e16f14;font-weight:800}
+
+/* 진행유형 선택 */
+.flow-selector{margin-top:30px;padding:22px 24px;border:1px solid #dde6df;border-radius:16px;background:#fff}
+.flow-selector-row{display:flex;align-items:center;gap:16px}
+.flow-selector-row + .flow-selector-row{margin-top:18px;padding-top:18px;border-top:1px solid #e1e8e3}
+.flow-selector-label{flex:0 0 118px;color:#526159;font-size:14px;font-weight:800}
+.flow-selector-buttons{display:flex;gap:10px;flex-wrap:wrap}
+.flow-choice{appearance:none;min-width:150px;min-height:46px;padding:0 20px;border:1px solid #cfd9d2;border-radius:12px;background:#fff;color:#40546a;font:inherit;font-size:15px;font-weight:800;cursor:pointer;transition:background .18s ease,border-color .18s ease,color .18s ease,box-shadow .18s ease}
+.flow-choice:hover{border-color:#9aa9b5;background:#f5f7f9}
+.flow-selector-row:first-child .flow-choice.is-active,
+.flow-selector-row:first-child .flow-choice[aria-selected="true"]{border-color:#17324a;background:#17324a;color:#fff;box-shadow:0 7px 16px rgba(23,50,74,.16)}
+.flow-selector-row:first-child .flow-choice:focus-visible{outline:3px solid rgba(23,50,74,.22);outline-offset:3px}
+.roof-sub-selector .flow-choice{border-color:#f0a35c;color:#d96816;background:#fffaf5}
+.roof-sub-selector .flow-choice.is-active,
+.roof-sub-selector .flow-choice[aria-selected="true"]{border-color:#ee7d22;background:#ee7d22;color:#fff;box-shadow:0 7px 16px rgba(238,125,34,.18)}
+.roof-sub-selector .flow-choice:focus-visible{outline:3px solid rgba(238,125,34,.22);outline-offset:3px}
+.roof-sub-selector[hidden]{display:none!important}
+.flow-panel[hidden]{display:none!important}
+.flow-panel-head{margin-top:28px;padding:14px 16px;border:1px solid #d8e5dd;border-radius:10px;background:#eef5f1}
+.flow-panel-kicker{display:inline-flex;align-items:center;min-height:28px;padding:0 10px;border-radius:6px;background:#fff;color:#2f7a5d;font-size:13px;font-weight:800}
+.flow-panel-title{display:inline;margin:0 0 0 10px!important;font-size:16px!important;letter-spacing:-.35px!important;color:#17324a!important;vertical-align:middle}
+
+
+
+/* 유형별 개발행위허가 카드의 토지형·지붕형 배지 강조 */
+.type-guide-card .type-guide-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:88px;
+  min-height:40px;
+  padding:8px 18px;
+  border-radius:10px;
+  font-size:18px!important;
+  font-weight:800;
+  line-height:1.2;
+  letter-spacing:-.3px;
+}
+@media (max-width:640px){
+  .type-guide-card .type-guide-badge{
+    min-width:78px;
+    min-height:36px;
+    padding:7px 15px;
+    font-size:16px!important;
+  }
+}
+
+/* 개발행위허가 주요 설명문 가독성 */
+.development-lead{max-width:1040px;line-height:1.85!important;word-break:keep-all}
+.type-guide-intro{max-width:1080px;line-height:1.85}
+.type-guide-notice{line-height:1.8;word-break:keep-all}
+.type-guide-notice .notice-line{display:block}
+.type-guide-notice .notice-line + .notice-line{margin-top:8px}
+.process-section-desc{font-size:16px!important;line-height:1.8!important;word-break:keep-all;max-width:920px}
+@media (max-width:700px){
+  .desktop-break{display:none}
+  .development-lead,.type-guide-intro,.process-section-desc{font-size:15px!important;line-height:1.75!important}
+  .type-guide-notice{line-height:1.7}
+}
+
+/* 서비스 진행 절차: 발전사업허가 페이지와 동일한 카드 디자인 */
+.service-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:service-step}
+.service-flow .flow-step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:13px;height:150px;min-height:150px;padding:22px 18px;border:1px solid #dfe7e1;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(25,55,38,.06)}
+.service-flow .flow-step::before,.service-flow .flow-step::after{content:none!important}
+.service-flow .flow-no{grid-row:1 / span 3;display:flex;align-items:center;justify-content:center;width:42px;height:42px;margin:0;border-radius:50%;background:#ef7d22;color:#fff;font-size:16px;font-weight:800}
+.service-flow .flow-step strong{display:block;margin:3px 0 7px;color:#123624;font-size:18px;line-height:1.4}
+.service-flow .flow-step p{margin:0;color:#46564d;font-size:15px;line-height:1.65;word-break:keep-all}
+.service-flow .flow-step .flow-required{margin-top:6px;color:#b94e08;font-size:14px;font-weight:700}
+
+@media (max-width:980px){
+  .service-flow{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:800px){
+  .type-guide-grid{grid-template-columns:1fr}
+  .type-guide-card{min-height:0}
+  .type-guide-intro{font-size:15px}
+  .development-page #type-guide{padding-bottom:64px}
+  .development-page #scope{padding-top:64px}
+}
+@media (max-width:700px){
+  .flow-selector{padding:18px 14px}
+  .flow-selector-row{display:block}
+  .flow-selector-label{display:block;margin-bottom:10px}
+  .flow-selector-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .flow-choice{min-width:0;width:100%;padding:0 10px;font-size:14px}
+  .roof-sub-selector .flow-selector-buttons{grid-template-columns:1fr}
+  .flow-panel-head{padding:12px 13px}
+  .flow-panel-title{display:block;margin:8px 0 0!important;font-size:15px!important}
+}
+@media (max-width:640px){
+  .service-flow{grid-template-columns:1fr;gap:14px}
+  .service-flow .flow-step{grid-template-columns:42px minmax(0,1fr);height:auto;min-height:92px;padding:18px 14px}
+  .service-flow .flow-step strong{font-size:16px}
+  .service-flow .flow-step p{font-size:15px}
+}
+</style>
+</head>
+<body class="taedo-has-fixed-header license-page development-page">
+<script src="common/js/site-config.js"></script>
+<script src="common/js/api.js?v=2.0"></script>
+<script src="common/js/auth.js?v=2.0"></script>
+<script src="common/js/components/header.js?v=2.6"></script>
+<main>
+  <section class="hero" aria-labelledby="development-title">
+    <div class="hero-inner">
+      <div>
+        <div class="badge">개별 서비스</div>
+        <h1 id="development-title">개발행위허가 서비스</h1>
+        <p>태양광 발전시설 설치에 필요한 개발행위허가 절차를<br>사업지 검토부터 허가 신청·협의·보완 대응까지 지원합니다.</p>
+        <div class="hero-apply-actions">
+          <a class="license-apply-btn" id="developmentApplyButton" href="start/development/apply/">개발행위허가 신청하기</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="license-section" id="overview">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 01</div>
+      <h2>개발행위허가란?</h2>
+      <p class="lead development-lead">태양광 발전시설을 설치하면서 토지의 형질변경이나 공작물 설치 등이 이루어지는 경우<br class="desktop-break">「국토의 계획 및 이용에 관한 법률」에 따라 검토되는 허가 절차입니다.<br><br>토지형은 부지의 용도지역·지목·경사도·진입도로·배수계획 등을 함께 검토하며,<br class="desktop-break">지붕형도 부속시설 설치나 부지 형질변경이 수반되는 경우 개발행위허가 대상 여부를 확인해야 합니다.</p>
+    </div>
+  </section>
+
+  <section class="license-section soft" id="target">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 02</div>
+      <h2>이런 분께 필요한 서비스입니다</h2>
+      <div class="check-grid">
+        <p>임야·농지·잡종지 등 토지에 태양광 발전소를 새로 설치하려는 고객</p>
+        <p>공장·창고·축사 등 건축물 지붕에 발전소 설치를 계획하는 고객</p>
+        <p>사업 예정지의 개발행위허가 가능 여부와 준비사항을 확인하고 싶은 고객</p>
+        <p>발전사업허가 이후 개발행위허가 단계부터 체계적으로 진행하고 싶은 고객</p>
+        <p>지자체 조례와 입지조건에 따른 허가 반려 위험을 사전에 줄이고 싶은 고객</p>
+        <p>측량·설계·허가도서·관계부서 협의와 보완 대응을 함께 진행하고 싶은 고객</p>
+      </div>
+    </div>
+  </section>
+
+
+
+  <section class="license-section" id="type-guide">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 03</div>
+      <h2>유형별 개발행위허가, 무엇이 다른가요?</h2>
+      <p class="type-guide-intro">태양광 발전소를 설치하려는 부지가 토지인지 건축물 지붕인지에 관계없이,<br class="desktop-break">대부분의 태양광 사업은 「국토의 계획 및 이용에 관한 법률」 제56조에 따른 개발행위허가 대상 여부를 검토해야 합니다.<br>부지 유형에 따라 검토 항목과 필요 도서가 달라집니다.</p>
+
+      <div class="type-guide-grid">
+        <article class="type-guide-card land">
+          <span class="type-guide-badge">토지형</span>
+          <h3>개발행위허가 대상</h3>
+          <p>나대지·농지·임야 등에 태양광을 새로 신설하는 경우, 토지의 형질을 변경하게 되어 「국토의 계획 및 이용에 관한 법률」 제56조에 따른 개발행위허가 대상입니다.</p>
+          <span class="type-guide-law">국토의 계획 및 이용에 관한 법률 제56조</span>
+        </article>
+
+        <article class="type-guide-card roof">
+          <span class="type-guide-badge">지붕형</span>
+          <h3>개발행위허가 대상</h3>
+          <p>공장·창고·축사 등 기존 건축물 지붕에 설치하는 경우에도, 태양광 설비의 설치와 부속시설로 인한 부지 형질변경이 수반되면 개발행위허가 대상 여부를 확인해야 합니다.</p>
+          <span class="type-guide-law">국토의 계획 및 이용에 관한 법률 제56조</span>
+        </article>
+      </div>
+
+      <div class="type-guide-notice"><span class="notice-line">⚠ 실제 인허가 종류·대상 여부는 사업지의 <strong>시·군·구 조례와 설치 규모</strong>에 따라 달라지므로,<br class="desktop-break">사전검토 단계에서 반드시 확인이 필요합니다.</span><span class="notice-line">또한 건축도면이 없거나 위반건축물(무단증축 등)이 있는 경우,<br class="desktop-break">인허가 이전에 건축물 양성화·원상복구 절차·비용이 추가될 수 있습니다.</span></div>
+    </div>
+  </section>
+
+  <section class="license-section" id="scope">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 04</div>
+      <h2>서비스 진행 절차</h2>
+      <p class="section-desc process-section-desc">사업 유형과 건축도면 보유 여부에 따라 실제 진행 절차가 달라질 수 있습니다.<br class="desktop-break">아래에서 해당 유형을 선택하면 맞춤 절차를 확인할 수 있습니다.</p>
+
+      <div class="flow-selector" aria-label="개발행위허가 진행 유형 선택">
+        <div class="flow-selector-row">
+          <div class="flow-selector-label">사업 유형</div>
+          <div class="flow-selector-buttons" role="tablist" aria-label="사업 유형">
+            <button class="flow-choice is-active" id="flowLandButton" type="button" role="tab" aria-selected="true" aria-controls="flowLand" data-flow="land">토지형</button>
+            <button class="flow-choice" id="flowRoofButton" type="button" role="tab" aria-selected="false" aria-controls="flowRoofWithDrawings" data-flow="roof">지붕형</button>
+          </div>
+        </div>
+        <div class="flow-selector-row roof-sub-selector" id="roofSubSelector" hidden>
+          <div class="flow-selector-label">건축도면 여부</div>
+          <div class="flow-selector-buttons" role="tablist" aria-label="지붕형 건축도면 여부">
+            <button class="flow-choice is-active" id="flowRoofWithButton" type="button" role="tab" aria-selected="true" aria-controls="flowRoofWithDrawings" data-roof-flow="with">건축도면 있는 경우</button>
+            <button class="flow-choice" id="flowRoofWithoutButton" type="button" role="tab" aria-selected="false" aria-controls="flowRoofWithoutDrawings" data-roof-flow="without">건축도면 없는 경우</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-panel" id="flowLand" role="tabpanel" aria-labelledby="flowLandButton">
+        <div class="flow-panel-head"><span class="flow-panel-kicker">토지형</span><h3 class="flow-panel-title">토지형 개발행위허가 진행 절차</h3></div>
+        <div class="service-flow" aria-label="토지형 개발행위허가 서비스 진행 절차">
+          <div class="flow-step"><span class="flow-no">01</span><strong>사업부지 기본검토 &amp; 입지분석</strong></div>
+          <div class="flow-step"><span class="flow-no">02</span><strong>현장조사 &amp; 데이터 수집</strong></div>
+          <div class="flow-step"><span class="flow-no">03</span><strong>지적측량 &amp; 토목 기본설계</strong></div>
+          <div class="flow-step"><span class="flow-no">04</span><strong>개발행위허가 도서 작성</strong></div>
+          <div class="flow-step"><span class="flow-no">05</span><strong>관계기관 복합협의 &amp; 도시계획 심의</strong></div>
+          <div class="flow-step"><span class="flow-no">06</span><strong>허가 완료, 착공 및 준공검사</strong></div>
+        </div>
+      </div>
+
+      <div class="flow-panel" id="flowRoofWithDrawings" role="tabpanel" aria-labelledby="flowRoofWithButton" hidden>
+        <div class="flow-panel-head"><span class="flow-panel-kicker">지붕형 · 건축도면 보유</span><h3 class="flow-panel-title">건축도면 있는 경우 진행 절차</h3></div>
+        <div class="service-flow" aria-label="지붕형 건축도면 있는 경우 개발행위허가 서비스 진행 절차">
+          <div class="flow-step"><span class="flow-no">01</span><strong>건축물 &amp; 부지 현황 확인</strong></div>
+          <div class="flow-step"><span class="flow-no">02</span><strong>태양광·부속시설 배치계획</strong></div>
+          <div class="flow-step"><span class="flow-no">03</span><strong>구조안전성 검토</strong></div>
+          <div class="flow-step"><span class="flow-no">04</span><strong>개발행위허가 도서 작성</strong></div>
+          <div class="flow-step"><span class="flow-no">05</span><strong>관계기관 협의 및 심의</strong></div>
+          <div class="flow-step"><span class="flow-no">06</span><strong>허가완료, 착공 및 준공검사</strong></div>
+        </div>
+      </div>
+
+      <div class="flow-panel" id="flowRoofWithoutDrawings" role="tabpanel" aria-labelledby="flowRoofWithoutButton" hidden>
+        <div class="flow-panel-head"><span class="flow-panel-kicker">지붕형 · 건축도면 미보유</span><h3 class="flow-panel-title">건축도면 없는 경우 진행 절차</h3></div>
+        <div class="service-flow" aria-label="지붕형 건축도면 없는 경우 개발행위허가 서비스 진행 절차">
+          <div class="flow-step"><span class="flow-no">01</span><strong>현장 실측 &amp; 건물·부지 데이터 구축</strong></div>
+          <div class="flow-step"><span class="flow-no">02</span><strong>건축물·부지 현황도 신규 작성</strong></div>
+          <div class="flow-step"><span class="flow-no">03</span><strong>건축물 적법성 검토 &amp; 양성화 협의</strong></div>
+          <div class="flow-step"><span class="flow-no">04</span><strong>구조안전진단 &amp; 태양광·부속시설 계획</strong></div>
+          <div class="flow-step"><span class="flow-no">05</span><strong>개발행위허가 도서 작성</strong></div>
+          <div class="flow-step"><span class="flow-no">06</span><strong>관계기관 협의-허가신청-시공·준공</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="license-section" id="before">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 05</div><h2>신청 전 확인사항</h2>
+      <ul class="caution-list">
+        <li>지붕형이라도 부속시설 설치나 부지 형질변경이 수반되면 개발행위허가 대상이 될 수 있어 사전검토가 필요합니다.</li>
+        <li>지붕형 사업은 건축도면 보유 여부에 따라 구조안전 확인 절차와 준비기간이 크게 달라질 수 있습니다.</li>
+        <li>위반건축물(무단증축 등)이 확인되는 경우, 인허가 전에 별도의 양성화·원상복구 절차가 선행되어야 할 수 있습니다.</li>
+        <li>임야·농지 등 특수지목의 토지는 별도의 전용허가가 먼저 진행되어야 할 수 있습니다.</li>
+        <li>제출자료가 부족하거나 관할기관에서 보완을 요구하는 경우 실제 처리기간이 늘어날 수 있습니다.</li>
+        <li>최종 제출서류와 적용기준은 신청 시점의 법령 및 관할기관 검토기준을 기준으로 확인합니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="license-section soft" id="faq">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 06</div><h2>자주 묻는 질문</h2>
+      <div class="faq-list">
+        <details><summary>지붕형 태양광도 개발행위허가가 필요한가요?</summary><p>지붕형의 경우에도 태양광 설비의 공작물 설치나 부속시설, 부지 형질변경 등이 수반되면 개발행위허가 대상 여부를 확인해야 합니다. 실제 적용 여부는 관할기관과 사업 조건에 따라 달라질 수 있습니다.</p></details>
+        <details><summary>농지나 임야도 개발행위허가를 진행할 수 있나요?</summary><p>사업 예정지가 농지 또는 임야인 경우 개발행위허가 외에 농지전용 또는 산지전용 관련 협의가 함께 또는 선행하여 진행될 수 있습니다.</p></details>
+        <details><summary>건축도면이 없으면 지붕형 사업을 진행할 수 없나요?</summary><p>도면이 없는 경우 현장 실측을 통해 건축물과 부지의 현황자료를 구축하고 필요한 현황도를 새로 작성하는 절차가 추가될 수 있습니다.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="common/js/components/footer.js"></script>
+<script src="start/development/js/script.js"></script>
+</body>
+</html>
