@@ -12,46 +12,20 @@
 <link href="common/css/common.css" rel="stylesheet">
 <link href="start/license/css/style.css" rel="stylesheet">
 <style>
-/* 서비스 진행 절차: PC는 순서가 이어지는 뱀형, 노트북·모바일은 세로형 */
-@media (min-width:961px){
-  .service-flow .flow-step::before,
-  .service-flow .flow-step::after{content:none}
-  .service-flow .flow-step:nth-child(4){grid-column:3;grid-row:2}
-  .service-flow .flow-step:nth-child(5){grid-column:2;grid-row:2}
-  .service-flow .flow-step:nth-child(6){grid-column:1;grid-row:2}
-  .service-flow .flow-step:nth-child(7){grid-column:1;grid-row:3}
-  .service-flow .flow-step:nth-child(8){grid-column:2;grid-row:3}
-  .service-flow .flow-step:nth-child(9){grid-column:3;grid-row:3}
-  .service-flow .flow-step:nth-child(1)::after,
-  .service-flow .flow-step:nth-child(2)::after,
-  .service-flow .flow-step:nth-child(7)::after,
-  .service-flow .flow-step:nth-child(8)::after{
-    content:'→';position:absolute;right:-27px;top:50%;transform:translateY(-50%);
-    font-size:24px;font-weight:800;color:#a9b5ad
-  }
-  .service-flow .flow-step:nth-child(4)::after,
-  .service-flow .flow-step:nth-child(5)::after{
-    content:'←';position:absolute;left:-27px;top:50%;transform:translateY(-50%);
-    font-size:24px;font-weight:800;color:#a9b5ad
-  }
-  .service-flow .flow-step:nth-child(3)::before,
-  .service-flow .flow-step:nth-child(6)::before{
-    content:'↓';position:absolute;left:50%;bottom:-36px;transform:translateX(-50%);
-    font-size:24px;font-weight:800;color:#a9b5ad
-  }
-  .service-flow .flow-step:nth-child(3),
-  .service-flow .flow-step:nth-child(6){margin-bottom:16px}
-}
-@media (max-width:960px){
-  .service-flow{grid-template-columns:1fr;gap:32px}
-  .service-flow .flow-step{grid-column:auto!important;grid-row:auto!important;min-height:auto;margin-bottom:0!important}
-  .service-flow .flow-step::before{content:none!important}
-  .service-flow .flow-step::after{
-    content:'↓'!important;position:absolute!important;right:auto!important;left:50%!important;
-    top:auto!important;bottom:-29px!important;transform:translateX(-50%)!important;
-    font-size:21px!important;font-weight:800!important;color:#a9b5ad!important
-  }
-  .service-flow .flow-step:last-child::after{content:none!important}
+/* 모든 서비스 페이지에서 공통으로 사용하는 번호형 진행 절차 */
+.service-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:service-step}
+.service-flow .flow-step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:13px;min-height:150px;padding:22px 18px;border:1px solid #dfe7e1;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(25,55,38,.06)}
+.service-flow .flow-step::before,.service-flow .flow-step::after{content:none!important}
+.service-flow .flow-no{grid-row:1 / span 3;display:flex;align-items:center;justify-content:center;width:42px;height:42px;margin:0;border-radius:50%;background:#ef7d22;color:#fff;font-size:16px;font-weight:800}
+.service-flow .flow-step strong{display:block;margin:3px 0 7px;color:#123624;font-size:18px;line-height:1.4}
+.service-flow .flow-step p{margin:0;color:#46564d;font-size:15px;line-height:1.65;word-break:keep-all}
+.service-flow .flow-step .flow-required{margin-top:6px;color:#b94e08;font-size:14px;font-weight:700}
+@media (max-width:960px){.service-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){
+  .service-flow{grid-template-columns:1fr;gap:14px}
+  .service-flow .flow-step{grid-template-columns:42px minmax(0,1fr);min-height:0;padding:18px 14px}
+  .service-flow .flow-step strong{font-size:16px}
+  .service-flow .flow-step p{font-size:15px}
 }
 </style>
 </head>
