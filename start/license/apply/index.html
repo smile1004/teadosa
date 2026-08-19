@@ -74,7 +74,7 @@
           <section class="form-section" aria-labelledby="applicantHeading">
             <div class="form-section-head">
               <span>02</span>
-              <div><h2 id="applicantHeading">신청인 기본정보</h2><p>공통 기본정보와 신청인 유형에 해당하는 항목을 입력해 주세요.</p></div>
+              <div><h2 id="applicantHeading">신청인 기본정보</h2><p>신청 상담에 필요한 기본정보를 입력해 주세요.</p></div>
             </div>
 
             <div class="form-grid three-col">
@@ -83,25 +83,6 @@
               <label class="field"><span>이메일 <em>필수</em></span><input type="email" id="applicantEmail" name="applicantEmail" maxlength="120" required></label>
             </div>
 
-            <div id="personalFields" class="conditional-block" hidden>
-              <div class="conditional-title">개인사업자이신 경우</div>
-              <div class="form-grid two-col">
-                <label class="field full-span"><span>주민등록상 주소</span><span class="address-input-row"><input type="text" id="personalAddress" name="personalAddress" maxlength="200" autocomplete="street-address" placeholder="주소 검색 버튼을 눌러 입력해 주세요"><button type="button" id="personalAddressSearch" class="address-search-btn">주소 검색</button></span></label>
-                <label class="field"><span>주민등록번호</span><input type="text" id="residentNumber" name="residentNumber" maxlength="14" inputmode="numeric" placeholder="위임장 작성 시 제공하셔도 됩니다."><small>지금 입력이 부담스러우시면 비워두셔도 됩니다.</small></label>
-                <label class="field"><span>등록기준지(본적)</span><input type="text" id="registeredDomicile" name="registeredDomicile" maxlength="200" placeholder="모르시면 비워두셔도 됩니다."></label>
-              </div>
-            </div>
-
-            <div id="businessFields" class="conditional-block business-block" hidden>
-              <div class="conditional-title">법인사업자이신 경우</div>
-              <div class="form-grid two-col">
-                <label class="field"><span>대표자명</span><input type="text" id="representativeName" name="representativeName" maxlength="80"></label>
-                <label class="field"><span>법인명(상호)</span><input type="text" id="corporationName" name="corporationName" maxlength="120"></label>
-                <label class="field"><span>법인등록번호</span><input type="text" id="corporationRegistrationNumber" name="corporationRegistrationNumber" maxlength="20"></label>
-                <label class="field"><span>본점 소재지</span><input type="text" id="headOfficeAddress" name="headOfficeAddress" maxlength="200"></label>
-              </div>
-              <p class="section-helper">사업자등록증, 정관, 재무제표 등 세부 법인서류는 접수 확정 후 담당자가 안내드리는 목록에 따라 순차적으로 제출하시면 됩니다.</p>
-            </div>
           </section>
 
           <section class="form-section" aria-labelledby="siteHeading">
@@ -119,11 +100,12 @@
 
             <label class="field full top-gap"><span>설치 희망 주소 <em>필수</em></span><span class="address-input-row"><input type="text" id="siteAddress" name="siteAddress" maxlength="200" autocomplete="street-address" placeholder="주소 검색 버튼을 눌러 설치 희망 주소를 입력해 주세요" required><button type="button" id="siteAddressSearch" class="address-search-btn">주소 검색</button></span></label>
 
-            <div class="choice-group choice-wide top-gap" role="group" aria-labelledby="purposeLabel">
-              <span class="choice-label" id="purposeLabel">사업 목적 <em>필수</em></span>
-              <label><input type="radio" name="businessPurpose" value="self-consumption" required><span>자가소비(전기요금 절감 목적)</span></label>
-              <label><input type="radio" name="businessPurpose" value="generation" required><span>발전사업(매전 목적)</span></label>
-              <label><input type="radio" name="businessPurpose" value="unknown" required><span>잘 모르겠음(상담 희망)</span></label>
+            <div class="choice-group choice-wide top-gap" role="group" aria-labelledby="ownershipLabel">
+              <span class="choice-label" id="ownershipLabel">소유관계 <em>필수</em></span>
+              <label><input type="radio" name="ownership" value="self" required><span>본인(신청인) 소유</span></label>
+              <label><input type="radio" name="ownership" value="lease" required><span>임차 중(임대인 동의 필요)</span></label>
+              <label><input type="radio" name="ownership" value="planned" required><span>매입/계약 예정</span></label>
+              <label><input type="radio" name="ownership" value="unknown" required><span>잘 모르겠음(상담 희망)</span></label>
             </div>
 
             <p class="section-helper">설비용량, 사용전압, 계통연계 가능 여부 등 기술적인 세부 사항은 담당자가 현장 여건과 관련 검토 내용을 바탕으로 확인합니다.</p>
@@ -134,86 +116,14 @@
             </div>
           </section>
 
-          <section class="form-section" aria-labelledby="ownershipHeading">
-            <div class="form-section-head">
-              <span>04</span>
-              <div><h2 id="ownershipHeading">부지 소유 현황</h2><p>현재 부지·건물의 소유관계와 담보 설정 여부를 알려주세요.</p></div>
-            </div>
-
-            <div class="choice-group choice-wide" role="group" aria-labelledby="ownershipLabel">
-              <span class="choice-label" id="ownershipLabel">소유관계 <em>필수</em></span>
-              <label><input type="radio" name="ownership" value="self" required><span>본인(신청인) 소유</span></label>
-              <label><input type="radio" name="ownership" value="lease" required><span>임차 중(임대인 동의 필요)</span></label>
-              <label><input type="radio" name="ownership" value="planned" required><span>매입/계약 예정</span></label>
-              <label><input type="radio" name="ownership" value="unknown" required><span>잘 모르겠음(상담 희망)</span></label>
-            </div>
-
-            <div class="choice-group choice-wide top-gap" role="group" aria-labelledby="collateralLabel">
-              <span class="choice-label" id="collateralLabel">담보(대출·근저당권) 설정 여부 <em>필수</em></span>
-              <label><input type="radio" name="collateralStatus" value="none" required><span>없음</span></label>
-              <label><input type="radio" name="collateralStatus" value="yes" required><span>있음(대출 진행 중이거나 근저당 설정됨)</span></label>
-              <label><input type="radio" name="collateralStatus" value="unknown" required><span>잘 모르겠음</span></label>
-            </div>
-
-            <p class="section-helper">지목, 용도지역, 등기부상 권리관계 등 세부 사항은 담당자가 관련 자료를 확인합니다. 담보 설정 여부는 상담 시 미리 확인이 필요한 항목입니다.</p>
-          </section>
-
-          <section class="form-section" aria-labelledby="fundingHeading">
-            <div class="form-section-head">
-              <span>05</span>
-              <div><h2 id="fundingHeading">사업비 및 자금조달계획</h2><p>사업계획서에는 총사업비와 자금조달계획이 포함됩니다. 정확한 공사비는 견적을 바탕으로 담당자가 작성하므로, 신청 단계에서는 대략적인 계획만 입력해 주세요.</p></div>
-            </div>
-
-            <div class="form-grid two-col">
-              <label class="field"><span>예상 총사업비</span><div class="input-unit"><input type="number" id="totalProjectCost" name="totalProjectCost" min="0" step="1" inputmode="numeric" placeholder="모르면 비워두세요"><b>원</b></div></label>
-              <label class="field"><span>kW당 예상단가</span><input type="text" id="costPerKw" name="costPerKw" maxlength="60" placeholder="견적 받으신 경우 기재"></label>
-            </div>
-
-            <div class="choice-group choice-wide top-gap" role="group" aria-labelledby="contractorLabel">
-              <span class="choice-label" id="contractorLabel">시공업체 섭외 현황 <em>필수</em></span>
-              <label><input type="radio" name="contractorStatus" value="quoted" required><span>이미 견적받은 시공업체 있음(견적서 있음)</span></label>
-              <label><input type="radio" name="contractorStatus" value="introduce" required><span>태도사에 시공업체 소개 요청</span></label>
-              <label><input type="radio" name="contractorStatus" value="undecided" required><span>아직 미정(상담 희망)</span></label>
-            </div>
-
-            <div class="funding-box top-gap">
-              <h3>자기자금 조달 계획 <small>(해당 항목 모두 선택)</small></h3>
-              <div class="check-grid">
-                <label><input type="checkbox" name="ownFundingPlan" value="cash"><span>현금·통장잔액</span></label>
-                <label><input type="checkbox" name="ownFundingPlan" value="deposit"><span>예금·적금</span></label>
-                <label><input type="checkbox" name="ownFundingPlan" value="compensation"><span>보상금 수입(토지보상 등)</span></label>
-                <label><input type="checkbox" name="ownFundingPlan" value="sale"><span>부동산 매각</span></label>
-                <label><input type="checkbox" name="ownFundingPlan" value="unknown"><span>해당 없음 / 잘 모르겠음</span></label>
-              </div>
-              <label class="field top-gap"><span>자기자금 예상 금액</span><div class="input-unit"><input type="number" id="ownFundingAmount" name="ownFundingAmount" min="0" step="1" inputmode="numeric" placeholder="대략적인 금액 / 모르면 비워두세요"><b>원</b></div></label>
-            </div>
-
-            <div class="funding-box top-gap">
-              <h3>타인자금(대출) 조달 계획 <small>(해당 항목 모두 선택)</small></h3>
-              <div class="check-grid">
-                <label><input type="checkbox" name="loanFundingPlan" value="financial"><span>금융기관 융자·대출</span></label>
-                <label><input type="checkbox" name="loanFundingPlan" value="mortgage"><span>부동산 담보대출</span></label>
-                <label><input type="checkbox" name="loanFundingPlan" value="none"><span>대출 계획 없음</span></label>
-                <label><input type="checkbox" name="loanFundingPlan" value="unknown"><span>잘 모르겠음(상담 희망)</span></label>
-              </div>
-              <div class="form-grid two-col top-gap">
-                <label class="field"><span>대출 예상 금액</span><div class="input-unit"><input type="number" id="loanAmount" name="loanAmount" min="0" step="1" inputmode="numeric" placeholder="대략적인 금액을 입력해 주세요"><b>원</b></div></label>
-                <label class="field"><span>차입처</span><input type="text" id="lender" name="lender" maxlength="80" placeholder="예: ○○은행 / 미정"></label>
-              </div>
-            </div>
-
-            <p class="section-helper">자기자금과 타인자금의 정확한 세부 산출 근거는 서류 준비 단계에서 받아 반영합니다. 지금은 대략적인 계획만 알려주셔도 충분합니다.</p>
-          </section>
-
           <div class="document-notice" role="note">
             <strong>준비서류는 신청 후 안내합니다.</strong>
             <p>신청 단계에서는 기본 사업정보만 입력하며, 발전사업허가 제출서류는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
-            <button class="document-list-link" type="button" data-documents-open>준비서류 리스트 확인 →</button>
           </div>
 
           <section class="form-section" aria-labelledby="requestHeading">
             <div class="form-section-head">
-              <span>06</span>
+              <span>04</span>
               <div><h2 id="requestHeading">추가 요청사항</h2><p>궁금하신 점이나 참고해 주셨으면 하는 내용을 자유롭게 입력해 주세요.</p></div>
             </div>
             <label class="field full"><span>추가 요청사항</span><textarea id="requestNote" name="requestNote" maxlength="1500" rows="6" placeholder="예: 연락 가능한 시간대, 희망 상담 방식 등"></textarea><small id="noteCount">0 / 1,500</small></label>
@@ -221,7 +131,7 @@
 
           <section class="form-section confirmation-section" aria-labelledby="confirmationHeading">
             <div class="form-section-head">
-              <span>07</span>
+              <span>05</span>
               <div><h2 id="confirmationHeading">확인 및 동의</h2><p>신청 전 입력내용과 개인정보 수집·이용 동의를 확인해 주세요.</p></div>
             </div>
             <div class="confirmation-list">
@@ -255,29 +165,11 @@
         <div class="side-note">
           <strong>준비서류는 신청 후 안내합니다.</strong>
           <p>신청 단계에서는 기본 사업정보만 입력하며, 발전사업허가 제출서류는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
-          <button class="side-document-link" type="button" data-documents-open>준비서류 리스트 확인 →</button>
         </div>
       </aside>
     </div>
   </section>
 </main>
-
-<div id="documentsModal" class="documents-modal" hidden>
-  <div class="documents-modal-backdrop" data-documents-close></div>
-  <section class="documents-modal-panel" role="dialog" aria-modal="true" aria-labelledby="documentsModalTitle" tabindex="-1">
-    <header class="documents-modal-head">
-      <div><span>발전사업허가</span><h2 id="documentsModalTitle">준비서류 리스트</h2><p>신청 단계에서는 제출하지 않으며, 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p></div>
-      <button type="button" class="documents-modal-close" data-documents-close aria-label="준비서류 안내 닫기">×</button>
-    </header>
-    <div class="documents-modal-body">
-      <article class="documents-group owner-documents"><div class="documents-group-title"><b>01</b><div><h3>사업주 준비</h3><p>사업주가 직접 발급·작성하여 제출하는 서류</p></div></div><ol><li>인감증명서 (개인/법인)</li><li>주민등록등본</li><li>가족관계증명서</li><li>법인 사업자등록증</li><li>법인 재무제표</li><li>법인 정관</li><li>주주 서면결의서</li><li>통장 잔액증명서·통장 사본</li><li>위임장</li><li>신원조회동의서</li></ol></article>
-      <article class="documents-group agency-documents"><div class="documents-group-title"><b>02</b><div><h3>태도사 작성·발급</h3><p>태도사가 작성·발급·현장 확인하여 처리하는 서류</p></div></div><ol><li>발전사업허가 신청서</li><li>사업계획서</li><li>단선결선도 (송전관계일람도)</li><li>배치도·측면도</li><li>건축물대장</li><li>토지대장·지적도</li><li>등기부등본 (토지·건물)</li><li>이용계획확인서</li><li>법인 등기부등본</li><li>연계선로 전주 사진</li></ol></article>
-      <article class="documents-group conditional-documents"><div class="documents-group-title"><b>03</b><div><h3>조건부 준비서류</h3><p>서류의 종류와 업무 조건에 따라 준비하는 서류</p></div></div><ol><li>대출의향서·사전확인서</li><li>사용인감계</li><li>토지·건물 사용승낙서</li></ol></article>
-      <p class="documents-modal-note">※ 실제 제출서류는 개인·법인 여부, 소유관계와 자금조달 방식 등에 따라 달라질 수 있습니다.</p>
-    </div>
-    <footer class="documents-modal-actions"><a href="start/license/#documents" target="_blank" rel="noopener noreferrer">전체 준비서류 상세보기</a><button type="button" data-documents-close>신청서 계속 작성</button></footer>
-  </section>
-</div>
 
 <script src="common/js/components/footer.js"></script>
 <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
