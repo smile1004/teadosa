@@ -10,7 +10,7 @@
     siteName: '태양광도사',
     routes: Object.freeze({
       home: 'index.html',
-      about: 'index.html#about',
+      about: 'marketing.html',
       precheck: 'precheck/index.html',
       precheckApply: 'precheck/apply/index.html',
       precheckResult: 'precheck/result/index.html',
