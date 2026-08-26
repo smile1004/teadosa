@@ -10,17 +10,21 @@
   <style>
     :root{
       --navy:#0b1f3a;
-      --navy-2:#102a4c;
+      --navy-2:#123553;
       --green:#16a36a;
+      --green-deep:#0f7c55;
       --green-soft:#eaf8f1;
+      --blue-soft:#eef5fb;
+      --cream:#fbf8f1;
       --bg:#f5f8fb;
       --white:#ffffff;
       --text:#152235;
       --muted:#66778b;
       --line:#dde6ef;
-      --shadow:0 20px 50px rgba(15,38,66,.08);
+      --shadow:0 18px 44px rgba(15,38,66,.08);
       --radius:24px;
     }
+
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{
@@ -33,127 +37,1000 @@
       word-break:keep-all;
     }
     a{text-decoration:none;color:inherit}
+    h1,h2,h3,p{margin-top:0}
     .container{width:min(1180px,calc(100% - 40px));margin:0 auto}
     .section{padding:92px 0}
-    .section.white{background:#fff}
-    .eyebrow{
-      display:inline-flex;align-items:center;gap:8px;
-      font-size:13px;font-weight:800;letter-spacing:.08em;
-      color:var(--green);text-transform:uppercase;margin-bottom:16px;
+    .section-title{
+      font-size:clamp(30px,4vw,48px);
+      line-height:1.2;
+      letter-spacing:-.045em;
+      margin-bottom:18px;
     }
-    h1,h2,h3,p{margin-top:0}
-    h2{font-size:clamp(30px,4vw,48px);line-height:1.22;letter-spacing:-.04em;margin-bottom:18px}
-    .lead{font-size:18px;color:var(--muted);max-width:920px;margin-bottom:42px}
-    .lead-line{display:block;margin-bottom:5px}
-    .lead-line:last-child{margin-bottom:0}
+    .lead{
+      max-width:980px;
+      margin:0 0 38px;
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.82;
+    }
+    .lead-line{display:block}
+    .lead-line + .lead-line{margin-top:5px}
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:16px;
+      color:var(--green);
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.12em;
+    }
+    .eyebrow::before{
+      content:"";
+      width:7px;height:7px;border-radius:50%;
+      background:currentColor;
+      box-shadow:0 0 0 5px rgba(22,163,106,.08);
+    }
+    .section-no{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:44px;
+      height:44px;
+      padding:0 13px;
+      margin-bottom:14px;
+      border-radius:13px;
+      background:var(--navy);
+      color:#fff;
+      font-size:16px;
+      font-weight:900;
+      box-shadow:0 8px 20px rgba(11,31,58,.12);
+    }
     .btn{
-      display:inline-flex;align-items:center;justify-content:center;
-      min-height:50px;padding:0 24px;border-radius:999px;
-      background:var(--navy);color:#fff;font-weight:800;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:50px;
+      padding:0 24px;
+      border-radius:999px;
+      background:var(--navy);
+      color:#fff;
+      font-weight:800;
       transition:.2s ease;
     }
     .btn:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(11,31,58,.16)}
     .btn.green{background:var(--green)}
     .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
-    .card{
-      background:rgba(255,255,255,.88);
-      border:1px solid rgba(221,230,239,.9);
-      border-radius:var(--radius);
-      padding:30px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(14px);
+
+    /* PAGE INTRO */
+    .marketing-hero{
+      padding:54px 0 34px;
+      background:#fff;
+      border-bottom:1px solid #e8edf1;
     }
-    .num{
-      width:42px;height:42px;border-radius:14px;
-      display:flex;align-items:center;justify-content:center;
-      background:var(--green-soft);color:var(--green);
-      font-size:14px;font-weight:900;margin-bottom:20px;
-    }
-    .card h3{font-size:21px;letter-spacing:-.03em;margin-bottom:10px}
-    .card p{color:var(--muted);margin-bottom:0}
-    .pain-card{
-      position:relative;overflow:hidden;
-      min-height:210px;
-    }
-    .pain-card::after{
-      content:"";position:absolute;right:-40px;bottom:-40px;
-      width:120px;height:120px;border-radius:50%;
-      background:linear-gradient(135deg,rgba(22,163,106,.12),rgba(11,31,58,.03));
-    }
-    .icon{
-      font-size:26px;margin-bottom:18px;display:block
-    }
-    .why{
-      background:linear-gradient(135deg,var(--navy),#173c66);
-      color:#fff;
-    }
-    .why .lead{color:#c9d5e2}
-    .why .card{
-      background:rgba(255,255,255,.08);
-      color:#fff;border-color:rgba(255,255,255,.14);box-shadow:none;
-    }
-    .why .card p{color:#d3dde7}
-    .why .num{background:rgba(255,255,255,.12);color:#8ee0ba}
-    .flow{
-      display:grid;grid-template-columns:1fr 1fr;gap:22px;
-    }
-    .flow-card{
-      background:#fff;border-radius:28px;padding:34px;border:1px solid var(--line);box-shadow:var(--shadow)
-    }
-    .flow-card h3{font-size:25px;margin-bottom:6px}
-    .steps{margin:24px 0 28px;padding:0;list-style:none}
-    .steps li{
-      display:flex;align-items:center;gap:12px;padding:12px 0;
-      border-bottom:1px solid #edf1f5;color:#415266
-    }
-    .steps li:last-child{border-bottom:0}
-    .steps b{
-      width:28px;height:28px;border-radius:50%;
-      background:var(--green-soft);color:var(--green);
-      display:inline-flex;align-items:center;justify-content:center;font-size:12px
-    }
-    .cta{
-      background:linear-gradient(135deg,#0b1f3a,#15436c);
-      border-radius:34px;padding:58px;
-      color:#fff;display:flex;align-items:center;justify-content:space-between;gap:30px;
-      box-shadow:0 30px 70px rgba(11,31,58,.18)
-    }
-    .cta h2{margin-bottom:14px}
-    .cta p{color:#cfdae5;margin-bottom:0;max-width:700px}
-    .sample-note{
-      background:#fff8e8;border:1px solid #f3d79e;color:#77541d;
-      padding:16px 18px;border-radius:16px;margin-bottom:30px;font-size:14px
+    .marketing-hero h1{
+      margin:0;
+      font-size:clamp(34px,5vw,58px);
+      line-height:1.16;
+      letter-spacing:-.055em;
+      color:#10263c;
     }
 
-    .section-no{
-      display:flex;align-items:center;justify-content:center;
-      width:48px;min-width:48px;height:48px;padding:0;
-      border-radius:15px;background:var(--navy);color:#fff;
-      font-size:19px;font-weight:900;margin-bottom:18px;
-      box-shadow:0 10px 24px rgba(11,31,58,.12);
+    /* 01 START SMART : 광고 캠페인 카드 */
+    .smart-section{background:#fff}
+    .smart-wrap{
+      position:relative;
+      overflow:hidden;
+      padding:48px 44px 42px;
+      border-radius:30px;
+      background:
+        radial-gradient(circle at 86% 12%,rgba(90,206,150,.18),transparent 28%),
+        radial-gradient(circle at 8% 92%,rgba(80,132,188,.12),transparent 26%),
+        linear-gradient(135deg,#102b3d 0%,#174b4b 68%,#14604b 100%);
+      box-shadow:0 26px 60px rgba(19,50,71,.14);
     }
-    .why .section-no{
-      background:#fff;color:var(--navy);
+    .smart-wrap::before{
+      content:"";
+      position:absolute;
+      right:-70px;top:-80px;
+      width:240px;height:240px;border-radius:50%;
+      border:1px solid rgba(255,255,255,.09);
+    }
+    .smart-wrap::after{
+      content:"";
+      position:absolute;
+      right:46px;top:28px;
+      width:105px;height:105px;border-radius:50%;
+      border:1px solid rgba(154,231,192,.11);
+    }
+    .smart-copy{position:relative;z-index:2;max-width:1030px;margin-bottom:34px}
+    .smart-section .section-no{
+      background:rgba(255,255,255,.10);
+      color:#b8efd1;
+      box-shadow:none;
+      border:1px solid rgba(255,255,255,.14);
+    }
+    .smart-section .eyebrow{color:#b8efd1}
+    .smart-section .eyebrow::before{box-shadow:0 0 0 5px rgba(184,239,209,.08)}
+    .smart-section .section-title{
+      color:#fff;
+      font-size:clamp(34px,4.5vw,52px);
+    }
+    .smart-section .section-title span{color:#9ee5be}
+    .smart-section .lead{color:#d4e2e8;margin-bottom:0}
+    .smart-grid{
+      position:relative;z-index:2;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+    }
+    .smart-card{
+      min-height:235px;
+      padding:26px 22px 24px;
+      border:1px solid rgba(255,255,255,.74);
+      border-radius:19px;
+      background:linear-gradient(180deg,#fff 0%,#f6faf8 100%);
+      box-shadow:0 12px 28px rgba(5,27,39,.14);
+      transition:.2s ease;
+    }
+    .smart-card:hover{transform:translateY(-3px);box-shadow:0 18px 34px rgba(5,27,39,.18)}
+    .smart-num{
+      display:flex;align-items:center;justify-content:center;
+      width:48px;height:48px;margin-bottom:20px;
+      border-radius:15px;background:#e8f6ef;color:#16885d;
+      font-size:15px;font-weight:900;
+    }
+    .smart-card h3{
+      position:relative;
+      margin:0 0 14px;
+      padding-bottom:14px;
+      color:#102f43;
+      font-size:21px;
+      line-height:1.4;
+      letter-spacing:-.035em;
+    }
+    .smart-card h3::after{
+      content:"";
+      position:absolute;left:0;bottom:0;
+      width:34px;height:3px;border-radius:999px;background:#9fd6ba;
+    }
+    .smart-card p{margin:0;color:#526674;font-size:15px;line-height:1.78}
+
+    /* 02 YOUR CONCERNS : 고민 카드 월 */
+    .concern-section{
+      background:linear-gradient(180deg,#f5f8fb 0%,#f8fafc 100%);
+    }
+    .concern-heading{
+      display:grid;
+      grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
+      gap:34px;
+      align-items:end;
+      margin-bottom:36px;
+    }
+    .concern-heading .lead{margin:0}
+    .concern-grid{
+      display:grid;
+      grid-template-columns:repeat(12,1fr);
+      gap:16px;
+    }
+    .concern-card{
+      position:relative;
+      overflow:hidden;
+      min-height:210px;
+      padding:26px 24px;
+      border:1px solid #e0e7ed;
+      border-radius:22px;
+      background:#fff;
+      box-shadow:0 12px 30px rgba(15,38,66,.055);
+    }
+    .concern-card:nth-child(1),
+    .concern-card:nth-child(2){grid-column:span 6}
+    .concern-card:nth-child(n+3){grid-column:span 4}
+    .concern-icon{
+      display:flex;align-items:center;justify-content:center;
+      width:48px;height:48px;margin-bottom:20px;
+      border-radius:15px;
+      background:#eef7f3;
+      font-size:24px;
+    }
+    .concern-card:nth-child(2n) .concern-icon{background:#eef5fb}
+    .concern-card:nth-child(3n) .concern-icon{background:#fbf4e8}
+    .concern-card h3{
+      margin:0 0 10px;
+      color:#18364d;
+      font-size:20px;
+      line-height:1.45;
+      letter-spacing:-.035em;
+    }
+    .concern-card p{margin:0;color:#657685;font-size:14.5px;line-height:1.75}
+    .concern-card::after{
+      content:"";
+      position:absolute;right:-36px;bottom:-38px;
+      width:120px;height:120px;border-radius:50%;
+      background:radial-gradient(circle,rgba(22,163,106,.08),transparent 70%);
+    }
+    .concern-action{margin-top:30px}
+
+    /* 03 WHY TAEDOSA : 다크 프로세스형 */
+    .why-section{
+      background:#fff;
+    }
+    .why-panel{
+      position:relative;
+      overflow:hidden;
+      padding:48px 44px;
+      border-radius:30px;
+      background:linear-gradient(135deg,#0d2037 0%,#143753 100%);
+      color:#fff;
+      box-shadow:0 24px 56px rgba(11,31,58,.14);
+    }
+    .why-panel::before{
+      content:"";
+      position:absolute;left:-100px;bottom:-130px;
+      width:320px;height:320px;border-radius:50%;
+      background:radial-gradient(circle,rgba(34,170,115,.13),transparent 68%);
+    }
+    .why-section .section-no{
+      background:#fff;color:#0d2942;box-shadow:none;
+    }
+    .why-section .eyebrow{color:#8fd9b8}
+    .why-section .section-title{color:#fff}
+    .why-section .lead{color:#c7d5e1}
+    .why-process{
+      position:relative;z-index:2;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:0;
+      margin-top:38px;
+      border-top:1px solid rgba(255,255,255,.14);
+      border-bottom:1px solid rgba(255,255,255,.14);
+    }
+    .why-item{
+      position:relative;
+      min-height:230px;
+      padding:30px 24px 28px;
+    }
+    .why-item + .why-item{border-left:1px solid rgba(255,255,255,.12)}
+    .why-num{
+      margin-bottom:24px;
+      color:#8fd9b8;
+      font-size:13px;
+      font-weight:900;
+      letter-spacing:.1em;
+    }
+    .why-item h3{
+      margin:0 0 12px;
+      color:#fff;
+      font-size:21px;
+      line-height:1.45;
+      letter-spacing:-.035em;
+    }
+    .why-item p{margin:0;color:#c8d6e1;font-size:14.5px;line-height:1.75}
+
+    /* 04 CHOOSE YOUR SERVICE : 비교 선택형 */
+    .choose-section{
+      background:linear-gradient(180deg,#f7faf8 0%,#f4f7fa 100%);
+    }
+    .choose-intro{text-align:center;max-width:900px;margin:0 auto 42px}
+    .choose-intro .section-no{margin-left:auto;margin-right:auto}
+    .choose-intro .eyebrow{justify-content:center}
+    .choose-intro .lead{margin-left:auto;margin-right:auto}
+    .choose-grid{
+      position:relative;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:22px;
+      align-items:stretch;
+    }
+    .choose-or{
+      position:absolute;left:50%;top:50%;
+      transform:translate(-50%,-50%);
+      z-index:3;
+      display:flex;align-items:center;justify-content:center;
+      width:48px;height:48px;border-radius:50%;
+      background:#fff;border:1px solid #dce5ea;
+      color:#7b8995;font-size:12px;font-weight:900;
+      box-shadow:0 8px 22px rgba(15,38,66,.08);
+    }
+    .service-card{
+      min-height:470px;
+      padding:36px 34px;
+      border-radius:28px;
+      box-shadow:var(--shadow);
+    }
+    .service-card.single{
+      background:#fff;
+      border:1px solid #dbe5ec;
+    }
+    .service-card.package{
+      background:linear-gradient(160deg,#eef9f3 0%,#e2f4eb 100%);
+      border:1px solid #cce7d8;
+    }
+    .service-label{
+      display:inline-flex;
+      align-items:center;
+      min-height:30px;
+      padding:0 11px;
+      margin-bottom:18px;
+      border-radius:999px;
+      background:#edf3f7;
+      color:#496378;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.06em;
+    }
+    .package .service-label{background:#d9efe3;color:#147a55}
+    .service-card h3{
+      margin:0 0 10px;
+      color:#14334a;
+      font-size:28px;
+      letter-spacing:-.04em;
+    }
+    .service-card > p{margin:0;color:#667786;font-size:15px;line-height:1.75}
+    .service-list{margin:26px 0 30px;padding:0;list-style:none}
+    .service-list li{
+      display:flex;align-items:center;gap:12px;
+      padding:14px 0;
+      border-bottom:1px solid rgba(114,135,150,.15);
+      color:#3e5567;font-size:15px;font-weight:700;
+    }
+    .service-list li:last-child{border-bottom:0}
+    .check{
+      display:flex;align-items:center;justify-content:center;
+      width:28px;height:28px;flex:0 0 28px;border-radius:50%;
+      background:#edf5f1;color:#16885d;font-size:12px;font-weight:900;
+    }
+    .package .check{background:#cfe9dc}
+    .service-card .btn{margin-top:auto}
+
+    @media(max-width:1000px){
+      body{padding-top:72px}
+      .smart-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .concern-heading{grid-template-columns:1fr}
+      .concern-card:nth-child(1),
+      .concern-card:nth-child(2),
+      .concern-card:nth-child(n+3){grid-column:span 6}
+      .why-process{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .why-item:nth-child(3){border-left:0;border-top:1px solid rgba(255,255,255,.12)}
+      .why-item:nth-child(4){border-top:1px solid rgba(255,255,255,.12)}
+    }
+
+    @media(max-width:760px){
+      .section{padding:68px 0}
+      .container{width:min(100% - 28px,1180px)}
+      .smart-wrap,.why-panel{padding:34px 24px;border-radius:24px}
+      .smart-grid,.choose-grid{grid-template-columns:1fr}
+      .smart-card{min-height:0}
+      .concern-grid{grid-template-columns:1fr}
+      .concern-card:nth-child(1),
+      .concern-card:nth-child(2),
+      .concern-card:nth-child(n+3){grid-column:auto}
+      .why-process{grid-template-columns:1fr}
+      .why-item + .why-item{border-left:0;border-top:1px solid rgba(255,255,255,.12)}
+      .why-item{min-height:0}
+      .choose-or{display:none}
+      .service-card{min-height:0;padding:30px 24px}
+      .lead{font-size:15.5px}
+      .section-title{font-size:31px}
+      .smart-section .section-title{font-size:32px}
+    }
+  
+    /* 02 YOUR CONCERNS v2 : 좌측 메시지 + 우측 세로 리스트 */
+    .concern-section-v2{
+      background:
+        radial-gradient(circle at 12% 18%,rgba(22,163,106,.055),transparent 26%),
+        linear-gradient(180deg,#f7f9fb 0%,#f3f7f5 100%);
+    }
+    .concern-v2-layout{
+      display:grid;
+      grid-template-columns:minmax(300px,.78fr) minmax(0,1.45fr);
+      gap:34px;
+      align-items:stretch;
+    }
+    .concern-v2-intro{
+      position:relative;
+      overflow:hidden;
+      padding:38px 34px;
+      border:1px solid #dce8e2;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 88% 12%,rgba(90,196,145,.15),transparent 28%),
+        linear-gradient(155deg,#f9fdfb 0%,#edf6f1 100%);
+      box-shadow:0 18px 42px rgba(19,50,71,.07);
+    }
+    .concern-v2-intro .section-no{
+      background:#15364b;
+    }
+    .concern-v2-intro .section-title{
+      margin-bottom:24px;
+      color:#15364b;
+      font-size:clamp(34px,4vw,46px);
+      line-height:1.18;
+    }
+    .concern-v2-copy{
+      margin:0;
+      color:#60717f;
+      font-size:16px;
+      line-height:1.8;
+    }
+    .concern-v2-copy + .concern-v2-copy{
+      margin-top:12px;
+    }
+    .concern-v2-copy-strong{
+      color:#244b3c;
+      font-weight:750;
+    }
+    .concern-v2-deco{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-top:36px;
+    }
+    .concern-v2-deco span{
+      display:block;
+      height:6px;
+      border-radius:999px;
+      background:#b7d9ca;
+    }
+    .concern-v2-deco span:nth-child(1){width:52px}
+    .concern-v2-deco span:nth-child(2){width:26px;background:#d3e8df}
+    .concern-v2-deco span:nth-child(3){width:12px;background:#e2efe9}
+
+    .concern-v2-list{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .concern-v2-row{
+      display:grid;
+      grid-template-columns:42px 50px minmax(0,1fr);
+      gap:16px;
+      align-items:center;
+      min-height:112px;
+      padding:20px 22px;
+      border:1px solid #e1e8ed;
+      border-radius:20px;
+      background:#fff;
+      box-shadow:0 10px 26px rgba(15,38,66,.045);
+      transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+    }
+    .concern-v2-row:hover{
+      transform:translateX(4px);
+      border-color:#c9dfd4;
+      box-shadow:0 14px 30px rgba(15,38,66,.07);
+    }
+    .concern-v2-index{
+      color:#97a8b4;
+      font-size:12px;
+      font-weight:900;
+      letter-spacing:.08em;
+    }
+    .concern-v2-icon{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:50px;
+      height:50px;
+      border-radius:16px;
+      background:#eff7f3;
+      font-size:23px;
+    }
+    .concern-v2-row:nth-child(2n) .concern-v2-icon{background:#eef5fb}
+    .concern-v2-row:nth-child(3n) .concern-v2-icon{background:#fbf4e8}
+    .concern-v2-text h3{
+      margin:0 0 7px;
+      color:#17384d;
+      font-size:19px;
+      line-height:1.42;
+      letter-spacing:-.035em;
+    }
+    .concern-v2-text p{
+      margin:0;
+      color:#657685;
+      font-size:14px;
+      line-height:1.7;
+    }
+
+    @media(max-width:980px){
+      .concern-v2-layout{
+        grid-template-columns:1fr;
+      }
+      .concern-v2-intro{
+        padding:32px 28px;
+      }
+    }
+
+    @media(max-width:640px){
+      .concern-v2-intro{
+        padding:28px 22px;
+        border-radius:22px;
+      }
+      .concern-v2-intro .section-title{
+        font-size:31px;
+      }
+      .concern-v2-copy{
+        font-size:15px;
+      }
+      .concern-v2-row{
+        grid-template-columns:34px 44px minmax(0,1fr);
+        gap:12px;
+        min-height:0;
+        padding:18px 16px;
+        border-radius:17px;
+      }
+      .concern-v2-icon{
+        width:44px;
+        height:44px;
+        border-radius:14px;
+        font-size:20px;
+      }
+      .concern-v2-text h3{
+        font-size:17px;
+      }
+      .concern-v2-text p{
+        font-size:13.5px;
+      }
+    }
+
+
+    /* 02 YOUR CONCERNS compact : 서비스 페이지 삽입형 */
+    .concern-section-compact{
+      padding:72px 0;
+      background:#f7f9fb;
+    }
+    .concern-compact-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:30px;
+      margin-bottom:28px;
+    }
+    .concern-compact-title{
+      display:flex;
+      align-items:flex-start;
+      gap:16px;
+    }
+    .concern-compact-title .section-no{
+      flex:0 0 auto;
+      margin:2px 0 0;
+    }
+    .concern-compact-title .eyebrow{
+      margin-bottom:8px;
+    }
+    .concern-compact-title .section-title{
+      margin:0;
+      font-size:clamp(30px,3.6vw,42px);
+    }
+    .concern-compact-lead{
+      max-width:520px;
+      margin:0 0 4px;
+      color:#697987;
+      font-size:15.5px;
+      line-height:1.72;
+      text-align:right;
+    }
+    .concern-compact-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+    }
+    .concern-compact-card{
+      display:grid;
+      grid-template-columns:46px minmax(0,1fr);
+      gap:14px;
+      align-items:start;
+      min-height:146px;
+      padding:20px 18px;
+      border:1px solid #e0e7ec;
+      border-radius:18px;
+      background:#fff;
+      box-shadow:0 8px 22px rgba(15,38,66,.04);
+      transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+    }
+    .concern-compact-card:hover{
+      transform:translateY(-2px);
+      border-color:#cbded4;
+      box-shadow:0 12px 26px rgba(15,38,66,.06);
+    }
+    .concern-compact-icon{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      background:#eff7f3;
+      font-size:21px;
+    }
+    .concern-compact-card:nth-child(2n) .concern-compact-icon{background:#eef5fb}
+    .concern-compact-card:nth-child(3n) .concern-compact-icon{background:#fbf4e8}
+    .concern-compact-card h3{
+      margin:0 0 7px;
+      color:#17384d;
+      font-size:17px;
+      line-height:1.42;
+      letter-spacing:-.03em;
+    }
+    .concern-compact-card p{
+      margin:0;
+      color:#687987;
+      font-size:13.5px;
+      line-height:1.65;
+    }
+    .concern-compact-card-wide{
+      grid-column:span 2;
+    }
+
+    @media(max-width:1080px){
+      .concern-compact-grid{
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+      .concern-compact-card-wide{
+        grid-column:span 2;
+      }
+    }
+
+    @media(max-width:760px){
+      .concern-section-compact{
+        padding:58px 0;
+      }
+      .concern-compact-head{
+        display:block;
+        margin-bottom:22px;
+      }
+      .concern-compact-title{
+        display:block;
+      }
+      .concern-compact-title .section-no{
+        margin-bottom:12px;
+      }
+      .concern-compact-lead{
+        max-width:none;
+        margin-top:12px;
+        text-align:left;
+        font-size:14.5px;
+      }
+      .concern-compact-grid{
+        grid-template-columns:1fr;
+        gap:11px;
+      }
+      .concern-compact-card,
+      .concern-compact-card-wide{
+        grid-column:auto;
+        min-height:0;
+        padding:17px 15px;
+      }
+      .concern-compact-card h3{
+        font-size:16px;
+      }
+      .concern-compact-card p{
+        font-size:13px;
+      }
+    }
+
+
+    /* 02 YOUR CONCERNS : 오렌지 브랜드 카드형 */
+    .concern-orange-section{
+      padding:76px 0;
+      background:#fff;
+    }
+    .concern-orange-wrap{
+      position:relative;
+      overflow:hidden;
+      padding:42px 38px 38px;
+      border:1px solid #f2dfcf;
+      border-radius:28px;
+      background:
+        radial-gradient(circle at 92% 10%,rgba(245,154,69,.15),transparent 25%),
+        radial-gradient(circle at 8% 92%,rgba(233,121,36,.08),transparent 24%),
+        linear-gradient(145deg,#fff9f3 0%,#fff5ea 100%);
+      box-shadow:0 18px 44px rgba(126,76,35,.07);
+    }
+    .concern-orange-wrap::before{
+      content:"";
+      position:absolute;
+      right:-70px;
+      top:-82px;
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      border:1px solid rgba(233,121,36,.10);
+      pointer-events:none;
+    }
+    .concern-orange-head{
+      position:relative;
+      z-index:2;
+      max-width:980px;
+      margin-bottom:30px;
+    }
+    .concern-orange-head .section-no{
+      background:#e97924;
+      color:#fff;
+      box-shadow:0 8px 18px rgba(233,121,36,.16);
+    }
+    .concern-orange-head .eyebrow{
+      color:#d96b19;
+    }
+    .concern-orange-head .eyebrow::before{
+      box-shadow:0 0 0 5px rgba(233,121,36,.08);
+    }
+    .concern-orange-head .section-title{
+      margin-bottom:14px;
+      color:#17384d;
+      font-size:clamp(31px,3.8vw,44px);
+    }
+    .concern-orange-lead{
+      margin:0;
+      color:#6d746f;
+      font-size:16px;
+      line-height:1.78;
+    }
+    .concern-orange-lead span{
+      display:block;
+    }
+    .concern-orange-lead span + span{
+      margin-top:4px;
+    }
+
+    .concern-orange-grid{
+      position:relative;
+      z-index:2;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:14px;
+    }
+    .concern-orange-card{
+      flex:0 0 calc((100% - 42px) / 4);
+      min-height:218px;
+      padding:24px 20px 22px;
+      border:1px solid #f0e0d2;
+      border-radius:19px;
+      background:#fff;
+      box-shadow:0 10px 26px rgba(84,56,34,.055);
+      transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+    }
+    .concern-orange-card:hover{
+      transform:translateY(-3px);
+      border-color:#efc59f;
+      box-shadow:0 15px 32px rgba(84,56,34,.09);
+    }
+    .concern-orange-icon{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:46px;
+      height:46px;
+      margin-bottom:18px;
+      border-radius:14px;
+      background:#fff1e4;
+      border:1px solid #f8dcc2;
+      font-size:21px;
+    }
+    .concern-orange-card:nth-child(2n) .concern-orange-icon{
+      background:#fff5e9;
+    }
+    .concern-orange-card h3{
+      position:relative;
+      margin:0 0 12px;
+      padding-bottom:12px;
+      color:#20343f;
+      font-size:19px;
+      line-height:1.45;
+      letter-spacing:-.035em;
+    }
+    .concern-orange-card h3::after{
+      content:"";
+      position:absolute;
+      left:0;
+      bottom:0;
+      width:28px;
+      height:3px;
+      border-radius:999px;
+      background:#f1a15d;
+    }
+    .concern-orange-card p{
+      margin:0;
+      color:#6a767d;
+      font-size:14px;
+      line-height:1.7;
+    }
+
+    @media(max-width:1080px){
+      .concern-orange-card{
+        flex-basis:calc((100% - 14px) / 2);
+      }
+    }
+
+    @media(max-width:760px){
+      .concern-orange-section{
+        padding:58px 0;
+      }
+      .concern-orange-wrap{
+        padding:30px 20px 24px;
+        border-radius:22px;
+      }
+      .concern-orange-head{
+        margin-bottom:22px;
+      }
+      .concern-orange-head .section-title{
+        font-size:31px;
+      }
+      .concern-orange-lead{
+        font-size:14.5px;
+      }
+      .concern-orange-card{
+        flex-basis:100%;
+        min-height:0;
+        padding:20px 17px;
+      }
+      .concern-orange-card h3{
+        font-size:17px;
+      }
+      .concern-orange-card p{
+        font-size:13.5px;
+      }
+    }
+
+
+    /* 04 CHOOSE YOUR SERVICE : 항목 가독성 및 균형 개선 */
+    .choose-grid{
+      gap:26px;
+    }
+    .service-card{
+      display:flex;
+      flex-direction:column;
+      min-height:455px;
+      padding:38px 36px 34px;
+    }
+    .service-card h3{
+      margin-bottom:12px;
+      font-size:30px;
+      line-height:1.3;
+    }
+    .service-card > p{
+      max-width:520px;
+      font-size:16px;
+      line-height:1.78;
+    }
+    .service-list{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin:28px 0 30px;
+    }
+    .service-list li{
+      min-height:62px;
+      padding:14px 16px;
+      border:1px solid #e1e8ed;
+      border-radius:14px;
+      background:#f8fafb;
+      color:#344e60;
+      font-size:16px;
+      font-weight:800;
+      line-height:1.45;
+    }
+    .service-list li:last-child{
+      border-bottom:1px solid #e1e8ed;
+    }
+    .package .service-list li{
+      border-color:#cce4d7;
+      background:rgba(255,255,255,.7);
+      color:#315846;
+    }
+    .check{
+      width:30px;
+      height:30px;
+      flex:0 0 30px;
+      font-size:13px;
+    }
+    .service-card .btn{
+      align-self:flex-start;
+      margin-top:auto;
     }
 
     @media(max-width:900px){
-      .grid-4,.grid-3,.flow{grid-template-columns:1fr 1fr}
-      .cta{padding:40px;align-items:flex-start;flex-direction:column}
+      .service-list{
+        grid-template-columns:1fr;
+      }
     }
-    @media(max-width:980px){
-      body{padding-top:72px}
+
+    @media(max-width:760px){
+      .service-card{
+        padding:30px 24px 26px;
+      }
+      .service-card h3{
+        font-size:25px;
+      }
+      .service-card > p{
+        font-size:15px;
+      }
+      .service-list{
+        gap:9px;
+        margin:22px 0 26px;
+      }
+      .service-list li{
+        min-height:56px;
+        padding:12px 14px;
+        font-size:15px;
+      }
+      .service-card .btn{
+        width:100%;
+      }
     }
-    @media(max-width:640px){
-      .section{padding:68px 0}
-      .container{width:min(100% - 28px,1180px)}
-      .grid-4,.grid-3,.flow{grid-template-columns:1fr}
-      .card,.flow-card{padding:24px}
-      .cta{padding:30px;border-radius:24px}
-      .lead{font-size:16px}
+
+
+    /* 04 개별서비스 카드 : 오렌지 계열 */
+    .service-card.single{
+      background:linear-gradient(160deg,#fff9f3 0%,#fff3e7 100%);
+      border:1px solid #f2d7bd;
+      box-shadow:0 18px 42px rgba(159,88,33,.08);
     }
-  </style>
+    .service-card.single .service-label{
+      background:#fde8d5;
+      color:#c7671e;
+    }
+    .service-card.single h3{
+      color:#8f4b1c;
+    }
+    .service-card.single > p{
+      color:#765f4e;
+    }
+    .service-card.single .service-list li{
+      border-color:#f0dccb;
+      background:#fffaf6;
+      color:#6b4c35;
+    }
+    .service-card.single .check{
+      background:#fbe7d5;
+      color:#d86f20;
+    }
+    .service-card.single .btn.ghost{
+      border-color:#e7b98f;
+      background:#fff7f0;
+      color:#b85c18;
+    }
+    .service-card.single .btn.ghost:hover{
+      background:#fce8d6;
+      box-shadow:0 10px 22px rgba(198,103,30,.12);
+    }
+
+
+    /* 04 CHOOSE YOUR SERVICE : 상단 소개 좌측 정렬 통일 */
+    .choose-intro{
+      max-width:100%;
+      margin:0 0 42px;
+      text-align:left;
+    }
+    .choose-intro .section-no{
+      margin-left:0;
+      margin-right:0;
+    }
+    .choose-intro .eyebrow{
+      justify-content:flex-start;
+    }
+    .choose-intro .lead{
+      max-width:980px;
+      margin-left:0;
+      margin-right:0;
+      text-align:left;
+    }
+
+
+    /* 04 개별서비스 보기 버튼 : 패키지서비스 보기와 동일한 채움형 효과 */
+    .service-card.single .btn.ghost{
+      border:0;
+      background:#e97924;
+      color:#fff;
+      box-shadow:none;
+    }
+    .service-card.single .btn.ghost:hover{
+      transform:translateY(-2px);
+      background:#d96b19;
+      box-shadow:0 12px 24px rgba(233,121,36,.18);
+    }
+
+</style>
 </head>
 <body>
 
@@ -163,194 +1040,204 @@
   <script src="common/js/components/header.js?v=2.6"></script>
 
   <main>
-
-    <section class="section" style="padding:54px 0 28px;background:#fff;">
+    <section class="marketing-hero">
       <div class="container">
-        <h1 style="font-size:clamp(34px,5vw,58px);line-height:1.16;letter-spacing:-.05em;margin-bottom:16px;">마케팅 컨텐츠</h1>
+        <h1>마케팅 컨텐츠</h1>
       </div>
     </section>
 
-
-    <!-- 실제 적용 시 기존 HERO / 진행절차 영역 다음에 삽입 -->
-    <section class="section white">
+    <!-- 01 START SMART -->
+    <section class="section smart-section">
       <div class="container">
-<div class="section-no">1</div>
-        <span class="eyebrow">START SMART</span>
-        <h2>복잡한 태양광 발전사업,<br>더 쉽고 부담 없이</h2>
-        <p class="lead">
-          <span class="lead-line">태양광 발전사업에 관심은 있어도 처음부터 시공업체를 정하고 공사계약까지 결정하는 것은 부담스러울 수 있습니다.</span>
-          <span class="lead-line">태도사는 사업 가능성을 먼저 확인하고, 필요한 인허가와 기술서비스를 단계별로 이용한 뒤 다음 단계를 결정할 수 있도록 진입장벽을 낮춘 서비스 구조를 제공합니다.</span>
-        </p>
+        <div class="smart-wrap">
+          <div class="smart-copy">
+            <div class="section-no">1</div><br>
+            <span class="eyebrow">START SMART</span>
+            <h2 class="section-title">복잡한 태양광 발전사업,<br><span>더 쉽고 부담 없이</span></h2>
+            <p class="lead">
+              <span class="lead-line">태양광 발전사업에 관심은 있어도 처음부터 시공업체를 정하고 공사계약까지 결정하는 것은 부담스러울 수 있습니다.</span>
+              <span class="lead-line">태도사는 사업 가능성을 먼저 확인하고, 필요한 인허가와 기술서비스를 단계별로 이용한 뒤 다음 단계를 결정할 수 있도록 진입장벽을 낮춘 서비스 구조를 제공합니다.</span>
+            </p>
+          </div>
 
-        <div class="grid-4">
-          <article class="card">
-            <div class="num">01</div>
-            <h3>사업 가능성부터 확인</h3>
-            <p>내 토지·공장·창고·축사에 태양광 발전사업이 가능한지 먼저 검토합니다.</p>
-          </article>
-          <article class="card">
-            <div class="num">02</div>
-            <h3>필요한 서비스부터 시작</h3>
-            <p>처음부터 모든 업무를 계약하지 않고 현재 단계에 필요한 인허가·설계·기술서비스만 선택할 수 있습니다.</p>
-          </article>
-          <article class="card">
-            <div class="num">03</div>
-            <h3>단계별로 판단</h3>
-            <p>사전검토와 인허가 진행 결과를 확인하면서 다음 단계 진행 여부와 비용 지출을 결정합니다.</p>
-          </article>
-          <article class="card">
-            <div class="num">04</div>
-            <h3>공사계약은 충분히 검토 후</h3>
-            <p>처음 상담받은 시공업체와 바로 계약하지 않고 사업 조건을 확인한 뒤 공사 여부와 시공업체를 검토할 수 있습니다.</p>
-          </article>
-        </div>
+          <div class="smart-grid">
+            <article class="smart-card">
+              <div class="smart-num">01</div>
+              <h3>사업 가능성부터 확인</h3>
+              <p>내 토지·공장·창고·축사에 태양광 발전사업이 가능한지 먼저 검토합니다.</p>
+            </article>
+            <article class="smart-card">
+              <div class="smart-num">02</div>
+              <h3>필요한 서비스부터 시작</h3>
+              <p>처음부터 모든 업무를 계약하지 않고 현재 단계에 필요한 인허가·설계·기술서비스만 선택할 수 있습니다.</p>
+            </article>
+            <article class="smart-card">
+              <div class="smart-num">03</div>
+              <h3>단계별로 판단</h3>
+              <p>사전검토와 인허가 진행 결과를 확인하면서 다음 단계 진행 여부와 비용 지출을 결정합니다.</p>
+            </article>
+            <article class="smart-card">
+              <div class="smart-num">04</div>
+              <h3>공사계약은 충분히 검토 후</h3>
+              <p>처음 상담받은 시공업체와 바로 계약하지 않고 사업 조건을 확인한 뒤 공사 여부와 시공업체를 검토할 수 있습니다.</p>
+            </article>
+          </div>
 
-        <div style="margin-top:24px">
-          <a class="btn green" href="/precheck/">사업 가능성 먼저 확인하기 →</a>
-        </div>
-      </div>
-    </section>
-
-    <!-- 기존 고객 유형별 서비스 다음 삽입 -->
-    <section class="section">
-      <div class="container">
-<div class="section-no">2</div>
-        <span class="eyebrow">YOUR CONCERNS</span>
-        <h2>이런 고민이 있으신가요?</h2>
-        <p class="lead">
-          <span class="lead-line">태양광 발전사업을 시작하면 사업 가능성부터 인허가, 비용, 공사계약까지 다양한 고민을 마주하게 됩니다.</span>
-          <span class="lead-line">어디서부터 어떻게 시작해야 할지 막막한 고민, 태도사와 함께 하나씩 해결해보세요.</span>
-        </p>
-
-        <div class="grid-4">
-          <article class="card pain-card">
-            <span class="icon">📍</span>
-            <h3>내 토지에 태양광이 가능할까?</h3>
-            <p>용도지역과 지목, 지자체 조례, 주변 여건 등 사업 가능성을 먼저 확인해야 합니다.</p>
-          </article>
-          <article class="card pain-card">
-            <span class="icon">🏭</span>
-            <h3>공장·창고·축사 지붕을 활용하고 싶다면?</h3>
-            <p>건축물 현황과 구조, 지붕 상태 및 인허가 조건을 함께 검토해야 합니다.</p>
-          </article>
-          <article class="card pain-card">
-            <span class="icon">🧭</span>
-            <h3>발전사업허가부터 막막하다면?</h3>
-            <p>처음 시작하는 경우 필요한 절차와 준비사항부터 단계별로 확인할 수 있습니다.</p>
-          </article>
-          <article class="card pain-card">
-            <span class="icon">🧩</span>
-            <h3>이미 일부 절차를 진행했다면?</h3>
-            <p>처음부터 다시 진행하지 않고 현재 단계에서 필요한 개별 서비스만 선택할 수 있습니다.</p>
-          </article>
-          <article class="card pain-card">
-            <span class="icon">💳</span>
-            <h3>큰 비용부터 지출하기 부담스럽다면?</h3>
-            <p>설계·인허가·시공에 앞서 사업 가능성을 먼저 검토하고 필요한 단계만 순서대로 진행할 수 있습니다.</p>
-          </article>
-          <article class="card pain-card">
-            <span class="icon">🤝</span>
-            <h3>공사계약부터 해야 할까 봐 부담된다면?</h3>
-            <p>처음부터 시공계약을 결정하지 않고 사전검토와 필요한 인허가부터 단계적으로 진행할 수 있습니다.</p>
-          </article>
-          <article class="card pain-card">
-            <span class="icon">💬</span>
-            <h3>무엇을 신청해야 할지 모르겠다면?</h3>
-            <p>현재 사업상태를 기준으로 필요한 서비스부터 확인할 수 있습니다.</p>
-          </article>
-        </div>
-
-        <div style="margin-top:34px">
-          <a class="btn" href="/precheck/">내 사업에 필요한 서비스 확인하기 →</a>
         </div>
       </div>
     </section>
 
-    <!-- 개별서비스 다음 삽입 -->
-    <section class="section">
+    <!-- 02 YOUR CONCERNS -->
+    <section class="section concern-section concern-orange-section">
       <div class="container">
-<div class="section-no">3</div>
-        <span class="eyebrow">WHY TAEDOSA</span>
-        <h2>태양광 사업의 시작을 바꾸는,<br>태도사만의 차별성</h2>
-        <p class="lead">
-          <span class="lead-line">태양광 발전사업의 시작부터 모든 서비스를 한 번에 결정할 필요는 없습니다.</span>
-          <span class="lead-line">태도사는 먼저 검토하고 필요한 서비스부터 선택할 수 있는 방식으로 사업의 시작을 보다 쉽고 명확하게 만듭니다.</span>
-        </p>
+        <div class="concern-orange-wrap">
 
-        <div class="grid-4">
-          <article class="card">
-            <div class="num">01</div>
-            <h3>먼저 검토합니다</h3>
-            <p>사업 가능성을 확인하지 않은 상태에서 큰 비용부터 지출하지 않도록 사전검토를 제공합니다.</p>
-          </article>
-          <article class="card">
-            <div class="num">02</div>
-            <h3>필요한 것만 선택합니다</h3>
-            <p>종합 패키지뿐 아니라 발전사업허가, 개발행위허가 등 필요한 서비스만 개별 신청할 수 있습니다.</p>
-          </article>
-          <article class="card">
-            <div class="num">03</div>
-            <h3>진행과정을 확인합니다</h3>
-            <p>서비스 신청 후 검토·보완·진행·완료 상태를 마이페이지에서 확인할 수 있습니다.</p>
-          </article>
-          <article class="card">
-            <div class="num">04</div>
-            <h3>실무를 단계별로 연결합니다</h3>
-            <p>인허가부터 설계·기술검토·현장실사 등 발전사업에 필요한 업무를 단계별로 연결합니다.</p>
-          </article>
+          <div class="concern-orange-head">
+            <div class="section-no">2</div><br>
+            <span class="eyebrow">YOUR CONCERNS</span>
+            <h2 class="section-title">이런 고민이 있으신가요?</h2>
+            <p class="concern-orange-lead">
+              <span>태양광 발전사업을 시작하면 사업 가능성부터 인허가, 비용, 공사계약까지 다양한 고민을 마주하게 됩니다.</span>
+              <span>어디서부터 어떻게 시작해야 할지 막막한 고민, 태도사와 함께 하나씩 해결해보세요.</span>
+            </p>
+          </div>
+
+          <div class="concern-orange-grid">
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">📍</span>
+              <h3>내 토지에 태양광이 가능할까?</h3>
+              <p>용도지역과 지목, 지자체 조례, 주변 여건 등 사업 가능성을 먼저 확인해야 합니다.</p>
+            </article>
+
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">🏭</span>
+              <h3>공장·창고·축사 지붕을 활용하고 싶다면?</h3>
+              <p>건축물 현황과 구조, 지붕 상태 및 인허가 조건을 함께 검토해야 합니다.</p>
+            </article>
+
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">🧭</span>
+              <h3>발전사업허가부터 막막하다면?</h3>
+              <p>처음 시작하는 경우 필요한 절차와 준비사항부터 단계별로 확인할 수 있습니다.</p>
+            </article>
+
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">🪜</span>
+              <h3>사업 가능성은 있는데, 다음 순서를 모르겠다면?</h3>
+              <p>사전검토 이후 어떤 인허가와 절차를 먼저 진행해야 하는지 사업 단계에 맞춰 확인할 수 있습니다.</p>
+            </article>
+
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">💬</span>
+              <h3>무엇을 신청해야 할지 모르겠다면?</h3>
+              <p>현재 사업상태를 기준으로 필요한 서비스부터 확인할 수 있습니다.</p>
+            </article>
+
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">🧩</span>
+              <h3>이미 일부 절차를 진행했다면?</h3>
+              <p>처음부터 다시 진행하지 않고 현재 단계에서 필요한 개별 서비스만 선택할 수 있습니다.</p>
+            </article>
+
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">💳</span>
+              <h3>큰 비용부터 지출하기 부담스럽다면?</h3>
+              <p>설계·인허가·시공에 앞서 사업 가능성을 먼저 검토하고 필요한 단계만 순서대로 진행할 수 있습니다.</p>
+            </article>
+
+            <article class="concern-orange-card">
+              <span class="concern-orange-icon">🤝</span>
+              <h3>공사계약부터 해야 할까 봐 부담된다면?</h3>
+              <p>처음부터 시공계약을 결정하지 않고 사전검토와 필요한 인허가부터 단계적으로 진행할 수 있습니다.</p>
+            </article>
+          </div>
+
         </div>
       </div>
     </section>
 
-    <!-- 선택형 마케팅 섹션 -->
-    <section class="section white">
+    <!-- 03 WHY TAEDOSA -->
+    <section class="section why-section">
       <div class="container">
-        <div class="section-no">4</div>
-        <span class="eyebrow">CHOOSE YOUR SERVICE</span>
-        <h2>필요한 서비스만 선택,<br>복잡한 과정은 패키지로 한 번에</h2>
-        <p class="lead">
-          <span class="lead-line">필요한 절차나 특정 업무만 이용하고 싶다면 원하는 서비스를 개별적으로 선택할 수 있습니다.</span>
-          <span class="lead-line">여러 절차를 함께 진행해야 한다면 사업 유형에 맞는 패키지서비스로 복잡한 과정을 한 번에 연결할 수 있습니다.</span>
-        </p>
+        <div class="why-panel">
+          <div class="section-no">3</div><br>
+          <span class="eyebrow">WHY TAEDOSA</span>
+          <h2 class="section-title">태양광 사업의 시작을 바꾸는,<br>태도사만의 차별성</h2>
+          <p class="lead">
+            <span class="lead-line">태양광 발전사업의 시작부터 모든 서비스를 한 번에 결정할 필요는 없습니다.</span>
+            <span class="lead-line">태도사는 먼저 검토하고 필요한 서비스부터 선택할 수 있는 방식으로 사업의 시작을 보다 쉽고 명확하게 만듭니다.</span>
+          </p>
 
-        <div class="flow">
-          <article class="flow-card">
-            <div class="num">01</div>
+          <div class="why-process">
+            <article class="why-item">
+              <div class="why-num">01 · CHECK FIRST</div>
+              <h3>먼저 검토합니다</h3>
+              <p>사업 가능성을 확인하지 않은 상태에서 큰 비용부터 지출하지 않도록 사전검토를 제공합니다.</p>
+            </article>
+            <article class="why-item">
+              <div class="why-num">02 · CHOOSE</div>
+              <h3>필요한 것만 선택합니다</h3>
+              <p>종합 패키지뿐 아니라 발전사업허가, 개발행위허가 등 필요한 서비스만 개별 신청할 수 있습니다.</p>
+            </article>
+            <article class="why-item">
+              <div class="why-num">03 · TRACK</div>
+              <h3>진행과정을 확인합니다</h3>
+              <p>서비스 신청 후 검토·보완·진행·완료 상태를 마이페이지에서 확인할 수 있습니다.</p>
+            </article>
+            <article class="why-item">
+              <div class="why-num">04 · CONNECT</div>
+              <h3>실무를 단계별로 연결합니다</h3>
+              <p>인허가부터 설계·기술검토·현장실사 등 발전사업에 필요한 업무를 단계별로 연결합니다.</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 CHOOSE YOUR SERVICE -->
+    <section class="section choose-section">
+      <div class="container">
+        <div class="choose-intro">
+          <div class="section-no">4</div><br>
+          <span class="eyebrow">CHOOSE YOUR SERVICE</span>
+          <h2 class="section-title">필요한 서비스만 선택,<br>복잡한 과정은 패키지로 한 번에</h2>
+          <p class="lead">
+            <span class="lead-line">필요한 절차나 특정 업무만 이용하고 싶다면 원하는 서비스를 개별적으로 선택할 수 있습니다.</span>
+            <span class="lead-line">여러 절차를 함께 진행해야 한다면 사업 유형에 맞는 패키지서비스로 복잡한 과정을 한 번에 연결할 수 있습니다.</span>
+          </p>
+        </div>
+
+        <div class="choose-grid">
+          <span class="choose-or">OR</span>
+
+          <article class="service-card single">
+            <span class="service-label">SELECTIVE</span>
             <h3>개별서비스</h3>
             <p>필요한 절차와 업무만 개별적으로 선택하여 전문적인 서비스를 간편하게 이용할 수 있습니다.</p>
-            <ol class="steps">
-              <li><b>✓</b> 발전사업허가</li>
-              <li><b>✓</b> 개발행위허가</li>
-              <li><b>✓</b> 설계·기술검토</li>
-              <li><b>✓</b> 현장실사 등</li>
-            </ol>
+            <ul class="service-list">
+              <li><span class="check">✓</span> 발전사업허가</li>
+              <li><span class="check">✓</span> 개발행위허가</li>
+              <li><span class="check">✓</span> 설계·기술검토</li>
+              <li><span class="check">✓</span> 현장실사 등</li>
+            </ul>
             <a class="btn ghost" href="/start/">개별서비스 보기 →</a>
           </article>
 
-          <article class="flow-card">
-            <div class="num">02</div>
+          <article class="service-card package">
+            <span class="service-label">ALL-IN-ONE</span>
             <h3>패키지서비스</h3>
             <p>사업 유형에 따라 필요한 주요 서비스를 하나의 패키지로 연결하여 보다 편리하게 진행할 수 있습니다.</p>
-            <ol class="steps">
-              <li><b>✓</b> 토지형 발전사업</li>
-              <li><b>✓</b> 지붕형 발전사업</li>
-              <li><b>✓</b> 건물지원사업</li>
-              <li><b>✓</b> 금융지원사업</li>
-            </ol>
+            <ul class="service-list">
+              <li><span class="check">✓</span> 토지형 발전사업</li>
+              <li><span class="check">✓</span> 지붕형 발전사업</li>
+              <li><span class="check">✓</span> 건물지원사업</li>
+              <li><span class="check">✓</span> 금융지원사업</li>
+            </ul>
             <a class="btn green" href="/start/">패키지서비스 보기 →</a>
           </article>
         </div>
       </div>
     </section>
-</main>
+  </main>
 </body>
 </html>
-
-<style>
-.section-no + .eyebrow{
-  display:flex;
-  width:max-content;
-  margin-top:0;
-  margin-bottom:16px;
-}
-</style>
