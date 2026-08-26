@@ -345,29 +345,103 @@
   .service-flow .flow-step p{font-size:15px}
 }
 
-/* 서비스 진행 절차 다음 마케팅 컨텐츠 01 */
+/* 마케팅 강조 섹션 */
 .development-marketing-section{
-  background:#fff;
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,rgba(237,249,243,.96) 0%,rgba(248,251,253,.98) 48%,rgba(238,246,251,.96) 100%);
+  border-top:1px solid #e2ebe6;
+  border-bottom:1px solid #e2ebe6;
 }
-.development-marketing-kicker{
+.development-marketing-section::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:4px;
+  background:linear-gradient(90deg,#16a36a 0%,#4cb6a0 42%,#7eb6d8 100%);
+}
+.development-marketing-inner{
+  position:relative;
+  z-index:2;
+}
+.development-marketing-glow{
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+  filter:blur(4px);
+}
+.development-marketing-glow.glow-a{
+  width:360px;
+  height:360px;
+  right:-150px;
+  top:-130px;
+  background:radial-gradient(circle,rgba(22,163,106,.13) 0%,rgba(22,163,106,0) 70%);
+}
+.development-marketing-glow.glow-b{
+  width:300px;
+  height:300px;
+  left:-120px;
+  bottom:-150px;
+  background:radial-gradient(circle,rgba(51,122,166,.10) 0%,rgba(51,122,166,0) 72%);
+}
+.development-marketing-heading{
+  max-width:1060px;
+  margin-bottom:36px;
+}
+.development-marketing-label{
   display:inline-flex;
   align-items:center;
-  margin-bottom:16px;
-  color:#16a36a;
-  font-size:13px;
-  font-weight:800;
-  letter-spacing:.08em;
+  gap:9px;
+  min-height:32px;
+  padding:0 13px;
+  margin-bottom:18px;
+  border:1px solid rgba(22,163,106,.22);
+  border-radius:999px;
+  background:rgba(255,255,255,.76);
+  color:#13875a;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.13em;
+  box-shadow:0 6px 18px rgba(22,163,106,.08);
+}
+.development-marketing-label-dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:#16a36a;
+  box-shadow:0 0 0 5px rgba(22,163,106,.10);
 }
 .development-marketing-section h2{
-  margin-bottom:18px;
-  color:#132f47;
+  margin:0 0 20px;
+  color:#122f47;
+  font-size:clamp(32px,4vw,46px);
+  line-height:1.18;
+  letter-spacing:-1.3px!important;
+}
+.development-marketing-section h2 span{
+  position:relative;
+  display:inline-block;
+  color:#0f6f51;
+}
+.development-marketing-section h2 span::after{
+  content:"";
+  position:absolute;
+  left:2px;
+  right:0;
+  bottom:-8px;
+  height:7px;
+  border-radius:999px;
+  background:linear-gradient(90deg,rgba(22,163,106,.22),rgba(22,163,106,.04));
 }
 .development-marketing-lead{
-  max-width:1080px;
-  margin:0 0 34px;
-  color:#5f7082;
+  max-width:1030px;
+  margin:0;
+  color:#526779;
   font-size:17px;
-  line-height:1.8;
+  line-height:1.85;
   word-break:keep-all;
 }
 .development-marketing-lead span{
@@ -382,61 +456,77 @@
   gap:18px;
 }
 .development-marketing-card{
-  min-height:220px;
-  padding:26px 22px;
-  border:1px solid #dde6ef;
-  border-radius:18px;
-  background:#fff;
-  box-shadow:0 14px 34px rgba(15,38,66,.07);
+  position:relative;
+  min-height:228px;
+  padding:25px 22px 24px;
+  overflow:hidden;
+  border:1px solid rgba(210,224,217,.95);
+  border-radius:20px;
+  background:rgba(255,255,255,.88);
+  box-shadow:0 14px 34px rgba(19,50,71,.07);
+  backdrop-filter:blur(10px);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+}
+.development-marketing-card::after{
+  content:"";
+  position:absolute;
+  right:-30px;
+  bottom:-34px;
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(22,163,106,.08),rgba(22,163,106,0) 70%);
+}
+.development-marketing-card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(22,163,106,.34);
+  box-shadow:0 20px 42px rgba(19,50,71,.12);
+}
+.development-marketing-card-top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:20px;
 }
 .development-marketing-num{
   display:flex;
   align-items:center;
   justify-content:center;
-  width:42px;
-  height:42px;
-  margin-bottom:18px;
-  border-radius:12px;
-  background:#eaf8f1;
-  color:#16a36a;
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#138a5c,#20ad77);
+  color:#fff;
   font-size:14px;
   font-weight:900;
+  box-shadow:0 9px 20px rgba(22,163,106,.18);
+}
+.development-marketing-card-line{
+  width:38px;
+  height:2px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#9bd7bf,rgba(155,215,191,0));
 }
 .development-marketing-card h3{
+  position:relative;
+  z-index:1;
   margin:0 0 10px;
-  color:#17324a;
+  color:#15384d;
   font-size:19px;
+  font-weight:850;
   line-height:1.45;
-  letter-spacing:-.3px;
+  letter-spacing:-.45px;
   word-break:keep-all;
 }
 .development-marketing-card p{
+  position:relative;
+  z-index:1;
   margin:0;
-  color:#5f7082;
+  color:#5c6f7e;
   font-size:14px;
-  line-height:1.7;
+  line-height:1.75;
   word-break:keep-all;
-}
-.development-marketing-actions{
-  margin-top:24px;
-}
-.development-marketing-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-height:50px;
-  padding:0 24px;
-  border-radius:999px;
-  background:#16a36a;
-  color:#fff;
-  font-size:15px;
-  font-weight:800;
-  text-decoration:none;
-  transition:transform .18s ease,box-shadow .18s ease;
-}
-.development-marketing-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 22px rgba(22,163,106,.2);
 }
 @media (max-width:980px){
   .development-marketing-grid{
@@ -444,6 +534,20 @@
   }
 }
 @media (max-width:640px){
+  .development-marketing-heading{
+    margin-bottom:28px;
+  }
+  .development-marketing-label{
+    margin-bottom:15px;
+  }
+  .development-marketing-section h2{
+    font-size:30px;
+    line-height:1.25;
+  }
+  .development-marketing-section h2 span::after{
+    bottom:-5px;
+    height:5px;
+  }
   .development-marketing-lead{
     font-size:15px;
     line-height:1.75;
@@ -456,11 +560,7 @@
     min-height:0;
     padding:22px 18px;
   }
-  .development-marketing-btn{
-    width:100%;
-  }
 }
-
 </style>
 </head>
 <body class="taedo-has-fixed-header license-page development-page">
@@ -564,39 +664,58 @@
   </section>
 
 <section class="license-section development-marketing-section" id="start-smart">
-    <div class="license-container">
-      <div class="development-marketing-kicker">START SMART</div>
-      <h2>복잡한 태양광 발전사업,<br>더 쉽고 부담 없이</h2>
-      <p class="development-marketing-lead">
-        <span>태양광 발전사업에 관심은 있어도 처음부터 시공업체를 정하고 공사계약까지 결정하는 것은 부담스러울 수 있습니다.</span>
-        <span>태도사는 사업 가능성을 먼저 확인하고, 필요한 인허가와 기술서비스를 단계별로 이용한 뒤 다음 단계를 결정할 수 있도록 진입장벽을 낮춘 서비스 구조를 제공합니다.</span>
-      </p>
+    <div class="development-marketing-glow glow-a" aria-hidden="true"></div>
+    <div class="development-marketing-glow glow-b" aria-hidden="true"></div>
+
+    <div class="license-container development-marketing-inner">
+      <div class="development-marketing-heading">
+        <div class="development-marketing-label">
+          <span class="development-marketing-label-dot"></span>
+          START SMART
+        </div>
+        <h2>복잡한 태양광 발전사업,<br><span>더 쉽고 부담 없이</span></h2>
+        <p class="development-marketing-lead">
+          <span>태양광 발전사업에 관심은 있어도 처음부터 시공업체를 정하고 공사계약까지 결정하는 것은 부담스러울 수 있습니다.</span>
+          <span>태도사는 사업 가능성을 먼저 확인하고, 필요한 인허가와 기술서비스를 단계별로 이용한 뒤 다음 단계를 결정할 수 있도록 진입장벽을 낮춘 서비스 구조를 제공합니다.</span>
+        </p>
+      </div>
 
       <div class="development-marketing-grid">
         <article class="development-marketing-card">
-          <div class="development-marketing-num">01</div>
+          <div class="development-marketing-card-top">
+            <div class="development-marketing-num">01</div>
+            <span class="development-marketing-card-line" aria-hidden="true"></span>
+          </div>
           <h3>사업 가능성부터 확인</h3>
           <p>내 토지·공장·창고·축사에 태양광 발전사업이 가능한지 먼저 검토합니다.</p>
         </article>
+
         <article class="development-marketing-card">
-          <div class="development-marketing-num">02</div>
+          <div class="development-marketing-card-top">
+            <div class="development-marketing-num">02</div>
+            <span class="development-marketing-card-line" aria-hidden="true"></span>
+          </div>
           <h3>필요한 서비스부터 시작</h3>
           <p>처음부터 모든 업무를 계약하지 않고 현재 단계에 필요한 인허가·설계·기술서비스만 선택할 수 있습니다.</p>
         </article>
+
         <article class="development-marketing-card">
-          <div class="development-marketing-num">03</div>
+          <div class="development-marketing-card-top">
+            <div class="development-marketing-num">03</div>
+            <span class="development-marketing-card-line" aria-hidden="true"></span>
+          </div>
           <h3>단계별로 판단</h3>
           <p>사전검토와 인허가 진행 결과를 확인하면서 다음 단계 진행 여부와 비용 지출을 결정합니다.</p>
         </article>
+
         <article class="development-marketing-card">
-          <div class="development-marketing-num">04</div>
+          <div class="development-marketing-card-top">
+            <div class="development-marketing-num">04</div>
+            <span class="development-marketing-card-line" aria-hidden="true"></span>
+          </div>
           <h3>공사계약은 충분히 검토 후</h3>
           <p>처음 상담받은 시공업체와 바로 계약하지 않고 사업 조건을 확인한 뒤 공사 여부와 시공업체를 검토할 수 있습니다.</p>
         </article>
-      </div>
-
-      <div class="development-marketing-actions">
-        <a class="development-marketing-btn" href="/precheck/">사업 가능성 먼저 확인하기 →</a>
       </div>
     </div>
   </section>
