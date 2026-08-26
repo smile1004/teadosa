@@ -152,7 +152,7 @@
 }
 
 
-/* SECTION 03 Check Notice */
+/* SECTION 02 Check Notice */
 .type-guide-notice.check-notice{
   padding:0;
   overflow:hidden;
@@ -198,7 +198,7 @@
   .check-notice-body p{font-size:13px;line-height:1.7}
 }
 
-/* SECTION 03 요약 + 상세설명 계층 */
+/* SECTION 02 요약 + 상세설명 계층 */
 .type-guide-summary{
   margin:0 0 14px;
   padding:13px 14px;
@@ -227,7 +227,7 @@
   .type-guide-extra{font-size:12.5px}
 }
 
-/* SECTION 03 유형별 핵심 검토사항 */
+/* SECTION 02 유형별 핵심 검토사항 */
 .development-page #type-guide .type-guide-card{
   display:flex;
   flex-direction:column;
@@ -344,6 +344,123 @@
   .service-flow .flow-step strong{font-size:16px}
   .service-flow .flow-step p{font-size:15px}
 }
+
+/* 서비스 진행 절차 다음 마케팅 컨텐츠 01 */
+.development-marketing-section{
+  background:#fff;
+}
+.development-marketing-kicker{
+  display:inline-flex;
+  align-items:center;
+  margin-bottom:16px;
+  color:#16a36a;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+.development-marketing-section h2{
+  margin-bottom:18px;
+  color:#132f47;
+}
+.development-marketing-lead{
+  max-width:1080px;
+  margin:0 0 34px;
+  color:#5f7082;
+  font-size:17px;
+  line-height:1.8;
+  word-break:keep-all;
+}
+.development-marketing-lead span{
+  display:block;
+}
+.development-marketing-lead span + span{
+  margin-top:6px;
+}
+.development-marketing-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px;
+}
+.development-marketing-card{
+  min-height:220px;
+  padding:26px 22px;
+  border:1px solid #dde6ef;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 14px 34px rgba(15,38,66,.07);
+}
+.development-marketing-num{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  margin-bottom:18px;
+  border-radius:12px;
+  background:#eaf8f1;
+  color:#16a36a;
+  font-size:14px;
+  font-weight:900;
+}
+.development-marketing-card h3{
+  margin:0 0 10px;
+  color:#17324a;
+  font-size:19px;
+  line-height:1.45;
+  letter-spacing:-.3px;
+  word-break:keep-all;
+}
+.development-marketing-card p{
+  margin:0;
+  color:#5f7082;
+  font-size:14px;
+  line-height:1.7;
+  word-break:keep-all;
+}
+.development-marketing-actions{
+  margin-top:24px;
+}
+.development-marketing-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:50px;
+  padding:0 24px;
+  border-radius:999px;
+  background:#16a36a;
+  color:#fff;
+  font-size:15px;
+  font-weight:800;
+  text-decoration:none;
+  transition:transform .18s ease,box-shadow .18s ease;
+}
+.development-marketing-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 22px rgba(22,163,106,.2);
+}
+@media (max-width:980px){
+  .development-marketing-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media (max-width:640px){
+  .development-marketing-lead{
+    font-size:15px;
+    line-height:1.75;
+  }
+  .development-marketing-grid{
+    grid-template-columns:1fr;
+    gap:14px;
+  }
+  .development-marketing-card{
+    min-height:0;
+    padding:22px 18px;
+  }
+  .development-marketing-btn{
+    width:100%;
+  }
+}
+
 </style>
 </head>
 <body class="taedo-has-fixed-header license-page development-page">
@@ -372,24 +489,6 @@
       <p class="lead development-lead">태양광 발전시설을 설치하면서 토지의 형질변경이나 공작물 설치 등이 이루어지는 경우<br class="desktop-break">「국토의 계획 및 이용에 관한 법률」에 따라 검토되는 허가 절차입니다.<br><br>토지형은 부지의 용도지역·지목·경사도·진입도로·배수계획 등을 함께 검토하며,<br class="desktop-break">지붕형도 부속시설 설치나 부지 형질변경이 수반되는 경우 개발행위허가 대상 여부를 확인해야 합니다.</p>
     </div>
   </section>
-
-  <section class="license-section soft" id="target">
-    <div class="license-container">
-      <div class="section-kicker">SECTION 02</div>
-      <h2>이런 분께 필요한 서비스입니다</h2>
-      <div class="check-grid">
-        <p>임야·농지·잡종지 등 토지에 태양광 발전소를 새로 설치하려는 고객</p>
-        <p>공장·창고·축사 등 건축물 지붕에 발전소 설치를 계획하는 고객</p>
-        <p>사업 예정지의 개발행위허가 가능 여부와 준비사항을 확인하고 싶은 고객</p>
-        <p>발전사업허가 이후 개발행위허가 단계부터 체계적으로 진행하고 싶은 고객</p>
-        <p>지자체 조례와 입지조건에 따른 허가 반려 위험을 사전에 줄이고 싶은 고객</p>
-        <p>측량·설계·허가도서·관계부서 협의와 보완 대응을 함께 진행하고 싶은 고객</p>
-      </div>
-    </div>
-  </section>
-
-
-
   <section class="license-section" id="type-guide">
     <div class="license-container">
       <div class="section-kicker">SECTION 03</div>
@@ -440,15 +539,16 @@
         <div class="flow-step"><span class="flow-no">02</span><strong>서비스 신청</strong><p>홈페이지에서 개발행위허가 서비스를 신청하고 기본 사업정보를 입력합니다.</p></div>
         <div class="flow-step"><span class="flow-no">03</span><strong>담당자 확인 및 상담</strong><p>신청내용과 사업 유형을 확인한 후 담당자가 업무 범위와 필요한 사항을 안내합니다.</p></div>
         <div class="flow-step"><span class="flow-no">04</span><strong>계약 체결</strong><p>업무 범위와 비용을 확인한 후 개인정보 동의 및 전자계약을 진행합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">05</span><strong>필요서류 준비</strong><p>사업 조건을 확인한 후 개발행위허가 신청에 필요한 서류를 개별 안내하고 함께 준비합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">06</span><strong>허가 신청</strong><p>신청서와 첨부서류를 최종 검토한 후 관할기관에 접수합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">07</span><strong>심사 및 보완 대응</strong><p>관할기관 심사가 진행되며, 보완 요청이 있을 경우 필요한 자료를 준비하여 제출합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">08</span><strong>허가 완료</strong><p>최종 허가 결과를 확인하고 허가증 발급 절차를 안내합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">09</span><strong>후속 절차 안내</strong><p>허가 완료 후 필요한 후속 행정절차를 확인하여 안내합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">05</span><strong>현장 실사</strong><p>사업 예정지를 방문하여 부지 또는 건축물의 현황과 개발행위허가에 필요한 현장 조건을 확인합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">06</span><strong>필요서류 준비</strong><p>현장 확인 결과와 사업 조건을 바탕으로 개발행위허가 신청에 필요한 서류를 안내하고 준비합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">07</span><strong>현장 실측</strong><p>개발행위허가 신청에 필요한 자료를 준비하기 위해 사업지 또는 건축물의 위치·규모·현황을 확인하고 실측합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">08</span><strong>허가 신청</strong><p>신청서와 첨부서류를 최종 검토한 후 관할기관에 개발행위허가를 접수합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">09</span><strong>심사 및 보완 대응</strong><p>관할기관 심사가 진행되며, 보완 요청이 있을 경우 필요한 자료를 준비하여 제출합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">10</span><strong>허가 완료</strong><p>최종 허가 결과를 확인하고 허가증 발급 절차를 안내합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">11</span><strong>후속 절차 안내</strong><p>허가 완료 후 필요한 후속 행정절차를 확인하여 안내합니다.</p></div>
       </div>
     </div>
   </section>
-
   <section class="license-section" id="before">
     <div class="license-container">
       <div class="section-kicker">SECTION 05</div><h2>신청 전 확인사항</h2>
@@ -463,9 +563,48 @@
     </div>
   </section>
 
+<section class="license-section development-marketing-section" id="start-smart">
+    <div class="license-container">
+      <div class="development-marketing-kicker">START SMART</div>
+      <h2>복잡한 태양광 발전사업,<br>더 쉽고 부담 없이</h2>
+      <p class="development-marketing-lead">
+        <span>태양광 발전사업에 관심은 있어도 처음부터 시공업체를 정하고 공사계약까지 결정하는 것은 부담스러울 수 있습니다.</span>
+        <span>태도사는 사업 가능성을 먼저 확인하고, 필요한 인허가와 기술서비스를 단계별로 이용한 뒤 다음 단계를 결정할 수 있도록 진입장벽을 낮춘 서비스 구조를 제공합니다.</span>
+      </p>
+
+      <div class="development-marketing-grid">
+        <article class="development-marketing-card">
+          <div class="development-marketing-num">01</div>
+          <h3>사업 가능성부터 확인</h3>
+          <p>내 토지·공장·창고·축사에 태양광 발전사업이 가능한지 먼저 검토합니다.</p>
+        </article>
+        <article class="development-marketing-card">
+          <div class="development-marketing-num">02</div>
+          <h3>필요한 서비스부터 시작</h3>
+          <p>처음부터 모든 업무를 계약하지 않고 현재 단계에 필요한 인허가·설계·기술서비스만 선택할 수 있습니다.</p>
+        </article>
+        <article class="development-marketing-card">
+          <div class="development-marketing-num">03</div>
+          <h3>단계별로 판단</h3>
+          <p>사전검토와 인허가 진행 결과를 확인하면서 다음 단계 진행 여부와 비용 지출을 결정합니다.</p>
+        </article>
+        <article class="development-marketing-card">
+          <div class="development-marketing-num">04</div>
+          <h3>공사계약은 충분히 검토 후</h3>
+          <p>처음 상담받은 시공업체와 바로 계약하지 않고 사업 조건을 확인한 뒤 공사 여부와 시공업체를 검토할 수 있습니다.</p>
+        </article>
+      </div>
+
+      <div class="development-marketing-actions">
+        <a class="development-marketing-btn" href="/precheck/">사업 가능성 먼저 확인하기 →</a>
+      </div>
+    </div>
+  </section>
+
+
   <section class="license-section soft" id="faq">
     <div class="license-container">
-      <div class="section-kicker">SECTION 06</div><h2>자주 묻는 질문</h2>
+      <div class="section-kicker">Q &amp; A</div><h2>자주 묻는 질문</h2>
       <div class="faq-list">
         <details><summary>지붕형 태양광도 개발행위허가가 필요한가요?</summary><p>지붕형의 경우에도 태양광 설비의 공작물 설치나 부속시설, 부지 형질변경 등이 수반되면 개발행위허가 대상 여부를 확인해야 합니다. 실제 적용 여부는 관할기관과 사업 조건에 따라 달라질 수 있습니다.</p></details>
         <details><summary>농지나 임야도 개발행위허가를 진행할 수 있나요?</summary><p>사업 예정지가 농지 또는 임야인 경우 개발행위허가 외에 농지전용 또는 산지전용 관련 협의가 함께 또는 선행하여 진행될 수 있습니다.</p></details>
