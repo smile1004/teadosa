@@ -585,7 +585,7 @@
   border-radius:14px;
   background:#178f62;
   color:#fff;
-  font-size:14px;
+  font-size:15px;
   font-weight:900;
   box-shadow:none;
 }
@@ -975,8 +975,8 @@
   gap:14px;
 }
 .development-campaign-item{
-  min-height:214px;
-  padding:22px 20px;
+  min-height:238px;
+  padding:26px 22px 24px;
   border:1px solid rgba(255,255,255,.72);
   border-radius:18px;
   background:linear-gradient(180deg,#ffffff 0%,#f6faf8 100%);
@@ -992,28 +992,29 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  width:42px;
-  height:42px;
-  margin-bottom:18px;
-  border-radius:13px;
+  width:48px;
+  height:48px;
+  margin-bottom:20px;
+  border-radius:15px;
   background:#e8f6ef;
   color:#16885d;
   font-size:14px;
   font-weight:900;
 }
 .development-campaign-item h3{
-  margin:0 0 10px;
-  color:#15384d;
-  font-size:18px;
-  line-height:1.45;
-  letter-spacing:-.4px;
+  margin:0 0 14px;
+  color:#102f43;
+  font-size:21px;
+  font-weight:850;
+  line-height:1.4;
+  letter-spacing:-.55px;
   word-break:keep-all;
 }
 .development-campaign-item p{
   margin:0;
-  color:#60717f;
-  font-size:14px;
-  line-height:1.72;
+  color:#526674;
+  font-size:15px;
+  line-height:1.78;
   word-break:keep-all;
 }
 @media (max-width:980px){
@@ -1053,6 +1054,58 @@
   .development-campaign-card::before,
   .development-campaign-card::after{
     opacity:.6;
+  }
+}
+
+
+.development-campaign-item{
+  display:flex;
+  flex-direction:column;
+}
+.development-campaign-item h3{
+  position:relative;
+  padding-bottom:14px;
+}
+.development-campaign-item h3::after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:34px;
+  height:3px;
+  border-radius:999px;
+  background:#9fd6ba;
+}
+.development-campaign-item:nth-child(1) .development-campaign-num{
+  background:#e7f6ee;
+  color:#147f57;
+}
+.development-campaign-item:nth-child(2) .development-campaign-num{
+  background:#edf4fb;
+  color:#2f6f9f;
+}
+.development-campaign-item:nth-child(3) .development-campaign-num{
+  background:#f4f7e8;
+  color:#71823a;
+}
+.development-campaign-item:nth-child(4) .development-campaign-num{
+  background:#f7efe9;
+  color:#a45f32;
+}
+.development-campaign-item p{
+  margin-top:auto;
+}
+@media (max-width:640px){
+  .development-campaign-item h3{
+    font-size:19px;
+    margin-bottom:12px;
+  }
+  .development-campaign-item p{
+    font-size:14.5px;
+  }
+  .development-campaign-num{
+    width:46px;
+    height:46px;
   }
 }
 
