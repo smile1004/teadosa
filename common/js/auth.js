@@ -169,6 +169,11 @@
   async function getAdminPpaRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/ppa?' + query.toString(), { method: 'GET' }); }
   async function getAdminPpaDetail(requestId) { return request('/api/admin/ppa/' + encodeURIComponent(requestId), { method: 'GET' }); }
   async function updateAdminPpaStatus(requestId, payload) { return request('/api/admin/ppa/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
+  async function createDevelopmentRequest(payload) { return request('/api/development/create', { method: 'POST', body: payload }); }
+  async function getMyDevelopmentRequests() { return request('/api/development/my-requests', { method: 'GET' }); }
+  async function getAdminDevelopmentRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/development?' + query.toString(), { method: 'GET' }); }
+  async function getAdminDevelopmentDetail(requestId) { return request('/api/admin/development/' + encodeURIComponent(requestId), { method: 'GET' }); }
+  async function updateAdminDevelopmentStatus(requestId, payload) { return request('/api/admin/development/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
 
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
@@ -208,6 +213,11 @@
     getAdminPpaRequests: getAdminPpaRequests,
     getAdminPpaDetail: getAdminPpaDetail,
     updateAdminPpaStatus: updateAdminPpaStatus,
+    createDevelopmentRequest: createDevelopmentRequest,
+    getMyDevelopmentRequests: getMyDevelopmentRequests,
+    getAdminDevelopmentRequests: getAdminDevelopmentRequests,
+    getAdminDevelopmentDetail: getAdminDevelopmentDetail,
+    updateAdminDevelopmentStatus: updateAdminDevelopmentStatus,
     checkDuplicate: checkDuplicate
   });
 })(window);

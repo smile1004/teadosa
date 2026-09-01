@@ -41,9 +41,15 @@ export async function onRequestGet(context) {
       FROM ppa_requests WHERE member_id = ?
       ORDER BY submitted_at DESC, id DESC
     `).bind(memberId).all();
+    const developmentRequests = await env.DB.prepare(`
+      SELECT id, request_no, site_address, status, customer_notice, submitted_at, updated_at
+      FROM development_permit_requests WHERE member_id = ?
+      ORDER BY submitted_at DESC, id DESC
+    `).bind(memberId).all();
     const serviceApplications = [
       ...(prechecks.results || []).map(row => mapService(row, 'precheck')),
       ...(licenses.results || []).map(row => mapService(row, 'license')),
+      ...(developmentRequests.results || []).map(row => mapService(row, 'development')),
       ...(ppaRequests.results || []).map(row => mapService(row, 'ppa'))
     ].sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
     const completedCount = serviceApplications.filter(item => item.status === 'completed').length;
@@ -77,7 +83,7 @@ function mapService(row, type) {
     customerNotice: row.customer_notice || '',
     submittedAt: row.submitted_at,
     updatedAt: row.updated_at,
-    detailUrl: type === 'precheck' ? `/admin/precheck/detail/?id=${row.id}` : (type === 'ppa' ? `/admin/ppa/detail/?id=${row.id}` : `/admin/license/detail/?id=${row.id}`)
+    detailUrl: type === 'precheck' ? `/admin/precheck/detail/?id=${row.id}` : (type === 'development' ? `/admin/development/detail/?id=${row.id}` : (type === 'ppa' ? `/admin/ppa/detail/?id=${row.id}` : `/admin/license/detail/?id=${row.id}`))
   };
 }
 
