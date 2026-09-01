@@ -13,6 +13,12 @@
 <link href="start/css/style.css?v=8.0" rel="stylesheet">
 <link href="start/license/css/style.css" rel="stylesheet">
 <style>
+/* SECTION 구분: 배경/구분선 대비를 더 뚜렷하게 강조 */
+.license-page .license-section{position:relative;border-top:1px solid #d8e0dc}
+.license-page #overview{background:#fff}
+.license-page #scope{background:#eef2f6}
+.license-page #before{background:#f5f8f6}
+
 /* 모든 서비스 페이지에서 공통으로 사용하는 번호형 진행 절차 */
 .service-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:service-step}
 .service-flow .flow-step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:13px;min-height:150px;padding:22px 18px;border:1px solid #dfe7e1;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(25,55,38,.06)}
@@ -71,23 +77,9 @@
     </div>
   </section>
 
-  <section class="license-section soft" id="target">
-    <div class="license-container">
-      <div class="section-kicker">SECTION 02</div>
-      <h2>이런 분께 필요한 서비스입니다</h2>
-      <div class="check-grid">
-        <p>초기 투자 부담 때문에 태양광을 포기했던 분</p>
-        <p>내 토지·공장·창고·축사에 태양광이 가능한지 확인하고 싶은 분</p>
-        <p>발전사업허가 신청부터 막막했던 분</p>
-        <p>사업 가능성도 확인하지 않고 큰 비용부터 지출하고 싶지 않은 분</p>
-        <p>온라인으로 간편하게 인허가 절차를 시작하고 싶은 분</p>
-      </div>
-    </div>
-  </section>
-
   <section class="license-section" id="scope">
     <div class="license-container">
-      <div class="section-kicker">SECTION 03</div>
+      <div class="section-kicker">SECTION 02</div>
       <h2>서비스 진행 절차</h2>
       <p class="section-desc">사전검토 결과 확인부터 허가 완료 후 후속 절차 안내까지 실제 업무 흐름에 따라 진행합니다.</p>
       <div class="service-flow" aria-label="발전사업허가 서비스 진행 절차">
@@ -106,7 +98,7 @@
 
   <section class="license-section" id="before">
     <div class="license-container">
-      <div class="section-kicker">SECTION 04</div><h2>신청 전 확인사항</h2>
+      <div class="section-kicker">SECTION 03</div><h2>신청 전 확인사항</h2>
       <ul class="caution-list">
         <li>발전사업허가 외에도 사업 조건에 따라 별도의 인허가와 전력계통 관련 절차가 필요할 수 있습니다.</li>
         <li>발전설비 용량과 소재지 등에 따라 접수·처리기관 및 제출자료의 범위가 달라질 수 있습니다.</li>
