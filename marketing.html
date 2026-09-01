@@ -369,8 +369,8 @@
     .service-card > p{margin:0;color:#667786;font-size:15px;line-height:1.75}
     .service-list{margin:26px 0 30px;padding:0;list-style:none}
     .service-list li{
-      display:flex;align-items:center;gap:12px;
-      padding:14px 0;
+      display:block;
+      padding:0;
       border-bottom:1px solid rgba(114,135,150,.15);
       color:#3e5567;font-size:15px;font-weight:700;
     }
@@ -910,6 +910,47 @@
       font-weight:800;
       line-height:1.45;
     }
+    .service-link{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      width:100%;
+      min-height:62px;
+      padding:14px 16px;
+      color:inherit;
+      text-decoration:none;
+    }
+    .service-link-name{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+    .service-link-arrow{
+      display:inline-block;
+      min-width:52px;
+      color:#597184;
+      font-size:25px;
+      font-weight:400;
+      line-height:1;
+      text-align:right;
+      transform-origin:right center;
+      transition:color .2s ease,transform .25s ease;
+    }
+    .single .service-link-arrow{color:#c7671e}
+    .package .service-link-arrow{color:#16885d}
+    .service-link:hover .service-link-arrow,
+    .service-link:focus-visible .service-link-arrow{
+      transform:translateX(8px) scaleX(1.2);
+    }
+    .single .service-link:hover .service-link-arrow{color:#9b4d14}
+    .package .service-link:hover .service-link-arrow{color:#0f6f4c}
+    .service-link:focus-visible{
+      outline:3px solid rgba(216,132,34,.22);
+      outline-offset:-3px;
+      border-radius:14px;
+    }
     .service-list li:last-child{
       border-bottom:1px solid #e1e8ed;
     }
@@ -1030,6 +1071,19 @@
       box-shadow:0 12px 24px rgba(233,121,36,.18);
     }
 
+    /* 04 항목 전체 링크와 긴 화살표 최종 적용 */
+    .service-list li{
+      padding:0;
+    }
+    .service-link{
+      min-height:62px;
+      padding:14px 16px;
+    }
+    @media(max-width:760px){
+      .service-list li{padding:0}
+      .service-link{min-height:56px;padding:12px 14px}
+    }
+
 </style>
 </head>
 <body>
@@ -1094,11 +1148,11 @@
 
           <div class="concern-orange-head">
             <div class="section-no">2</div><br>
-            <span class="eyebrow">YOUR CONCERNS</span>
-            <h2 class="section-title">이런 고민이 있으신가요?</h2>
+            <span class="eyebrow">START WITH CLARITY</span>
+            <h2 class="section-title">복잡한 태양광 발전사업,<br>태도사와 시작의 방향을 찾으세요</h2>
             <p class="concern-orange-lead">
-              <span>태양광 발전사업을 시작하면 사업 가능성부터 인허가, 비용, 공사계약까지 다양한 고민을 마주하게 됩니다.</span>
-              <span>어디서부터 어떻게 시작해야 할지 막막한 고민, 태도사와 함께 하나씩 해결해보세요.</span>
+              <span>사업 가능성 검토부터 인허가, 비용, 공사계약까지 무엇을 먼저 확인하고 진행해야 할지 막막할 수 있습니다.</span>
+              <span>태도사는 현재 사업 상태를 기준으로 필요한 절차와 진행 순서를 안내하여, 필요한 서비스부터 단계적으로 시작할 수 있도록 돕습니다.</span>
             </p>
           </div>
 
@@ -1198,7 +1252,6 @@
     <section class="section choose-section">
       <div class="container">
         <div class="choose-intro">
-          <div class="section-no">4</div><br>
           <span class="eyebrow">CHOOSE YOUR SERVICE</span>
           <h2 class="section-title">필요한 서비스만 선택,<br>복잡한 과정은 패키지로 한 번에</h2>
           <p class="lead">
@@ -1215,12 +1268,11 @@
             <h3>개별서비스</h3>
             <p>필요한 절차와 업무만 개별적으로 선택하여 전문적인 서비스를 간편하게 이용할 수 있습니다.</p>
             <ul class="service-list">
-              <li><span class="check">✓</span> 발전사업허가</li>
-              <li><span class="check">✓</span> 개발행위허가</li>
-              <li><span class="check">✓</span> 설계·기술검토</li>
-              <li><span class="check">✓</span> 현장실사 등</li>
+              <li><a class="service-link" href="start/license/index.html"><span class="service-link-name"><span class="check">✓</span> 발전사업허가</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
+              <li><a class="service-link" href="start/development/index.html"><span class="service-link-name"><span class="check">✓</span> 개발행위허가</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
+              <li><a class="service-link" href="start/index.html#service-ppa"><span class="service-link-name"><span class="check">✓</span> 한전PPA접수</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
+              <li><a class="service-link" href="start/index.html#service-construction-plan"><span class="service-link-name"><span class="check">✓</span> 공사계획신고</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
             </ul>
-            <a class="btn ghost" href="/start/">개별서비스 보기 →</a>
           </article>
 
           <article class="service-card package">
@@ -1228,12 +1280,11 @@
             <h3>패키지서비스</h3>
             <p>사업 유형에 따라 필요한 주요 서비스를 하나의 패키지로 연결하여 보다 편리하게 진행할 수 있습니다.</p>
             <ul class="service-list">
-              <li><span class="check">✓</span> 토지형 발전사업</li>
-              <li><span class="check">✓</span> 지붕형 발전사업</li>
-              <li><span class="check">✓</span> 건물지원사업</li>
-              <li><span class="check">✓</span> 금융지원사업</li>
+              <li><a class="service-link" href="start/index.html#package-land"><span class="service-link-name"><span class="check">✓</span> 토지형 발전사업</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
+              <li><a class="service-link" href="start/index.html#package-roof"><span class="service-link-name"><span class="check">✓</span> 지붕형 발전사업</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
+              <li><a class="service-link" href="start/index.html#package-building"><span class="service-link-name"><span class="check">✓</span> 건물지원사업</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
+              <li><a class="service-link" href="start/index.html#package-finance"><span class="service-link-name"><span class="check">✓</span> 금융지원사업</span><span class="service-link-arrow" aria-hidden="true">⟶</span></a></li>
             </ul>
-            <a class="btn green" href="/start/">패키지서비스 보기 →</a>
           </article>
         </div>
       </div>

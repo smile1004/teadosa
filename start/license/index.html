@@ -10,6 +10,7 @@
 <link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
 <link href="common/css/common.css" rel="stylesheet">
+<link href="start/css/style.css?v=8.0" rel="stylesheet">
 <link href="start/license/css/style.css" rel="stylesheet">
 <style>
 /* 모든 서비스 페이지에서 공통으로 사용하는 번호형 진행 절차 */
@@ -27,6 +28,20 @@
   .service-flow .flow-step strong{font-size:16px}
   .service-flow .flow-step p{font-size:15px}
 }
+
+/* 블록 4: start/index.html과 동일한 디자인 및 링크 호버 효과 고정 */
+.license-page .start-choose-section{padding:72px 0;background:linear-gradient(180deg,#f7faf8 0%,#f4f7fa 100%)}
+.license-page .start-choose-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.license-page .start-choose-card:hover{transform:translateY(-3px);box-shadow:0 24px 54px rgba(30,62,50,.12)}
+.license-page .start-choose-list li{transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease}
+.license-page .start-choose-link{display:flex;width:100%;min-height:62px;cursor:pointer;text-decoration:none}
+.license-page .start-choose-single .start-choose-link{color:#c7671e}
+.license-page .start-choose-package .start-choose-link{color:#16885d}
+.license-page .start-choose-single .start-choose-link:hover{color:#9b4d14}
+.license-page .start-choose-package .start-choose-link:hover{color:#0f6f4c}
+.license-page .start-choose-link:hover .start-choose-arrow,
+.license-page .start-choose-link:focus-visible .start-choose-arrow{transform:translateX(8px) scaleX(1.2)}
+.license-page .start-choose-link:focus-visible{outline:3px solid rgba(216,132,34,.22);outline-offset:-3px;border-radius:14px}
 </style>
 </head>
 <body class="taedo-has-fixed-header license-page">
@@ -101,9 +116,41 @@
     </div>
   </section>
 
+  <!-- CHOOSE YOUR SERVICE -->
+  <section class="start-choose-section">
+    <div class="start-choose-container">
+      <div class="start-choose-intro">
+        <span class="start-choose-eyebrow">CHOOSE YOUR SERVICE</span>
+        <h2 class="start-choose-title">필요한 서비스만 선택,<br>복잡한 과정은 패키지로 한 번에</h2>
+        <p class="start-choose-lead"><span>필요한 절차나 특정 업무만 이용하고 싶다면 원하는 서비스를 개별적으로 선택할 수 있습니다.</span><span>여러 절차를 함께 진행해야 한다면 사업 유형에 맞는 패키지서비스로 복잡한 과정을 한 번에 연결할 수 있습니다.</span></p>
+      </div>
+      <div class="start-choose-grid">
+        <span class="start-choose-or">OR</span>
+        <article class="start-choose-card start-choose-single">
+          <span class="start-choose-label">SELECTIVE</span><h3>개별서비스</h3><p>필요한 절차와 업무만 개별적으로 선택하여 전문적인 서비스를 간편하게 이용할 수 있습니다.</p>
+          <ul class="start-choose-list">
+            <li><a class="start-choose-link" href="start/license/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 발전사업허가</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/development/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 개발행위허가</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#service-ppa"><span class="start-choose-name"><span class="start-choose-check">✓</span> 한전PPA접수</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#service-construction-plan"><span class="start-choose-name"><span class="start-choose-check">✓</span> 공사계획신고</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+          </ul>
+        </article>
+        <article class="start-choose-card start-choose-package">
+          <span class="start-choose-label">ALL-IN-ONE</span><h3>패키지서비스</h3><p>사업 유형에 따라 필요한 주요 서비스를 하나의 패키지로 연결하여 보다 편리하게 진행할 수 있습니다.</p>
+          <ul class="start-choose-list">
+            <li><a class="start-choose-link" href="start/index.html#package-land"><span class="start-choose-name"><span class="start-choose-check">✓</span> 토지형 발전사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#package-roof"><span class="start-choose-name"><span class="start-choose-check">✓</span> 지붕형 발전사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#package-building"><span class="start-choose-name"><span class="start-choose-check">✓</span> 건물지원사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#package-finance"><span class="start-choose-name"><span class="start-choose-check">✓</span> 금융지원사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <section class="license-section soft" id="faq">
     <div class="license-container">
-      <div class="section-kicker">SECTION 05</div><h2>자주 묻는 질문</h2>
+      <div class="section-kicker">Q&amp;A</div><h2>자주 묻는 질문</h2>
       <div class="faq-list">
         <details><summary>발전사업허가는 반드시 받아야 하나요?</summary><p>전기를 생산하여 공급하는 발전사업을 하려는 경우 「전기사업법」에 따른 전기사업 허가 절차가 필요합니다. 구체적인 적용 여부는 사업 형태와 설비 조건을 확인해 판단해야 합니다.</p></details>
         <details><summary>개인도 발전사업허가를 신청할 수 있나요?</summary><p>전기사업 허가 민원은 신청자격을 누구나 신청 가능으로 안내하고 있습니다. 다만 실제 허가 심사에서는 사업계획과 법령상 허가기준 등을 검토합니다.</p></details>
