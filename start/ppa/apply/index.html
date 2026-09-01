@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base href="../../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="태도사 한전PPA 접수 대행 신청 페이지입니다.">
+<title>한전PPA 접수 대행 신청 | 태양광도사</title>
+<link href="common/css/taedo1_start.css" rel="stylesheet">
+<link href="common/css/shared-layout.css" rel="stylesheet">
+<link href="common/css/shared-menu.css" rel="stylesheet">
+<link href="common/css/common.css" rel="stylesheet">
+<link href="start/ppa/apply/css/style.css?v=1.0" rel="stylesheet">
+<style>
+/* 이용자 구분 서류 업로드 : signup/business 페이지의 업로드 박스 패턴 재사용 */
+.upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px;margin-top:14px}
+.upload-field{display:flex;flex-direction:column;gap:7px}
+.upload-field>span{color:#39483f;font-size:13.5px;font-weight:800}
+.upload-box{position:relative;display:flex;align-items:center;min-height:46px;border:1px solid #d7dfd9;border-radius:10px;overflow:hidden;background:#fff}
+.upload-box input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.upload-name{flex:1;padding:0 13px;color:#8a948e;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.upload-label{display:flex;align-items:center;justify-content:center;align-self:stretch;min-width:96px;border-left:1px solid #d7dfd9;color:#b96d17;background:#fff7e9;cursor:pointer;font-size:13px;font-weight:800;white-space:nowrap}
+.upload-label:hover{background:#fdefd6}
+.usertype-block{margin-top:18px;padding:18px;border:1px solid #e0e7e1;border-radius:12px;background:#fbfcfb}
+.usertype-block[hidden]{display:none}
+.usertype-block-title{margin:0 0 4px;color:var(--navy);font-size:14.5px;font-weight:900}
+.usertype-block-desc{margin:0 0 4px;color:#68766f;font-size:13px;line-height:1.6}
+.required-doc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 14px;margin:15px 0 0;padding:0;list-style:none}
+.required-doc-list li{position:relative;padding:11px 13px 11px 36px;border:1px solid #e0e7e1;border-radius:10px;background:#fff;color:#39483f;font-size:13.5px;font-weight:700;line-height:1.45}
+.required-doc-list li::before{content:'✓';position:absolute;left:13px;top:10px;color:#78a84f;font-size:14px;font-weight:900}
+@media(max-width:700px){.upload-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.required-doc-list{grid-template-columns:1fr}}
+</style>
+</head>
+<body class="taedo-has-fixed-header license-apply-page">
+<script src="common/js/site-config.js"></script>
+<script src="common/js/api.js?v=2.0"></script>
+<script src="common/js/auth.js?v=2.9"></script>
+<script src="common/js/components/header.js?v=2.6"></script>
+
+<main>
+  <section class="apply-hero" aria-labelledby="applyTitle">
+    <div class="apply-container">
+      <div class="apply-badge">발전사업 시작하기 · 개별 서비스</div>
+      <h1 id="applyTitle">한전PPA 접수 서비스 신청</h1>
+      <p>한전PPA(전력수급계약) 접수 대행을 태도사에 의뢰하시는 사업주분을 위한 접수 양식입니다.</p>
+    </div>
+  </section>
+
+  <section class="apply-body">
+    <div class="apply-container apply-layout">
+      <div class="apply-main">
+        <div class="apply-intro" role="note">
+          <strong>신청 정보 입력</strong>
+          <p>아래 항목은 사업주께서 알고 계신 범위에서 편하게 작성해 주세요. 입력하신 정보를 바탕으로 담당자가 확인 후 추가적으로 확인이 필요한 부분과 진행 절차 등을 상담을 통해 안내해 드립니다.</p>
+        </div>
+
+        <form id="ppaApplyForm" class="apply-form" novalidate>
+          <section class="form-section" aria-labelledby="typeHeading">
+            <div class="form-section-head">
+              <span>01</span>
+              <div><h2 id="typeHeading">신청인 구분</h2><p>해당하는 유형을 선택해 주세요.</p></div>
+            </div>
+            <div class="choice-group choice-wide" role="group" aria-labelledby="applicantTypeLabel">
+              <span class="choice-label" id="applicantTypeLabel">신청인 구분 <em>필수</em></span>
+              <label><input type="radio" name="applicantType" value="personal" required><span>개인사업자</span></label>
+              <label><input type="radio" name="applicantType" value="business" required><span>법인사업자</span></label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="applicantHeading">
+            <div class="form-section-head">
+              <span>02</span>
+              <div><h2 id="applicantHeading">신청인 기본정보</h2><p>신청 상담에 필요한 기본정보를 입력해 주세요.</p></div>
+            </div>
+            <div class="form-grid three-col">
+              <label class="field"><span>성명 / 법인명 <em>필수</em></span><input type="text" id="applicantName" name="applicantName" maxlength="100" required></label>
+              <label class="field"><span>연락처 <em>필수</em></span><input type="tel" id="applicantPhone" name="applicantPhone" maxlength="20" placeholder="010-0000-0000" required></label>
+              <label class="field"><span>이메일 <em>필수</em></span><input type="email" id="applicantEmail" name="applicantEmail" maxlength="120" required></label>
+            </div>
+            <div class="form-grid two-col top-gap">
+              <label class="field"><span>사업자등록번호 <em>필수</em></span><input type="text" id="businessRegNumber" name="businessRegNumber" maxlength="20" placeholder="000-00-00000" required></label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="siteHeading">
+            <div class="form-section-head">
+              <span>03</span>
+              <div><h2 id="siteHeading">사업지 정보</h2><p>한전PPA 접수 대상 발전소의 사업지 정보를 입력해 주세요.</p></div>
+            </div>
+            <label class="field full"><span>사업지 주소 <em>필수</em></span><span class="address-input-row"><input type="text" id="siteAddress" name="siteAddress" maxlength="200" autocomplete="street-address" placeholder="주소 검색 버튼을 눌러 사업지 주소를 입력해 주세요" required><button type="button" id="siteAddressSearch" class="address-search-btn">주소 검색</button></span></label>
+            <div class="form-grid two-col top-gap">
+              <label class="field"><span>발전사업허가번호</span><input type="text" id="licenseNumber" name="licenseNumber" maxlength="60" placeholder="보유하신 경우 기재"></label>
+              <label class="field"><span>설비용량</span><input type="text" id="capacity" name="capacity" maxlength="40" placeholder="예: 100kW"></label>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="usertypeHeading">
+            <div class="form-section-head">
+              <span>04</span>
+              <div><h2 id="usertypeHeading">태도사 서비스 이용 이력 및 서류 안내</h2><p>태도사에서 이전 서비스를 이용한 이력이 있는지에 따라 자료 확인 방법이 달라집니다.</p></div>
+            </div>
+            <div class="choice-group choice-wide" role="group" aria-labelledby="userTypeLabel">
+              <span class="choice-label" id="userTypeLabel">태도사 서비스 이용 구분 <em>필수</em></span>
+              <label><input type="radio" name="userType" value="existing" required><span>기존 이용자(태도사 서비스 이용 이력 있음)</span></label>
+              <label><input type="radio" name="userType" value="new" required><span>신규 이용자(회원가입 후 첫 서비스 신청)</span></label>
+            </div>
+
+            <div id="existingUserBlock" class="usertype-block" hidden>
+              <p class="usertype-block-title">기존 이용자 자료 확인 안내</p>
+              <p class="usertype-block-desc">이전에 태도사 서비스를 이용하면서 제출한 사업정보와 서류를 먼저 확인합니다. 현재 보유한 자료로 진행이 가능한지 담당자가 검토한 후, 변경되었거나 추가로 필요한 자료만 별도로 안내해 드립니다.</p>
+            </div>
+
+            <div id="newUserBlock" class="usertype-block" hidden>
+              <p class="usertype-block-title">신규 이용자 필요서류</p>
+              <p class="usertype-block-desc">태도사 회원가입 후 처음 신청하는 서비스이므로 사업 및 설비 현황 확인을 위한 다음 서류가 필요합니다. 신청 단계에서는 목록만 확인해 주시고, 실제 제출방법은 담당자 상담 시 안내드립니다.</p>
+              <ul class="required-doc-list" aria-label="신규 이용자 필요서류 목록">
+                <li>발전사업허가증</li>
+                <li>사업자등록증</li>
+                <li>건물 및 토지대장</li>
+                <li>신분증</li>
+                <li>단선계통도</li>
+                <li>구조계산서</li>
+                <li>인버터(INV) 자체인증서</li>
+                <li>모듈 자체인증서</li>
+                <li>시험성적서</li>
+              </ul>
+            </div>
+
+            <p class="section-helper">실제 필요서류는 설비 용량, 사업 형태 및 한전 관할지사 기준에 따라 달라질 수 있습니다. 추가로 필요한 자료는 담당자 검토 후 상담 시 안내드립니다.</p>
+          </section>
+
+          <section class="form-section" aria-labelledby="requestHeading">
+            <div class="form-section-head">
+              <span>05</span>
+              <div><h2 id="requestHeading">추가 요청사항</h2><p>궁금하신 점이나 참고해 주셨으면 하는 내용을 자유롭게 입력해 주세요.</p></div>
+            </div>
+            <label class="field full"><span>추가 요청사항</span><textarea id="requestNote" name="requestNote" maxlength="1500" rows="6" placeholder="예: 연락 가능한 시간대, 희망 상담 방식 등"></textarea><small id="noteCount">0 / 1,500</small></label>
+          </section>
+
+          <section class="form-section confirmation-section" aria-labelledby="confirmationHeading">
+            <div class="form-section-head">
+              <span>06</span>
+              <div><h2 id="confirmationHeading">확인 및 동의</h2><p>신청 전 입력내용과 개인정보 수집·이용 동의를 확인해 주세요.</p></div>
+            </div>
+            <div class="confirmation-list">
+              <label class="confirmation-check"><input type="checkbox" id="privacyConsent" name="privacyConsent" required><span>한전PPA 접수 서비스 상담 및 업무 진행을 위한 개인정보 수집·이용에 동의합니다. <em>(필수)</em></span></label>
+              <label class="confirmation-check"><input type="checkbox" id="applicationConfirmation" name="applicationConfirmation" required><span>입력한 신청내용을 확인했으며, 사업 조건에 따라 추가 자료가 필요할 수 있음을 확인했습니다. <em>(필수)</em></span></label>
+            </div>
+          </section>
+
+          <div class="final-guide" role="note">
+            본 신청서는 한전PPA 접수 대행 상담·접수를 위한 정보 입력용입니다. 입력하신 내용을 바탕으로 담당자가 확인 연락을 드리며, 상세 검토와 정식 서류 준비는 상담 이후 순차적으로 진행됩니다.
+          </div>
+
+          <p id="formMessage" class="form-message" role="status" aria-live="polite" hidden></p>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">한전PPA 접수 신청하기</button>
+            <a href="start/ppa/" class="cancel-btn">취소</a>
+          </div>
+        </form>
+      </div>
+
+      <aside class="apply-side" aria-label="신청 진행 안내">
+        <div class="side-card">
+          <h2>신청 후 진행</h2>
+          <ol>
+            <li><span>1</span><div><strong>신청내용 확인</strong><p>담당자가 신청정보와 태도사 보유자료를 확인합니다.</p></div></li>
+            <li><span>2</span><div><strong>담당자 상담</strong><p>기존 자료 활용 여부와 추가로 필요한 서류를 안내합니다.</p></div></li>
+            <li><span>3</span><div><strong>전자계약</strong><p>업무 범위를 확인한 후 전자계약을 체결합니다.</p></div></li>
+            <li><span>4</span><div><strong>PPA 접수</strong><p>서류 준비가 완료되면 한전 관할지사에 접수합니다.</p></div></li>
+          </ol>
+        </div>
+        <div class="side-note">
+          <strong>준비서류는 신청 후 안내합니다.</strong>
+          <p>신청 단계에서는 기본 사업정보만 입력하며, 제출자료는 담당자 상담 및 계약 후 사업 조건에 맞춰 안내합니다.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<script src="common/js/components/footer.js"></script>
+<script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="start/ppa/apply/js/script.js?v=1.1"></script>
+</body>
+</html>

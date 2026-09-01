@@ -1,0 +1,134 @@
+(function(window, document){
+  'use strict';
+
+  const auth = window.TaeDoSAAuth;
+  const form = document.getElementById('ppaApplyForm');
+  const note = document.getElementById('requestNote');
+  const noteCount = document.getElementById('noteCount');
+  const formMessage = document.getElementById('formMessage');
+  const existingUserBlock = document.getElementById('existingUserBlock');
+  const newUserBlock = document.getElementById('newUserBlock');
+  const siteAddressSearch = document.getElementById('siteAddressSearch');
+
+  if (!form) return;
+
+  init();
+
+  async function init(){
+    updateNoteCount();
+    bindUserType();
+    bindFileNameDisplay();
+    bindAddressSearch(siteAddressSearch, 'siteAddress');
+    await tryFillFromSession();
+  }
+
+  async function tryFillFromSession(){
+    if (!auth) return;
+    try{
+      const outcome = await auth.getSession({force:true});
+      const member = outcome && outcome.response && outcome.response.ok && outcome.result && outcome.result.authenticated
+        ? outcome.result.member : null;
+      if (member){
+        fillMember(member);
+      }
+    }catch(error){/* not logged in; leave fields blank */}
+  }
+
+  function fillMember(member){
+    setValue('applicantName', member.name || member.companyName || member.company_name || '');
+    setValue('applicantPhone', formatPhone(member.phone || ''));
+    setValue('applicantEmail', member.email || '');
+    const memberType = String(member.memberType || member.member_type || member.type || '').toLowerCase();
+    if (memberType.includes('business') || memberType.includes('company') || memberType.includes('corporate')) {
+      setRadio('applicantType','business');
+    } else {
+      setRadio('applicantType','personal');
+    }
+  }
+
+  function bindUserType(){
+    document.querySelectorAll('input[name="userType"]').forEach(function(el){
+      el.addEventListener('change', updateUserTypeBlocks);
+    });
+  }
+
+  function updateUserTypeBlocks(){
+    const type = radioValue('userType');
+    if (existingUserBlock) existingUserBlock.hidden = type !== 'existing';
+    if (newUserBlock) newUserBlock.hidden = type !== 'new';
+  }
+
+  function bindFileNameDisplay(){
+    document.querySelectorAll('.upload-box input[type="file"]').forEach(function(input){
+      const label = document.getElementById(input.id + '-name');
+      if (!label) return;
+      input.addEventListener('change', function(){
+        label.textContent = input.files && input.files[0] ? input.files[0].name : 'PDF, JPG, PNG 파일을 첨부해 주세요.';
+      });
+    });
+  }
+
+  function bindAddressSearch(button, inputId){
+    if (!button) return;
+    button.addEventListener('click', function(){
+      if (!window.daum || !window.daum.Postcode) {
+        window.alert('주소검색 서비스를 불러오지 못했습니다. 인터넷 연결 상태를 확인해 주세요.');
+        return;
+      }
+      new window.daum.Postcode({
+        oncomplete:function(data){
+          setValue(inputId, data.roadAddress || data.jibunAddress || '');
+          const input = document.getElementById(inputId);
+          if (input) input.focus();
+        }
+      }).open({popupTitle:'태도사 주소검색'});
+    });
+  }
+
+  note && note.addEventListener('input', updateNoteCount);
+
+  form.addEventListener('submit', async function(event){
+    event.preventDefault();
+    clearMessage();
+    if (!form.reportValidity()) return;
+    if (!radioValue('userType')){
+      showMessage('태도사 서비스 이용 구분(기존 이용자 / 신규 이용자)을 선택해 주세요.','error');
+      return;
+    }
+    if (!auth || !auth.createPpaRequest) {
+      showMessage('신청 서비스를 불러오지 못했습니다. 페이지를 새로고침한 후 다시 시도해 주세요.','error');
+      return;
+    }
+    const submitButton = form.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = '신청 접수 중...';
+    try {
+      const payload = {
+        formVersion:'PPA_APPLY_V1', applicantType:radioValue('applicantType'),
+        applicantName:value('applicantName'), applicantPhone:value('applicantPhone'), applicantEmail:value('applicantEmail'),
+        businessRegNumber:value('businessRegNumber'), siteAddress:value('siteAddress'), licenseNumber:value('licenseNumber'),
+        capacity:value('capacity'), userType:radioValue('userType'), requestNote:value('requestNote'),
+        privacyConsent:document.getElementById('privacyConsent').checked,
+        applicationConfirmed:document.getElementById('applicationConfirmation').checked
+      };
+      const outcome = await auth.createPpaRequest(payload);
+      const result = outcome.result || {};
+      if (!outcome.response.ok || !result.success) throw new Error(result.message || '신청을 접수하지 못했습니다.');
+      showMessage((result.message || '신청이 완료되었습니다.') + ' 신청번호: ' + (result.request && result.request.requestNo || '-'),'success');
+      form.querySelectorAll('input,textarea,button').forEach(function(el){ el.disabled = true; });
+    } catch (error) {
+      showMessage(error && error.message ? error.message : '신청 접수 중 오류가 발생했습니다.','error');
+      submitButton.disabled = false;
+      submitButton.textContent = '한전PPA 접수 신청하기';
+    }
+  });
+
+  function updateNoteCount(){ if (note && noteCount) noteCount.textContent = note.value.length.toLocaleString('ko-KR') + ' / 1,500'; }
+  function setValue(id,value){ const el=document.getElementById(id); if(el) el.value=value; }
+  function value(id){ const el=document.getElementById(id); return el ? String(el.value||'').normalize('NFKC').trim() : ''; }
+  function radioValue(name){ const el=document.querySelector('input[name="'+name+'"]:checked'); return el ? el.value : ''; }
+  function setRadio(name,value){ const el=document.querySelector('input[name="'+name+'"][value="'+value+'"]'); if(el) el.checked=true; }
+  function formatPhone(value){ const d=String(value||'').replace(/\D/g,'').slice(0,11); if(d.length<4)return d; if(d.length<8)return d.slice(0,3)+'-'+d.slice(3); return d.slice(0,3)+'-'+d.slice(3,d.length===10?6:7)+'-'+d.slice(d.length===10?6:7); }
+  function showMessage(message,type){ if(!formMessage)return; formMessage.hidden=false; formMessage.className='form-message '+(type||'info'); formMessage.textContent=message; formMessage.scrollIntoView({behavior:'smooth',block:'center'}); }
+  function clearMessage(){ if(!formMessage)return; formMessage.hidden=true; formMessage.textContent=''; formMessage.className='form-message'; }
+})(window,document);

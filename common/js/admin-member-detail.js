@@ -38,7 +38,7 @@
     const list = document.getElementById('detail-service-list');
     if (!list) return;
     list.innerHTML = applications.length ? applications.map(function (item) {
-      const typeLabel = item.type === 'precheck' ? '사전검토 신청' : '발전사업허가 신청';
+      const typeLabel = item.type === 'precheck' ? '사전검토 신청' : (item.type === 'ppa' ? '한전PPA 신청' : '발전사업허가 신청');
       return '<article class="member-service-item"><div class="member-service-top"><div><span class="member-service-type ' + item.type + '">' + typeLabel + '</span><strong>' + escapeHtml(item.requestNo || '-') + '</strong></div><span class="status-badge ' + escapeHtml(item.status || '') + '">' + escapeHtml(serviceStatusLabel(item.type, item.status)) + '</span></div><p class="member-service-address">' + escapeHtml(item.siteAddress || '주소 미등록') + '</p><div class="member-service-meta"><span>신청일 ' + escapeHtml(formatDateTime(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatDateTime(item.updatedAt)) + '</span></div>' + (item.customerNotice ? '<div class="member-service-notice"><strong>최근 고객 안내</strong><p>' + escapeHtml(item.customerNotice).replace(/\n/g, '<br>') + '</p></div>' : '') + '<a class="admin-button detail member-service-detail" href="' + escapeHtml(item.detailUrl) + '">상세보기</a></article>';
     }).join('') : '<p class="empty-row member-service-empty">이 회원의 서비스 신청내역이 없습니다.</p>';
   }
@@ -46,7 +46,8 @@
   function serviceStatusLabel(type, status) {
     const precheck = { received:'접수', reviewing:'검토중', supplement_required:'보완요청', completed:'검토완료' };
     const license = { received:'접수', consulting:'상담중', contracted:'계약완료', documents:'서류준비', submitted:'허가접수', supplement_required:'보완요청', completed:'허가완료', cancelled:'취소' };
-    return (type === 'precheck' ? precheck : license)[status] || status || '-';
+    const ppa = { received:'접수', consulting:'상담중', contracted:'계약완료', documents:'서류준비', submitted:'PPA접수', supplement_required:'보완요청', completed:'처리완료', cancelled:'취소' };
+    return (type === 'precheck' ? precheck : (type === 'ppa' ? ppa : license))[status] || status || '-';
   }
 
   function renderMember(item) {
