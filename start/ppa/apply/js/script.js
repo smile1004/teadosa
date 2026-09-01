@@ -17,6 +17,7 @@
   async function init(){
     updateNoteCount();
     bindUserType();
+    bindApplicantType();
     bindFileNameDisplay();
     bindAddressSearch(siteAddressSearch, 'siteAddress');
     await tryFillFromSession();
@@ -44,12 +45,31 @@
     } else {
       setRadio('applicantType','personal');
     }
+    updateBusinessRegistrationRequirement();
   }
 
   function bindUserType(){
     document.querySelectorAll('input[name="userType"]').forEach(function(el){
       el.addEventListener('change', updateUserTypeBlocks);
     });
+  }
+
+  function bindApplicantType(){
+    document.querySelectorAll('input[name="applicantType"]').forEach(function(el){
+      el.addEventListener('change', updateBusinessRegistrationRequirement);
+    });
+    updateBusinessRegistrationRequirement();
+  }
+
+  function updateBusinessRegistrationRequirement(){
+    const isBusiness = radioValue('applicantType') === 'business';
+    const input = document.getElementById('businessRegNumber');
+    const requiredMark = document.getElementById('businessRegRequired');
+    if (input) {
+      input.required = isBusiness;
+      input.placeholder = isBusiness ? '000-00-00000' : '보유하신 경우 입력해 주세요';
+    }
+    if (requiredMark) requiredMark.hidden = !isBusiness;
   }
 
   function updateUserTypeBlocks(){

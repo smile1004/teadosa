@@ -80,7 +80,7 @@
               <label class="field"><span>이메일 <em>필수</em></span><input type="email" id="applicantEmail" name="applicantEmail" maxlength="120" required></label>
             </div>
             <div class="form-grid two-col top-gap">
-              <label class="field"><span>사업자등록번호 <em>필수</em></span><input type="text" id="businessRegNumber" name="businessRegNumber" maxlength="20" placeholder="000-00-00000" required></label>
+              <label class="field"><span>사업자등록번호 <em id="businessRegRequired" hidden>필수</em></span><input type="text" id="businessRegNumber" name="businessRegNumber" maxlength="20" inputmode="numeric" placeholder="보유하신 경우 입력해 주세요"></label>
             </div>
           </section>
 
@@ -183,6 +183,6 @@
 
 <script src="common/js/components/footer.js"></script>
 <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="start/ppa/apply/js/script.js?v=1.1"></script>
+<script src="start/ppa/apply/js/script.js?v=1.2"></script>
 </body>
 </html>

@@ -23,7 +23,8 @@ export async function onRequestPost({ request, env }) {
     if (!applicantName) return error('성명 또는 법인명을 입력해 주세요.');
     if (!/^\d{9,11}$/.test(phone)) return error('연락처를 정확하게 입력해 주세요.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return error('이메일 형식을 확인해 주세요.');
-    if (businessRegNumber.length !== 10) return error('사업자등록번호 10자리를 정확하게 입력해 주세요.');
+    if (applicantType === 'business' && businessRegNumber.length !== 10) return error('법인사업자는 사업자등록번호 10자리를 정확하게 입력해 주세요.');
+    if (businessRegNumber && businessRegNumber.length !== 10) return error('사업자등록번호는 10자리로 입력해 주세요.');
     if (!siteAddress) return error('사업지 주소를 입력해 주세요.');
     if (!userType) return error('태도사 서비스 이용 구분을 선택해 주세요.');
     if (body.privacyConsent !== true || body.applicationConfirmed !== true) return error('필수 확인 및 동의 항목을 확인해 주세요.');
