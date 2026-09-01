@@ -4,8 +4,8 @@
 <base href="../../">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="태양광 발전사업허가 서비스의 진행 절차와 지원 내용을 안내합니다.">
-<title>발전사업허가 | 태양광도사</title>
+<meta name="description" content="태양광 한전PPA 접수 서비스의 진행 절차와 신청 전 확인사항을 안내합니다.">
+<title>한전PPA 접수 | 태양광도사</title>
 <link href="common/css/taedo1_start.css" rel="stylesheet">
 <link href="common/css/shared-layout.css" rel="stylesheet">
 <link href="common/css/shared-menu.css" rel="stylesheet">
@@ -13,11 +13,11 @@
 <link href="start/css/style.css?v=8.0" rel="stylesheet">
 <link href="start/license/css/style.css" rel="stylesheet">
 <style>
-/* SECTION 구분: 배경/구분선 대비를 더 뚜렷하게 강조 */
-.license-page .license-section{position:relative;border-top:1px solid #d8e0dc}
-.license-page #overview{background:#fff}
-.license-page #scope{background:#eef2f6}
-.license-page #before{background:#f5f8f6}
+/* SECTION 구분: 발전사업허가/개발행위허가 페이지와 동일한 배경/구분선 패턴 적용 */
+.ppa-page .license-section{position:relative;border-top:1px solid #d8e0dc}
+.ppa-page #overview{background:#fff}
+.ppa-page #scope{background:#eef2f6}
+.ppa-page #before{background:#f5f8f6}
 
 /* 모든 서비스 페이지에서 공통으로 사용하는 번호형 진행 절차 */
 .service-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:service-step}
@@ -35,36 +35,39 @@
   .service-flow .flow-step p{font-size:15px}
 }
 
-/* 블록 4: start/index.html과 동일한 디자인 및 링크 호버 효과 고정 */
-.license-page .start-choose-section{padding:72px 0;background:linear-gradient(180deg,#f7faf8 0%,#f4f7fa 100%)}
-.license-page .start-choose-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
-.license-page .start-choose-card:hover{transform:translateY(-3px);box-shadow:0 24px 54px rgba(30,62,50,.12)}
-.license-page .start-choose-list li{transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease}
-.license-page .start-choose-link{display:flex;width:100%;min-height:62px;cursor:pointer;text-decoration:none}
-.license-page .start-choose-single .start-choose-link{color:#c7671e}
-.license-page .start-choose-package .start-choose-link{color:#16885d}
-.license-page .start-choose-single .start-choose-link:hover{color:#9b4d14}
-.license-page .start-choose-package .start-choose-link:hover{color:#0f6f4c}
-.license-page .start-choose-link:hover .start-choose-arrow,
-.license-page .start-choose-link:focus-visible .start-choose-arrow{transform:translateX(8px) scaleX(1.2)}
-.license-page .start-choose-link:focus-visible{outline:3px solid rgba(216,132,34,.22);outline-offset:-3px;border-radius:14px}
+/* SECTION 소제목 자간 및 가독성 조정 */
+.ppa-page .license-section h2{letter-spacing:-0.35px!important;word-spacing:1px;line-height:1.35}
+@media (max-width:640px){
+  .ppa-page .license-section h2{letter-spacing:-0.2px!important;word-spacing:.5px;line-height:1.4}
+}
+
+/* 블록: start/index.html과 동일한 디자인 및 링크 호버 효과 고정 */
+.ppa-page .start-choose-section{padding:72px 0;background:linear-gradient(180deg,#f7faf8 0%,#f4f7fa 100%)}
+.ppa-page .start-choose-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.ppa-page .start-choose-card:hover{transform:translateY(-3px);box-shadow:0 24px 54px rgba(30,62,50,.12)}
+.ppa-page .start-choose-list li{transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease}
+.ppa-page .start-choose-link{display:flex;width:100%;min-height:62px;cursor:pointer;text-decoration:none}
+.ppa-page .start-choose-single .start-choose-link{color:#c7671e}
+.ppa-page .start-choose-package .start-choose-link{color:#16885d}
+.ppa-page .start-choose-single .start-choose-link:hover{color:#9b4d14}
+.ppa-page .start-choose-package .start-choose-link:hover{color:#0f6f4c}
+.ppa-page .start-choose-link:hover .start-choose-arrow,
+.ppa-page .start-choose-link:focus-visible .start-choose-arrow{transform:translateX(8px) scaleX(1.2)}
+.ppa-page .start-choose-link:focus-visible{outline:3px solid rgba(216,132,34,.22);outline-offset:-3px;border-radius:14px}
 </style>
 </head>
-<body class="taedo-has-fixed-header license-page">
+<body class="taedo-has-fixed-header license-page ppa-page">
 <script src="common/js/site-config.js"></script>
 <script src="common/js/api.js?v=2.0"></script>
 <script src="common/js/auth.js?v=2.0"></script>
 <script src="common/js/components/header.js?v=2.6"></script>
 <main>
-  <section class="hero" aria-labelledby="license-title">
+  <section class="hero" aria-labelledby="ppa-title">
     <div class="hero-inner">
       <div>
         <div class="badge">개별 서비스</div>
-        <h1 id="license-title">발전사업허가 서비스</h1>
-        <p>태양광 발전사업을 시작하기 위한 발전사업허가 절차를<br>필요서류 준비부터 신청·보완 대응까지 지원합니다.</p>
-        <div class="hero-apply-actions">
-          <a class="license-apply-btn" id="licenseApplyButton" href="start/license/apply/">발전사업허가 신청하기</a>
-        </div>
+        <h1 id="ppa-title">한전PPA 접수 서비스</h1>
+        <p>태양광 발전사업의 전력수급계약(PPA) 접수를<br>필요서류 준비부터 접수·보완 대응까지 지원합니다.</p>
       </div>
     </div>
   </section>
@@ -72,8 +75,8 @@
   <section class="license-section" id="overview">
     <div class="license-container">
       <div class="section-kicker">SECTION 01</div>
-      <h2>발전사업허가란?</h2>
-      <p class="lead">전기를 생산하여 공급하는 발전사업을 하려는 경우 「전기사업법」에 따라 받아야 하는 사업 허가입니다.<br>발전사업허가는 전체 사업 절차의 시작 단계 중 하나이며, 허가 이후에도 사업 조건에 따라 개발행위허가, 전력수급계약(PPA), 공사계획신고, 사용전검사 등의 후속 절차가 이어질 수 있습니다.</p>
+      <h2>한전PPA 접수란?</h2>
+      <p class="lead">한전PPA(전력수급계약, Power Purchase Agreement)는 생산한 전력을 한국전력공사에 판매하기 위해 체결하는 전력거래계약입니다.<br>일반적으로 발전사업허가와 개발행위허가 등 관련 인허가를 확인한 뒤, 설비 공사와 한국전기안전공사의 사용전검사가 완료되는 시점에 맞추어 접수가 진행됩니다.</p>
     </div>
   </section>
 
@@ -81,17 +84,16 @@
     <div class="license-container">
       <div class="section-kicker">SECTION 02</div>
       <h2>서비스 진행 절차</h2>
-      <p class="section-desc">사전검토 결과 확인부터 허가 완료 후 후속 절차 안내까지 실제 업무 흐름에 따라 진행합니다.</p>
-      <div class="service-flow" aria-label="발전사업허가 서비스 진행 절차">
-        <div class="flow-step"><span class="flow-no">01</span><strong>사전검토 결과 확인</strong><p>발전사업허가 업무 진행 전 사전검토 결과와 기본 사업조건을 확인합니다.</p><p class="flow-required">(반드시 사전검토 결과가 있어야 함)</p></div>
-        <div class="flow-step"><span class="flow-no">02</span><strong>서비스 신청</strong><p>홈페이지에서 발전사업허가 서비스를 신청합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">03</span><strong>담당자 확인 및 상담</strong><p>신청내용을 확인한 후 담당자가 고객과 상담하여 업무 범위와 필요한 사항을 안내합니다.</p></div>
+      <p class="section-desc">발전사업허가·개발행위허가 확인부터 PPA 접수 완료 후 후속 절차 안내까지 실제 업무 흐름에 따라 진행합니다.</p>
+      <div class="service-flow" aria-label="한전PPA 접수 서비스 진행 절차">
+        <div class="flow-step"><span class="flow-no">01</span><strong>발전사업허가·개발행위허가 확인</strong><p>발전사업허가증과 개발행위허가 등 관련 인허가 현황을 확인합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">02</span><strong>서비스 신청</strong><p>홈페이지에서 한전PPA 접수 서비스를 신청합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">03</span><strong>담당자 확인 및 상담</strong><p>신청내용과 사업 조건을 확인한 후 담당자가 업무 범위와 필요한 사항을 안내합니다.</p></div>
         <div class="flow-step"><span class="flow-no">04</span><strong>계약 체결</strong><p>개인정보 동의 후 전자계약을 체결합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">05</span><strong>필요서류 준비</strong><p>사업 조건을 확인한 후 실제 필요한 서류를 개별 안내하고 함께 준비합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">06</span><strong>허가 신청</strong><p>신청서와 첨부서류를 최종 검토한 후 관할기관에 접수합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">07</span><strong>심사 및 보완 대응</strong><p>관할기관 심사가 진행되며, 보완 요청이 있을 경우 필요한 자료를 준비하여 제출합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">08</span><strong>허가 완료</strong><p>최종 허가 결과를 확인하고 허가증 발급 절차를 안내합니다.</p></div>
-        <div class="flow-step"><span class="flow-no">09</span><strong>후속 절차 안내</strong><p>개발행위허가 등 다음 단계에 필요한 절차를 안내합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">05</span><strong>필요서류 준비</strong><p>사업 조건을 확인한 후 전력거래계약 신청서 등 실제 필요한 서류를 개별 안내하고 함께 준비합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">06</span><strong>PPA 접수</strong><p>준비된 서류를 최종 검토한 후 한전 관할지사에 전력수급계약(PPA)을 접수합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">07</span><strong>신청 완료</strong><p>한전 검토 및 계약 체결 결과를 확인합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">08</span><strong>후속 절차 안내</strong><p>공사계획신고 등 다음 단계에 필요한 절차를 안내합니다.</p></div>
       </div>
     </div>
   </section>
@@ -100,10 +102,11 @@
     <div class="license-container">
       <div class="section-kicker">SECTION 03</div><h2>신청 전 확인사항</h2>
       <ul class="caution-list">
-        <li>발전사업허가 외에도 사업 조건에 따라 별도의 인허가와 전력계통 관련 절차가 필요할 수 있습니다.</li>
-        <li>발전설비 용량과 소재지 등에 따라 접수·처리기관 및 제출자료의 범위가 달라질 수 있습니다.</li>
-        <li>제출자료가 부족하거나 관할기관에서 보완을 요구하는 경우 실제 처리기간이 늘어날 수 있습니다.</li>
-        <li>최종 제출서류와 적용기준은 허가신청 시점의 법령 및 관할기관 검토기준을 기준으로 확인합니다.</li>
+        <li>한전PPA 접수는 발전사업허가·개발행위허가 등 관련 인허가 확인을 기준으로 진행할 수 있습니다.</li>
+        <li>계약 체결은 통상 설비 공사와 한국전기안전공사의 사용전검사가 완료된 이후 가능합니다.</li>
+        <li>설비 용량과 계통연계 조건 등에 따라 접수·처리기관 및 제출자료의 범위가 달라질 수 있습니다.</li>
+        <li>제출자료가 부족하거나 한전에서 보완을 요구하는 경우 실제 처리기간이 늘어날 수 있습니다.</li>
+        <li>최종 제출서류와 적용기준은 접수 시점의 한전 기준 및 관할지사 검토기준을 기준으로 확인합니다.</li>
       </ul>
     </div>
   </section>
@@ -123,7 +126,6 @@
           <ul class="start-choose-list">
             <li><a class="start-choose-link" href="start/license/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 발전사업허가</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
             <li><a class="start-choose-link" href="start/development/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 개발행위허가</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
-            <li><a class="start-choose-link" href="start/ppa/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 한전PPA접수</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
             <li><a class="start-choose-link" href="start/index.html#service-construction-plan"><span class="start-choose-name"><span class="start-choose-check">✓</span> 공사계획신고</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
           </ul>
         </article>
@@ -144,15 +146,15 @@
     <div class="license-container">
       <div class="section-kicker">Q&amp;A</div><h2>자주 묻는 질문</h2>
       <div class="faq-list">
-        <details><summary>발전사업허가는 반드시 받아야 하나요?</summary><p>전기를 생산하여 공급하는 발전사업을 하려는 경우 「전기사업법」에 따른 전기사업 허가 절차가 필요합니다. 구체적인 적용 여부는 사업 형태와 설비 조건을 확인해 판단해야 합니다.</p></details>
-        <details><summary>개인도 발전사업허가를 신청할 수 있나요?</summary><p>전기사업 허가 민원은 신청자격을 누구나 신청 가능으로 안내하고 있습니다. 다만 실제 허가 심사에서는 사업계획과 법령상 허가기준 등을 검토합니다.</p></details>
-        <details><summary>발전사업허가를 받으면 바로 공사를 시작할 수 있나요?</summary><p>아닙니다. 사업 조건에 따라 개발행위허가, PPA, 공사계획신고 등 후속 절차가 필요할 수 있으므로 공사 착수 전에 해당 절차를 별도로 확인해야 합니다.</p></details>
+        <details><summary>한전PPA는 반드시 접수해야 하나요?</summary><p>생산한 전력을 한전에 판매하려는 경우 전력거래계약(PPA) 체결이 필요합니다. 자가소비 등 사업 형태에 따라 적용 여부가 달라질 수 있습니다.</p></details>
+        <details><summary>한전PPA 접수는 언제 진행할 수 있나요?</summary><p>일반적으로 발전사업허가·개발행위허가 등 관련 인허가를 확인한 후, 설비 공사와 사용전검사가 완료되는 시점에 맞추어 접수가 진행됩니다.</p></details>
+        <details><summary>한전PPA 접수 전에 발전사업허가를 꼭 받아야 하나요?</summary><p>네. 한전PPA 접수는 발전사업허가 완료를 기준으로 진행되는 절차입니다.</p></details>
       </div>
     </div>
   </section>
 
 </main>
 <script src="common/js/components/footer.js"></script>
-<script src="start/license/js/script.js"></script>
+<script src="start/ppa/js/script.js"></script>
 </body>
 </html>
