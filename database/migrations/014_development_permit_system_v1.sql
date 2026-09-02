@@ -42,3 +42,5 @@ CREATE TABLE IF NOT EXISTS development_permit_status_history (
 );
 
 CREATE INDEX IF NOT EXISTS idx_development_permit_history ON development_permit_status_history(request_id, changed_at);
+
+

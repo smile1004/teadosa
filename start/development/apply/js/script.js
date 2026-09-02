@@ -1,62 +1,11 @@
-(function(w,d){
-'use strict';
-var auth=w.TaeDoSAAuth;
-var form=d.getElementById('developmentApplyForm');
-var msg=d.getElementById('formMessage');
-var loginNotice=d.getElementById('loginNotice');
-
-function conditional(v){
- d.getElementById('landUseField').hidden=v!=='land';
- d.getElementById('buildingUseField').hidden=v!=='roof';
- d.getElementById('drawingField').hidden=v!=='roof';
-}
-d.querySelectorAll('input[name="siteType"]').forEach(function(el){el.addEventListener('change',function(){conditional(this.value);});});
-var btn=d.getElementById('siteAddressSearch');
-if(btn){btn.addEventListener('click',function(){
- if(w.daum&&w.daum.Postcode){new w.daum.Postcode({oncomplete:function(data){d.getElementById('siteAddress').value=data.roadAddress||data.jibunAddress;}}).open();}
-});}
-if(form){form.addEventListener('submit',function(e){
- e.preventDefault();
- if(!form.checkValidity()){form.reportValidity();return;}
- msg.hidden=false; msg.textContent='신청정보를 확인했습니다. 실제 접수 연동은 관리자 신청 API 연결 후 활성화됩니다.';
-});}
-
-if (auth && form) {
-  requireMember().then(function(member){
-    if (member) fillMember(member);
-  });
-}
-
-async function requireMember(){
-  try{
-    var outcome = await auth.getSession({force:true});
-    var member = outcome && outcome.response && outcome.response.ok && outcome.result && outcome.result.authenticated
-      ? outcome.result.member : null;
-    if (member){
-      if (loginNotice) loginNotice.hidden = true;
-      return member;
-    }
-  }catch(error){/* redirect below */}
-
-  if (loginNotice) loginNotice.hidden = false;
-  w.alert('개발행위허가 신청은 회원가입 및 로그인 후 이용할 수 있습니다.');
-  w.location.replace('/login/?next=' + encodeURIComponent('/start/development/apply/') + '&reason=login-required');
-  return null;
-}
-
-function fillMember(member){
-  setValue('applicantName', member.name || member.companyName || member.company_name || '');
-  setValue('applicantPhone', formatPhone(member.phone || ''));
-  setValue('applicantEmail', member.email || '');
-  var memberType = String(member.memberType || member.member_type || member.type || '').toLowerCase();
-  if (memberType.indexOf('business') !== -1 || memberType.indexOf('company') !== -1 || memberType.indexOf('corporate') !== -1) {
-    setRadio('applicantType','business');
-  } else {
-    setRadio('applicantType','personal');
-  }
-}
-
-function setValue(name,value){ var el=d.querySelector('[name="'+name+'"]'); if(el) el.value=value; }
-function setRadio(name,value){ var el=d.querySelector('input[name="'+name+'"][value="'+value+'"]'); if(el) el.checked=true; }
-function formatPhone(value){ var v=String(value||'').replace(/\D/g,'').slice(0,11); if(v.length<4)return v; if(v.length<8)return v.slice(0,3)+'-'+v.slice(3); return v.slice(0,3)+'-'+v.slice(3,v.length===10?6:7)+'-'+v.slice(v.length===10?6:7); }
+(function(w,d){'use strict';
+var auth=w.TaeDoSAAuth,form=d.getElementById('developmentApplyForm'),msg=d.getElementById('formMessage'),loginNotice=d.getElementById('loginNotice');if(!form)return;
+init();
+async function init(){bind();await fillSession();}
+function bind(){d.querySelectorAll('input[name="siteType"]').forEach(function(el){el.addEventListener('change',function(){conditional(this.value);});});var btn=d.getElementById('siteAddressSearch');if(btn)btn.addEventListener('click',searchAddress);form.addEventListener('submit',submit);}
+function conditional(v){d.getElementById('landUseField').hidden=v!=='land';d.getElementById('buildingUseField').hidden=v!=='roof';d.getElementById('drawingField').hidden=v!=='roof';}
+async function fillSession(){if(!auth)return;try{var out=await auth.getSession({force:true}),member=out&&out.response&&out.response.ok&&out.result&&out.result.authenticated?out.result.member:null;if(!member){if(loginNotice)loginNotice.hidden=false;return;}set('applicantName',member.name||member.companyName||member.company_name||'');set('applicantPhone',phone(member.phone||''));set('applicantEmail',member.email||'');var type=String(member.memberType||member.member_type||'').toLowerCase();radio('applicantType',type.includes('business')?'business':'personal');}catch(e){if(loginNotice)loginNotice.hidden=false;}}
+function searchAddress(){if(!w.daum||!w.daum.Postcode){show('주소검색 서비스를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.',true);return;}new w.daum.Postcode({oncomplete:function(data){d.getElementById('siteAddress').value=data.roadAddress||data.jibunAddress||'';}}).open({popupTitle:'태도사 주소검색'});}
+async function submit(e){e.preventDefault();clear();if(!form.reportValidity())return;if(!auth||!auth.createDevelopmentRequest){show('신청 서비스를 불러오지 못했습니다. 페이지를 새로고침해 주세요.',true);return;}var button=form.querySelector('button[type="submit"]');button.disabled=true;button.textContent='신청 접수 중...';try{var payload={formVersion:'DEVELOPMENT_PERMIT_APPLY_V1',applicantType:radioValue('applicantType'),applicantName:value('applicantName'),applicantPhone:value('applicantPhone'),applicantEmail:value('applicantEmail'),precheckStatus:radioValue('precheckStatus'),businessLicenseStatus:radioValue('businessLicenseStatus'),licenseNumber:value('licenseNumber'),licenseDate:value('licenseDate'),lineCapacity:radioValue('lineCapacity'),siteRights:radioValue('siteRights'),siteType:radioValue('siteType'),siteAddress:value('siteAddress'),capacity:value('capacity'),landUse:value('landUse'),buildingUse:value('buildingUse'),drawingStatus:radioValue('drawingStatus'),siteNotes:value('siteNotes'),preferredVisit:value('preferredVisit'),siteContact:value('siteContact'),visitNotes:value('visitNotes'),additionalRequest:value('additionalRequest'),privacyConsent:checked('privacyConsent'),applicationConfirmed:checked('applicationConfirmation')};var out=await auth.createDevelopmentRequest(payload),r=out.result||{};if(!out.response.ok||!r.success)throw new Error(r.message||'신청을 접수하지 못했습니다.');show((r.message||'신청이 완료되었습니다.')+' 신청번호: '+(r.request&&r.request.requestNo||'-'),false);form.querySelectorAll('input,textarea,button').forEach(function(el){el.disabled=true;});}catch(err){show(err&&err.message?err.message:'신청 접수 중 오류가 발생했습니다.',true);button.disabled=false;button.textContent='개발행위허가 신청하기';}}
+function control(name){return form.elements.namedItem(name);}function value(name){var el=control(name);return el?String(el.value||'').normalize('NFKC').trim():'';}function checked(name){var el=control(name);return !!(el&&el.checked);}function radioValue(name){var el=form.querySelector('input[name="'+name+'"]:checked');return el?el.value:'';}function radio(name,v){var el=form.querySelector('input[name="'+name+'"][value="'+v+'"]');if(el)el.checked=true;}function set(name,v){var el=control(name);if(el)el.value=v;}function phone(v){var x=String(v||'').replace(/\D/g,'').slice(0,11);if(x.length<4)return x;if(x.length<8)return x.slice(0,3)+'-'+x.slice(3);return x.slice(0,3)+'-'+x.slice(3,x.length===10?6:7)+'-'+x.slice(x.length===10?6:7);}function show(t,error){msg.hidden=false;msg.textContent=t;msg.className='form-message '+(error?'error':'success');msg.scrollIntoView({behavior:'smooth',block:'center'});}function clear(){msg.hidden=true;msg.textContent='';msg.className='form-message';}
 })(window,document);

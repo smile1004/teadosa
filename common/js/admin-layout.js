@@ -112,7 +112,7 @@
   async function deleteNotification(event) { event.stopPropagation(); const button=event.currentTarget; button.disabled=true; const outcome=await auth.request('/api/admin/notifications/'+encodeURIComponent(button.dataset.id),{method:'DELETE'}); if(outcome.response.ok)loadNotifications(); else button.disabled=false; }
   async function readAllNotifications() { const outcome=await auth.request('/api/admin/notifications',{method:'PATCH'}); if(outcome.response.ok)loadNotifications(); }
   function renderNotificationCount(count){const badge=document.getElementById('admin-notification-count');if(!badge)return;badge.textContent=count>99?'99+':String(count);badge.hidden=count<1;}
-  function notificationType(type){return({member_signup:'회원가입',precheck_request:'사전검토',license_request:'발전사업허가'})[type]||'알림';}
+  function notificationType(type){return({member_signup:'회원가입',precheck_request:'사전검토',license_request:'발전사업허가',development_request:'개발행위허가'})[type]||'알림';}
   function formatNotificationDate(value){const date=new Date(value);return Number.isNaN(date.getTime())?'-':new Intl.DateTimeFormat('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(date);}
   function escapeHtml(value){return String(value??'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c];});}
   function escapeAttribute(value){return escapeHtml(value||'');}

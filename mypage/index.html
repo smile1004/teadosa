@@ -15,7 +15,7 @@
   <script src="common/js/site-config.js?v=2.0"></script>
   <script src="common/js/api.js?v=2.0"></script>
   <script src="common/js/validation.js?v=2.0"></script>
-  <script src="common/js/auth.js?v=2.7"></script>
+  <script src="common/js/auth.js?v=3.0"></script>
   <script src="common/js/session.js?v=2.0"></script>
   <script src="common/js/components/header.js?v=2.6"></script>
 
@@ -34,10 +34,12 @@
           <article class="progress-overview-card primary"><span>진행 중인 서비스</span><strong id="mypage-active-count">0</strong><small>현재 처리 중인 전체 신청</small></article>
           <article class="progress-overview-card"><span>사전검토 신청</span><strong id="mypage-precheck-count">0</strong><small id="mypage-precheck-latest">신청내역 확인 중</small></article>
           <article class="progress-overview-card"><span>발전사업허가 신청</span><strong id="mypage-license-count">0</strong><small id="mypage-license-latest">신청내역 확인 중</small></article>
+          <article class="progress-overview-card"><span>개발행위허가 신청</span><strong id="mypage-development-count">0</strong><small id="mypage-development-latest">신청내역 확인 중</small></article>
         </section>
 
         <nav class="mypage-section-nav" aria-label="마이페이지 메뉴">
           <a class="active" href="/mypage/#license-history-section"><span>발전사업허가 신청</span><b id="mypage-license-nav-count">0</b></a>
+          <a href="/mypage/#development-history-section"><span>개발행위허가 신청</span><b id="mypage-development-nav-count">0</b></a>
           <a href="/mypage/#precheck-history-section"><span>사전검토 신청</span><b id="mypage-precheck-nav-count">0</b></a>
           <a href="/mypage/#account-section"><span>회원정보</span></a>
         </nav>
@@ -48,6 +50,15 @@
             <summary><span>회원정보 상세보기</span><small>연락처·주소·가입정보</small></summary>
             <dl id="account-info" class="mypage-info"></dl>
           </details>
+        </section>
+
+        <section id="development-history-section" class="mypage-card precheck-history-card" aria-labelledby="development-history-title">
+          <div class="mypage-card-head">
+            <div><p class="mypage-card-kicker">DEVELOPMENT PERMIT</p><h2 id="development-history-title">개발행위허가 신청내역</h2><p class="mypage-card-desc">신청 접수부터 상담·계약·현장확인·서류준비·허가 완료까지 진행상황을 확인할 수 있습니다.</p></div>
+            <a class="mypage-button secondary precheck-new-apply" href="/start/development/apply/">개발행위허가 신청</a>
+          </div>
+          <p id="development-history-message" class="precheck-history-message">신청내역을 확인하고 있습니다.</p>
+          <div id="development-history-list" class="precheck-history-list" hidden></div>
         </section>
 
         <section id="license-history-section" class="mypage-card precheck-history-card" aria-labelledby="license-history-title">
@@ -149,6 +160,6 @@
 
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script src="common/js/components/footer.js?v=2.0"></script>
-  <script src="common/js/mypage.js?v=3.0"></script>
+  <script src="common/js/mypage.js?v=3.2"></script>
 </body>
 </html>
