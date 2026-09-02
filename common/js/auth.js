@@ -176,6 +176,12 @@
   async function getAdminPpaDetail(requestId) { return request('/api/admin/ppa/' + encodeURIComponent(requestId), { method: 'GET' }); }
   async function updateAdminPpaStatus(requestId, payload) { return request('/api/admin/ppa/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
 
+  async function createConstructionPlanRequest(payload) { return request('/api/construction-plan/create', { method: 'POST', body: payload }); }
+  async function getMyConstructionPlanRequests() { return request('/api/construction-plan/my-requests', { method: 'GET' }); }
+  async function getAdminConstructionPlanRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/construction-plan?' + query.toString(), { method: 'GET' }); }
+  async function getAdminConstructionPlanDetail(requestId) { return request('/api/admin/construction-plan/' + encodeURIComponent(requestId), { method: 'GET' }); }
+  async function updateAdminConstructionPlanStatus(requestId, payload) { return request('/api/admin/construction-plan/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
+
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
       method: 'POST',
@@ -219,6 +225,11 @@
     getAdminPpaRequests: getAdminPpaRequests,
     getAdminPpaDetail: getAdminPpaDetail,
     updateAdminPpaStatus: updateAdminPpaStatus,
+    createConstructionPlanRequest: createConstructionPlanRequest,
+    getMyConstructionPlanRequests: getMyConstructionPlanRequests,
+    getAdminConstructionPlanRequests: getAdminConstructionPlanRequests,
+    getAdminConstructionPlanDetail: getAdminConstructionPlanDetail,
+    updateAdminConstructionPlanStatus: updateAdminConstructionPlanStatus,
     checkDuplicate: checkDuplicate
   });
 })(window);

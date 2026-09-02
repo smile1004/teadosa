@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base href="../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="태양광 공사계획신고 서비스의 진행 절차와 신청 전 확인사항을 안내합니다.">
+<title>공사계획신고 | 태양광도사</title>
+<link href="common/css/taedo1_start.css" rel="stylesheet">
+<link href="common/css/shared-layout.css" rel="stylesheet">
+<link href="common/css/shared-menu.css" rel="stylesheet">
+<link href="common/css/common.css" rel="stylesheet">
+<link href="start/css/style.css?v=8.0" rel="stylesheet">
+<link href="start/license/css/style.css" rel="stylesheet">
+<style>
+/* SECTION 구분: 발전사업허가/한전PPA 접수 페이지와 동일한 배경/구분선 패턴 적용 */
+.construction-plan-page .license-section{position:relative;border-top:1px solid #d8e0dc}
+.construction-plan-page #overview{background:#fff}
+.construction-plan-page #scope{background:#eef2f6}
+.construction-plan-page #before{background:#f5f8f6}
+
+/* 모든 서비스 페이지에서 공통으로 사용하는 번호형 진행 절차 */
+.service-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;counter-reset:service-step}
+.service-flow .flow-step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:13px;min-height:150px;padding:22px 18px;border:1px solid #dfe7e1;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(25,55,38,.06)}
+.service-flow .flow-no{grid-row:1 / span 3;display:flex;align-items:center;justify-content:center;width:42px;height:42px;margin:0;border-radius:50%;background:#ef7d22;color:#fff;font-size:16px;font-weight:800}
+.service-flow .flow-step strong{display:block;margin:3px 0 7px;color:#123624;font-size:18px;line-height:1.4}
+.service-flow .flow-step p{margin:0;color:#46564d;font-size:15px;line-height:1.65;word-break:keep-all}
+@media (max-width:960px){.service-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){
+  .service-flow{grid-template-columns:1fr;gap:14px}
+  .service-flow .flow-step{grid-template-columns:42px minmax(0,1fr);min-height:0;padding:18px 14px}
+  .service-flow .flow-step strong{font-size:16px}
+  .service-flow .flow-step p{font-size:15px}
+}
+
+/* 신고/인가 구분 비교 카드 */
+.threshold-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
+.threshold-card{padding:22px;border:1px solid #dfe4e1;border-radius:12px;background:#fff}
+.threshold-badge{display:inline-flex;align-items:center;min-height:25px;padding:0 11px;border-radius:999px;font-size:13px;font-weight:800;line-height:1}
+.threshold-card.report .threshold-badge{background:#eaf4fb;color:#2872a8}
+.threshold-card.approval .threshold-badge{background:#fff0df;color:#e56e17}
+.threshold-card h3{margin:14px 0 8px;color:#132f47!important;font-size:18px!important;font-weight:800!important;letter-spacing:-.35px!important;line-height:1.45}
+.threshold-card p{margin:0;color:#536579;font-size:14.5px;line-height:1.75;word-break:keep-all}
+@media (max-width:640px){.threshold-grid{grid-template-columns:1fr}}
+
+/* SECTION 소제목 자간 및 가독성 조정 */
+.construction-plan-page .license-section h2{letter-spacing:-0.35px!important;word-spacing:1px;line-height:1.35}
+@media (max-width:640px){
+  .construction-plan-page .license-section h2{letter-spacing:-0.2px!important;word-spacing:.5px;line-height:1.4}
+}
+
+/* CHOOSE YOUR SERVICE 블록 */
+.construction-plan-page .start-choose-section{padding:72px 0;background:linear-gradient(180deg,#f7faf8 0%,#f4f7fa 100%)}
+.construction-plan-page .start-choose-card{transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.construction-plan-page .start-choose-card:hover{transform:translateY(-3px);box-shadow:0 24px 54px rgba(30,62,50,.12)}
+.construction-plan-page .start-choose-list li{transition:border-color .2s ease,background-color .2s ease,box-shadow .2s ease}
+.construction-plan-page .start-choose-link{display:flex;width:100%;min-height:62px;cursor:pointer;text-decoration:none}
+.construction-plan-page .start-choose-single .start-choose-link{color:#c7671e}
+.construction-plan-page .start-choose-package .start-choose-link{color:#16885d}
+.construction-plan-page .start-choose-single .start-choose-link:hover{color:#9b4d14}
+.construction-plan-page .start-choose-package .start-choose-link:hover{color:#0f6f4c}
+.construction-plan-page .start-choose-link:hover .start-choose-arrow,
+.construction-plan-page .start-choose-link:focus-visible .start-choose-arrow{transform:translateX(8px) scaleX(1.2)}
+.construction-plan-page .start-choose-link:focus-visible{outline:3px solid rgba(216,132,34,.22);outline-offset:-3px;border-radius:14px}
+</style>
+</head>
+<body class="taedo-has-fixed-header license-page construction-plan-page">
+<script src="common/js/site-config.js"></script>
+<script src="common/js/api.js?v=2.0"></script>
+<script src="common/js/auth.js?v=3.0"></script>
+<script src="common/js/components/header.js?v=2.6"></script>
+<main>
+  <section class="hero" aria-labelledby="construction-plan-title">
+    <div class="hero-inner">
+      <div>
+        <div class="badge">개별 서비스</div>
+        <h1 id="construction-plan-title">공사계획신고 서비스</h1>
+        <p>태양광 발전설비 착공 전 반드시 진행해야 하는 공사계획신고를<br>서류 준비부터 접수·보완 대응까지 지원합니다.</p>
+        <div class="hero-apply-actions">
+          <a class="license-apply-btn" href="start/construction-plan/apply/">공사계획신고 신청하기</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="license-section" id="overview">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 01</div>
+      <h2>공사계획신고란?</h2>
+      <p class="lead">공사계획신고는 전기사업용 전기설비의 설치공사(또는 변경공사)를 시작하기 전에 공사계획을 관할 기관에 신고하거나 인가받는 절차입니다(전기사업법 제61조·제62조).<br>발전사업허가와 개발행위허가를 받은 이후, 실제 착공에 앞서 진행합니다.</p>
+
+      <div class="threshold-grid">
+        <article class="threshold-card report">
+          <span class="threshold-badge">신고 대상</span>
+          <h3>설비용량 10,000kW 미만</h3>
+          <p>관할 지자체(도청 또는 시·군청)에 공사계획신고를 제출합니다. 대부분의 일반 태양광 발전사업이 이에 해당합니다.</p>
+        </article>
+        <article class="threshold-card approval">
+          <span class="threshold-badge">인가 대상</span>
+          <h3>설비용량 10,000kW 이상</h3>
+          <p>산업통상자원부에 공사계획인가를 신청합니다. 대규모 발전사업에 해당하며 신고보다 검토 절차가 더 엄격합니다.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="license-section" id="scope">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 02</div>
+      <h2>서비스 진행 절차</h2>
+      <p class="section-desc">발전사업허가·개발행위허가 확인부터 신고 수리 후 후속 절차 안내까지 실제 업무 흐름에 따라 진행합니다.</p>
+      <div class="service-flow" aria-label="공사계획신고 서비스 진행 절차">
+        <div class="flow-step"><span class="flow-no">01</span><strong>발전사업허가·개발행위허가 확인</strong><p>발전사업허가증과 개발행위허가 등 관련 인허가 현황을 확인합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">02</span><strong>서비스 신청</strong><p>홈페이지에서 공사계획신고 서비스를 신청합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">03</span><strong>담당자 확인 및 상담</strong><p>설비용량과 사업 조건을 확인한 후 담당자가 업무 범위를 안내합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">04</span><strong>계약 체결</strong><p>개인정보 동의 후 전자계약을 체결합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">05</span><strong>설계도서·감리 준비</strong><p>공사계획서, 설계도서 등 필요서류와 감리원 배치(해당 시)를 준비합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">06</span><strong>공사계획신고 접수</strong><p>준비된 서류를 최종 검토한 후 관할 지자체(또는 산업통상자원부)에 접수합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">07</span><strong>신고 수리 확인</strong><p>관할 기관의 검토 결과와 신고 수리 여부를 확인합니다.</p></div>
+        <div class="flow-step"><span class="flow-no">08</span><strong>후속 절차 안내</strong><p>착공, 사용전검사 등 다음 단계에 필요한 절차를 안내합니다.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="license-section" id="before">
+    <div class="license-container">
+      <div class="section-kicker">SECTION 03</div><h2>신청 전 확인사항</h2>
+      <ul class="caution-list">
+        <li>공사계획신고는 발전사업허가·개발행위허가 완료를 기준으로 진행할 수 있습니다.</li>
+        <li>설비용량 10,000kW를 기준으로 신고(지자체) 또는 인가(산업통상자원부) 대상이 구분되며, 처리기관과 절차가 달라질 수 있습니다.</li>
+        <li>공사감리 대상인 경우 감리원 배치확인서가 필요하며, 전기안전관리자가 자체감리를 하는 경우에는 이를 확인할 수 있는 서류로 갈음할 수 있습니다.</li>
+        <li>처리기간은 통상 15일 내외로 예상되나, 관할기관 검토 및 보완 여부에 따라 달라질 수 있습니다.</li>
+        <li>착공·준공 일정이 지연되는 경우 별도의 연장신청서와 사유서 제출이 필요할 수 있습니다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CHOOSE YOUR SERVICE -->
+  <section class="start-choose-section">
+    <div class="start-choose-container">
+      <div class="start-choose-intro">
+        <span class="start-choose-eyebrow">CHOOSE YOUR SERVICE</span>
+        <h2 class="start-choose-title">필요한 서비스만 선택,<br>복잡한 과정은 패키지로 한 번에</h2>
+        <p class="start-choose-lead"><span>필요한 절차나 특정 업무만 이용하고 싶다면 원하는 서비스를 개별적으로 선택할 수 있습니다.</span><span>여러 절차를 함께 진행해야 한다면 사업 유형에 맞는 패키지서비스로 복잡한 과정을 한 번에 연결할 수 있습니다.</span></p>
+      </div>
+      <div class="start-choose-grid">
+        <span class="start-choose-or">OR</span>
+        <article class="start-choose-card start-choose-single">
+          <span class="start-choose-label">SELECTIVE</span><h3>개별서비스</h3><p>필요한 절차와 업무만 개별적으로 선택하여 전문적인 서비스를 간편하게 이용할 수 있습니다.</p>
+          <ul class="start-choose-list">
+            <li><a class="start-choose-link" href="start/license/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 발전사업허가</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/development/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 개발행위허가</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/ppa/index.html"><span class="start-choose-name"><span class="start-choose-check">✓</span> 한전PPA접수</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+          </ul>
+        </article>
+        <article class="start-choose-card start-choose-package">
+          <span class="start-choose-label">ALL-IN-ONE</span><h3>패키지서비스</h3><p>사업 유형에 따라 필요한 주요 서비스를 하나의 패키지로 연결하여 보다 편리하게 진행할 수 있습니다.</p>
+          <ul class="start-choose-list">
+            <li><a class="start-choose-link" href="start/index.html#package-land"><span class="start-choose-name"><span class="start-choose-check">✓</span> 토지형 발전사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#package-roof"><span class="start-choose-name"><span class="start-choose-check">✓</span> 지붕형 발전사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#package-building"><span class="start-choose-name"><span class="start-choose-check">✓</span> 건물지원사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+            <li><a class="start-choose-link" href="start/index.html#package-finance"><span class="start-choose-name"><span class="start-choose-check">✓</span> 금융지원사업</span><span class="start-choose-arrow" aria-hidden="true">⟶</span></a></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="license-section soft" id="faq">
+    <div class="license-container">
+      <div class="section-kicker">Q&amp;A</div><h2>자주 묻는 질문</h2>
+      <div class="faq-list">
+        <details><summary>공사계획신고는 반드시 해야 하나요?</summary><p>네. 전기사업용 전기설비의 설치공사 또는 변경공사를 하려는 경우 전기사업법에 따라 공사계획신고(또는 인가)가 필요합니다.</p></details>
+        <details><summary>공사계획신고와 공사계획인가는 어떻게 다른가요?</summary><p>설비용량 10,000kW를 기준으로 구분됩니다. 10,000kW 미만은 지자체에 신고, 10,000kW 이상은 산업통상자원부에 인가를 신청합니다. 대부분의 일반 태양광 발전사업은 신고 대상입니다.</p></details>
+        <details><summary>공사계획신고는 언제 진행하나요?</summary><p>발전사업허가와 개발행위허가를 받은 이후, 실제 착공 전에 진행합니다. 처리기간을 고려해 착공 일정보다 여유 있게 준비하는 것이 좋습니다.</p></details>
+      </div>
+    </div>
+  </section>
+
+</main>
+<script src="common/js/components/footer.js"></script>
+<script src="start/construction-plan/js/script.js"></script>
+</body>
+</html>
