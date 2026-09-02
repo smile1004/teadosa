@@ -33,11 +33,14 @@
   const licenseHistoryList = document.getElementById('license-history-list');
   const developmentHistoryMessage = document.getElementById('development-history-message');
   const developmentHistoryList = document.getElementById('development-history-list');
+  const ppaHistoryMessage = document.getElementById('ppa-history-message');
+  const ppaHistoryList = document.getElementById('ppa-history-list');
 
   let currentMember = null;
   let currentPrecheckRequests = [];
   let currentLicenseRequests = [];
   let currentDevelopmentRequests = [];
+  let currentPpaRequests = [];
 
   if (!session || !auth || !validation || !content || !message || !accountInfo || !editForm) return;
 
@@ -76,6 +79,7 @@
       await loadPrecheckHistory();
       await loadLicenseHistory();
       await loadDevelopmentHistory();
+      await loadPpaHistory();
     } catch (error) {
       showMainError(error && error.message ? error.message : '회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
@@ -97,6 +101,24 @@
 
   function developmentStatusLabel(value){return({received:'접수',consulting:'상담중',contracted:'계약완료',site_review:'현장확인',documents:'서류준비',submitted:'허가접수',supplement_required:'보완요청',completed:'허가완료',cancelled:'취소'})[value]||value||'-';}
   function developmentProgress(value){return({received:'1 / 8',consulting:'2 / 8',contracted:'3 / 8',site_review:'4 / 8',documents:'5 / 8',submitted:'6 / 8',supplement_required:'7 / 8',completed:'8 / 8',cancelled:'진행 종료'})[value]||'-';}
+
+  async function loadPpaHistory() {
+    if (!ppaHistoryMessage || !ppaHistoryList || !auth.getMyPpaRequests) return;
+    ppaHistoryMessage.hidden=false; ppaHistoryMessage.classList.remove('error'); ppaHistoryMessage.textContent='신청내역을 확인하고 있습니다.'; ppaHistoryList.hidden=true;
+    try { const outcome=await auth.getMyPpaRequests(); const result=outcome.result||{}; if(!outcome.response.ok||!result.success)throw new Error(result.message||'한전PPA 신청내역을 불러오지 못했습니다.'); renderPpaHistory(result.requests||[]); }
+    catch(error){ppaHistoryMessage.textContent=error.message||'한전PPA 신청내역을 불러오지 못했습니다.';ppaHistoryMessage.classList.add('error');}
+  }
+
+  function renderPpaHistory(requests) {
+    currentPpaRequests=requests;updateProgressOverview();
+    if(!requests.length){ppaHistoryList.innerHTML='<div class="precheck-history-empty"><strong>한전PPA 접수 신청내역이 없습니다.</strong><p>한전PPA 접수 서비스가 필요한 경우 신청서를 작성해 주세요.</p><a href="/start/ppa/apply/">한전PPA 접수 신청하기</a></div>';}
+    else{ppaHistoryList.innerHTML=requests.map(function(item){var history=Array.isArray(item.statusHistory)?item.statusHistory:[];if(!history.length&&item.submittedAt)history=[{status:'received',customerNotice:'',changedAt:item.submittedAt}];var timeline='<div class="license-status-timeline" aria-label="진행상태 변경 이력">'+history.map(function(entry){return'<div class="license-timeline-item"><span class="license-timeline-marker" aria-hidden="true"></span><div class="license-timeline-content"><div class="license-timeline-head"><strong>'+escapeHtml(ppaStatusLabel(entry.status))+'</strong><time datetime="'+escapeHtml(entry.changedAt||'')+'">'+escapeHtml(formatLicenseDateTime(entry.changedAt))+'</time></div>'+(entry.customerNotice?'<p>'+escapeHtml(entry.customerNotice).replace(/\n/g,'<br>')+'</p>':'')+'</div></div>';}).join('')+'</div>';return'<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">'+escapeHtml(item.requestNo||'-')+'</strong><span class="precheck-status license-'+escapeHtml(item.status||'received')+'">'+escapeHtml(ppaStatusLabel(item.status))+'</span></div><p class="precheck-site-address">'+escapeHtml(item.siteAddress||'사업지 주소 미등록')+'</p><div class="precheck-history-meta"><span>신청일 '+escapeHtml(formatPrecheckDate(item.submittedAt))+'</span><span>최근 변경 '+escapeHtml(formatPrecheckDate(item.updatedAt))+'</span></div>'+timeline+'</div><div class="license-progress" aria-label="'+escapeHtml(ppaStatusLabel(item.status))+'"><span>'+escapeHtml(ppaProgress(item.status))+'</span></div></article>';}).join('');}
+    ppaHistoryList.hidden=false;ppaHistoryMessage.hidden=true;
+    if (new URLSearchParams(window.location.search).get('section') === 'ppa') document.getElementById('ppa-history-section')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function ppaStatusLabel(value){return({received:'접수',consulting:'상담중',contracted:'계약완료',documents:'서류준비',submitted:'접수완료',supplement_required:'보완요청',completed:'완료',cancelled:'취소'})[value]||value||'-';}
+  function ppaProgress(value){return({received:'1 / 7',consulting:'2 / 7',contracted:'3 / 7',documents:'4 / 7',submitted:'5 / 7',supplement_required:'6 / 7',completed:'7 / 7',cancelled:'진행 종료'})[value]||'-';}
 
   async function loadLicenseHistory() {
     if (!licenseHistoryMessage || !licenseHistoryList || !auth.getMyLicenseRequests) return;
@@ -251,16 +273,20 @@
     const activePrecheck = currentPrecheckRequests.filter(function (item) { return item.status !== 'completed'; }).length;
     const activeLicense = currentLicenseRequests.filter(function (item) { return item.status !== 'completed' && item.status !== 'cancelled'; }).length;
     const activeDevelopment = currentDevelopmentRequests.filter(function (item) { return item.status !== 'completed' && item.status !== 'cancelled'; }).length;
-    setText('mypage-active-count', activePrecheck + activeLicense + activeDevelopment);
+    const activePpa = currentPpaRequests.filter(function (item) { return item.status !== 'completed' && item.status !== 'cancelled'; }).length;
+    setText('mypage-active-count', activePrecheck + activeLicense + activeDevelopment + activePpa);
     setText('mypage-precheck-count', currentPrecheckRequests.length);
     setText('mypage-license-count', currentLicenseRequests.length);
     setText('mypage-precheck-nav-count', currentPrecheckRequests.length);
     setText('mypage-license-nav-count', currentLicenseRequests.length);
     setText('mypage-development-count', currentDevelopmentRequests.length);
     setText('mypage-development-nav-count', currentDevelopmentRequests.length);
+    setText('mypage-ppa-count', currentPpaRequests.length);
+    setText('mypage-ppa-nav-count', currentPpaRequests.length);
     setText('mypage-precheck-latest', currentPrecheckRequests.length ? '최근 상태 · ' + precheckStatusLabel(currentPrecheckRequests[0].status) : '신청내역 없음');
     setText('mypage-license-latest', currentLicenseRequests.length ? '최근 상태 · ' + licenseStatusLabel(currentLicenseRequests[0].status) : '신청내역 없음');
     setText('mypage-development-latest', currentDevelopmentRequests.length ? '최근 상태 · ' + developmentStatusLabel(currentDevelopmentRequests[0].status) : '신청내역 없음');
+    setText('mypage-ppa-latest', currentPpaRequests.length ? '최근 상태 · ' + ppaStatusLabel(currentPpaRequests[0].status) : '신청내역 없음');
   }
 
   function setText(id, value) { const element = document.getElementById(id); if (element) element.textContent = value; }
