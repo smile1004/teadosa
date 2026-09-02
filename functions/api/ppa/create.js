@@ -59,7 +59,7 @@ export async function onRequestPost({ request, env }) {
     return jsonResponse({ success: true, code: 'PPA_REQUEST_CREATED', message: '한전PPA 접수 서비스 신청이 완료되었습니다.', request: { id, requestNo, status: 'received', submittedAt: nowIso } }, 201);
   } catch (err) {
     console.error('한전PPA 신청 저장 오류:', err);
-    return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '신청을 저장하는 중 오류가 발생했습니다. [디버그: ' + (err && err.message ? err.message : String(err)) + ']' }, 500);
+    return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '신청을 저장하는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.' }, 500);
   }
 }
 
