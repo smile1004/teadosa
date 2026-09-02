@@ -17,7 +17,6 @@
   async function init(){
     updateNoteCount();
     bindUserType();
-    bindApplicantType();
     bindFileNameDisplay();
     bindAddressSearch(siteAddressSearch, 'siteAddress');
     await tryFillFromSession();
@@ -45,31 +44,12 @@
     } else {
       setRadio('applicantType','personal');
     }
-    updateBusinessRegistrationRequirement();
   }
 
   function bindUserType(){
     document.querySelectorAll('input[name="userType"]').forEach(function(el){
       el.addEventListener('change', updateUserTypeBlocks);
     });
-  }
-
-  function bindApplicantType(){
-    document.querySelectorAll('input[name="applicantType"]').forEach(function(el){
-      el.addEventListener('change', updateBusinessRegistrationRequirement);
-    });
-    updateBusinessRegistrationRequirement();
-  }
-
-  function updateBusinessRegistrationRequirement(){
-    const isBusiness = radioValue('applicantType') === 'business';
-    const input = document.getElementById('businessRegNumber');
-    const requiredMark = document.getElementById('businessRegRequired');
-    if (input) {
-      input.required = isBusiness;
-      input.placeholder = isBusiness ? '000-00-00000' : '보유하신 경우 입력해 주세요';
-    }
-    if (requiredMark) requiredMark.hidden = !isBusiness;
   }
 
   function updateUserTypeBlocks(){
@@ -107,45 +87,19 @@
 
   note && note.addEventListener('input', updateNoteCount);
 
-  form.addEventListener('submit', async function(event){
+  form.addEventListener('submit', function(event){
     event.preventDefault();
     clearMessage();
     if (!form.reportValidity()) return;
     if (!radioValue('userType')){
-      showMessage('태도사 서비스 이용 구분(기존 이용자 / 신규 이용자)을 선택해 주세요.','error');
+      showMessage('이용자 구분(기존 이용자 / 신규 이용자)을 선택해 주세요.','error');
       return;
     }
-    if (!auth || !auth.createPpaRequest) {
-      showMessage('신청 서비스를 불러오지 못했습니다. 페이지를 새로고침한 후 다시 시도해 주세요.','error');
-      return;
-    }
-    const submitButton = form.querySelector('button[type="submit"]');
-    submitButton.disabled = true;
-    submitButton.textContent = '신청 접수 중...';
-    try {
-      const payload = {
-        formVersion:'PPA_APPLY_V1', applicantType:radioValue('applicantType'),
-        applicantName:value('applicantName'), applicantPhone:value('applicantPhone'), applicantEmail:value('applicantEmail'),
-        businessRegNumber:value('businessRegNumber'), siteAddress:value('siteAddress'), licenseNumber:value('licenseNumber'),
-        capacity:value('capacity'), userType:radioValue('userType'), requestNote:value('requestNote'),
-        privacyConsent:document.getElementById('privacyConsent').checked,
-        applicationConfirmed:document.getElementById('applicationConfirmation').checked
-      };
-      const outcome = await auth.createPpaRequest(payload);
-      const result = outcome.result || {};
-      if (!outcome.response.ok || !result.success) throw new Error(result.message || '신청을 접수하지 못했습니다.');
-      showMessage((result.message || '신청이 완료되었습니다.') + ' 신청번호: ' + (result.request && result.request.requestNo || '-'),'success');
-      form.querySelectorAll('input,textarea,button').forEach(function(el){ el.disabled = true; });
-    } catch (error) {
-      showMessage(error && error.message ? error.message : '신청 접수 중 오류가 발생했습니다.','error');
-      submitButton.disabled = false;
-      submitButton.textContent = '한전PPA 접수 신청하기';
-    }
+    showMessage('신청정보를 확인했습니다. 실제 접수 연동은 관리자 신청 API 연결 후 활성화됩니다.','info');
   });
 
   function updateNoteCount(){ if (note && noteCount) noteCount.textContent = note.value.length.toLocaleString('ko-KR') + ' / 1,500'; }
   function setValue(id,value){ const el=document.getElementById(id); if(el) el.value=value; }
-  function value(id){ const el=document.getElementById(id); return el ? String(el.value||'').normalize('NFKC').trim() : ''; }
   function radioValue(name){ const el=document.querySelector('input[name="'+name+'"]:checked'); return el ? el.value : ''; }
   function setRadio(name,value){ const el=document.querySelector('input[name="'+name+'"][value="'+value+'"]'); if(el) el.checked=true; }
   function formatPhone(value){ const d=String(value||'').replace(/\D/g,'').slice(0,11); if(d.length<4)return d; if(d.length<8)return d.slice(0,3)+'-'+d.slice(3); return d.slice(0,3)+'-'+d.slice(3,d.length===10?6:7)+'-'+d.slice(d.length===10?6:7); }

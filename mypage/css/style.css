@@ -175,7 +175,7 @@ body {
 .mypage-hero h1{font-size:clamp(27px,3vw,36px);line-height:1.25;letter-spacing:-.035em}
 .mypage-hero>p:last-child{margin-top:8px;font-size:14px;line-height:1.6}
 .mypage-content{gap:18px}
-.mypage-progress-overview{order:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px}
+.mypage-progress-overview{order:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .progress-overview-card{padding:20px 22px;border:1px solid #dfe6ec;border-radius:17px;background:#fff;box-shadow:0 9px 25px rgba(19,39,62,.05)}
 .progress-overview-card.primary{border-color:#f0c99f;background:linear-gradient(145deg,#fffaf4,#fff)}
 .progress-overview-card span{display:block;color:#667687;font-size:12px;font-weight:800}
@@ -189,13 +189,11 @@ body {
 .mypage-section-nav b{display:grid;place-items:center;min-width:21px;height:21px;padding:0 6px;border-radius:999px;background:#e7edf2;color:#536678;font-size:10px}
 .mypage-section-nav a.active b{background:#d88422;color:#fff}
 #license-history-section{order:3;scroll-margin-top:155px}
-#development-history-section{order:4;scroll-margin-top:155px}
-#ppa-history-section{order:5;scroll-margin-top:155px}
-#precheck-history-section{order:6;scroll-margin-top:155px}
-#account-section{order:7;scroll-margin-top:155px}
-.business-summary-card{order:8}
-#account-actions-section{order:9}
-#password-change-section,#profile-edit-section{order:10}
+#precheck-history-section{order:4;scroll-margin-top:155px}
+#account-section{order:5;scroll-margin-top:155px}
+.business-summary-card{order:6}
+#account-actions-section{order:7}
+#password-change-section,#profile-edit-section{order:8}
 .mypage-card,.mypage-actions{padding:24px 27px;border-radius:18px;box-shadow:0 9px 28px rgba(19,39,62,.05)}
 .mypage-card-head{padding-bottom:17px}
 .mypage-card-head h2,.mypage-actions h2{font-size:20px}
@@ -224,7 +222,7 @@ body {
   .progress-overview-card strong{font-size:24px}
   .mypage-section-nav{top:72px;gap:4px;margin:0 -4px;padding:6px;overflow-x:auto;border-radius:12px}
   .mypage-section-nav a{min-width:112px;min-height:40px;padding:0 10px;font-size:12px;white-space:nowrap}
-  #license-history-section,#development-history-section,#ppa-history-section,#precheck-history-section,#account-section{scroll-margin-top:130px}
+  #license-history-section,#precheck-history-section,#account-section{scroll-margin-top:130px}
   .mypage-card,.mypage-actions{padding:20px 17px;border-radius:16px}
   .mypage-card-head{gap:13px;padding-bottom:15px}
   .mypage-card-head h2,.mypage-actions h2{font-size:18px}

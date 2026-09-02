@@ -164,16 +164,6 @@
   async function getAdminLicenseRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/license?' + query.toString(), { method: 'GET' }); }
   async function getAdminLicenseDetail(requestId) { return request('/api/admin/license/' + encodeURIComponent(requestId), { method: 'GET' }); }
   async function updateAdminLicenseStatus(requestId, payload) { return request('/api/admin/license/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
-  async function createPpaRequest(payload) { return request('/api/ppa/create', { method: 'POST', body: payload }); }
-  async function getMyPpaRequests() { return request('/api/ppa/my-requests', { method: 'GET' }); }
-  async function getAdminPpaRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/ppa?' + query.toString(), { method: 'GET' }); }
-  async function getAdminPpaDetail(requestId) { return request('/api/admin/ppa/' + encodeURIComponent(requestId), { method: 'GET' }); }
-  async function updateAdminPpaStatus(requestId, payload) { return request('/api/admin/ppa/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
-  async function createDevelopmentRequest(payload) { return request('/api/development/create', { method: 'POST', body: payload }); }
-  async function getMyDevelopmentRequests() { return request('/api/development/my-requests', { method: 'GET' }); }
-  async function getAdminDevelopmentRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/development?' + query.toString(), { method: 'GET' }); }
-  async function getAdminDevelopmentDetail(requestId) { return request('/api/admin/development/' + encodeURIComponent(requestId), { method: 'GET' }); }
-  async function updateAdminDevelopmentStatus(requestId, payload) { return request('/api/admin/development/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
 
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
@@ -208,16 +198,6 @@
     getAdminLicenseRequests: getAdminLicenseRequests,
     getAdminLicenseDetail: getAdminLicenseDetail,
     updateAdminLicenseStatus: updateAdminLicenseStatus,
-    createPpaRequest: createPpaRequest,
-    getMyPpaRequests: getMyPpaRequests,
-    getAdminPpaRequests: getAdminPpaRequests,
-    getAdminPpaDetail: getAdminPpaDetail,
-    updateAdminPpaStatus: updateAdminPpaStatus,
-    createDevelopmentRequest: createDevelopmentRequest,
-    getMyDevelopmentRequests: getMyDevelopmentRequests,
-    getAdminDevelopmentRequests: getAdminDevelopmentRequests,
-    getAdminDevelopmentDetail: getAdminDevelopmentDetail,
-    updateAdminDevelopmentStatus: updateAdminDevelopmentStatus,
     checkDuplicate: checkDuplicate
   });
 })(window);
