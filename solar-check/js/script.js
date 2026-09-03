@@ -12,6 +12,7 @@
   var postcodeCloseButton=document.getElementById('postcodeCloseButton');
   var selectedAddress=null;
   var mapConfig=null;
+  var kakaoSdkPromise=null;
 
   addressButton.addEventListener('click',function(){
     if(!window.daum||!window.daum.Postcode){
@@ -40,7 +41,8 @@
     if(!selectedAddress){setMessage('먼저 주소 검색으로 사업지를 선택해 주세요.');return;}
     analyzeButton.disabled=true;analyzeButton.textContent='검토 중...';setMessage('공개 위치정보를 확인하고 있습니다.');
     try{
-      var response=await fetch('/api/solar-check/analyze',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({address:selectedAddress.roadAddress||selectedAddress.jibunAddress,roadAddress:selectedAddress.roadAddress,jibunAddress:selectedAddress.jibunAddress,region:[selectedAddress.sido,selectedAddress.sigungu,selectedAddress.bname].filter(Boolean).join(' '),siteType:getSiteType(),area:getArea()})});
+      var coordinates=await geocodeSelectedAddress();
+      var response=await fetch('/api/solar-check/analyze',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({address:selectedAddress.roadAddress||selectedAddress.jibunAddress,roadAddress:selectedAddress.roadAddress,jibunAddress:selectedAddress.jibunAddress,region:[selectedAddress.sido,selectedAddress.sigungu,selectedAddress.bname].filter(Boolean).join(' '),siteType:getSiteType(),area:getArea(),latitude:coordinates&&coordinates.latitude,longitude:coordinates&&coordinates.longitude})});
       var result=await response.json().catch(function(){return {};});
       if(!response.ok)throw new Error(result.error||'위치정보를 조회하지 못했습니다.');
       renderResult(result,false);
@@ -116,11 +118,33 @@
   async function loadMap(latitude,longitude){
     if(!latitude||!longitude)return;
     try{
-      if(!mapConfig){var response=await fetch('/api/solar-check/config',{headers:{'Accept':'application/json'}});if(response.ok)mapConfig=await response.json();}
-      if(!mapConfig||!mapConfig.kakaoJavaScriptKey)return;
-      if(window.kakao&&window.kakao.maps){drawMap(latitude,longitude);return;}
-      var script=document.createElement('script');script.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey='+encodeURIComponent(mapConfig.kakaoJavaScriptKey);script.onload=function(){window.kakao.maps.load(function(){drawMap(latitude,longitude);});};document.head.appendChild(script);
+      await ensureKakaoSdk();
+      drawMap(latitude,longitude);
     }catch(error){console.warn('지도 표시 준비 실패',error);}
+  }
+  async function ensureKakaoSdk(){
+    if(window.kakao&&window.kakao.maps&&window.kakao.maps.services)return window.kakao;
+    if(kakaoSdkPromise)return kakaoSdkPromise;
+    kakaoSdkPromise=(async function(){
+      if(!mapConfig){var response=await fetch('/api/solar-check/config',{headers:{'Accept':'application/json'}});if(response.ok)mapConfig=await response.json();}
+      if(!mapConfig||!mapConfig.kakaoJavaScriptKey)throw new Error('카카오 지도 키를 확인해 주세요.');
+      await new Promise(function(resolve,reject){var script=document.createElement('script');script.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&libraries=services&appkey='+encodeURIComponent(mapConfig.kakaoJavaScriptKey);script.onload=resolve;script.onerror=function(){reject(new Error('카카오 지도 프로그램을 불러오지 못했습니다.'));};document.head.appendChild(script);});
+      await new Promise(function(resolve){window.kakao.maps.load(resolve);});
+      return window.kakao;
+    })();
+    return kakaoSdkPromise;
+  }
+  async function geocodeSelectedAddress(){
+    try{
+      await ensureKakaoSdk();
+      var geocoder=new window.kakao.maps.services.Geocoder();
+      var queries=[selectedAddress.roadAddress,selectedAddress.jibunAddress].filter(Boolean);
+      for(var i=0;i<queries.length;i++){
+        var result=await new Promise(function(resolve){geocoder.addressSearch(queries[i],function(items,status){resolve(status===window.kakao.maps.services.Status.OK&&items[0]?items[0]:null);});});
+        if(result)return{longitude:Number(result.x),latitude:Number(result.y)};
+      }
+    }catch(error){console.warn('브라우저 주소 좌표변환 실패',error);}
+    return null;
   }
   function drawMap(latitude,longitude){
     var container=document.getElementById('kakaoMap');var fallback=document.getElementById('mapFallback');var position=new window.kakao.maps.LatLng(latitude,longitude);container.style.display='block';fallback.style.display='none';var map=new window.kakao.maps.Map(container,{center:position,level:4});new window.kakao.maps.Marker({map:map,position:position});}

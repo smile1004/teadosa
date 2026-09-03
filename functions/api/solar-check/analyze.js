@@ -11,28 +11,40 @@ export async function onRequestPost(context) {
   const address = String(input.address || '').trim();
   const roadAddress = String(input.roadAddress || '').trim();
   const jibunAddress = String(input.jibunAddress || '').trim();
+  const vworldKey = String(context.env.VWORLD_API_KEY || '').trim();
+  const kakaoRestKey = String(context.env.KAKAO_REST_API_KEY || '').trim();
   if (!address || address.length > 250) return json({ error: '올바른 주소를 선택해 주세요.' }, 400);
-  if (!context.env.VWORLD_API_KEY && !context.env.KAKAO_REST_API_KEY) {
+  const suppliedLatitude = Number(input.latitude);
+  const suppliedLongitude = Number(input.longitude);
+  const hasClientCoordinates = Number.isFinite(suppliedLatitude) && suppliedLatitude >= 32 && suppliedLatitude <= 40 && Number.isFinite(suppliedLongitude) && suppliedLongitude >= 124 && suppliedLongitude <= 132;
+  if (!hasClientCoordinates && !vworldKey && !kakaoRestKey) {
     return json({ error: 'V-World 또는 카카오 REST 인증키가 아직 배포 환경에 연결되지 않았습니다.' }, 503);
   }
 
   const candidates = [...new Set([roadAddress, jibunAddress, address].filter(Boolean))];
   const requestOrigin = new URL(context.request.url).origin;
-  let location = null;
+  let location = hasClientCoordinates ? {
+    latitude: suppliedLatitude,
+    longitude: suppliedLongitude,
+    roadAddress: roadAddress || address,
+    jibunAddress,
+    pnu: null,
+    source: '카카오 지도 주소 좌표변환'
+  } : null;
   let authorizationFailed = false;
-  if (context.env.VWORLD_API_KEY) {
+  if (!location && vworldKey) {
     for (const candidate of candidates) {
       for (const category of ['ROAD', 'PARCEL']) {
-        const result = await searchVworld(candidate, context.env.VWORLD_API_KEY, category, requestOrigin);
+        const result = await searchVworld(candidate, vworldKey, category, requestOrigin);
         if (result.authorizationFailed) authorizationFailed = true;
         if (result.location) { location = result.location; break; }
       }
       if (location) break;
     }
   }
-  if (!location && context.env.KAKAO_REST_API_KEY) {
+  if (!location && kakaoRestKey) {
     for (const candidate of candidates) {
-      const result = await searchKakao(candidate, context.env.KAKAO_REST_API_KEY);
+      const result = await searchKakao(candidate, kakaoRestKey);
       if (result.authorizationFailed) authorizationFailed = true;
       if (result.location) { location = result.location; break; }
     }
