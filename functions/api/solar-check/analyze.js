@@ -104,7 +104,8 @@ async function fetchSetbackReview(location, key, domain) {
     parcelFeatures = await fetchVworldFeatures('LP_PA_CBND_BUBUN', key, domain, null, `POINT(${location.longitude} ${location.latitude})`, 5);
     parcel = parcelFeatures.find((feature) => normalizePnu(feature?.properties?.pnu || feature?.id) === location.pnu) || parcelFeatures[0];
   }
-  if (!parcel?.geometry) return { parcelGeometry: null, setbacks: unavailableSetbacks('필지 경계 조회 실패') };
+  const parcelResolved = Boolean(parcel?.geometry);
+  const reviewGeometry = parcelResolved ? parcel.geometry : { type: 'Point', coordinates: [location.longitude, location.latitude] };
 
   const radius = 1400;
   const latGap = radius / 111320;
@@ -115,20 +116,20 @@ async function fetchSetbackReview(location, key, domain) {
     fetchVworldFeatures('LT_C_UO301', key, domain, null, box, 500)
   ]);
   return {
-    parcelGeometry: parcel.geometry,
+    parcelGeometry: parcelResolved ? parcel.geometry : null,
     setbacks: {
-      road: distanceResult(parcel.geometry, roads, '도로 중심선 기준 참고거리'),
+      road: distanceResult(reviewGeometry, roads, parcelResolved ? '필지 경계→도로 중심선 참고거리' : '주소 중심점→도로 중심선 임시 참고거리'),
       residential: pendingResult('주택 용도·밀집 호수 판정 필요'),
       river: pendingResult('하천구역 경계 데이터 연동 필요'),
       forest: pendingResult('산림 적용 경계와 조례 확인 필요'),
-      heritage: distanceResult(parcel.geometry, heritage, '문화재보호도 경계 기준')
+      heritage: distanceResult(reviewGeometry, heritage, parcelResolved ? '필지 경계→문화재보호도 경계' : '주소 중심점→문화재보호도 임시 참고거리')
     }
   };
 }
 
 async function fetchVworldFeatures(dataId, key, domain, attrFilter, geomFilter, size) {
   const endpoint = new URL('https://api.vworld.kr/req/data');
-  const params = { service: 'data', request: 'GetFeature', data: dataId, key, domain, format: 'json', geometry: 'true', attribute: 'true', crs: 'EPSG:4326', size: String(size || 100), page: '1' };
+  const params = { service: 'data', request: 'GetFeature', version: '2.0', data: dataId, key, domain, format: 'json', geometry: 'true', attribute: 'true', crs: 'EPSG:4326', size: String(size || 100), page: '1' };
   if (attrFilter) params.attrFilter = attrFilter;
   if (geomFilter) params.geomFilter = geomFilter;
   endpoint.search = new URLSearchParams(params).toString();

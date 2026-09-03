@@ -149,7 +149,7 @@
   function renderSetbacks(setbacks){
     var rows=document.querySelectorAll('.setback-rows li');var keys=['road','residential','river','forest','heritage'];var measured=0;
     keys.forEach(function(key,index){var item=setbacks&&setbacks[key];var row=rows[index];if(!row)return;var cells=row.querySelectorAll('span,strong,em');if(cells.length<3)return;var hasDistance=item&&item.distance!==null&&item.distance!==undefined&&item.distance!==''&&Number.isFinite(Number(item.distance));cells[0].textContent=item&&item.note||'원천자료 확인 필요';cells[1].textContent=hasDistance?Number(item.distance).toLocaleString('ko-KR')+'m':'-';cells[2].textContent=item&&item.status||'확인 필요';if(hasDistance)measured+=1;});
-    setText('setbackSummary',measured?measured+'개 항목의 공간 참고거리를 확인했습니다. 조례 기준 판정은 담당자 검수가 필요합니다.':'자동 측정 가능한 공간정보가 없어 담당자 확인이 필요합니다.');
+    setText('setbackSummary',measured?measured+'개 항목의 공간 참고거리를 확인했습니다. 측정 기준과 조례 판정은 상세 내용을 확인해 주세요.':'V-World 공간정보를 조회하지 못했습니다. 인증키의 2D 데이터 API 권한과 등록 도메인을 확인해 주세요.');
   }
   function renderSolar(solar,capacity,isSample){
     var irradiance=document.getElementById('irradianceValue');var annual=document.getElementById('annualSolarValue');var source=document.getElementById('solarSourceValue');var monthly=document.getElementById('monthlyGeneration');
