@@ -22,7 +22,9 @@ export async function onRequestPost(context) {
   }
 
   const candidates = [...new Set([roadAddress, jibunAddress, address].filter(Boolean))];
-  const requestOrigin = new URL(context.request.url).origin;
+  // V-World는 인증키에 등록된 서비스 URL과 domain 값을 문자열 기준으로 비교한다.
+  // 등록 URL(https://teadosa.pages.dev/)과 동일하게 마지막 슬래시를 포함한다.
+  const requestOrigin = `${new URL(context.request.url).origin}/`;
   let location = hasClientCoordinates ? {
     latitude: suppliedLatitude,
     longitude: suppliedLongitude,
@@ -134,7 +136,7 @@ async function fetchVworldFeatures(dataId, key, domain, attrFilter, geomFilter, 
   if (geomFilter) params.geomFilter = geomFilter;
   endpoint.search = new URLSearchParams(params).toString();
   try {
-    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: `${domain}/` } });
+    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: domain } });
     if (!response.ok) return [];
     const payload = await response.json();
     const collection = payload?.response?.result?.featureCollection || payload?.response?.result;
@@ -237,7 +239,7 @@ async function searchVworld(address, key, category, domain) {
     crs: 'EPSG:4326', key, domain
   }).toString();
   try {
-    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: `${domain}/` } });
+    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: domain } });
     if (response.status === 401 || response.status === 403) return { location: null, authorizationFailed: true };
     if (!response.ok) return { location: null, authorizationFailed: false };
     const payload = await response.json();
