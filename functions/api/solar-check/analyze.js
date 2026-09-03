@@ -78,6 +78,9 @@ export async function onRequestPost(context) {
 
   const area = Number(input.area);
   const solar = await fetchSolarClimate(location.latitude, location.longitude);
+  const spatialReview = vworldKey && location.pnu
+    ? await fetchSetbackReview(location, vworldKey, requestOrigin)
+    : { parcelGeometry: null, setbacks: unavailableSetbacks('PNU 또는 V-World 공간정보 키 확인 필요') };
   return json({
     mode: 'live',
     roadAddress: String(roadAddress || location.roadAddress || address),
@@ -87,8 +90,122 @@ export async function onRequestPost(context) {
     area: Number.isFinite(area) && area > 0 && area < 100000000 ? area : null,
     longitude: location.longitude, latitude: location.latitude,
     pnu: location.pnu || null,
-    source: location.source, solar, queriedAt: new Date().toISOString()
+    source: location.source, solar,
+    parcelGeometry: spatialReview.parcelGeometry,
+    setbacks: spatialReview.setbacks,
+    queriedAt: new Date().toISOString()
   });
+}
+
+async function fetchSetbackReview(location, key, domain) {
+  const parcelFeatures = await fetchVworldFeatures('LP_PA_CBND_BUBUN', key, domain, `pnu:=:${location.pnu}`, null, 5);
+  const parcel = parcelFeatures.find((feature) => normalizePnu(feature?.properties?.pnu || feature?.id) === location.pnu) || parcelFeatures[0];
+  if (!parcel?.geometry) return { parcelGeometry: null, setbacks: unavailableSetbacks('필지 경계 조회 실패') };
+
+  const radius = 1400;
+  const latGap = radius / 111320;
+  const lonGap = radius / (111320 * Math.cos(location.latitude * Math.PI / 180));
+  const box = `BOX(${location.longitude - lonGap},${location.latitude - latGap},${location.longitude + lonGap},${location.latitude + latGap})`;
+  const [roads, heritage] = await Promise.all([
+    fetchVworldFeatures('LT_L_SPRD', key, domain, null, box, 1000),
+    fetchVworldFeatures('LT_C_UO301', key, domain, null, box, 500)
+  ]);
+  return {
+    parcelGeometry: parcel.geometry,
+    setbacks: {
+      road: distanceResult(parcel.geometry, roads, '도로 중심선 기준 참고거리'),
+      residential: pendingResult('주택 용도·밀집 호수 판정 필요'),
+      river: pendingResult('하천구역 경계 데이터 연동 필요'),
+      forest: pendingResult('산림 적용 경계와 조례 확인 필요'),
+      heritage: distanceResult(parcel.geometry, heritage, '문화재보호도 경계 기준')
+    }
+  };
+}
+
+async function fetchVworldFeatures(dataId, key, domain, attrFilter, geomFilter, size) {
+  const endpoint = new URL('https://api.vworld.kr/req/data');
+  const params = { service: 'data', request: 'GetFeature', data: dataId, key, domain, format: 'json', geometry: 'true', attribute: 'true', crs: 'EPSG:4326', size: String(size || 100), page: '1' };
+  if (attrFilter) params.attrFilter = attrFilter;
+  if (geomFilter) params.geomFilter = geomFilter;
+  endpoint.search = new URLSearchParams(params).toString();
+  try {
+    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: `${domain}/` } });
+    if (!response.ok) return [];
+    const payload = await response.json();
+    const collection = payload?.response?.result?.featureCollection || payload?.response?.result;
+    return Array.isArray(collection?.features) ? collection.features : [];
+  } catch { return []; }
+}
+
+function unavailableSetbacks(reason) {
+  return { road: pendingResult(reason), residential: pendingResult(reason), river: pendingResult(reason), forest: pendingResult(reason), heritage: pendingResult(reason) };
+}
+
+function pendingResult(note) { return { distance: null, status: '확인 필요', note }; }
+
+function distanceResult(parcelGeometry, features, note) {
+  if (!features.length) return { distance: null, status: '주변 데이터 없음', note };
+  let minimum = Infinity;
+  for (const feature of features) {
+    if (!feature?.geometry) continue;
+    minimum = Math.min(minimum, geometryDistanceMeters(parcelGeometry, feature.geometry));
+  }
+  return Number.isFinite(minimum)
+    ? { distance: Math.round(minimum), status: '거리 확인', note }
+    : pendingResult(`${note} 계산 실패`);
+}
+
+function geometryDistanceMeters(first, second) {
+  const a = geometrySegments(first);
+  const b = geometrySegments(second);
+  if (!a.length || !b.length) return Infinity;
+  const latitude = [...a[0][0], ...b[0][0]][1] || 36;
+  const project = (point) => [point[0] * 111320 * Math.cos(latitude * Math.PI / 180), point[1] * 111320];
+  let min = Infinity;
+  for (const lineA of a) for (const lineB of b) {
+    const p1 = project(lineA[0]); const p2 = project(lineA[1]);
+    const q1 = project(lineB[0]); const q2 = project(lineB[1]);
+    min = Math.min(min, segmentDistance(p1, p2, q1, q2));
+  }
+  return min;
+}
+
+function geometrySegments(geometry) {
+  const lines = [];
+  const visit = (coordinates) => {
+    if (!Array.isArray(coordinates)) return;
+    if (coordinates.length >= 2 && typeof coordinates[0]?.[0] === 'number') {
+      for (let i = 1; i < coordinates.length; i += 1) lines.push([coordinates[i - 1], coordinates[i]]);
+      return;
+    }
+    coordinates.forEach(visit);
+  };
+  if (geometry.type === 'Point') {
+    const p = geometry.coordinates; const tiny = 0.00000001; return [[[p[0] - tiny, p[1]], [p[0] + tiny, p[1]]]];
+  }
+  visit(geometry.coordinates);
+  return lines;
+}
+
+function segmentDistance(a, b, c, d) {
+  if (segmentsIntersect(a, b, c, d)) return 0;
+  return Math.min(pointSegmentDistance(a, c, d), pointSegmentDistance(b, c, d), pointSegmentDistance(c, a, b), pointSegmentDistance(d, a, b));
+}
+
+function pointSegmentDistance(p, a, b) {
+  const dx = b[0] - a[0]; const dy = b[1] - a[1];
+  if (!dx && !dy) return Math.hypot(p[0] - a[0], p[1] - a[1]);
+  const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy)));
+  return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
+}
+
+function segmentsIntersect(a, b, c, d) {
+  const cross = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  const abC = cross(a, b, c); const abD = cross(a, b, d); const cdA = cross(c, d, a); const cdB = cross(c, d, b);
+  const epsilon = 0.000001;
+  const onSegment = (p, q, r) => q[0] >= Math.min(p[0], r[0]) - epsilon && q[0] <= Math.max(p[0], r[0]) + epsilon && q[1] >= Math.min(p[1], r[1]) - epsilon && q[1] <= Math.max(p[1], r[1]) + epsilon;
+  if (((abC > epsilon && abD < -epsilon) || (abC < -epsilon && abD > epsilon)) && ((cdA > epsilon && cdB < -epsilon) || (cdA < -epsilon && cdB > epsilon))) return true;
+  return (Math.abs(abC) <= epsilon && onSegment(a, c, b)) || (Math.abs(abD) <= epsilon && onSegment(a, d, b)) || (Math.abs(cdA) <= epsilon && onSegment(c, a, d)) || (Math.abs(cdB) <= epsilon && onSegment(c, b, d));
 }
 
 async function fetchSolarClimate(latitude, longitude) {

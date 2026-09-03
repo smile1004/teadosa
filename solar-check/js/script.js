@@ -119,7 +119,7 @@
     precheck.href='precheck/apply/index.html?address='+encodeURIComponent(data.roadAddress||data.address||'');
     resultSection.hidden=false;
     resultSection.scrollIntoView({behavior:'smooth',block:'start'});
-    loadMap(data.latitude,data.longitude);
+    loadMap(data.latitude,data.longitude,data.parcelGeometry);
   }
 
   function closePostcode(){postcodeLayer.hidden=true;postcodeContainer.innerHTML='';document.body.classList.remove('postcode-open');addressButton.focus();}
@@ -133,7 +133,7 @@
     if(!isSample){
       ['landCategoryValue','landZoneValue','landRestrictionValue','maxSlopeValue','avgSlopeValue','slopeDirectionValue','elevationValue','buildingUseValue','buildingStructureValue','buildingRoofAreaValue','buildingApprovalValue','buildingHeightValue'].forEach(function(id){setText(id,'추가 연동');});
       setTags('landUseRegionTags',['토지이용계획 API 연동 필요']);setTags('landUseDistrictTags',['공간정보 중첩 분석 필요']);setTags('landUseRestrictionTags',['규제정보 연동 필요']);
-      setText('substationValue','한전 확인 필요');setText('distributionLineValue','한전 확인 필요');setText('gridStatusValue','공개자료 조회 후에도 실제 연계 가능 여부는 한전 검토로 확정됩니다.');return;
+      setText('substationValue','한전 확인 필요');setText('distributionLineValue','한전 확인 필요');setText('gridStatusValue','공개자료 조회 후에도 실제 연계 가능 여부는 한전 검토로 확정됩니다.');renderSetbacks(data.setbacks);return;
     }
     setText('landCategoryValue','대');setText('landZoneValue','중심상업지역');setText('landRestrictionValue','중심상업지역');
     setTags('landUseRegionTags',['중심상업지역','지구단위계획구역','방화지구']);setTags('landUseDistrictTags',['소로1류(폭 10m~12m) 접함','소로3류(폭 8m 미만) 접함','주차장 접함']);setTags('landUseRestrictionTags',['가축사육제한구역']);
@@ -146,6 +146,11 @@
     var bars=document.querySelectorAll('.grid-tier-list .capacity-bar i');[11,4,3].forEach(function(value,index){if(bars[index])bars[index].style.width=value+'%';});
     var rows=document.querySelectorAll('.setback-rows li');var values=[['-','17m','미측정'],['100m','101m','적합'],['-','784m','미측정'],['-','-','미측정'],['100m','961m','적합']];rows.forEach(function(row,index){var spans=row.querySelectorAll('span,strong,em');if(values[index]&&spans.length>=3){spans[0].textContent=values[index][0];spans[1].textContent=values[index][1];spans[2].textContent=values[index][2];}});
   }
+  function renderSetbacks(setbacks){
+    var rows=document.querySelectorAll('.setback-rows li');var keys=['road','residential','river','forest','heritage'];var measured=0;
+    keys.forEach(function(key,index){var item=setbacks&&setbacks[key];var row=rows[index];if(!row)return;var cells=row.querySelectorAll('span,strong,em');if(cells.length<3)return;cells[0].textContent=item&&item.note||'원천자료 확인 필요';cells[1].textContent=item&&Number.isFinite(Number(item.distance))?Number(item.distance).toLocaleString('ko-KR')+'m':'-';cells[2].textContent=item&&item.status||'확인 필요';if(item&&Number.isFinite(Number(item.distance)))measured+=1;});
+    setText('setbackSummary',measured?measured+'개 항목의 공간 참고거리를 확인했습니다. 조례 기준 판정은 담당자 검수가 필요합니다.':'자동 측정 가능한 공간정보가 없어 담당자 확인이 필요합니다.');
+  }
   function renderSolar(solar,capacity,isSample){
     var irradiance=document.getElementById('irradianceValue');var annual=document.getElementById('annualSolarValue');var source=document.getElementById('solarSourceValue');var monthly=document.getElementById('monthlyGeneration');
     if(!solar||!Array.isArray(solar.monthly)){irradiance.textContent=isSample?'약 4.0 kWh/㎡/일':'조회정보 없음';annual.textContent=capacity?document.getElementById('generationValue').textContent:'용량 확인 필요';source.textContent=isSample?'화면 확인용 샘플':'NASA POWER 조회 필요';monthly.innerHTML='<p class="empty-data">월별 일사량을 확인하면 발전량 그래프가 표시됩니다.</p>';return;}
@@ -155,11 +160,11 @@
     monthly.innerHTML=values.map(function(value,index){return '<div><span class="bar" style="height:'+Math.max(8,Math.round(value/max*100))+'%"></span><b>'+String(index+1)+'월</b><small>'+value.toLocaleString('ko-KR')+'</small></div>';}).join('');
   }
 
-  async function loadMap(latitude,longitude){
+  async function loadMap(latitude,longitude,parcelGeometry){
     if(!latitude||!longitude)return;
     try{
       await ensureKakaoSdk();
-      drawMap(latitude,longitude);
+      drawMap(latitude,longitude,parcelGeometry);
     }catch(error){console.warn('지도 표시 준비 실패',error);}
   }
   async function ensureKakaoSdk(){
@@ -186,13 +191,24 @@
     }catch(error){console.warn('브라우저 주소 좌표변환 실패',error);}
     return null;
   }
-  function drawMap(latitude,longitude){
+  function drawMap(latitude,longitude,parcelGeometry){
     var container=document.getElementById('kakaoMap');var fallback=document.getElementById('mapFallback');sitePosition=new window.kakao.maps.LatLng(latitude,longitude);container.style.display='block';fallback.style.display='none';activeMap=new window.kakao.maps.Map(container,{center:sitePosition,level:4});activeMap.setMapTypeId(window.kakao.maps.MapTypeId.HYBRID);new window.kakao.maps.Marker({map:activeMap,position:sitePosition});
     activeMap.addControl(new window.kakao.maps.MapTypeControl(),window.kakao.maps.ControlPosition.TOPRIGHT);
     activeMap.addControl(new window.kakao.maps.ZoomControl(),window.kakao.maps.ControlPosition.RIGHT);
     window.kakao.maps.event.addListener(activeMap,'click',handleMapClick);
     mapTools.hidden=false;
     resetMapTools();
+    drawParcelBoundary(parcelGeometry);
+  }
+  function drawParcelBoundary(geometry){
+    if(!activeMap||!geometry||!window.kakao||!window.kakao.maps)return;
+    var polygons=geometry.type==='MultiPolygon'?geometry.coordinates:geometry.type==='Polygon'?[geometry.coordinates]:[];
+    polygons.forEach(function(polygon){
+      if(!Array.isArray(polygon)||!Array.isArray(polygon[0]))return;
+      var path=polygon[0].map(function(point){return new window.kakao.maps.LatLng(Number(point[1]),Number(point[0]));});
+      if(path.length<3)return;
+      new window.kakao.maps.Polygon({map:activeMap,path:path,strokeWeight:3,strokeColor:'#ef7f1a',strokeOpacity:.95,fillColor:'#ffb56e',fillOpacity:.22});
+    });
   }
   function toggleMeasureTool(tool,button){
     if(!activeMap)return;
