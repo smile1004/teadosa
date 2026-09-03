@@ -4,3 +4,19 @@ body.postcode-open{overflow:hidden}.postcode-layer[hidden]{display:none}.postcod
 /* 주소검색 iframe이 제목 영역과 겹치는 경우에도 검색 결과를 선택할 수 있게 한다. */
 .postcode-head{pointer-events:none}
 .postcode-head button{pointer-events:auto}
+
+/* 결과 지도 도구 */
+.map-box{height:430px!important}
+.map-tools{position:absolute;z-index:5;top:10px;left:10px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;max-width:calc(100% - 150px)}
+.map-tools[hidden],.map-tool-result[hidden]{display:none}
+.map-tools button,.setback-setting{height:34px;border:1px solid #cbd6df;border-radius:6px;background:#fff;color:#23384b;box-shadow:0 2px 7px rgba(15,40,65,.16);font:700 12px/1 Pretendard,"Noto Sans KR","Malgun Gothic",sans-serif}
+.map-tools button{padding:0 11px;cursor:pointer}
+.map-tools button:hover{border-color:#ef7f1a;color:#d5650b}
+.map-tools button.active{border-color:#ef7f1a;background:#ef7f1a;color:#fff}
+.setback-setting{display:none;align-items:center;padding:0 7px;background:#fff}
+.setback-setting.visible{display:flex}
+.setback-setting input{width:48px;border:0;outline:0;background:transparent;text-align:right;font:700 12px/1 inherit;color:#23384b}
+.setback-setting span{margin-left:2px;color:#5e7180}
+.map-tool-result{position:absolute;z-index:5;left:10px;bottom:10px;max-width:calc(100% - 20px);padding:9px 12px;border-radius:7px;background:rgba(9,36,66,.92);box-shadow:0 2px 8px rgba(0,0,0,.22);color:#fff;font-size:12px;font-weight:700;line-height:1.45}
+.map-tool-result strong{color:#ffab5d}
+@media(max-width:700px){.map-box{height:360px!important}.map-tools{right:8px;left:8px;top:8px;max-width:none;gap:4px}.map-tools button{height:32px;padding:0 8px;font-size:11px}.setback-setting{height:32px}.map-tool-result{right:8px;left:8px;bottom:8px;max-width:none}}

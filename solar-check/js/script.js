@@ -13,6 +13,24 @@
   var selectedAddress=null;
   var mapConfig=null;
   var kakaoSdkPromise=null;
+  var activeMap=null;
+  var sitePosition=null;
+  var activeTool=null;
+  var measurePoints=[];
+  var measureOverlays=[];
+  var measureShape=null;
+  var districtVisible=false;
+  var setbackCircle=null;
+  var mapTools=document.getElementById('mapTools');
+  var mapToolResult=document.getElementById('mapToolResult');
+  var districtToggle=document.getElementById('districtToggle');
+  var setbackToggle=document.getElementById('setbackToggle');
+  var setbackMeters=document.getElementById('setbackMeters');
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-map-tool]'),function(button){button.addEventListener('click',function(){toggleMeasureTool(button.dataset.mapTool,button);});});
+  districtToggle.addEventListener('click',toggleDistrict);
+  setbackToggle.addEventListener('click',toggleSetback);
+  setbackMeters.addEventListener('change',function(){if(setbackCircle)drawSetbackCircle();});
 
   addressButton.addEventListener('click',function(){
     if(!window.daum||!window.daum.Postcode){
@@ -126,7 +144,7 @@
     if(window.kakao&&window.kakao.maps&&window.kakao.maps.services)return window.kakao;
     if(kakaoSdkPromise)return kakaoSdkPromise;
     kakaoSdkPromise=(async function(){
-      if(!mapConfig){var response=await fetch('/api/solar-check/config',{headers:{'Accept':'application/json'}});if(response.ok)mapConfig=await response.json();}
+      if(!mapConfig){var response=await fetch('/api/solar-check/config?v=2',{cache:'no-store',headers:{'Accept':'application/json'}});if(response.ok)mapConfig=await response.json();}
       if(!mapConfig||!mapConfig.kakaoJavaScriptKey)throw new Error('카카오 지도 키를 확인해 주세요.');
       await new Promise(function(resolve,reject){var script=document.createElement('script');script.src='https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&libraries=services&appkey='+encodeURIComponent(mapConfig.kakaoJavaScriptKey);script.onload=resolve;script.onerror=function(){reject(new Error('카카오 지도 프로그램을 불러오지 못했습니다.'));};document.head.appendChild(script);});
       await new Promise(function(resolve){window.kakao.maps.load(resolve);});
@@ -147,5 +165,65 @@
     return null;
   }
   function drawMap(latitude,longitude){
-    var container=document.getElementById('kakaoMap');var fallback=document.getElementById('mapFallback');var position=new window.kakao.maps.LatLng(latitude,longitude);container.style.display='block';fallback.style.display='none';var map=new window.kakao.maps.Map(container,{center:position,level:4});new window.kakao.maps.Marker({map:map,position:position});}
+    var container=document.getElementById('kakaoMap');var fallback=document.getElementById('mapFallback');sitePosition=new window.kakao.maps.LatLng(latitude,longitude);container.style.display='block';fallback.style.display='none';activeMap=new window.kakao.maps.Map(container,{center:sitePosition,level:4});new window.kakao.maps.Marker({map:activeMap,position:sitePosition});
+    activeMap.addControl(new window.kakao.maps.MapTypeControl(),window.kakao.maps.ControlPosition.TOPRIGHT);
+    activeMap.addControl(new window.kakao.maps.ZoomControl(),window.kakao.maps.ControlPosition.RIGHT);
+    window.kakao.maps.event.addListener(activeMap,'click',handleMapClick);
+    mapTools.hidden=false;
+    resetMapTools();
+  }
+  function toggleMeasureTool(tool,button){
+    if(!activeMap)return;
+    var turningOff=activeTool===tool;
+    clearMeasurement();
+    activeTool=turningOff?null:tool;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-map-tool]'),function(item){item.classList.toggle('active',item===button&&!turningOff);});
+    if(activeTool==='distance')showMapResult('지도에서 지점을 차례로 클릭하면 <strong>누적 거리</strong>가 계산됩니다.');
+    else if(activeTool==='area')showMapResult('지도에서 경계점을 3개 이상 클릭하면 <strong>면적</strong>이 계산됩니다.');
+    else hideMapResult();
+  }
+  function handleMapClick(event){
+    if(!activeTool)return;
+    measurePoints.push(event.latLng);
+    var dot=new window.kakao.maps.Circle({map:activeMap,center:event.latLng,radius:1.8,strokeWeight:2,strokeColor:'#ffffff',strokeOpacity:1,fillColor:'#ef7f1a',fillOpacity:1});
+    measureOverlays.push(dot);
+    if(activeTool==='distance')drawDistance();
+    if(activeTool==='area')drawArea();
+  }
+  function drawDistance(){
+    if(measureShape)measureShape.setMap(null);
+    var line=new window.kakao.maps.Polyline({map:activeMap,path:measurePoints,strokeWeight:4,strokeColor:'#ef7f1a',strokeOpacity:.95,strokeStyle:'solid'});
+    measureShape=line;
+    var length=line.getLength();
+    showMapResult(measurePoints.length<2?'다음 지점을 클릭해 주세요.':'누적 거리 <strong>'+formatDistance(length)+'</strong> · 계속 클릭하면 거리가 이어집니다.');
+  }
+  function drawArea(){
+    if(measureShape)measureShape.setMap(null);
+    var polygon=new window.kakao.maps.Polygon({map:activeMap,path:measurePoints,strokeWeight:3,strokeColor:'#ef7f1a',strokeOpacity:.95,fillColor:'#ff9c43',fillOpacity:.25});
+    measureShape=polygon;
+    if(measurePoints.length<3)showMapResult('경계점을 '+(3-measurePoints.length)+'개 더 클릭해 주세요.');
+    else{var area=polygon.getArea();showMapResult('측정 면적 <strong>'+Math.round(area).toLocaleString('ko-KR')+'㎡</strong> · 약 '+Math.round(area/3.3058).toLocaleString('ko-KR')+'평');}
+  }
+  function toggleDistrict(){
+    if(!activeMap)return;
+    districtVisible=!districtVisible;
+    if(districtVisible)activeMap.addOverlayMapTypeId(window.kakao.maps.MapTypeId.USE_DISTRICT);else activeMap.removeOverlayMapTypeId(window.kakao.maps.MapTypeId.USE_DISTRICT);
+    districtToggle.textContent='지적도 '+(districtVisible?'ON':'OFF');districtToggle.classList.toggle('active',districtVisible);
+  }
+  function toggleSetback(){
+    if(!activeMap||!sitePosition)return;
+    if(setbackCircle){setbackCircle.setMap(null);setbackCircle=null;setbackToggle.textContent='이격거리 OFF';setbackToggle.classList.remove('active');document.querySelector('.setback-setting').classList.remove('visible');hideMapResult();return;}
+    setbackToggle.classList.add('active');document.querySelector('.setback-setting').classList.add('visible');drawSetbackCircle();
+  }
+  function drawSetbackCircle(){
+    if(setbackCircle)setbackCircle.setMap(null);
+    var radius=Math.max(10,Math.min(5000,Number(setbackMeters.value)||100));setbackMeters.value=radius;
+    setbackCircle=new window.kakao.maps.Circle({map:activeMap,center:sitePosition,radius:radius,strokeWeight:3,strokeColor:'#d55416',strokeOpacity:.95,strokeStyle:'dash',fillColor:'#ef7f1a',fillOpacity:.14});
+    setbackToggle.textContent='이격거리 ON';showMapResult('사업지 중심에서 <strong>'+radius.toLocaleString('ko-KR')+'m</strong> 반경을 표시했습니다. 거리값을 변경하면 다시 그려집니다.');
+  }
+  function clearMeasurement(){measureOverlays.forEach(function(overlay){overlay.setMap(null);});if(measureShape)measureShape.setMap(null);measureShape=null;measureOverlays=[];measurePoints=[];}
+  function resetMapTools(){clearMeasurement();activeTool=null;document.querySelectorAll('[data-map-tool]').forEach(function(item){item.classList.remove('active');});if(setbackCircle)setbackCircle.setMap(null);setbackCircle=null;districtVisible=false;districtToggle.textContent='지적도 OFF';districtToggle.classList.remove('active');setbackToggle.textContent='이격거리 OFF';setbackToggle.classList.remove('active');document.querySelector('.setback-setting').classList.remove('visible');hideMapResult();}
+  function showMapResult(html){mapToolResult.innerHTML=html;mapToolResult.hidden=false;}
+  function hideMapResult(){mapToolResult.hidden=true;mapToolResult.textContent='';}
+  function formatDistance(value){return value>=1000?(value/1000).toFixed(2)+'km':Math.round(value).toLocaleString('ko-KR')+'m';}
 })();
