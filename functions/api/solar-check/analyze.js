@@ -9,22 +9,44 @@ export async function onRequestPost(context) {
   catch { return json({ error: '요청 내용을 확인할 수 없습니다.' }, 400); }
 
   const address = String(input.address || '').trim();
+  const roadAddress = String(input.roadAddress || '').trim();
+  const jibunAddress = String(input.jibunAddress || '').trim();
   if (!address || address.length > 250) return json({ error: '올바른 주소를 선택해 주세요.' }, 400);
   if (!context.env.VWORLD_API_KEY && !context.env.KAKAO_REST_API_KEY) {
     return json({ error: 'V-World 또는 카카오 REST 인증키가 아직 배포 환경에 연결되지 않았습니다.' }, 503);
   }
 
+  const candidates = [...new Set([roadAddress, jibunAddress, address].filter(Boolean))];
   let location = null;
-  if (context.env.VWORLD_API_KEY) location = await searchVworld(address, context.env.VWORLD_API_KEY);
-  if (!location && context.env.KAKAO_REST_API_KEY) location = await searchKakao(address, context.env.KAKAO_REST_API_KEY);
-  if (!location) return json({ error: '선택한 주소의 위치를 찾지 못했습니다. 지번주소로 다시 확인해 주세요.' }, 404);
+  let authorizationFailed = false;
+  if (context.env.VWORLD_API_KEY) {
+    for (const candidate of candidates) {
+      for (const category of ['road', 'parcel']) {
+        const result = await searchVworld(candidate, context.env.VWORLD_API_KEY, category);
+        if (result.authorizationFailed) authorizationFailed = true;
+        if (result.location) { location = result.location; break; }
+      }
+      if (location) break;
+    }
+  }
+  if (!location && context.env.KAKAO_REST_API_KEY) {
+    for (const candidate of candidates) {
+      const result = await searchKakao(candidate, context.env.KAKAO_REST_API_KEY);
+      if (result.authorizationFailed) authorizationFailed = true;
+      if (result.location) { location = result.location; break; }
+    }
+  }
+  if (!location && authorizationFailed) {
+    return json({ error: '주소 API 인증이 거부되었습니다. 등록한 키의 종류와 허용 도메인을 확인해 주세요.' }, 503);
+  }
+  if (!location) return json({ error: '선택한 주소의 위치를 찾지 못했습니다. 도로명과 지번주소를 모두 조회했지만 결과가 없습니다.' }, 404);
 
   const area = Number(input.area);
   const solar = await fetchSolarClimate(location.latitude, location.longitude);
   return json({
     mode: 'live',
-    roadAddress: String(input.roadAddress || location.roadAddress || address),
-    jibunAddress: String(input.jibunAddress || location.jibunAddress || ''),
+    roadAddress: String(roadAddress || location.roadAddress || address),
+    jibunAddress: String(jibunAddress || location.jibunAddress || ''),
     region: String(input.region || '').slice(0, 100),
     siteType: ['roof', 'land', 'unknown'].includes(input.siteType) ? input.siteType : 'unknown',
     area: Number.isFinite(area) && area > 0 && area < 100000000 ? area : null,
@@ -50,26 +72,28 @@ async function fetchSolarClimate(latitude, longitude) {
   } catch { return null; }
 }
 
-async function searchVworld(address, key) {
+async function searchVworld(address, key, category) {
   const endpoint = new URL('https://api.vworld.kr/req/search');
   endpoint.search = new URLSearchParams({
     service: 'search', request: 'search', version: '2.0', size: '5', page: '1',
-    query: address, type: 'address', category: 'road', format: 'json',
+    query: address, type: 'address', category, format: 'json',
     crs: 'EPSG:4326', key
   }).toString();
   try {
     const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json' } });
-    if (!response.ok) return null;
+    if (response.status === 401 || response.status === 403) return { location: null, authorizationFailed: true };
+    if (!response.ok) return { location: null, authorizationFailed: false };
     const payload = await response.json();
     const item = payload?.response?.result?.items?.[0];
-    if (!item?.point) return null;
-    return {
+    const apiError = String(payload?.response?.status || '').toUpperCase() === 'ERROR';
+    if (!item?.point) return { location: null, authorizationFailed: apiError && /KEY|AUTH|DOMAIN/i.test(JSON.stringify(payload?.response?.error || {})) };
+    return { authorizationFailed: false, location: {
       longitude: Number(item.point.x), latitude: Number(item.point.y),
       roadAddress: item.address?.road || address,
       jibunAddress: item.address?.parcel || '',
       pnu: normalizePnu(item.id), source: 'V-World 주소검색 API'
-    };
-  } catch { return null; }
+    }};
+  } catch { return { location: null, authorizationFailed: false }; }
 }
 
 async function searchKakao(address, key) {
@@ -79,17 +103,18 @@ async function searchKakao(address, key) {
     const response = await fetch(endpoint.toString(), {
       headers: { Accept: 'application/json', Authorization: `KakaoAK ${key}` }
     });
-    if (!response.ok) return null;
+    if (response.status === 401 || response.status === 403) return { location: null, authorizationFailed: true };
+    if (!response.ok) return { location: null, authorizationFailed: false };
     const payload = await response.json();
     const item = payload?.documents?.[0];
-    if (!item) return null;
-    return {
+    if (!item) return { location: null, authorizationFailed: false };
+    return { authorizationFailed: false, location: {
       longitude: Number(item.x), latitude: Number(item.y),
       roadAddress: item.road_address?.address_name || address,
       jibunAddress: item.address?.address_name || '',
       pnu: createPnu(item.address), source: '카카오 주소검색 API (V-World 자동 대체)'
-    };
-  } catch { return null; }
+    }};
+  } catch { return { location: null, authorizationFailed: false }; }
 }
 
 function normalizePnu(value) {
