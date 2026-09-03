@@ -165,7 +165,7 @@
     return null;
   }
   function drawMap(latitude,longitude){
-    var container=document.getElementById('kakaoMap');var fallback=document.getElementById('mapFallback');sitePosition=new window.kakao.maps.LatLng(latitude,longitude);container.style.display='block';fallback.style.display='none';activeMap=new window.kakao.maps.Map(container,{center:sitePosition,level:4});new window.kakao.maps.Marker({map:activeMap,position:sitePosition});
+    var container=document.getElementById('kakaoMap');var fallback=document.getElementById('mapFallback');sitePosition=new window.kakao.maps.LatLng(latitude,longitude);container.style.display='block';fallback.style.display='none';activeMap=new window.kakao.maps.Map(container,{center:sitePosition,level:4});activeMap.setMapTypeId(window.kakao.maps.MapTypeId.HYBRID);new window.kakao.maps.Marker({map:activeMap,position:sitePosition});
     activeMap.addControl(new window.kakao.maps.MapTypeControl(),window.kakao.maps.ControlPosition.TOPRIGHT);
     activeMap.addControl(new window.kakao.maps.ZoomControl(),window.kakao.maps.ControlPosition.RIGHT);
     window.kakao.maps.event.addListener(activeMap,'click',handleMapClick);
