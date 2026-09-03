@@ -136,7 +136,7 @@ async function fetchVworldFeatures(dataId, key, domain, attrFilter, geomFilter, 
   if (geomFilter) params.geomFilter = geomFilter;
   endpoint.search = new URLSearchParams(params).toString();
   try {
-    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: domain } });
+    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json' } });
     if (!response.ok) return [];
     const payload = await response.json();
     const collection = payload?.response?.result?.featureCollection || payload?.response?.result;
@@ -239,7 +239,7 @@ async function searchVworld(address, key, category, domain) {
     crs: 'EPSG:4326', key, domain
   }).toString();
   try {
-    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: domain } });
+    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json' } });
     if (response.status === 401 || response.status === 403) return { location: null, authorizationFailed: true };
     if (!response.ok) return { location: null, authorizationFailed: false };
     const payload = await response.json();
