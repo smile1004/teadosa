@@ -32,6 +32,28 @@ export async function onRequestPost(context) {
     source: '카카오 지도 주소 좌표변환'
   } : null;
   let authorizationFailed = false;
+  // 브라우저의 카카오 지도 SDK가 좌표를 먼저 찾았더라도 PNU는 별도 주소 API로 보완한다.
+  // 좌표만 성공했다고 서버 검색을 건너뛰면 화면에는 계속 "지번 확인 필요"가 표시된다.
+  if (location && !location.pnu && vworldKey) {
+    for (const candidate of candidates) {
+      const result = await searchVworld(candidate, vworldKey, 'PARCEL', requestOrigin);
+      if (result.authorizationFailed) authorizationFailed = true;
+      if (result.location?.pnu) {
+        location = mergeParcelLocation(location, result.location, '카카오 지도 좌표변환 + V-World 필지검색');
+        break;
+      }
+    }
+  }
+  if (location && !location.pnu && kakaoRestKey) {
+    for (const candidate of candidates) {
+      const result = await searchKakao(candidate, kakaoRestKey);
+      if (result.authorizationFailed) authorizationFailed = true;
+      if (result.location?.pnu) {
+        location = mergeParcelLocation(location, result.location, '카카오 지도 좌표변환 + 카카오 지번검색');
+        break;
+      }
+    }
+  }
   if (!location && vworldKey) {
     for (const candidate of candidates) {
       for (const category of ['ROAD', 'PARCEL']) {
@@ -133,6 +155,16 @@ async function searchKakao(address, key) {
 function normalizePnu(value) {
   const digits = String(value || '').replace(/\D/g, '');
   return digits.length === 19 ? digits : null;
+}
+
+function mergeParcelLocation(base, parcel, source) {
+  return {
+    ...base,
+    roadAddress: base.roadAddress || parcel.roadAddress || '',
+    jibunAddress: base.jibunAddress || parcel.jibunAddress || '',
+    pnu: parcel.pnu,
+    source
+  };
 }
 
 function createPnu(parcel) {
