@@ -26,6 +26,7 @@
   var districtToggle=document.getElementById('districtToggle');
   var setbackToggle=document.getElementById('setbackToggle');
   var setbackMeters=document.getElementById('setbackMeters');
+  var vworldBrowserKey='01BB25F3-74B3-4781-B43C-6F38B9D90208';
 
   Array.prototype.forEach.call(document.querySelectorAll('[data-map-tool]'),function(button){button.addEventListener('click',function(){toggleMeasureTool(button.dataset.mapTool,button);});});
   districtToggle.addEventListener('click',toggleDistrict);
@@ -119,8 +120,28 @@
     precheck.href='precheck/apply/index.html?address='+encodeURIComponent(data.roadAddress||data.address||'');
     resultSection.hidden=false;
     resultSection.scrollIntoView({behavior:'smooth',block:'start'});
-    loadMap(data.latitude,data.longitude,data.parcelGeometry);
+    loadMap(data.latitude,data.longitude,data.parcelGeometry).then(function(){if(!isSample&&!hasMeasuredSetback(data.setbacks))loadBrowserSpatialReview(data);});
   }
+
+  function hasMeasuredSetback(setbacks){return setbacks&&Object.keys(setbacks).some(function(key){var distance=setbacks[key]&&setbacks[key].distance;return distance!==null&&distance!==undefined&&distance!==''&&Number.isFinite(Number(distance));});}
+  async function loadBrowserSpatialReview(data){
+    if(window.location.origin!=='https://teadosa.pages.dev')return;
+    try{
+      setText('setbackSummary','V-World에서 필지와 주변 공간정보를 확인하고 있습니다.');
+      var parcelResponse=await requestVworldBrowser({data:'LP_PA_CBND_BUBUN',attrFilter:'pnu:=:'+data.pnu,size:'5'});var parcelFeatures=vworldFeatures(parcelResponse);var parcel=parcelFeatures[0];
+      if(!parcel||!parcel.geometry){parcelResponse=await requestVworldBrowser({data:'LP_PA_CBND_BUBUN',geomFilter:'POINT('+data.longitude+' '+data.latitude+')',size:'5'});parcelFeatures=vworldFeatures(parcelResponse);parcel=parcelFeatures[0];}
+      var parcelGeometry=parcel&&parcel.geometry;if(!parcelGeometry)throw new Error('필지 경계를 찾지 못했습니다.');
+      var radius=1400,latitude=Number(data.latitude),longitude=Number(data.longitude),latGap=radius/111320,lonGap=radius/(111320*Math.cos(latitude*Math.PI/180));var box='BOX('+(longitude-lonGap)+','+(latitude-latGap)+','+(longitude+lonGap)+','+(latitude+latGap)+')';
+      var responses=await Promise.all([requestVworldBrowser({data:'LT_L_SPRD',geomFilter:box,size:'1000'}),requestVworldBrowser({data:'LT_C_UO301',geomFilter:box,size:'500'})]);var roads=nearestBrowserFeatures(parcelGeometry,vworldFeatures(responses[0]),2);var heritage=nearestBrowserFeatures(parcelGeometry,vworldFeatures(responses[1]),1)[0];
+      var result={road:roads[0]||{distance:null,status:'주변 데이터 없음',note:'주변 도로 없음'},smallRoad:roads[1]||{distance:null,status:'주변 데이터 없음',note:'두 번째 인근 도로 없음'},residential:{distance:null,status:'확인 필요',note:'주택 용도·밀집 호수 판정 필요'},river:{distance:null,status:'확인 필요',note:'하천구역 경계 데이터 연동 필요'},forest:{distance:null,status:'확인 필요',note:'산림 적용 경계와 조례 확인 필요'},heritage:heritage||{distance:null,status:'주변 데이터 없음',note:'주변 문화재보호도 없음'}};
+      renderSetbacks(result);drawParcelBoundary(parcelGeometry);
+    }catch(error){setText('setbackSummary','V-World 브라우저 조회에 실패했습니다: '+error.message);}
+  }
+  function requestVworldBrowser(options){return new Promise(function(resolve,reject){var callback='teadosaVworld_'+Date.now()+'_'+Math.floor(Math.random()*10000),script=document.createElement('script'),timer=setTimeout(function(){finish();reject(new Error('응답 시간 초과'));},15000);function finish(){clearTimeout(timer);delete window[callback];if(script.parentNode)script.parentNode.removeChild(script);}window[callback]=function(payload){finish();resolve(payload);};var params=new URLSearchParams({service:'data',request:'GetFeature',version:'2.0',key:vworldBrowserKey,domain:'https://teadosa.pages.dev/',format:'json',geometry:'true',attribute:'true',crs:'EPSG:4326',page:'1',size:options.size||'100',callback:callback,data:options.data});if(options.attrFilter)params.set('attrFilter',options.attrFilter);if(options.geomFilter)params.set('geomFilter',options.geomFilter);script.src='https://api.vworld.kr/req/data?'+params.toString();script.onerror=function(){finish();reject(new Error('API 연결 실패'));};document.head.appendChild(script);});}
+  function vworldFeatures(payload){var collection=payload&&payload.response&&payload.response.result&&payload.response.result.featureCollection;return collection&&Array.isArray(collection.features)?collection.features:[];}
+  function nearestBrowserFeatures(parcel,features,count){return features.map(function(feature){return{distance:feature&&feature.geometry?browserGeometryDistance(parcel,feature.geometry):Infinity,name:feature&&feature.properties&&(feature.properties.rn||feature.properties.name||feature.properties.full_nm)||''};}).filter(function(item){return Number.isFinite(item.distance);}).sort(function(a,b){return a.distance-b.distance;}).slice(0,count).map(function(item){return{distance:Math.round(item.distance),status:'거리 확인',note:'필지 경계 기준 참고거리',name:item.name||'명칭 확인 필요'};});}
+  function browserGeometryDistance(first,second){var a=browserSegments(first),b=browserSegments(second),minimum=Infinity,latitude=a.length?a[0][0][1]:36,cos=Math.cos(latitude*Math.PI/180);function project(p){return[p[0]*111320*cos,p[1]*111320];}function pointLine(p,a,b){p=project(p);a=project(a);b=project(b);var dx=b[0]-a[0],dy=b[1]-a[1],t=dx||dy?Math.max(0,Math.min(1,((p[0]-a[0])*dx+(p[1]-a[1])*dy)/(dx*dx+dy*dy))):0;return Math.hypot(p[0]-(a[0]+t*dx),p[1]-(a[1]+t*dy));}a.forEach(function(x){b.forEach(function(y){minimum=Math.min(minimum,pointLine(x[0],y[0],y[1]),pointLine(x[1],y[0],y[1]),pointLine(y[0],x[0],x[1]),pointLine(y[1],x[0],x[1]));});});return minimum;}
+  function browserSegments(geometry){var result=[];function visit(value){if(!Array.isArray(value))return;if(value.length>1&&value[0]&&typeof value[0][0]==='number'){for(var i=1;i<value.length;i++)result.push([value[i-1],value[i]]);return;}value.forEach(visit);}visit(geometry.coordinates);return result;}
 
   function closePostcode(){postcodeLayer.hidden=true;postcodeContainer.innerHTML='';document.body.classList.remove('postcode-open');addressButton.focus();}
   function sampleSolar(){var values=[2.75,3.35,4.15,4.85,5.05,4.72,4.08,4.21,4.02,3.72,2.91,2.52];var days=[31,28.25,31,30,31,30,31,31,30,31,30,31];return{averageDaily:3.86,source:'화면 확인용 일사량 샘플',monthly:values.map(function(value,index){return{month:index+1,irradiance:value,days:days[index]};})};}
