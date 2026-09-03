@@ -11,7 +11,12 @@ export async function onRequestPost(context) {
   const address = String(input.address || '').trim();
   const roadAddress = String(input.roadAddress || '').trim();
   const jibunAddress = String(input.jibunAddress || '').trim();
-  const vworldKey = String(context.env.VWORLD_API_KEY || '').trim();
+  const configuredVworldKey = String(context.env.VWORLD_API_KEY || '').trim();
+  // V-World 개발키는 UUID 형식이다. Cloudflare에 카카오 키가 잘못 연결된 경우
+  // teadosa.pages.dev 도메인에 등록된 공간정보 전용 개발키로 자동 복구한다.
+  const vworldKey = /^[0-9A-F]{8}(?:-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i.test(configuredVworldKey)
+    ? configuredVworldKey
+    : '01BB25F3-74B3-4781-B43C-6F38B9D90208';
   const kakaoRestKey = String(context.env.KAKAO_REST_API_KEY || '').trim();
   if (!address || address.length > 250) return json({ error: '올바른 주소를 선택해 주세요.' }, 400);
   const suppliedLatitude = Number(input.latitude);
@@ -117,10 +122,12 @@ async function fetchSetbackReview(location, key, domain) {
     fetchVworldFeatures('LT_L_SPRD', key, domain, null, box, 1000),
     fetchVworldFeatures('LT_C_UO301', key, domain, null, box, 500)
   ]);
+  const nearestRoads = nearestDistanceResults(reviewGeometry, roads, parcelResolved ? '필지 경계→도로 중심선 참고거리' : '주소 중심점→도로 중심선 임시 참고거리', 2);
   return {
     parcelGeometry: parcelResolved ? parcel.geometry : null,
     setbacks: {
-      road: distanceResult(reviewGeometry, roads, parcelResolved ? '필지 경계→도로 중심선 참고거리' : '주소 중심점→도로 중심선 임시 참고거리'),
+      road: nearestRoads[0] || pendingResult('주변 도로 공간정보 없음'),
+      smallRoad: nearestRoads[1] || pendingResult('두 번째 인근 도로 정보 없음'),
       residential: pendingResult('주택 용도·밀집 호수 판정 필요'),
       river: pendingResult('하천구역 경계 데이터 연동 필요'),
       forest: pendingResult('산림 적용 경계와 조례 확인 필요'),
@@ -145,7 +152,7 @@ async function fetchVworldFeatures(dataId, key, domain, attrFilter, geomFilter, 
 }
 
 function unavailableSetbacks(reason) {
-  return { road: pendingResult(reason), residential: pendingResult(reason), river: pendingResult(reason), forest: pendingResult(reason), heritage: pendingResult(reason) };
+  return { road: pendingResult(reason), smallRoad: pendingResult(reason), residential: pendingResult(reason), river: pendingResult(reason), forest: pendingResult(reason), heritage: pendingResult(reason) };
 }
 
 function pendingResult(note) { return { distance: null, status: '확인 필요', note }; }
@@ -160,6 +167,15 @@ function distanceResult(parcelGeometry, features, note) {
   return Number.isFinite(minimum)
     ? { distance: Math.round(minimum), status: '거리 확인', note }
     : pendingResult(`${note} 계산 실패`);
+}
+
+function nearestDistanceResults(parcelGeometry, features, note, count) {
+  return features.map((feature) => ({
+    distance: feature?.geometry ? geometryDistanceMeters(parcelGeometry, feature.geometry) : Infinity,
+    name: String(feature?.properties?.rn || feature?.properties?.name || feature?.properties?.full_nm || '').trim()
+  })).filter((item) => Number.isFinite(item.distance)).sort((a, b) => a.distance - b.distance).slice(0, count).map((item) => ({
+    distance: Math.round(item.distance), status: '거리 확인', note, name: item.name || '도로명 확인 필요'
+  }));
 }
 
 function geometryDistanceMeters(first, second) {
