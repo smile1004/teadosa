@@ -9,8 +9,6 @@
   const existingUserBlock = document.getElementById('existingUserBlock');
   const newUserBlock = document.getElementById('newUserBlock');
   const siteAddressSearch = document.getElementById('siteAddressSearch');
-  const businessRegInput = document.getElementById('businessRegNumber');
-  const businessRegRequired = document.getElementById('businessRegRequired');
 
   if (!form) return;
 
@@ -18,8 +16,8 @@
 
   async function init(){
     updateNoteCount();
-    bindApplicantType();
     bindUserType();
+    bindFileNameDisplay();
     bindAddressSearch(siteAddressSearch, 'siteAddress');
     await tryFillFromSession();
   }
@@ -46,19 +44,6 @@
     } else {
       setRadio('applicantType','personal');
     }
-    updateApplicantTypeFields();
-  }
-
-  function bindApplicantType(){
-    document.querySelectorAll('input[name="applicantType"]').forEach(function(el){
-      el.addEventListener('change', updateApplicantTypeFields);
-    });
-  }
-
-  function updateApplicantTypeFields(){
-    const isBusiness = radioValue('applicantType') === 'business';
-    if (businessRegRequired) businessRegRequired.hidden = !isBusiness;
-    if (businessRegInput) { if (isBusiness) businessRegInput.setAttribute('required',''); else businessRegInput.removeAttribute('required'); }
   }
 
   function bindUserType(){
@@ -71,6 +56,16 @@
     const type = radioValue('userType');
     if (existingUserBlock) existingUserBlock.hidden = type !== 'existing';
     if (newUserBlock) newUserBlock.hidden = type !== 'new';
+  }
+
+  function bindFileNameDisplay(){
+    document.querySelectorAll('.upload-box input[type="file"]').forEach(function(input){
+      const label = document.getElementById(input.id + '-name');
+      if (!label) return;
+      input.addEventListener('change', function(){
+        label.textContent = input.files && input.files[0] ? input.files[0].name : 'PDF, JPG, PNG 파일을 첨부해 주세요.';
+      });
+    });
   }
 
   function bindAddressSearch(button, inputId){
@@ -92,54 +87,19 @@
 
   note && note.addEventListener('input', updateNoteCount);
 
-  form.addEventListener('submit', async function(event){
+  form.addEventListener('submit', function(event){
     event.preventDefault();
     clearMessage();
     if (!form.reportValidity()) return;
     if (!radioValue('userType')){
-      showMessage('태도사 서비스 이용 구분을 선택해 주세요.','error');
+      showMessage('이용자 구분(기존 이용자 / 신규 이용자)을 선택해 주세요.','error');
       return;
     }
-    if (!auth || !auth.createPpaRequest) {
-      showMessage('신청 서비스를 불러오지 못했습니다. 페이지를 새로고침해 주세요.','error');
-      return;
-    }
-
-    const payload = {
-      formVersion: 'PPA_APPLY_V2',
-      applicantType: radioValue('applicantType'),
-      applicantName: valueOf('applicantName'),
-      applicantPhone: valueOf('applicantPhone'),
-      applicantEmail: valueOf('applicantEmail'),
-      businessRegNumber: valueOf('businessRegNumber'),
-      siteAddress: valueOf('siteAddress'),
-      licenseNumber: valueOf('licenseNumber'),
-      capacity: valueOf('capacity'),
-      userType: radioValue('userType'),
-      requestNote: valueOf('requestNote'),
-      privacyConsent: document.getElementById('privacyConsent').checked,
-      applicationConfirmed: document.getElementById('applicationConfirmation').checked
-    };
-
-    const submitButton = form.querySelector('.submit-btn');
-    if (submitButton) { submitButton.disabled = true; submitButton.textContent = '신청 접수 중...'; }
-
-    try {
-      const outcome = await auth.createPpaRequest(payload);
-      const result = outcome.result || {};
-      if (!outcome.response.ok || !result.success) throw new Error(result.message || '신청을 접수하지 못했습니다.');
-
-      showMessage((result.request && result.request.requestNo ? result.request.requestNo + '번으로 ' : '') + '신청이 접수되었습니다. 담당자가 확인 후 순차적으로 연락드리겠습니다.','info');
-      form.querySelectorAll('input,textarea,button').forEach(function(el){ el.disabled = true; });
-    } catch (error) {
-      showMessage(error.message || '신청 접수 중 오류가 발생했습니다.','error');
-      if (submitButton) { submitButton.disabled = false; submitButton.textContent = '한전PPA 접수 신청하기'; }
-    }
+    showMessage('신청정보를 확인했습니다. 실제 접수 연동은 관리자 신청 API 연결 후 활성화됩니다.','info');
   });
 
   function updateNoteCount(){ if (note && noteCount) noteCount.textContent = note.value.length.toLocaleString('ko-KR') + ' / 1,500'; }
   function setValue(id,value){ const el=document.getElementById(id); if(el) el.value=value; }
-  function valueOf(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
   function radioValue(name){ const el=document.querySelector('input[name="'+name+'"]:checked'); return el ? el.value : ''; }
   function setRadio(name,value){ const el=document.querySelector('input[name="'+name+'"][value="'+value+'"]'); if(el) el.checked=true; }
   function formatPhone(value){ const d=String(value||'').replace(/\D/g,'').slice(0,11); if(d.length<4)return d; if(d.length<8)return d.slice(0,3)+'-'+d.slice(3); return d.slice(0,3)+'-'+d.slice(3,d.length===10?6:7)+'-'+d.slice(d.length===10?6:7); }

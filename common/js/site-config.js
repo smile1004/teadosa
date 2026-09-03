@@ -19,7 +19,7 @@
       services: 'start/index.html#services',
       generationLicense: 'start/license/index.html',
       enterprise: 'index.html#enterprise-services',
-      materials: 'index.html#materials',
+      materials: 'solar-check/index.html',
       plantListings: 'index.html#plant-listings',
       reviews: 'reviews/index.html',
       sitemap: 'sitemap/index.html',
