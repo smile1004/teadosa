@@ -17,7 +17,6 @@
   async function init(){
     updateNoteCount();
     bindUserType();
-    bindFileNameDisplay();
     bindAddressSearch(siteAddressSearch, 'siteAddress');
     await tryFillFromSession();
   }
@@ -56,16 +55,6 @@
     const type = radioValue('userType');
     if (existingUserBlock) existingUserBlock.hidden = type !== 'existing';
     if (newUserBlock) newUserBlock.hidden = type !== 'new';
-  }
-
-  function bindFileNameDisplay(){
-    document.querySelectorAll('.upload-box input[type="file"]').forEach(function(input){
-      const label = document.getElementById(input.id + '-name');
-      if (!label) return;
-      input.addEventListener('change', function(){
-        label.textContent = input.files && input.files[0] ? input.files[0].name : 'PDF, JPG, PNG 파일을 첨부해 주세요.';
-      });
-    });
   }
 
   function bindAddressSearch(button, inputId){
