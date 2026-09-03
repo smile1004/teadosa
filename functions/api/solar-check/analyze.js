@@ -17,12 +17,13 @@ export async function onRequestPost(context) {
   }
 
   const candidates = [...new Set([roadAddress, jibunAddress, address].filter(Boolean))];
+  const requestOrigin = new URL(context.request.url).origin;
   let location = null;
   let authorizationFailed = false;
   if (context.env.VWORLD_API_KEY) {
     for (const candidate of candidates) {
-      for (const category of ['road', 'parcel']) {
-        const result = await searchVworld(candidate, context.env.VWORLD_API_KEY, category);
+      for (const category of ['ROAD', 'PARCEL']) {
+        const result = await searchVworld(candidate, context.env.VWORLD_API_KEY, category, requestOrigin);
         if (result.authorizationFailed) authorizationFailed = true;
         if (result.location) { location = result.location; break; }
       }
@@ -72,15 +73,15 @@ async function fetchSolarClimate(latitude, longitude) {
   } catch { return null; }
 }
 
-async function searchVworld(address, key, category) {
+async function searchVworld(address, key, category, domain) {
   const endpoint = new URL('https://api.vworld.kr/req/search');
   endpoint.search = new URLSearchParams({
     service: 'search', request: 'search', version: '2.0', size: '5', page: '1',
     query: address, type: 'address', category, format: 'json',
-    crs: 'EPSG:4326', key
+    crs: 'EPSG:4326', key, domain
   }).toString();
   try {
-    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json' } });
+    const response = await fetch(endpoint.toString(), { headers: { Accept: 'application/json', Referer: `${domain}/` } });
     if (response.status === 401 || response.status === 403) return { location: null, authorizationFailed: true };
     if (!response.ok) return { location: null, authorizationFailed: false };
     const payload = await response.json();
