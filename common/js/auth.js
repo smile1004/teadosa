@@ -169,6 +169,7 @@
   async function getAdminDevelopmentRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/development?' + query.toString(), { method: 'GET' }); }
   async function getAdminDevelopmentDetail(requestId) { return request('/api/admin/development/' + encodeURIComponent(requestId), { method: 'GET' }); }
   async function updateAdminDevelopmentStatus(requestId, payload) { return request('/api/admin/development/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
+  async function createConstructionPlanRequest(payload) { return request('/api/construction-plan/create', { method: 'POST', body: payload }); }
 
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
@@ -208,6 +209,7 @@
     getAdminDevelopmentRequests: getAdminDevelopmentRequests,
     getAdminDevelopmentDetail: getAdminDevelopmentDetail,
     updateAdminDevelopmentStatus: updateAdminDevelopmentStatus,
+    createConstructionPlanRequest: createConstructionPlanRequest,
     checkDuplicate: checkDuplicate
   });
 })(window);
