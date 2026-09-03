@@ -71,8 +71,7 @@
   });
 
   sampleButton.addEventListener('click',function(){
-    var type=getSiteType();var area=getArea()||500;
-    renderResult({roadAddress:selectedAddress&&selectedAddress.roadAddress||'경기도 안양시 동안구 엘에스로 127',jibunAddress:selectedAddress&&selectedAddress.jibunAddress||'경기도 안양시 동안구 호계동 555-9',region:selectedAddress?[selectedAddress.sido,selectedAddress.sigungu,selectedAddress.bname].filter(Boolean).join(' '):'경기도 안양시 동안구',siteType:type,area:area,latitude:37.3718,longitude:126.9507,pnu:'화면 확인용 샘플',source:'화면 확인용 샘플 데이터',mode:'sample',solar:sampleSolar()},true);
+    renderResult({roadAddress:'전북특별자치도 전주시 완산구 석산1길 18-10',jibunAddress:'전북특별자치도 전주시 완산구 효자동3가 1698-3',region:'전북특별자치도 전주시 완산구',siteType:'roof',area:411.08,landArea:618.9,latitude:35.820227,longitude:127.103579,pnu:'5211114200116980003',source:'화면 확인용 샘플 데이터',mode:'sample',solar:sampleSolar()},true);
   });
 
   document.getElementById('printButton').addEventListener('click',function(){window.print();});
@@ -90,7 +89,7 @@
     return{min:roundFive(mid*.85),max:roundFive(mid*1.15)};
   }
   function renderResult(data,isSample){
-    var type=data.siteType||getSiteType();var area=Number(data.area)||getArea();var capacity=estimate(type,area);
+    var type=data.siteType||getSiteType();var area=Number(data.area)||getArea();var capacity=isSample?{min:66,max:66}:estimate(type,area);
     document.getElementById('resultModeBadge').textContent=isSample?'화면 확인용 샘플':'공개 위치정보 조회';
     document.getElementById('resultModeBadge').classList.toggle('sample',isSample);
     document.getElementById('overallTitle').textContent=isSample?'샘플 간편검토 결과입니다':'사업지 기본 위치가 확인되었습니다';
@@ -102,19 +101,20 @@
     document.getElementById('pnuValue').textContent=data.pnu||'지번 확인 필요';
     document.getElementById('siteTypeValue').textContent=typeLabel(type);
     document.getElementById('sourceValue').textContent=data.source||(isSample?'샘플 데이터':'V-World 주소검색');
-    renderSolar(data.solar,capacity,isSample);
+    renderDetailedSections(data,isSample,capacity,area);
     document.getElementById('resultTimestamp').textContent='검토일시 '+new Intl.DateTimeFormat('ko-KR',{dateStyle:'long',timeStyle:'short'}).format(new Date());
     if(capacity){
-      document.getElementById('capacityValue').textContent='약 '+capacity.min+'~'+capacity.max+' kW';
-      document.getElementById('capacityCaption').textContent='입력면적 '+area.toLocaleString('ko-KR')+'㎡ 기준';
+      document.getElementById('capacityValue').textContent=isSample?'66 kW':'약 '+capacity.min+'~'+capacity.max+' kW';
+      document.getElementById('capacityCaption').textContent=(isSample?'지붕면적 ':'입력면적 ')+area.toLocaleString('ko-KR')+'㎡ 기준';
       document.getElementById('generationValue').textContent='약 '+Math.round(capacity.min*1200/1000).toLocaleString('ko-KR')+'~'+Math.round(capacity.max*1350/1000).toLocaleString('ko-KR')+' MWh/년';
-      document.getElementById('costValue').textContent='상담 후 산정';
+      document.getElementById('costValue').textContent=isSample?'7,590~8,250만원':'상담 후 산정';
     }else{
       document.getElementById('capacityValue').textContent='면적 확인 필요';
       document.getElementById('capacityCaption').textContent='정확한 부지·지붕 면적 확인 후 계산합니다.';
       document.getElementById('generationValue').textContent='용량 산정 후 계산';
       document.getElementById('costValue').textContent='견적 확인 필요';
     }
+    renderSolar(data.solar,capacity,isSample);
     var precheck=document.getElementById('precheckLink');
     precheck.href='precheck/apply/index.html?address='+encodeURIComponent(data.roadAddress||data.address||'');
     resultSection.hidden=false;
@@ -124,12 +124,34 @@
 
   function closePostcode(){postcodeLayer.hidden=true;postcodeContainer.innerHTML='';document.body.classList.remove('postcode-open');addressButton.focus();}
   function sampleSolar(){var values=[2.75,3.35,4.15,4.85,5.05,4.72,4.08,4.21,4.02,3.72,2.91,2.52];var days=[31,28.25,31,30,31,30,31,31,30,31,30,31];return{averageDaily:3.86,source:'화면 확인용 일사량 샘플',monthly:values.map(function(value,index){return{month:index+1,irradiance:value,days:days[index]};})};}
+  function setText(id,value){var element=document.getElementById(id);if(element)element.textContent=value;}
+  function setTags(id,values){var element=document.getElementById(id);if(element)element.innerHTML=values.map(function(value){return '<span>'+value+'</span>';}).join('');}
+  function renderDetailedSections(data,isSample,capacity,area){
+    setText('landPnuValue',data.pnu||'지번 확인 필요');
+    setText('landAreaValue',isSample?'618.9㎡':(data.landArea||area?(Number(data.landArea||area).toLocaleString('ko-KR')+'㎡ (입력값)'):'추가 연동'));
+    setText('solarCapacityValue',capacity?(isSample?'66 kW':'약 '+capacity.min+'~'+capacity.max+' kW'):'용량 확인 필요');
+    if(!isSample){
+      ['landCategoryValue','landZoneValue','landRestrictionValue','maxSlopeValue','avgSlopeValue','slopeDirectionValue','elevationValue','buildingUseValue','buildingStructureValue','buildingRoofAreaValue','buildingApprovalValue','buildingHeightValue'].forEach(function(id){setText(id,'추가 연동');});
+      setTags('landUseRegionTags',['토지이용계획 API 연동 필요']);setTags('landUseDistrictTags',['공간정보 중첩 분석 필요']);setTags('landUseRestrictionTags',['규제정보 연동 필요']);
+      setText('substationValue','한전 확인 필요');setText('distributionLineValue','한전 확인 필요');setText('gridStatusValue','공개자료 조회 후에도 실제 연계 가능 여부는 한전 검토로 확정됩니다.');return;
+    }
+    setText('landCategoryValue','대');setText('landZoneValue','중심상업지역');setText('landRestrictionValue','중심상업지역');
+    setTags('landUseRegionTags',['중심상업지역','지구단위계획구역','방화지구']);setTags('landUseDistrictTags',['소로1류(폭 10m~12m) 접함','소로3류(폭 8m 미만) 접함','주차장 접함']);setTags('landUseRestrictionTags',['가축사육제한구역']);
+    setText('maxSlopeValue','3.4°');setText('avgSlopeValue','2.1°');setText('slopeDirectionValue','북서');setText('elevationValue','31m');
+    setText('buildingUseValue','제2종근린생활시설');setText('buildingStructureValue','철근콘크리트구조');setText('buildingRoofAreaValue','411.08㎡');setText('buildingApprovalValue','2015년 (11년)');setText('buildingRoofTypeValue','평슬래브');setText('buildingHeightValue','22.35m');
+    setText('substationValue','서곡');setText('distributionLineValue','호남');setText('gridStatusValue','샘플 기준 3계층 모두 여유용량이 있습니다. 실제 값은 한전 조회로 확인합니다.');
+    setText('tierSubstationName','서곡');setText('tierSubstationStatus','여유있음');setText('tierSubstationCapacity','접수 21,126 kW · 여유 178,874 kW');
+    setText('tierTransformerName','#2');setText('tierTransformerStatus','여유있음');setText('tierTransformerCapacity','접수 1,794 kW · 여유 48,206 kW');
+    setText('tierLineName','호남');setText('tierLineStatus','여유있음');setText('tierLineCapacity','접수 408 kW · 여유 11,592 kW');
+    var bars=document.querySelectorAll('.grid-tier-list .capacity-bar i');[11,4,3].forEach(function(value,index){if(bars[index])bars[index].style.width=value+'%';});
+    var rows=document.querySelectorAll('.setback-rows li');var values=[['-','17m','미측정'],['100m','101m','적합'],['-','784m','미측정'],['-','-','미측정'],['100m','961m','적합']];rows.forEach(function(row,index){var spans=row.querySelectorAll('span,strong,em');if(values[index]&&spans.length>=3){spans[0].textContent=values[index][0];spans[1].textContent=values[index][1];spans[2].textContent=values[index][2];}});
+  }
   function renderSolar(solar,capacity,isSample){
     var irradiance=document.getElementById('irradianceValue');var annual=document.getElementById('annualSolarValue');var source=document.getElementById('solarSourceValue');var monthly=document.getElementById('monthlyGeneration');
     if(!solar||!Array.isArray(solar.monthly)){irradiance.textContent=isSample?'약 4.0 kWh/㎡/일':'조회정보 없음';annual.textContent=capacity?document.getElementById('generationValue').textContent:'용량 확인 필요';source.textContent=isSample?'화면 확인용 샘플':'NASA POWER 조회 필요';monthly.innerHTML='<p class="empty-data">월별 일사량을 확인하면 발전량 그래프가 표시됩니다.</p>';return;}
     irradiance.textContent=solar.averageDaily.toFixed(2)+' kWh/㎡/일';source.textContent=solar.source;
     if(!capacity){annual.textContent='예상 용량 확인 필요';monthly.innerHTML='<p class="empty-data">참고 면적을 입력하면 월별 예상 발전량을 계산합니다.</p>';return;}
-    var kw=(capacity.min+capacity.max)/2;var values=solar.monthly.map(function(item){return Math.round(kw*item.irradiance*item.days*.82);});var total=values.reduce(function(sum,value){return sum+value;},0);annual.textContent=(total/1000).toFixed(1)+' MWh/년';document.getElementById('generationValue').textContent=(total/1000).toFixed(1)+' MWh/년';var max=Math.max.apply(null,values);
+    var kw=(capacity.min+capacity.max)/2;var values=isSample?[4600,5900,7900,9600,10000,9400,8000,7900,6800,7100,4900,4300]:solar.monthly.map(function(item){return Math.round(kw*item.irradiance*item.days*.82);});var total=values.reduce(function(sum,value){return sum+value;},0);annual.textContent=(total/1000).toFixed(1)+' MWh/년';document.getElementById('generationValue').textContent=(total/1000).toFixed(1)+' MWh/년';setText('capacityFactorValue',isSample?'14.9%':(total/(kw*8760)*100).toFixed(1)+'%');var max=Math.max.apply(null,values);
     monthly.innerHTML=values.map(function(value,index){return '<div><span class="bar" style="height:'+Math.max(8,Math.round(value/max*100))+'%"></span><b>'+String(index+1)+'월</b><small>'+value.toLocaleString('ko-KR')+'</small></div>';}).join('');
   }
 
