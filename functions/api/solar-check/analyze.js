@@ -98,8 +98,12 @@ export async function onRequestPost(context) {
 }
 
 async function fetchSetbackReview(location, key, domain) {
-  const parcelFeatures = await fetchVworldFeatures('LP_PA_CBND_BUBUN', key, domain, `pnu:=:${location.pnu}`, null, 5);
-  const parcel = parcelFeatures.find((feature) => normalizePnu(feature?.properties?.pnu || feature?.id) === location.pnu) || parcelFeatures[0];
+  let parcelFeatures = await fetchVworldFeatures('LP_PA_CBND_BUBUN', key, domain, `pnu:=:${location.pnu}`, null, 5);
+  let parcel = parcelFeatures.find((feature) => normalizePnu(feature?.properties?.pnu || feature?.id) === location.pnu) || parcelFeatures[0];
+  if (!parcel?.geometry) {
+    parcelFeatures = await fetchVworldFeatures('LP_PA_CBND_BUBUN', key, domain, null, `POINT(${location.longitude} ${location.latitude})`, 5);
+    parcel = parcelFeatures.find((feature) => normalizePnu(feature?.properties?.pnu || feature?.id) === location.pnu) || parcelFeatures[0];
+  }
   if (!parcel?.geometry) return { parcelGeometry: null, setbacks: unavailableSetbacks('필지 경계 조회 실패') };
 
   const radius = 1400;
