@@ -169,14 +169,12 @@
   async function getAdminDevelopmentRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/development?' + query.toString(), { method: 'GET' }); }
   async function getAdminDevelopmentDetail(requestId) { return request('/api/admin/development/' + encodeURIComponent(requestId), { method: 'GET' }); }
   async function updateAdminDevelopmentStatus(requestId, payload) { return request('/api/admin/development/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
-
+  async function createConstructionPlanRequest(payload) { return request('/api/construction-plan/create', { method: 'POST', body: payload }); }
   async function createPpaRequest(payload) { return request('/api/ppa/create', { method: 'POST', body: payload }); }
   async function getMyPpaRequests() { return request('/api/ppa/my-requests', { method: 'GET' }); }
   async function getAdminPpaRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/ppa?' + query.toString(), { method: 'GET' }); }
   async function getAdminPpaDetail(requestId) { return request('/api/admin/ppa/' + encodeURIComponent(requestId), { method: 'GET' }); }
   async function updateAdminPpaStatus(requestId, payload) { return request('/api/admin/ppa/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
-
-  async function createConstructionPlanRequest(payload) { return request('/api/construction-plan/create', { method: 'POST', body: payload }); }
   async function getMyConstructionPlanRequests() { return request('/api/construction-plan/my-requests', { method: 'GET' }); }
   async function getAdminConstructionPlanRequests(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/construction-plan?' + query.toString(), { method: 'GET' }); }
   async function getAdminConstructionPlanDetail(requestId) { return request('/api/admin/construction-plan/' + encodeURIComponent(requestId), { method: 'GET' }); }
@@ -220,12 +218,12 @@
     getAdminDevelopmentRequests: getAdminDevelopmentRequests,
     getAdminDevelopmentDetail: getAdminDevelopmentDetail,
     updateAdminDevelopmentStatus: updateAdminDevelopmentStatus,
+    createConstructionPlanRequest: createConstructionPlanRequest,
     createPpaRequest: createPpaRequest,
     getMyPpaRequests: getMyPpaRequests,
     getAdminPpaRequests: getAdminPpaRequests,
     getAdminPpaDetail: getAdminPpaDetail,
     updateAdminPpaStatus: updateAdminPpaStatus,
-    createConstructionPlanRequest: createConstructionPlanRequest,
     getMyConstructionPlanRequests: getMyConstructionPlanRequests,
     getAdminConstructionPlanRequests: getAdminConstructionPlanRequests,
     getAdminConstructionPlanDetail: getAdminConstructionPlanDetail,

@@ -13,30 +13,21 @@
 <link href="common/css/common.css" rel="stylesheet">
 <link href="start/ppa/apply/css/style.css?v=1.0" rel="stylesheet">
 <style>
-/* 이용자 구분 서류 업로드 : signup/business 페이지의 업로드 박스 패턴 재사용 */
-.upload-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px;margin-top:14px}
-.upload-field{display:flex;flex-direction:column;gap:7px}
-.upload-field>span{color:#39483f;font-size:13.5px;font-weight:800}
-.upload-box{position:relative;display:flex;align-items:center;min-height:46px;border:1px solid #d7dfd9;border-radius:10px;overflow:hidden;background:#fff}
-.upload-box input[type="file"]{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
-.upload-name{flex:1;padding:0 13px;color:#8a948e;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.upload-label{display:flex;align-items:center;justify-content:center;align-self:stretch;min-width:96px;border-left:1px solid #d7dfd9;color:#b96d17;background:#fff7e9;cursor:pointer;font-size:13px;font-weight:800;white-space:nowrap}
-.upload-label:hover{background:#fdefd6}
+/* 이용자 구분별 필요 서류 안내 */
 .usertype-block{margin-top:18px;padding:18px;border:1px solid #e0e7e1;border-radius:12px;background:#fbfcfb}
 .usertype-block[hidden]{display:none}
 .usertype-block-title{margin:0 0 4px;color:var(--navy);font-size:14.5px;font-weight:900}
-.usertype-block-desc{margin:0 0 4px;color:#68766f;font-size:13px;line-height:1.6}
-.required-doc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 14px;margin:15px 0 0;padding:0;list-style:none}
-.required-doc-list li{position:relative;padding:11px 13px 11px 36px;border:1px solid #e0e7e1;border-radius:10px;background:#fff;color:#39483f;font-size:13.5px;font-weight:700;line-height:1.45}
-.required-doc-list li::before{content:'✓';position:absolute;left:13px;top:10px;color:#78a84f;font-size:14px;font-weight:900}
-@media(max-width:700px){.upload-grid{grid-template-columns:1fr}}
+.usertype-block-desc{margin:0;color:#68766f;font-size:13px;line-height:1.6}
+.required-doc-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;margin:14px 0 0;padding:0;list-style:none}
+.required-doc-list li{position:relative;padding:12px 14px 12px 38px;border:1px solid #e1e8e3;border-radius:10px;background:#fff;color:#39483f;font-size:13.5px;font-weight:800;line-height:1.45}
+.required-doc-list li::before{content:'\2713';position:absolute;left:14px;top:11px;color:#df7917;font-size:16px;font-weight:900}
 @media(max-width:700px){.required-doc-list{grid-template-columns:1fr}}
 </style>
 </head>
 <body class="taedo-has-fixed-header license-apply-page">
 <script src="common/js/site-config.js"></script>
 <script src="common/js/api.js?v=2.0"></script>
-<script src="common/js/auth.js?v=2.9"></script>
+<script src="common/js/auth.js?v=3.1"></script>
 <script src="common/js/components/header.js?v=2.6"></script>
 
 <main>
@@ -80,7 +71,7 @@
               <label class="field"><span>이메일 <em>필수</em></span><input type="email" id="applicantEmail" name="applicantEmail" maxlength="120" required></label>
             </div>
             <div class="form-grid two-col top-gap">
-              <label class="field"><span>사업자등록번호 <em id="businessRegRequired" hidden>필수</em></span><input type="text" id="businessRegNumber" name="businessRegNumber" maxlength="20" inputmode="numeric" placeholder="보유하신 경우 입력해 주세요"></label>
+              <label class="field"><span>사업자등록번호 <em>필수</em></span><input type="text" id="businessRegNumber" name="businessRegNumber" maxlength="20" placeholder="000-00-00000" required></label>
             </div>
           </section>
 
@@ -113,9 +104,9 @@
             </div>
 
             <div id="newUserBlock" class="usertype-block" hidden>
-              <p class="usertype-block-title">신규 이용자 필요서류</p>
-              <p class="usertype-block-desc">태도사 회원가입 후 처음 신청하는 서비스이므로 사업 및 설비 현황 확인을 위한 다음 서류가 필요합니다. 신청 단계에서는 목록만 확인해 주시고, 실제 제출방법은 담당자 상담 시 안내드립니다.</p>
-              <ul class="required-doc-list" aria-label="신규 이용자 필요서류 목록">
+              <p class="usertype-block-title">신규 이용자 필요 서류</p>
+              <p class="usertype-block-desc">사업 및 설비 현황 확인을 위해 아래 서류가 필요할 수 있습니다.</p>
+              <ul class="required-doc-list">
                 <li>발전사업허가증</li>
                 <li>사업자등록증</li>
                 <li>건물 및 토지대장</li>
@@ -128,7 +119,7 @@
               </ul>
             </div>
 
-            <p class="section-helper">실제 필요서류는 설비 용량, 사업 형태 및 한전 관할지사 기준에 따라 달라질 수 있습니다. 추가로 필요한 자료는 담당자 검토 후 상담 시 안내드립니다.</p>
+            <p class="section-helper">필요 서류는 설비 용량, 사업 형태 및 한전 관할지사 기준에 따라 달라질 수 있습니다. 정확한 준비 서류와 제출 방법은 필요시 담당자 상담 시 안내드립니다.</p>
           </section>
 
           <section class="form-section" aria-labelledby="requestHeading">
@@ -166,8 +157,8 @@
         <div class="side-card">
           <h2>신청 후 진행</h2>
           <ol>
-            <li><span>1</span><div><strong>신청내용 확인</strong><p>담당자가 신청정보와 태도사 보유자료를 확인합니다.</p></div></li>
-            <li><span>2</span><div><strong>담당자 상담</strong><p>기존 자료 활용 여부와 추가로 필요한 서류를 안내합니다.</p></div></li>
+            <li><span>1</span><div><strong>신청내용 확인</strong><p>담당자가 신청정보와 인허가 현황을 확인합니다.</p></div></li>
+            <li><span>2</span><div><strong>담당자 상담</strong><p>이용자 구분과 필요한 서류를 다시 한 번 안내합니다.</p></div></li>
             <li><span>3</span><div><strong>전자계약</strong><p>업무 범위를 확인한 후 전자계약을 체결합니다.</p></div></li>
             <li><span>4</span><div><strong>PPA 접수</strong><p>서류 준비가 완료되면 한전 관할지사에 접수합니다.</p></div></li>
           </ol>
@@ -183,6 +174,6 @@
 
 <script src="common/js/components/footer.js"></script>
 <script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-<script src="start/ppa/apply/js/script.js?v=1.2"></script>
+<script src="start/ppa/apply/js/script.js?v=1.0"></script>
 </body>
 </html>

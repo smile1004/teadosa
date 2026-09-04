@@ -9,8 +9,6 @@
   const existingUserBlock = document.getElementById('existingUserBlock');
   const newUserBlock = document.getElementById('newUserBlock');
   const siteAddressSearch = document.getElementById('siteAddressSearch');
-  const businessRegInput = document.getElementById('businessRegNumber');
-  const businessRegRequired = document.getElementById('businessRegRequired');
 
   if (!form) return;
 
@@ -18,7 +16,6 @@
 
   async function init(){
     updateNoteCount();
-    bindApplicantType();
     bindUserType();
     bindAddressSearch(siteAddressSearch, 'siteAddress');
     await tryFillFromSession();
@@ -46,19 +43,6 @@
     } else {
       setRadio('applicantType','personal');
     }
-    updateApplicantTypeFields();
-  }
-
-  function bindApplicantType(){
-    document.querySelectorAll('input[name="applicantType"]').forEach(function(el){
-      el.addEventListener('change', updateApplicantTypeFields);
-    });
-  }
-
-  function updateApplicantTypeFields(){
-    const isBusiness = radioValue('applicantType') === 'business';
-    if (businessRegRequired) businessRegRequired.hidden = !isBusiness;
-    if (businessRegInput) { if (isBusiness) businessRegInput.setAttribute('required',''); else businessRegInput.removeAttribute('required'); }
   }
 
   function bindUserType(){
@@ -106,7 +90,7 @@
     }
 
     const payload = {
-      formVersion: 'PPA_APPLY_V2',
+      formVersion: 'PPA_APPLY_V1',
       applicantType: radioValue('applicantType'),
       applicantName: valueOf('applicantName'),
       applicantPhone: valueOf('applicantPhone'),
