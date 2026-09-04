@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "teadosa-local-preview",
+  "compatibility_date": "2026-09-04",
+  "pages_build_output_dir": ".",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "teadosa-local",
+      "database_id": "00000000-0000-0000-0000-000000000000"
+    }
+  ]
+}

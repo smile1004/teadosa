@@ -273,7 +273,8 @@ export async function onRequestPost(context) {
       {
         "Set-Cookie": createSessionCookie(
           sessionToken,
-          SESSION_MAX_AGE_SECONDS
+          SESSION_MAX_AGE_SECONDS,
+          request.url
         ),
       }
     );
@@ -370,15 +371,20 @@ async function sha256(value) {
   return bytesToHex(new Uint8Array(digest));
 }
 
-function createSessionCookie(token, maxAge) {
-  return [
+function createSessionCookie(token, maxAge, requestUrl) {
+  const cookieParts = [
     `${SESSION_COOKIE_NAME}=${token}`,
     "Path=/",
     `Max-Age=${maxAge}`,
     "HttpOnly",
-    "Secure",
     "SameSite=Lax",
-  ].join("; ");
+  ];
+
+  if (new URL(requestUrl).protocol === "https:") {
+    cookieParts.splice(cookieParts.length - 1, 0, "Secure");
+  }
+
+  return cookieParts.join("; ");
 }
 
 function bytesToBase64Url(bytes) {

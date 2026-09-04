@@ -4,6 +4,8 @@
   "description": "태양광도사 홈페이지의 운영용 정적 웹 프로젝트입니다.",
   "main": "index.js",
   "scripts": {
+    "dev": "wrangler pages dev . --port 8000 --persist-to .wrangler/state --live-reload",
+    "db:init": "wrangler d1 execute DB --local --persist-to .wrangler/state --file=database/schema/member_system_v1_fresh.sql && wrangler d1 execute DB --local --persist-to .wrangler/state --file=database/migrations/007_precheck_review_v2.sql && wrangler d1 execute DB --local --persist-to .wrangler/state --file=database/migrations/011_members_last_login_v1.sql && wrangler d1 execute DB --local --persist-to .wrangler/state --file=database/local/seed_preview.sql",
     "generate:vapid": "node scripts/generate-vapid-keys.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,5 +24,8 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "web-push-neo": "^0.1.2"
+  },
+  "devDependencies": {
+    "wrangler": "^4.129.0"
   }
 }

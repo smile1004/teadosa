@@ -6,6 +6,7 @@
 
   const message = document.getElementById('result-message');
   const content = document.getElementById('result-content');
+  const VWORLD_KEY = '01BB25F3-74B3-4781-B43C-6F38B9D90208';
 
   init();
 
@@ -69,6 +70,8 @@
       return '<div class="label">' + escapeHtml(row[0]) + '</div><div class="value">' + escapeHtml(row[1]) + '</div>';
     }).join('');
 
+    renderInstallationMap(request.siteAddress || '');
+
     const items = review.resultData?.items || [];
     const box = document.getElementById('result-items');
 
@@ -98,6 +101,123 @@
       noticeCard.hidden = false;
     } else {
       noticeCard.hidden = true;
+    }
+  }
+
+  function renderInstallationMap(address) {
+    const mapNode = document.getElementById('result-map');
+    const addressNode = document.getElementById('result-map-address');
+    const mapMessage = document.getElementById('result-map-message');
+
+    if (!mapNode || !addressNode || !mapMessage) return;
+    addressNode.textContent = address || '신청 주소 정보 없음';
+
+    if (!address) {
+      mapMessage.textContent = '표시할 신청 주소가 없습니다.';
+      return;
+    }
+
+    if (!window.kakao || !window.kakao.maps) {
+      mapMessage.textContent = '지도 서비스를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+      return;
+    }
+
+    window.kakao.maps.load(function () {
+      findCoordinates(address).then(function (coordinates) {
+        const center = new window.kakao.maps.LatLng(coordinates.lat, coordinates.lng);
+        const map = new window.kakao.maps.Map(mapNode, {
+          center: center,
+          level: 3,
+          mapTypeId: window.kakao.maps.MapTypeId.ROADMAP
+        });
+
+        const marker = new window.kakao.maps.Marker({ map: map, position: center });
+        const markerContent = document.createElement('div');
+        markerContent.className = 'result-map-marker';
+        markerContent.innerHTML = '<strong>사전검토 신청 위치</strong><span>' + escapeHtml(address) + '</span>';
+        const overlay = new window.kakao.maps.CustomOverlay({
+          map: map,
+          position: center,
+          content: markerContent,
+          yAnchor: 1.55
+        });
+
+        void marker;
+        void overlay;
+        bindMapControls(map);
+        mapMessage.hidden = true;
+        mapNode.setAttribute('aria-label', address + ' 태양광 설치 가능 위치 지도');
+      }).catch(function () {
+        mapMessage.textContent = '신청 주소의 지도 위치를 찾지 못했습니다.';
+      });
+    });
+  }
+
+  function findCoordinates(address) {
+    return findCoordinatesWithKakao(address).catch(function () {
+      return findCoordinatesWithVWorld(address, 'road').catch(function () {
+        return findCoordinatesWithVWorld(address, 'parcel');
+      });
+    });
+  }
+
+  function findCoordinatesWithKakao(address) {
+    return new Promise(function (resolve, reject) {
+      const geocoder = new window.kakao.maps.services.Geocoder();
+      geocoder.addressSearch(address, function (result, status) {
+        if (status === window.kakao.maps.services.Status.OK && result[0]) {
+          resolve({ lat: Number(result[0].y), lng: Number(result[0].x) });
+        } else {
+          reject(new Error('KAKAO_ADDRESS_NOT_FOUND'));
+        }
+      });
+    });
+  }
+
+  function findCoordinatesWithVWorld(address, type) {
+    const params = new URLSearchParams({
+      service: 'address', request: 'getcoord', version: '2.0',
+      crs: 'epsg:4326', address: address, refine: 'true', simple: 'false',
+      format: 'json', type: type, key: VWORLD_KEY
+    });
+
+    return fetch('https://api.vworld.kr/req/address?' + params.toString())
+      .then(function (response) {
+        if (!response.ok) throw new Error('VWORLD_REQUEST_FAILED');
+        return response.json();
+      })
+      .then(function (data) {
+        const point = data?.response?.result?.point;
+        if (!point) throw new Error('VWORLD_ADDRESS_NOT_FOUND');
+        return { lat: Number(point.y), lng: Number(point.x) };
+      });
+  }
+
+  function bindMapControls(map) {
+    const typeButtons = document.querySelectorAll('[data-map-type]');
+    const cadastralButton = document.getElementById('result-map-cadastral');
+    let cadastralVisible = false;
+
+    typeButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        const isSkyview = button.dataset.mapType === 'skyview';
+        map.setMapTypeId(isSkyview ? window.kakao.maps.MapTypeId.HYBRID : window.kakao.maps.MapTypeId.ROADMAP);
+        typeButtons.forEach(function (item) {
+          const active = item === button;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-pressed', String(active));
+        });
+      });
+    });
+
+    if (cadastralButton) {
+      cadastralButton.addEventListener('click', function () {
+        cadastralVisible = !cadastralVisible;
+        if (cadastralVisible) map.addOverlayMapTypeId(window.kakao.maps.MapTypeId.USE_DISTRICT);
+        else map.removeOverlayMapTypeId(window.kakao.maps.MapTypeId.USE_DISTRICT);
+        cadastralButton.classList.toggle('is-active', cadastralVisible);
+        cadastralButton.setAttribute('aria-pressed', String(cadastralVisible));
+      });
     }
   }
 

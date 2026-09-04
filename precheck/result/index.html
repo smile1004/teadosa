@@ -9,7 +9,7 @@
   <link href="common/css/shared-layout.css" rel="stylesheet">
   <link href="common/css/shared-menu.css" rel="stylesheet">
   <link href="common/css/common.css" rel="stylesheet">
-  <link href="precheck/result/css/style.css?v=2.6" rel="stylesheet">
+  <link href="precheck/result/css/style.css?v=2.7" rel="stylesheet">
 </head>
 <body>
   <script src="common/js/site-config.js"></script>
@@ -40,6 +40,25 @@
             <div id="result-basic-info" class="info-grid"></div>
           </section>
 
+          <section class="card result-map-card" aria-labelledby="result-map-title">
+            <div class="result-map-head">
+              <div>
+                <h2 id="result-map-title">태양광 설치 가능 위치</h2>
+                <p id="result-map-address" class="result-map-address">신청 주소의 위치를 확인하고 있습니다.</p>
+              </div>
+              <div class="result-map-controls" aria-label="지도 유형 선택">
+                <button class="result-map-type is-active" type="button" data-map-type="roadmap" aria-pressed="true">일반지도</button>
+                <button class="result-map-type" type="button" data-map-type="skyview" aria-pressed="false">위성지도</button>
+                <button id="result-map-cadastral" class="result-map-type" type="button" aria-pressed="false">지적도</button>
+              </div>
+            </div>
+            <div class="result-map-frame">
+              <div id="result-map" role="img" aria-label="신청 주소 지도"></div>
+              <p id="result-map-message" class="result-map-message" role="status">지도를 불러오고 있습니다.</p>
+            </div>
+            <p class="result-map-caption">지도상의 위치와 경계는 참고용이며 실제 현황 및 인허가 검토 결과와 다를 수 있습니다.</p>
+          </section>
+
           <section class="card">
             <div class="result-section-head"><h2>검토 결과</h2></div>
             <div id="result-items" class="result-items"></div>
@@ -65,6 +84,7 @@
   </main>
 
   <script src="common/js/components/footer.js"></script>
-  <script src="precheck/result/js/script.js?v=2.5"></script>
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=06b61338ce778daa454c9a8d78e41e06&libraries=services&autoload=false"></script>
+  <script src="precheck/result/js/script.js?v=2.6"></script>
 </body>
 </html>
