@@ -1,0 +1,604 @@
+<meta charset="UTF-8">
+<title>설치가능여부 자동검토 (테스트)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* ---- 태양광도사 실 사이트 브랜드 토큰 (teadosa.pages.dev에서 추출) ---- */
+  :root{
+    --bg:#fbfcf8; --card:#ffffff; --cream:#fffaf1; --mint:#f6faf4; --line:#e8eee3;
+    --green:#77a83d; --green-dark:#4f7f34; --green-soft:#edf6e7;
+    --orange:#d88422; --orange-soft:#f4d39f;
+    --text:#1f2b24; --muted:#68766a;
+    --good:#4f7f34; --good-soft:#edf6e7; --warn:#b0740d; --warn-soft:#faf0da;
+    --bad:#c1442e; --bad-soft:#fbe8e3; --focus:#2f6fed; --focus-soft:rgba(47,111,237,.1);
+    --shadow: 0 18px 45px rgba(64,92,52,.08);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:"Pretendard","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ text-wrap:balance; }
+  .mono{ font-variant-numeric:tabular-nums; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+
+  /* ---------- Top bar: 실 사이트 헤더를 단순 재현 ---------- */
+  .topbar{
+    background:var(--card); border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 28px; position:sticky; top:0; z-index:40;
+  }
+  .brand{ display:flex; align-items:center; gap:9px; font-weight:800; font-size:16px; color:var(--text); }
+  .brand .mark{ font-size:19px; }
+  .crumb{ font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .crumb b{ color:var(--text); font-weight:700; }
+  .crumb .sep{ color:var(--line); }
+  .back-home{
+    font-size:12.5px; color:var(--green-dark); font-weight:700; border:1px solid var(--green-soft);
+    background:var(--green-soft); padding:7px 14px; border-radius:999px; white-space:nowrap;
+  }
+
+  /* ---------- Hero band (실 사이트: 밝은 배경 + 진한 텍스트) ---------- */
+  .hero{ background:linear-gradient(180deg, var(--cream), var(--bg)); padding:40px 28px 34px; border-bottom:1px solid var(--line); }
+  .hero-inner{ max-width:1080px; margin:0 auto; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; font-size:12.5px; font-weight:800;
+    color:var(--orange); background:var(--orange-soft); border:1px solid rgba(216,132,34,.35);
+    padding:5px 12px; border-radius:999px; margin-bottom:14px;
+  }
+  .hero h1{ font-size:clamp(24px,3.2vw,34px); font-weight:900; margin:0 0 10px; letter-spacing:-.01em; color:var(--text); }
+  .hero p{ margin:0; color:var(--muted); font-size:15px; max-width:660px; line-height:1.65; }
+  .hero-note{
+    margin-top:18px; display:flex; gap:10px; align-items:flex-start; font-size:12.5px; color:var(--muted);
+    background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 16px; max-width:660px;
+    box-shadow:var(--shadow);
+  }
+
+  /* ---------- Page shell ---------- */
+  .wrap{ max-width:1080px; margin:0 auto; padding:30px 28px 90px; }
+  .panel{ background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); }
+
+  .search-card{ padding:26px 28px; display:flex; flex-direction:column; gap:16px; }
+  .search-card h2{ font-size:19px; margin:0; font-weight:800; }
+  .search-card .sub{ color:var(--muted); font-size:13.5px; margin-top:-8px; }
+  .search-row{ display:flex; gap:12px; flex-wrap:wrap; }
+  .select-wrap{ position:relative; flex:1 1 360px; }
+  select{
+    width:100%; appearance:none; -webkit-appearance:none;
+    background:var(--mint); border:1px solid var(--line); color:var(--text);
+    padding:13px 40px 13px 14px; border-radius:12px; font-size:14.5px; font-family:inherit;
+  }
+  .select-wrap::after{ content:"▾"; position:absolute; right:14px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; font-size:13px; }
+  .btn-start{
+    background:var(--green-dark); border:none; color:#fff;
+    font-weight:800; font-size:14.5px; padding:13px 26px; border-radius:12px; flex:0 0 auto;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-start:disabled{ opacity:.45; cursor:default; }
+  .sample-tag{ font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  .sample-tag b{ color:var(--text); }
+
+  .loading-row{ display:none; align-items:center; gap:10px; color:var(--muted); font-size:13.5px; padding:4px 2px; }
+  .loading-row.show{ display:flex; }
+  .spinner{ width:15px; height:15px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--green); animation:spin .8s linear infinite; }
+  @media (prefers-reduced-motion: reduce){ .spinner{ animation:none; } }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  #result{ margin-top:26px; display:none; flex-direction:column; gap:22px; scroll-margin-top:24px; }
+  #result.show{ display:flex; }
+  .fade-in{ animation:fadeIn .35s ease both; }
+  @media (prefers-reduced-motion: reduce){ .fade-in{ animation:none; } }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+  .loc-bar{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-radius:16px; background:var(--card); border:1px solid var(--line); }
+  .loc-bar .addr{ font-weight:800; font-size:15.5px; }
+  .loc-bar .meta{ font-size:12.5px; color:var(--muted); margin-top:3px; }
+  .verdict{ display:inline-flex; align-items:center; gap:8px; font-weight:800; font-size:13.5px; padding:8px 14px; border-radius:999px; white-space:nowrap; }
+  .verdict.good{ background:var(--good-soft); color:var(--good); }
+  .verdict.warn{ background:var(--warn-soft); color:var(--warn); }
+  .verdict.bad{ background:var(--bad-soft); color:var(--bad); }
+  .verdict.info{ background:var(--focus-soft); color:var(--focus); }
+  .verdict-dot{ width:8px; height:8px; border-radius:50%; background:currentColor; }
+  .verdict-reason{ font-size:12.5px; color:var(--muted); width:100%; margin-top:6px; }
+
+  .stat-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .stat{ padding:18px 20px; border-radius:16px; background:var(--card); border:1px solid var(--line); display:flex; flex-direction:column; gap:6px; }
+  .stat .label{ font-size:12px; color:var(--muted); font-weight:700; letter-spacing:.02em; }
+  .stat .value{ font-size:22px; font-weight:800; }
+  .stat .value.accent{ color:var(--green-dark); }
+  .stat .value span{ font-size:13px; font-weight:600; color:var(--muted); margin-left:3px;}
+
+  .grid-2{ display:grid; grid-template-columns:1.05fr .95fr; gap:18px; align-items:start; }
+  @media (max-width:780px){ .grid-2, .stat-row{ grid-template-columns:1fr; } }
+
+  .card{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:20px 22px; }
+  .card h3{ font-size:14.5px; margin:0 0 14px; font-weight:800; display:flex; align-items:center; justify-content:space-between; }
+  .card h3 .src{ font-size:11px; font-weight:600; color:var(--muted); }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th,td{ text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); }
+  th{ color:var(--muted); font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.04em; }
+  td.num{ text-align:right; }
+  tr:last-child td{ border-bottom:none; }
+
+  .law-list{ display:flex; flex-direction:column; gap:10px; }
+  .law-item{ display:flex; gap:10px; align-items:flex-start; font-size:13px; }
+  .law-badge{ flex:none; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; margin-top:1px; }
+  .law-badge.good{ background:var(--good-soft); color:var(--good); }
+  .law-badge.warn{ background:var(--warn-soft); color:var(--warn); }
+  .law-item .name{ font-weight:700; }
+  .law-item .desc{ color:var(--muted); margin-top:1px; }
+
+  .grid-cont{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  @media (max-width:780px){ .grid-cont{ grid-template-columns:1fr; } }
+  .cont{ border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+  .cont .t{ font-size:12px; color:var(--muted); font-weight:700; display:flex; justify-content:space-between; }
+  .cont .pct{ font-size:18px; font-weight:800; margin-top:4px; }
+  .bar-track{ height:6px; border-radius:99px; background:var(--mint); margin-top:8px; overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:99px; }
+  .cont .kw{ font-size:11px; color:var(--muted); margin-top:6px; }
+
+  .chart-wrap svg text{ fill:var(--muted); }
+  .chart-wrap .bar{ fill:var(--green); }
+  .chart-wrap .gridline{ stroke:var(--line); stroke-width:1; }
+
+  .cta-row{ display:flex; gap:12px; flex-wrap:wrap; padding-top:4px; }
+  .btn-outline{ background:transparent; border:1px solid var(--line); color:var(--text); font-weight:700; padding:14px 24px; border-radius:12px; font-size:14.5px; }
+
+  .disclaimer{ margin-top:8px; font-size:12px; color:var(--muted); line-height:1.7; border-top:1px dashed var(--line); padding-top:16px; }
+
+  .mode-banner{ font-size:12.5px; padding:10px 14px; border-radius:12px; display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--mint); }
+  .mode-banner.live{ border-color:rgba(47,111,237,.35); background:var(--focus-soft); color:var(--focus); }
+  .mode-banner code{ background:var(--card); border:1px solid var(--line); border-radius:5px; padding:1px 5px; }
+  .live-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .live-row input[type="text"]{ flex:1 1 320px; background:var(--mint); border:1px solid var(--line); color:var(--text); padding:13px 14px; border-radius:12px; font-size:14.5px; font-family:inherit; }
+  .cap-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .cap-row label{ font-size:13px; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .cap-row input[type="number"]{ width:110px; background:var(--mint); border:1px solid var(--line); color:var(--text); padding:10px 12px; border-radius:10px; font-size:14px; }
+  .seg{ display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .seg button{ border:none; background:var(--mint); color:var(--muted); font-size:13px; font-weight:700; padding:9px 16px; }
+  .seg button.active{ background:var(--green-dark); color:#fff; }
+  #kakaoMap{ width:100%; height:220px; border-radius:14px; border:1px solid var(--line); margin-top:4px; display:none; }
+  .placeholder-card{ font-size:13px; color:var(--muted); background:var(--mint); border:1px dashed var(--line); border-radius:12px; padding:16px; line-height:1.7; }
+  .status-line{ font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  .status-dot{ width:6px; height:6px; border-radius:50%; background:var(--good); flex:none; }
+  .status-dot.off{ background:var(--muted); }
+</style>
+
+<header class="topbar">
+  <div class="brand"><span class="mark">🔆</span> 태양광도사</div>
+  <div class="crumb"><a href="/">태양광도사 홈</a> <span class="sep">/</span> 자재거래 <span class="sep">/</span> <b>설치가능여부 자동검토(테스트)</b></div>
+  <a class="back-home" href="/">← 홈으로</a>
+</header>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">🔆 자재거래 메뉴 임시 테스트 페이지</span>
+    <h1>태양광 설치 가능 여부 자동검토</h1>
+    <p>SolarCheck 벤치마크 분석을 바탕으로 만든 자동판정 로직의 테스트 화면입니다. 실제 주소를 검색하면 카카오 지도·NASA POWER 공개 일사량 데이터로 위치와 예상 발전량을 실제로 계산합니다.</p>
+    <div class="hero-note">
+      ⚠️ <span><b style="color:var(--text)">이 페이지는 자재거래 메뉴 자리를 임시로 빌린 로직 검증용 테스트 페이지입니다.</b> 이격거리·토지·조례·계통연계 데이터는 아직 연동 전이라 해당 항목은 예시로 표시됩니다.</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel search-card">
+    <div class="mode-banner" id="modeBanner">⚙️ 확인 중…</div>
+
+    <div id="sampleBlock">
+      <h2>샘플 부지 선택</h2>
+      <p class="sub">카카오 키가 설정되지 않아 샘플 모드로 동작합니다. 유형이 다른 4개 샘플 부지로 결과 화면을 체험할 수 있습니다.</p>
+      <div class="search-row">
+        <div class="select-wrap">
+          <select id="siteSelect">
+            <option value="" selected disabled>검토할 샘플 부지를 선택하세요</option>
+            <option value="A">경기 안양시 · 공장 지붕형 예시</option>
+            <option value="B">전남 신안군 · 농지 지상형 예시</option>
+            <option value="C">충남 예산군 · 소형 창고 지붕형 예시</option>
+            <option value="D">강원 홍천군 · 임야 지상형 예시</option>
+          </select>
+        </div>
+        <button class="btn-start" id="startBtn" disabled>검토 시작 →</button>
+      </div>
+      <div class="sample-tag">📍 <b>4개 샘플</b>은 실제 SolarCheck 벤치마크 테스트에서 확인한 결과 패턴(지붕형 적합 / 지상형 부적합 / 조건부 2건)을 참고해 구성했습니다.</div>
+    </div>
+
+    <div id="liveBlock" style="display:none; flex-direction:column; gap:16px;">
+      <h2>주소로 검토하기</h2>
+      <p class="sub">카카오 주소검색으로 실제 위치를 찾고, 설치용량을 입력하면 NASA POWER 공개 일사량 데이터로 예상 발전량을 실제 계산합니다. 이격거리·토지·조례·계통연계는 아직 연동 전이라 예시로 표시됩니다.</p>
+      <div class="live-row">
+        <input type="text" id="addrInput" placeholder="예: 경기 안양시 동안구 엘에스로 127">
+        <button class="btn-start" id="searchBtn">주소 검색</button>
+      </div>
+      <div id="kakaoMap"></div>
+      <div class="cap-row">
+        <div class="seg" id="typeSeg">
+          <button type="button" class="active" data-type="지붕형">지붕형</button>
+          <button type="button" data-type="노지(지상)형">노지(지상)형</button>
+        </div>
+        <label>예상 설치용량 <input type="number" id="capInput" value="100" min="1" step="1"> kW</label>
+        <button class="btn-start" id="liveStartBtn" disabled>이 위치로 검토 시작 →</button>
+      </div>
+      <div class="status-line" id="geoStatus"><span class="status-dot off"></span>주소를 검색하면 좌표가 표시됩니다</div>
+    </div>
+
+    <div class="loading-row" id="loadingRow"><div class="spinner"></div> <span id="loadingText">발전량 데이터를 취합하는 중…</span></div>
+  </section>
+
+  <section id="result"></section>
+</main>
+
+<script>
+/* ============================================================
+   실데이터 연동 설정
+   카카오 디벨로퍼스(https://developers.kakao.com)에서 발급받은
+   JavaScript 키입니다. 이 파일이 실제로 열리는 도메인이
+   카카오 콘솔 [내 애플리케이션 > 플랫폼 키 > JavaScript 키 >
+   JavaScript SDK 도메인]에 등록되어 있어야 하고,
+   [제품 설정 > 카카오맵 > 활성화 설정]도 ON이어야 합니다.
+   이 파일은 https://teadosa.pages.dev 도메인에 배포해서 여는 것을
+   전제로 만들어졌습니다 (해당 도메인이 이미 등록되어 있음).
+   ============================================================ */
+const KAKAO_JS_KEY = "994a8bd27a552e20d6853062c8e6fb27";
+
+const DEMO = {
+  A: {
+    addr: "경기도 안양시 동안구 ○○로 (공장 지붕형 예시)",
+    coord: "37.3901, 126.9245", pnu: "4117310400-1-00000000 (예시)", date: "2026.09.03 조회",
+    type: "지붕형", capacity: 550, cost: "5.0 ~ 6.0억원",
+    verdict: "good", verdictLabel: "가능", verdictReason: "이격거리 조례 없음(확인됨) · 계통연계 3계층 모두 여유 있음",
+    land: { 지목:"공장용지", 용도지역:"준공업지역", 면적:"8,900㎡", 지붕면적:"3,000㎡" },
+    setback: [
+      ["도로","-","50m","-"], ["주거지역 건물","-","4m","-"], ["하천","-","126m","-"],
+    ],
+    laws: [
+      ["good","신재생에너지법","적합 — 재생에너지 보급 촉진 대상"],
+      ["good","전기사업법","적합 — 550kW, 사업용(발전사업허가 대상)"],
+      ["good","국토계획법","적합 — 준공업지역, 개발행위허가 대상 아님"],
+      ["good","이격거리 조례","적합 — 관할 지자체 조례 없음(확인됨)"],
+      ["good","농지법","해당 없음 — 공장용지"],
+    ],
+    grid: [ ["변전소","동안양",1,99], ["주변압기","#3",3,97], ["배전선로","금통",4,96] ],
+    monthly: [50000,55000,68000,72000,75000,60000,48000,52000,64000,68000,57000,46000],
+    annualMWh: 715, cf: 14.8,
+  },
+  B: {
+    addr: "전라남도 신안군 지도읍 ○○리 (농지 지상형 예시)",
+    coord: "35.0348, 126.1509", pnu: "1287025028-1-09720017 (예시)", date: "2026.09.03 조회",
+    type: "노지(지상)형", capacity: 45, cost: "4,900 ~ 5,700만원",
+    verdict: "bad", verdictLabel: "부적합 (현행 불가)", verdictReason: "계통연계 불가 — 변전소·주변압기·배전선로 3계층 모두 여유용량 0kW",
+    land: { 지목:"답", 용도지역:"생산관리지역", 면적:"420㎡" },
+    setback: [
+      ["도로","-","692m","-"], ["도로(소로)","-","45m","-"], ["주거지역 건물","-","55m","-"],
+    ],
+    laws: [
+      ["good","신재생에너지법","적합 — 재생에너지 보급 촉진 대상"],
+      ["good","전기사업법","적합 — 45kW, 소규모 사업용 분류"],
+      ["good","국토계획법","적합 — 생산관리지역"],
+      ["warn","이격거리 조례","조건부 — 지자체 조례 확인 필요"],
+      ["warn","농지법","조건부 — 농지전용허가 또는 타용도 일시사용허가 필요"],
+    ],
+    grid: [ ["변전소","운남",100,0], ["주변압기","#3",100,0], ["배전선로","봉대",100,0] ],
+    monthly: [4100,4500,5600,5900,6200,4900,4000,4300,5300,5600,4700,3900],
+    annualMWh: 59, cf: 15.0,
+  },
+  C: {
+    addr: "충청남도 예산군 ○○면 (소형 창고 지붕형 예시)",
+    coord: "36.6820, 126.8420", pnu: "4482025021-1-00610000 (예시)", date: "2026.09.03 조회",
+    type: "지붕형", capacity: 20, cost: "2,600 ~ 2,900만원",
+    verdict: "warn", verdictLabel: "조건부", verdictReason: "이격거리 조례 확인 필요 — 상담을 통해 지자체 기준 대조 필요",
+    land: { 지목:"대", 용도지역:"계획관리지역", 면적:"610㎡", 지붕면적:"120㎡" },
+    setback: [
+      ["도로","-","27m","-"], ["주거지역 건물","-","8m","-"],
+    ],
+    laws: [
+      ["good","신재생에너지법","적합 — 재생에너지 보급 촉진 대상"],
+      ["good","전기사업법","적합 — 20kW, 자가용 전기설비 신고 대상"],
+      ["good","국토계획법","적합 — 계획관리지역"],
+      ["warn","이격거리 조례","조건부 — 주거지 8m 실측, 지자체 기준 대조 필요"],
+      ["good","농지법","해당 없음 — 대지"],
+    ],
+    grid: [ ["변전소","예산",78,22], ["주변압기","#1",65,35], ["배전선로","신례원",70,30] ],
+    monthly: [1840,2020,2500,2650,2760,2210,1770,1910,2360,2500,2100,1690],
+    annualMWh: 26.3, cf: 15.0,
+  },
+  D: {
+    addr: "강원도 홍천군 ○○면 (임야 지상형 예시)",
+    coord: "37.6970, 127.9130", pnu: "5182031028-1-03300000 (예시)", date: "2026.09.03 조회",
+    type: "노지(지상)형", capacity: 99, cost: "1.0 ~ 1.2억원",
+    verdict: "warn", verdictLabel: "조건부", verdictReason: "산지전용허가 및 배전선로 여유용량(9%) 확인 필요",
+    land: { 지목:"임야", 용도지역:"보전관리지역", 면적:"3,300㎡", 경사도:"최대 15.2° · 평균 9.1°" },
+    setback: [
+      ["도로","-","210m","-"], ["주거지역 건물","-","340m","-"],
+    ],
+    laws: [
+      ["good","신재생에너지법","적합 — 재생에너지 보급 촉진 대상"],
+      ["good","전기사업법","적합 — 99kW, 사업용(발전사업허가 대상)"],
+      ["warn","산지관리법","조건부 — 산지전용허가 및 경사도 기준 확인 필요"],
+      ["good","국토계획법","적합 — 보전관리지역"],
+      ["good","이격거리 조례","적합 — 관할 지자체 조례 없음(확인됨)"],
+    ],
+    grid: [ ["변전소","홍천",55,45], ["주변압기","#2",60,40], ["배전선로","동면",91,9] ],
+    monthly: [8490,9340,11550,12220,12740,10190,8160,8830,10870,11550,9680,7810],
+    annualMWh: 121.4, cf: 14.0,
+  }
+};
+
+const sel = document.getElementById('siteSelect');
+const startBtn = document.getElementById('startBtn');
+const loadingRow = document.getElementById('loadingRow');
+const resultEl = document.getElementById('result');
+
+sel.addEventListener('change', () => { startBtn.disabled = !sel.value; });
+
+startBtn.addEventListener('click', () => {
+  if (!sel.value) return;
+  resultEl.classList.remove('show');
+  resultEl.innerHTML = '';
+  document.getElementById('loadingText').textContent = '지목·이격거리·계통연계·발전량 데이터를 취합하는 중…';
+  loadingRow.classList.add('show');
+  startBtn.disabled = true;
+  setTimeout(() => {
+    loadingRow.classList.remove('show');
+    startBtn.disabled = false;
+    render(DEMO[sel.value]);
+  }, 700);
+});
+
+/* ============================================================
+   실주소 검색 모드 (KAKAO_JS_KEY가 설정된 경우에만 활성화)
+   ============================================================ */
+let liveCoord = null;
+let liveType = "지붕형";
+
+function initLiveMode(){
+  document.getElementById('sampleBlock').style.display = 'none';
+  document.getElementById('liveBlock').style.display = 'flex';
+  document.getElementById('modeBanner').className = 'mode-banner live';
+  document.getElementById('modeBanner').innerHTML = '🟢 실주소 검색 모드 — 카카오 지도/주소검색이 연결되었습니다. 발전량은 NASA POWER 실데이터로 계산됩니다.';
+
+  const script = document.createElement('script');
+  script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=' + KAKAO_JS_KEY + '&autoload=false&libraries=services';
+  script.onload = () => kakao.maps.load(onKakaoReady);
+  script.onerror = () => {
+    document.getElementById('modeBanner').className = 'mode-banner';
+    document.getElementById('modeBanner').textContent = '⚠️ 카카오 SDK 로드 실패 — 이 도메인이 카카오 콘솔에 등록되어 있는지, 카카오맵 API가 활성화되어 있는지 확인하세요. 샘플 모드로 되돌립니다.';
+    document.getElementById('sampleBlock').style.display = 'block';
+    document.getElementById('liveBlock').style.display = 'none';
+  };
+  document.head.appendChild(script);
+}
+
+let kakaoMap, kakaoMarker, geocoder;
+function onKakaoReady(){
+  geocoder = new kakao.maps.services.Geocoder();
+  const mapEl = document.getElementById('kakaoMap');
+  mapEl.style.display = 'block';
+  kakaoMap = new kakao.maps.Map(mapEl, { center: new kakao.maps.LatLng(36.5, 127.8), level: 12 });
+  kakaoMarker = new kakao.maps.Marker({ map: kakaoMap });
+
+  document.getElementById('searchBtn').addEventListener('click', doGeocode);
+  document.getElementById('addrInput').addEventListener('keydown', e => { if (e.key === 'Enter') doGeocode(); });
+
+  document.querySelectorAll('#typeSeg button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#typeSeg button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      liveType = btn.dataset.type;
+    });
+  });
+
+  document.getElementById('liveStartBtn').addEventListener('click', startLiveReview);
+}
+
+function doGeocode(){
+  const q = document.getElementById('addrInput').value.trim();
+  if (!q) return;
+  const status = document.getElementById('geoStatus');
+  status.innerHTML = '<span class="status-dot off"></span>검색 중…';
+  geocoder.addressSearch(q, (result, statusCode) => {
+    if (statusCode === kakao.maps.services.Status.OK && result[0]) {
+      const { x, y, address_name } = result[0];
+      const lat = parseFloat(y), lng = parseFloat(x);
+      liveCoord = { lat, lng, addr: address_name };
+      const pos = new kakao.maps.LatLng(lat, lng);
+      kakaoMap.setCenter(pos);
+      kakaoMap.setLevel(4);
+      kakaoMarker.setPosition(pos);
+      status.innerHTML = `<span class="status-dot"></span>${address_name} · ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+      document.getElementById('liveStartBtn').disabled = false;
+    } else {
+      liveCoord = null;
+      document.getElementById('liveStartBtn').disabled = true;
+      status.innerHTML = '<span class="status-dot off"></span>검색 결과가 없습니다. 다른 주소로 시도해보세요.';
+    }
+  });
+}
+
+async function fetchNasaPower(lat, lng){
+  const url = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=ALLSKY_SFC_SW_DWN&community=RE&longitude=${lng}&latitude=${lat}&format=JSON`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('NASA POWER 응답 오류: ' + res.status);
+  const json = await res.json();
+  const p = json.properties.parameter.ALLSKY_SFC_SW_DWN;
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  return months.map(m => p[m]);
+}
+
+const DAYS_IN_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+const SYSTEM_EFF = 0.8;
+
+async function startLiveReview(){
+  if (!liveCoord) return;
+  const capacity = Math.max(1, parseInt(document.getElementById('capInput').value, 10) || 100);
+  const liveStartBtn = document.getElementById('liveStartBtn');
+  resultEl.classList.remove('show');
+  resultEl.innerHTML = '';
+  document.getElementById('loadingText').textContent = 'NASA POWER 일사량 데이터로 발전량을 계산하는 중…';
+  loadingRow.classList.add('show');
+  liveStartBtn.disabled = true;
+
+  let monthly, cf, sourceNote = 'NASA POWER 기후평균 데이터 기반 실제 계산', genSrc = 'NASA POWER 실데이터 연동됨';
+  try {
+    const irradiance = await fetchNasaPower(liveCoord.lat, liveCoord.lng);
+    monthly = irradiance.map((v, i) => Math.round(capacity * v * DAYS_IN_MONTH[i] * SYSTEM_EFF));
+    const annualKWh = monthly.reduce((a,b) => a+b, 0);
+    cf = +(annualKWh / (capacity * 8760) * 100).toFixed(1);
+  } catch (err) {
+    sourceNote = 'NASA POWER 응답 실패 — 이용률 15% 가정값으로 대체';
+    genSrc = 'NASA POWER 응답 실패 (예시값)';
+    const shape = [0.070,0.077,0.095,0.101,0.105,0.084,0.067,0.073,0.089,0.095,0.079,0.065];
+    const annualKWh = capacity * 8760 * 0.15;
+    monthly = shape.map(w => Math.round(annualKWh * w));
+    cf = 15.0;
+  }
+  const annualMWh = +(monthly.reduce((a,b)=>a+b,0) / 1000).toFixed(1);
+
+  loadingRow.classList.remove('show');
+  liveStartBtn.disabled = false;
+
+  render({
+    addr: liveCoord.addr,
+    coord: `${liveCoord.lat.toFixed(6)}, ${liveCoord.lng.toFixed(6)}`,
+    pnu: '연동 전 (브이월드 필요)',
+    date: new Date().toLocaleDateString('ko-KR') + ' 조회',
+    type: liveType, capacity, cost: '연동 전 (건축HUB 필요)',
+    verdict: 'info', verdictLabel: '발전량만 실제 계산됨',
+    verdictReason: `이격거리·토지·조례·계통연계 데이터는 아직 연동 전입니다. 발전량은 ${sourceNote}입니다.`,
+    land: {}, setback: [], laws: [], grid: [], genSrc,
+    monthly, annualMWh, cf,
+  });
+}
+
+if (KAKAO_JS_KEY) {
+  initLiveMode();
+} else {
+  document.getElementById('modeBanner').textContent = '⚪ 샘플 모드 — 실제 주소검색을 쓰려면 이 파일의 KAKAO_JS_KEY 값에 카카오 JavaScript 키를 넣어주세요.';
+}
+
+function verdictWord(v){ return v === 'good' ? '적합' : v === 'warn' ? '조건부' : v === 'info' ? '참고' : '부적합'; }
+
+function barColor(v){
+  if (v >= 40) return 'var(--good)';
+  if (v >= 10) return 'var(--warn)';
+  return 'var(--bad)';
+}
+
+function render(d){
+  const lawRows = d.laws.map(([lvl,name,desc]) => `
+    <div class="law-item">
+      <div class="law-badge ${lvl}">${lvl === 'good' ? '✓' : '!'}</div>
+      <div><div class="name">${name} <span style="color:${lvl==='good'?'var(--good)':'var(--warn)'};font-weight:700;">${verdictWord(lvl)}</span></div>
+      <div class="desc">${desc}</div></div>
+    </div>`).join('');
+
+  const setbackRows = d.setback.map(([item,base,measured,judge]) => `
+    <tr><td>${item}</td><td class="num">${base}</td><td class="num mono">${measured}</td><td class="num">${judge}</td></tr>
+  `).join('');
+
+  const landRows = Object.entries(d.land).map(([k,v]) => `<tr><td>${k}</td><td class="num">${v}</td></tr>`).join('');
+
+  const gridCards = d.grid.map(([label,name,used,free]) => `
+    <div class="cont">
+      <div class="t"><span>${label} · ${name}</span><span class="mono">${used}% 접수</span></div>
+      <div class="pct" style="color:${barColor(free)}">${free}% 여유</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${used}%;background:${barColor(free)}"></div></div>
+    </div>`).join('');
+
+  const noSetback = d.setback.length === 0;
+  const noLand = Object.keys(d.land).length === 0;
+  const noLaws = d.laws.length === 0;
+  const noGrid = d.grid.length === 0;
+  const pending = (label) => `<div class="placeholder-card">🔒 ${label} 데이터는 아직 연동되지 않았습니다.</div>`;
+
+  const max = Math.max(...d.monthly);
+  const W = 640, H = 170, padL = 44, padB = 22, padT = 10;
+  const bw = (W - padL - 10) / 12 * 0.62;
+  const gap = (W - padL - 10) / 12;
+  const scaleY = v => (H - padB - padT) * (v / max);
+  const ticks = [0, max/2, max].map(v => Math.round(v));
+  const bars = d.monthly.map((v,i) => {
+    const h = scaleY(v);
+    const x = padL + i*gap + (gap-bw)/2;
+    const y = H - padB - h;
+    return `<rect class="bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="2"></rect>
+            <text x="${(x+bw/2).toFixed(1)}" y="${H-6}" font-size="9" text-anchor="middle">${i+1}</text>`;
+  }).join('');
+  const gridlines = ticks.map(t => {
+    const y = H - padB - scaleY(t);
+    return `<line class="gridline" x1="${padL}" x2="${W-6}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}"></line>
+            <text x="${padL-8}" y="${(y+3).toFixed(1)}" font-size="9" text-anchor="end">${t.toLocaleString()}</text>`;
+  }).join('');
+
+  resultEl.innerHTML = `
+    <div class="fade-in loc-bar">
+      <div>
+        <div class="addr">${d.addr}</div>
+        <div class="meta mono">${d.coord} · PNU ${d.pnu} · ${d.date}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <span class="verdict ${d.verdict}"><span class="verdict-dot"></span>${d.verdictLabel}</span>
+      </div>
+      <div class="verdict-reason">${d.verdictReason}</div>
+    </div>
+
+    <div class="fade-in stat-row">
+      <div class="stat"><span class="label">추천 유형</span><span class="value">${d.type}</span></div>
+      <div class="stat"><span class="label">예상 설치용량</span><span class="value mono accent">${d.capacity}<span>kW</span></span></div>
+      <div class="stat"><span class="label">예상 시공비</span><span class="value mono">${d.cost}</span></div>
+    </div>
+
+    <div class="fade-in grid-2">
+      <div class="card">
+        <h3>이격거리 검토 <span class="src">${noSetback ? '브이월드/GIS 연동 필요' : '지도 좌표 실측(예시)'}</span></h3>
+        ${noSetback ? pending('이격거리') : `<table><thead><tr><th>항목</th><th>기준</th><th>실측</th><th>판정</th></tr></thead>
+          <tbody>${setbackRows}</tbody></table>`}
+      </div>
+      <div class="card">
+        <h3>토지 정보 <span class="src">${noLand ? '브이월드 연동 필요' : '브이월드 연동 예정'}</span></h3>
+        ${noLand ? pending('토지 정보(지목·용도지역)') : `<table><tbody>${landRows}</tbody></table>`}
+      </div>
+    </div>
+
+    <div class="fade-in card">
+      <h3>적합성 검토 <span class="src">${noLaws ? '규칙 엔진 연동 필요' : '규칙 기반 판정(예시)'}</span></h3>
+      ${noLaws ? pending('법령 적합성') : `<div class="law-list">${lawRows}</div>`}
+    </div>
+
+    <div class="fade-in card">
+      <h3>계통연계 여유용량 <span class="src">${noGrid ? '한전 데이터 연동 필요' : '한전 데이터 연동 예정'}</span></h3>
+      ${noGrid ? pending('계통연계 여유용량') : `<div class="grid-cont">${gridCards}</div>`}
+    </div>
+
+    <div class="fade-in card">
+      <h3>예상 발전량 <span class="src">${d.genSrc || 'NASA POWER 연동 예정'}</span></h3>
+      <div class="stat-row" style="grid-template-columns:repeat(2,auto) 1fr;margin-bottom:14px;">
+        <div><span class="label" style="display:block;margin-bottom:4px;">연간 발전량</span><span class="value mono">${d.annualMWh}<span>MWh/년</span></span></div>
+        <div><span class="label" style="display:block;margin-bottom:4px;">이용률</span><span class="value mono">${d.cf}<span>%</span></span></div>
+        <div></div>
+      </div>
+      <div class="chart-wrap">
+        <svg viewBox="0 0 640 170" width="100%" height="170" role="img" aria-label="월별 예상 발전량(kWh)">
+          ${gridlines}${bars}
+        </svg>
+      </div>
+    </div>
+
+    <div class="fade-in cta-row">
+      <button class="btn-outline" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ 다시 검토하기</button>
+    </div>
+
+    <div class="fade-in disclaimer">
+      ${d.verdict === 'info'
+        ? '※ 이 화면은 태양광 설치 가능 여부 자동검토 로직을 검증하기 위한 <b>테스트 프로토타입</b>입니다. 주소·좌표·예상 발전량은 카카오·NASA POWER 공개 데이터를 실제로 조회·계산한 값이지만, 이격거리·토지·조례·계통연계는 아직 연동 전이라 표시되지 않습니다. 본 검토 결과는 참고용이며 법적 효력이 없습니다.'
+        : '※ 본 화면은 태양광 설치 가능 여부 자동검토 로직·화면 구성을 검증하기 위한 <b>테스트 프로토타입</b>입니다. 표시된 주소·좌표·수치는 실제 조회 결과가 아닌 예시 데이터이며, 실제 서비스 적용 시 카카오·브이월드·건축HUB·한전·NASA POWER 등 공식 데이터 연동과 법률 검토가 필요합니다. 본 검토 결과는 참고용이며 법적 효력이 없습니다.'}
+    </div>
+  `;
+  resultEl.classList.add('show');
+  resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>

@@ -10,7 +10,7 @@ async function save(){var b=d.getElementById('save-cp-status');b.disabled=true;b
 function message(t,e){var x=d.getElementById('cp-detail-message');x.textContent=t||'';x.hidden=!t;x.classList.toggle('error',!!e);}
 function action(t,e){var x=d.getElementById('cp-action-message');x.textContent=t||'';x.hidden=!t;x.classList.toggle('error',!!e);}
 function label(v){return({received:'접수',consulting:'상담중',contracted:'계약완료',documents:'서류준비',submitted:'접수완료',supplement_required:'보완요청',completed:'완료',cancelled:'취소'})[v]||v;}
-function capacityType(v){return({under10mw:'10,000kW 미만(지자체 신고)',over10mw:'10,000kW 이상(산업통상자원부 인가)',unknown:'미확인'})[v]||'-';}
+function capacityType(v){return({under10mw:'10,000kW 미만(지자체 신고)',over10mw:'10,000kW 이상(관할 중앙행정기관 인가)',unknown:'미확인'})[v]||'-';}
 function map(v,m){return m[v]||v||'-';}
 function phone(v){var x=String(v||'').replace(/\D/g,'');return x.length===11?x.replace(/(\d{3})(\d{4})(\d{4})/,'$1-$2-$3'):v||'-';}
 function datetime(v){var x=new Date(v);return isNaN(x)?'-':new Intl.DateTimeFormat('ko-KR',{dateStyle:'medium',timeStyle:'short'}).format(x);}
