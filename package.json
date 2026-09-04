@@ -24,8 +24,5 @@
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "web-push-neo": "^0.1.2"
-  },
-  "devDependencies": {
-    "wrangler": "^4.129.0"
   }
 }

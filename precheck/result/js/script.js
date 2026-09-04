@@ -128,8 +128,9 @@
         const map = new window.kakao.maps.Map(mapNode, {
           center: center,
           level: 3,
-          mapTypeId: window.kakao.maps.MapTypeId.ROADMAP
+          mapTypeId: window.kakao.maps.MapTypeId.SKYVIEW
         });
+        map.addControl(new window.kakao.maps.ZoomControl(), window.kakao.maps.ControlPosition.RIGHT);
 
         const marker = new window.kakao.maps.Marker({ map: map, position: center });
         const markerContent = document.createElement('div');
@@ -196,12 +197,20 @@
   function bindMapControls(map) {
     const typeButtons = document.querySelectorAll('[data-map-type]');
     const cadastralButton = document.getElementById('result-map-cadastral');
+    const trafficButton = document.getElementById('result-map-traffic');
+    const distanceButton = document.getElementById('result-map-distance');
+    const areaButton = document.getElementById('result-map-area');
     let cadastralVisible = false;
+    let trafficVisible = false;
+    let measureMode = '';
+    let measurePath = [];
+    let measureShape = null;
+    let measureLabel = null;
 
     typeButtons.forEach(function (button) {
       button.addEventListener('click', function () {
         const isSkyview = button.dataset.mapType === 'skyview';
-        map.setMapTypeId(isSkyview ? window.kakao.maps.MapTypeId.HYBRID : window.kakao.maps.MapTypeId.ROADMAP);
+        map.setMapTypeId(isSkyview ? window.kakao.maps.MapTypeId.SKYVIEW : window.kakao.maps.MapTypeId.ROADMAP);
         typeButtons.forEach(function (item) {
           const active = item === button;
           item.classList.toggle('is-active', active);
@@ -217,7 +226,119 @@
         else map.removeOverlayMapTypeId(window.kakao.maps.MapTypeId.USE_DISTRICT);
         cadastralButton.classList.toggle('is-active', cadastralVisible);
         cadastralButton.setAttribute('aria-pressed', String(cadastralVisible));
+        cadastralButton.textContent = '지적도 ' + (cadastralVisible ? 'ON' : 'OFF');
       });
+    }
+
+    if (trafficButton) {
+      trafficButton.addEventListener('click', function () {
+        trafficVisible = !trafficVisible;
+        if (trafficVisible) map.addOverlayMapTypeId(window.kakao.maps.MapTypeId.TRAFFIC);
+        else map.removeOverlayMapTypeId(window.kakao.maps.MapTypeId.TRAFFIC);
+        trafficButton.classList.toggle('is-active', trafficVisible);
+        trafficButton.setAttribute('aria-pressed', String(trafficVisible));
+        trafficButton.textContent = '교통정보 ' + (trafficVisible ? 'ON' : 'OFF');
+      });
+    }
+
+    if (distanceButton) distanceButton.addEventListener('click', function () { toggleMeasure('distance'); });
+    if (areaButton) areaButton.addEventListener('click', function () { toggleMeasure('area'); });
+
+    window.kakao.maps.event.addListener(map, 'click', function (event) {
+      if (!measureMode) return;
+      measurePath.push(event.latLng);
+      drawMeasureShape();
+    });
+
+    window.kakao.maps.event.addListener(map, 'dblclick', function (event) {
+      if (!measureMode || measurePath.length < 2) return;
+      window.kakao.maps.event.preventMap();
+      if (measureMode === 'area' && measurePath.length < 3) return;
+      finishMeasure(event.latLng);
+    });
+
+    function toggleMeasure(mode) {
+      if (measureMode === mode) {
+        resetMeasure();
+        return;
+      }
+      resetMeasure();
+      measureMode = mode;
+      map.setCursor('crosshair');
+      setMeasureButtonState();
+    }
+
+    function setMeasureButtonState() {
+      if (distanceButton) {
+        const active = measureMode === 'distance';
+        distanceButton.classList.toggle('is-active', active);
+        distanceButton.setAttribute('aria-pressed', String(active));
+        distanceButton.textContent = active ? '거리 측정중' : '거리 재기';
+      }
+      if (areaButton) {
+        const active = measureMode === 'area';
+        areaButton.classList.toggle('is-active', active);
+        areaButton.setAttribute('aria-pressed', String(active));
+        areaButton.textContent = active ? '면적 측정중' : '면적 재기';
+      }
+    }
+
+    function drawMeasureShape() {
+      if (measureShape) measureShape.setMap(null);
+      const options = {
+        map: map,
+        path: measurePath,
+        strokeWeight: 4,
+        strokeColor: '#3182f6',
+        strokeOpacity: 0.95,
+        strokeStyle: 'solid'
+      };
+      if (measureMode === 'area') {
+        options.fillColor = '#3182f6';
+        options.fillOpacity = 0.22;
+        measureShape = new window.kakao.maps.Polygon(options);
+      } else {
+        measureShape = new window.kakao.maps.Polyline(options);
+      }
+    }
+
+    function finishMeasure(position) {
+      const mode = measureMode;
+      const value = mode === 'area' ? measureShape.getArea() : measureShape.getLength();
+      const text = mode === 'area' ? formatArea(value) : formatDistance(value);
+      const labelNode = document.createElement('div');
+      labelNode.className = 'result-map-measure-label';
+      labelNode.textContent = text;
+      measureLabel = new window.kakao.maps.CustomOverlay({
+        map: map,
+        position: position,
+        content: labelNode,
+        yAnchor: 1.25
+      });
+      measureMode = '';
+      measurePath = [];
+      map.setCursor('default');
+      setMeasureButtonState();
+    }
+
+    function resetMeasure() {
+      measureMode = '';
+      measurePath = [];
+      if (measureShape) measureShape.setMap(null);
+      if (measureLabel) measureLabel.setMap(null);
+      measureShape = null;
+      measureLabel = null;
+      map.setCursor('default');
+      setMeasureButtonState();
+    }
+
+    function formatDistance(metres) {
+      if (metres >= 1000) return '총거리 ' + (metres / 1000).toFixed(2) + 'km';
+      return '총거리 ' + Math.round(metres).toLocaleString('ko-KR') + 'm';
+    }
+
+    function formatArea(squareMetres) {
+      return '총면적 ' + Math.round(squareMetres).toLocaleString('ko-KR') + '㎡';
     }
   }
 
