@@ -274,6 +274,15 @@
       if (position) drawMeasureShape(position);
     }, true);
 
+    mapNode.addEventListener('dblclick', function (event) {
+      if (!measureMode) return;
+      event.preventDefault();
+      event.stopPropagation();
+      removeDuplicatedLastPoint();
+      if (canFinishMeasure()) finishMeasure(measurePath[measurePath.length - 1]);
+      else updateMeasureGuide(true);
+    }, true);
+
     window.kakao.maps.event.addListener(map, 'rightclick', function () {
       if (!canFinishMeasure()) return;
       finishMeasure(measurePath[measurePath.length - 1]);
@@ -331,8 +340,15 @@
         return;
       }
       measureGuide.textContent = measureMode === 'area'
-        ? '선택 ' + count + '개 · 경계 지점을 3개 이상 선택한 뒤 “✓ 완료”를 누르세요.'
-        : '선택 ' + count + '개 · 경로 지점을 2개 이상 선택한 뒤 “✓ 완료”를 누르세요.';
+        ? '선택 ' + count + '개 · 마지막 지점을 더블클릭하거나 “✓ 완료”를 누르세요.'
+        : '선택 ' + count + '개 · 마지막 지점을 더블클릭하거나 “✓ 완료”를 누르세요.';
+    }
+
+    function removeDuplicatedLastPoint() {
+      if (measurePath.length < 2) return;
+      measurePath.pop();
+      const duplicatedDot = measureDots.pop();
+      if (duplicatedDot) duplicatedDot.setMap(null);
     }
 
     function canFinishMeasure() {
