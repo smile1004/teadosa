@@ -268,6 +268,12 @@
       updateMeasureGuide();
     }, true);
 
+    mapNode.addEventListener('pointermove', function (event) {
+      if (!measureMode || event.pointerType !== 'mouse' || event.buttons !== 0 || !measurePath.length) return;
+      const position = eventToMapPosition(event);
+      if (position) drawMeasureShape(position);
+    }, true);
+
     window.kakao.maps.event.addListener(map, 'rightclick', function () {
       if (!canFinishMeasure()) return;
       finishMeasure(measurePath[measurePath.length - 1]);
@@ -303,6 +309,12 @@
         areaButton.hidden = measureMode === 'distance';
       }
       if (cancelButton) cancelButton.hidden = !measureMode;
+      if (cancelButton && measureMode) {
+        const activeButton = measureMode === 'area' ? areaButton : distanceButton;
+        if (activeButton) activeButton.insertAdjacentElement('afterend', cancelButton);
+      } else if (cancelButton && trafficButton) {
+        trafficButton.insertAdjacentElement('afterend', cancelButton);
+      }
       if (measureGuide) {
         measureGuide.hidden = !measureMode;
         updateMeasureGuide();
@@ -327,20 +339,26 @@
       return measureMode === 'area' ? measurePath.length >= 3 : measureMode === 'distance' && measurePath.length >= 2;
     }
 
-    function drawMeasureShape() {
+    function eventToMapPosition(event) {
+      const rect = mapNode.getBoundingClientRect();
+      const point = new window.kakao.maps.Point(event.clientX - rect.left, event.clientY - rect.top);
+      return map.getProjection().coordsFromContainerPoint(point);
+    }
+
+    function drawMeasureShape(previewPosition) {
       if (measureShape) measureShape.setMap(null);
       measureShape = null;
-      if (measureMode === 'area' && measurePath.length < 3) return;
-      if (measureMode === 'distance' && measurePath.length < 2) return;
+      const displayPath = previewPosition ? measurePath.concat([previewPosition]) : measurePath.slice();
+      if (displayPath.length < 2) return;
       const options = {
         map: map,
-        path: measurePath,
+        path: displayPath,
         strokeWeight: 4,
         strokeColor: '#3182f6',
         strokeOpacity: 0.95,
         strokeStyle: 'solid'
       };
-      if (measureMode === 'area') {
+      if (measureMode === 'area' && displayPath.length >= 3) {
         options.fillColor = '#3182f6';
         options.fillOpacity = 0.22;
         measureShape = new window.kakao.maps.Polygon(options);
@@ -364,6 +382,7 @@
 
     function finishMeasure(position) {
       const mode = measureMode;
+      drawMeasureShape();
       const value = mode === 'area' ? measureShape.getArea() : measureShape.getLength();
       showMeasureResult(mode, value);
       measureMode = '';
