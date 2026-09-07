@@ -9,7 +9,7 @@
   <link href="common/css/shared-layout.css" rel="stylesheet">
   <link href="common/css/shared-menu.css" rel="stylesheet">
   <link href="common/css/common.css" rel="stylesheet">
-  <link href="precheck/result/css/style.css?v=2.8" rel="stylesheet">
+  <link href="precheck/result/css/style.css?v=3.1" rel="stylesheet">
 </head>
 <body>
   <script src="common/js/site-config.js"></script>
@@ -58,7 +58,10 @@
                 <button id="result-map-distance" class="result-map-tool" type="button" aria-pressed="false">거리 재기</button>
                 <button id="result-map-cadastral" class="result-map-tool" type="button" aria-pressed="false">지적도 OFF</button>
                 <button id="result-map-traffic" class="result-map-tool" type="button" aria-pressed="false">교통정보 OFF</button>
+                <button id="result-map-measure-cancel" class="result-map-tool result-map-tool-cancel" type="button" hidden>취소</button>
               </div>
+              <p id="result-map-measure-guide" class="result-map-measure-guide" hidden></p>
+              <div id="result-map-measure-result" class="result-map-measure-result" hidden></div>
               <p id="result-map-message" class="result-map-message" role="status">지도를 불러오고 있습니다.</p>
             </div>
             <p class="result-map-caption">지도상의 위치와 경계는 참고용이며 실제 현황 및 인허가 검토 결과와 다를 수 있습니다.</p>
@@ -90,6 +93,6 @@
 
   <script src="common/js/components/footer.js"></script>
   <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=994a8bd27a552e20d6853062c8e6fb27&libraries=services&autoload=false"></script>
-  <script src="precheck/result/js/script.js?v=2.7"></script>
+  <script src="precheck/result/js/script.js?v=3.0"></script>
 </body>
 </html>

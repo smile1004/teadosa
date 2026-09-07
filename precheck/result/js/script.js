@@ -145,7 +145,7 @@
 
         void marker;
         void overlay;
-        bindMapControls(map);
+        bindMapControls(map, mapNode);
         mapMessage.hidden = true;
         mapNode.setAttribute('aria-label', address + ' 태양광 설치 가능 위치 지도');
       }).catch(function () {
@@ -194,18 +194,22 @@
       });
   }
 
-  function bindMapControls(map) {
+  function bindMapControls(map, mapNode) {
     const typeButtons = document.querySelectorAll('[data-map-type]');
     const cadastralButton = document.getElementById('result-map-cadastral');
     const trafficButton = document.getElementById('result-map-traffic');
     const distanceButton = document.getElementById('result-map-distance');
     const areaButton = document.getElementById('result-map-area');
+    const cancelButton = document.getElementById('result-map-measure-cancel');
+    const measureGuide = document.getElementById('result-map-measure-guide');
+    const measureResult = document.getElementById('result-map-measure-result');
     let cadastralVisible = false;
     let trafficVisible = false;
     let measureMode = '';
     let measurePath = [];
     let measureShape = null;
-    let measureLabel = null;
+    let measureDots = [];
+    let pointerStart = null;
 
     typeButtons.forEach(function (button) {
       button.addEventListener('click', function () {
@@ -243,23 +247,38 @@
 
     if (distanceButton) distanceButton.addEventListener('click', function () { toggleMeasure('distance'); });
     if (areaButton) areaButton.addEventListener('click', function () { toggleMeasure('area'); });
+    if (cancelButton) cancelButton.addEventListener('click', resetMeasure);
 
-    window.kakao.maps.event.addListener(map, 'click', function (event) {
-      if (!measureMode) return;
-      measurePath.push(event.latLng);
+    mapNode.addEventListener('pointerdown', function (event) {
+      pointerStart = { x: event.clientX, y: event.clientY };
+    }, true);
+
+    mapNode.addEventListener('pointerup', function (event) {
+      if (!measureMode || !pointerStart || event.button !== 0) return;
+      const moved = Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y);
+      pointerStart = null;
+      if (moved > 7) return;
+      const rect = mapNode.getBoundingClientRect();
+      const point = new window.kakao.maps.Point(event.clientX - rect.left, event.clientY - rect.top);
+      const position = map.getProjection().coordsFromContainerPoint(point);
+      if (!position) return;
+      measurePath.push(position);
+      addMeasureDot(position);
       drawMeasureShape();
-    });
+      updateMeasureGuide();
+    }, true);
 
-    window.kakao.maps.event.addListener(map, 'dblclick', function (event) {
-      if (!measureMode || measurePath.length < 2) return;
-      window.kakao.maps.event.preventMap();
-      if (measureMode === 'area' && measurePath.length < 3) return;
-      finishMeasure(event.latLng);
+    window.kakao.maps.event.addListener(map, 'rightclick', function () {
+      if (!canFinishMeasure()) return;
+      finishMeasure(measurePath[measurePath.length - 1]);
     });
 
     function toggleMeasure(mode) {
       if (measureMode === mode) {
-        resetMeasure();
+        if (canFinishMeasure()) finishMeasure(measurePath[measurePath.length - 1]);
+        else {
+          updateMeasureGuide(true);
+        }
         return;
       }
       resetMeasure();
@@ -273,18 +292,46 @@
         const active = measureMode === 'distance';
         distanceButton.classList.toggle('is-active', active);
         distanceButton.setAttribute('aria-pressed', String(active));
-        distanceButton.textContent = active ? '거리 측정중' : '거리 재기';
+        distanceButton.textContent = active ? '✓ 완료' : '거리 재기';
+        distanceButton.hidden = measureMode === 'area';
       }
       if (areaButton) {
         const active = measureMode === 'area';
         areaButton.classList.toggle('is-active', active);
         areaButton.setAttribute('aria-pressed', String(active));
-        areaButton.textContent = active ? '면적 측정중' : '면적 재기';
+        areaButton.textContent = active ? '✓ 완료' : '면적 재기';
+        areaButton.hidden = measureMode === 'distance';
       }
+      if (cancelButton) cancelButton.hidden = !measureMode;
+      if (measureGuide) {
+        measureGuide.hidden = !measureMode;
+        updateMeasureGuide();
+      }
+    }
+
+    function updateMeasureGuide(showMinimumWarning) {
+      if (!measureGuide || !measureMode) return;
+      const count = measurePath.length;
+      if (showMinimumWarning) {
+        measureGuide.textContent = measureMode === 'area'
+          ? '면적 측정은 경계 지점을 3개 이상 선택해야 합니다.'
+          : '거리 측정은 경로 지점을 2개 이상 선택해야 합니다.';
+        return;
+      }
+      measureGuide.textContent = measureMode === 'area'
+        ? '선택 ' + count + '개 · 경계 지점을 3개 이상 선택한 뒤 “✓ 완료”를 누르세요.'
+        : '선택 ' + count + '개 · 경로 지점을 2개 이상 선택한 뒤 “✓ 완료”를 누르세요.';
+    }
+
+    function canFinishMeasure() {
+      return measureMode === 'area' ? measurePath.length >= 3 : measureMode === 'distance' && measurePath.length >= 2;
     }
 
     function drawMeasureShape() {
       if (measureShape) measureShape.setMap(null);
+      measureShape = null;
+      if (measureMode === 'area' && measurePath.length < 3) return;
+      if (measureMode === 'distance' && measurePath.length < 2) return;
       const options = {
         map: map,
         path: measurePath,
@@ -302,19 +349,23 @@
       }
     }
 
+    function addMeasureDot(position) {
+      const dot = document.createElement('span');
+      dot.className = 'result-map-measure-dot';
+      measureDots.push(new window.kakao.maps.CustomOverlay({
+        map: map,
+        position: position,
+        content: dot,
+        zIndex: 5,
+        xAnchor: 0.5,
+        yAnchor: 0.5
+      }));
+    }
+
     function finishMeasure(position) {
       const mode = measureMode;
       const value = mode === 'area' ? measureShape.getArea() : measureShape.getLength();
-      const text = mode === 'area' ? formatArea(value) : formatDistance(value);
-      const labelNode = document.createElement('div');
-      labelNode.className = 'result-map-measure-label';
-      labelNode.textContent = text;
-      measureLabel = new window.kakao.maps.CustomOverlay({
-        map: map,
-        position: position,
-        content: labelNode,
-        yAnchor: 1.25
-      });
+      showMeasureResult(mode, value);
       measureMode = '';
       measurePath = [];
       map.setCursor('default');
@@ -325,9 +376,13 @@
       measureMode = '';
       measurePath = [];
       if (measureShape) measureShape.setMap(null);
-      if (measureLabel) measureLabel.setMap(null);
+      measureDots.forEach(function (dot) { dot.setMap(null); });
       measureShape = null;
-      measureLabel = null;
+      measureDots = [];
+      if (measureResult) {
+        measureResult.hidden = true;
+        measureResult.innerHTML = '';
+      }
       map.setCursor('default');
       setMeasureButtonState();
     }
@@ -339,6 +394,15 @@
 
     function formatArea(squareMetres) {
       return '총면적 ' + Math.round(squareMetres).toLocaleString('ko-KR') + '㎡';
+    }
+
+    function showMeasureResult(mode, value) {
+      if (!measureResult) return;
+      const rounded = Math.round(value).toLocaleString('ko-KR');
+      const unit = mode === 'area' ? '㎡' : 'm';
+      const label = mode === 'area' ? '측정 면적' : '측정 거리';
+      measureResult.innerHTML = '<span>' + label + '</span><strong>' + rounded + ' ' + unit + '</strong><span>(참조용)</span>';
+      measureResult.hidden = false;
     }
   }
 

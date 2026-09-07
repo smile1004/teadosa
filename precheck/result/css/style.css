@@ -580,8 +580,15 @@ a{color:inherit;text-decoration:none}
 .result-map-tools{position:absolute;z-index:4;top:8px;left:8px;display:flex;gap:5px;max-width:calc(100% - 70px)}
 .result-map-tool{min-height:34px;padding:0 11px;border:1px solid #cdd7df;border-radius:5px;background:#fff;color:#344252;font:inherit;font-size:12px;font-weight:800;box-shadow:0 2px 7px rgba(15,23,42,.14);cursor:pointer;white-space:nowrap}
 .result-map-tool:hover{background:#f3f7fa}
-.result-map-tool.is-active{border-color:#3182f6;background:#3182f6;color:#fff}
-.result-map-measure-label{padding:7px 10px;border:1px solid #3182f6;border-radius:7px;background:#fff;color:#174f9c;font-size:12px;font-weight:800;box-shadow:0 3px 10px rgba(15,23,42,.18);white-space:nowrap}
+.result-map-tool.is-active{border-color:#183b61;background:#183b61;color:#fff}
+.result-map-tool[hidden]{display:none!important}
+.result-map-tool-cancel{color:#566371}
+.result-map-measure-guide{position:absolute;z-index:4;top:50px;left:8px;margin:0;padding:7px 10px;border-radius:6px;background:rgba(22,34,49,.88);color:#fff;font-size:11px;font-weight:700;box-shadow:0 2px 8px rgba(15,23,42,.18);pointer-events:none}
+.result-map-measure-guide[hidden]{display:none}
+.result-map-measure-result{position:absolute;z-index:4;left:50%;bottom:12px;transform:translateX(-50%);padding:8px 12px;border:1px solid #d6dde3;border-radius:7px;background:rgba(255,255,255,.96);color:#596675;font-size:12px;box-shadow:0 3px 12px rgba(15,23,42,.2);white-space:nowrap;pointer-events:none}
+.result-map-measure-result[hidden]{display:none}
+.result-map-measure-result strong{margin:0 3px;color:#183b61;font-size:13px}
+.result-map-measure-dot{display:block;width:12px;height:12px;border:2px solid #fff;border-radius:50%;background:#3182f6;box-shadow:0 1px 5px rgba(15,23,42,.45)}
 .result-map-message{position:absolute;inset:0;z-index:3;display:flex;align-items:center;justify-content:center;margin:0;padding:24px;background:#f3f6f2;color:#647065;font-size:14px;text-align:center}
 .result-map-message[hidden]{display:none}
 .result-map-caption{margin:10px 2px 0;color:#7a847c;font-size:12px;line-height:1.55}
@@ -596,6 +603,7 @@ a{color:inherit;text-decoration:none}
   .result-map-address{padding-left:0;font-size:13px}
   .result-map-tools{right:48px;max-width:none;overflow-x:auto;padding-bottom:4px}
   .result-map-tool{min-height:32px;padding:0 9px;font-size:11px}
+  .result-map-measure-guide{top:48px;max-width:calc(100% - 16px)}
 }
 @media print{
   .result-map-controls{display:none!important}
