@@ -168,8 +168,11 @@ export async function onRequestPut(context) {
     if (!savedReview?.id) {
       throw new Error('저장된 사전검토 결과를 다시 확인할 수 없습니다.');
     }
+    if (publish && !savedReview.published_at) {
+      throw new Error('공개 상태가 저장되지 않았습니다. 다시 공개해 주세요.');
+    }
 
-    const nextStatus = publish ? 'completed' : 'reviewing';
+    const nextStatus = savedReview.published_at ? 'completed' : 'reviewing';
     const requestUpdateResult = await env.DB.prepare(
       'UPDATE precheck_requests SET status = ?, updated_at = ? WHERE id = ?'
     ).bind(nextStatus, nowIso, requestId).run();

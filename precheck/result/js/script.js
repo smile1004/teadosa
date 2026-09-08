@@ -127,13 +127,14 @@
     else image.removeAttribute('src');
   }
 
-  async function renderInstallationMap(address) {
+  async function renderInstallationMap(address, selectedCoordinates) {
     const mapNode = document.getElementById('result-map');
     const addressNode = document.getElementById('result-map-address');
     const mapMessage = document.getElementById('result-map-message');
 
     if (!mapNode || !addressNode || !mapMessage) return;
     mapMessage.hidden = false;
+    mapMessage.textContent = '지도를 불러오고 있습니다.';
     addressNode.textContent = address || '신청 주소 정보 없음';
 
     if (!address) {
@@ -152,8 +153,11 @@
         window.kakao.maps.load(function () { window.clearTimeout(timer); resolve(); });
       });
       let coordinates;
-      try { coordinates = await findCoordinates(address); }
-      catch (error) { throw new Error(error.message === 'AMBIGUOUS_PLACE' ? 'AMBIGUOUS_PLACE' : 'ADDRESS_LOOKUP_FAILED'); }
+      try { coordinates = selectedCoordinates || await findCoordinates(address); }
+      catch (error) {
+        if (error.message === 'AMBIGUOUS_PLACE') throw error;
+        throw new Error('ADDRESS_LOOKUP_FAILED');
+      }
         const center = new window.kakao.maps.LatLng(coordinates.lat, coordinates.lng);
         const map = new window.kakao.maps.Map(mapNode, {
           center: center,
@@ -186,6 +190,33 @@
     } catch (error) {
       console.error('사전검토 지도 표시 오류:', error);
       mapMessage.hidden = false;
+      if (error.message === 'AMBIGUOUS_PLACE' && error.places?.length) {
+        mapMessage.textContent = '';
+        const choices = document.createElement('div');
+        choices.className = 'result-map-choices';
+        const heading = document.createElement('strong');
+        heading.textContent = '신청하신 건물의 위치를 선택해 주세요';
+        choices.appendChild(heading);
+        const help = document.createElement('p');
+        help.textContent = '검색된 장소의 이름과 주소를 확인해 주세요. 선택은 지도 표시에만 적용됩니다.';
+        choices.appendChild(help);
+        error.places.forEach(function (place) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          const name = document.createElement('strong');
+          name.textContent = place.place_name;
+          const detail = document.createElement('span');
+          detail.textContent = place.road_address_name || place.address_name || '주소 정보 없음';
+          button.appendChild(name);
+          button.appendChild(detail);
+          button.addEventListener('click', function () {
+            renderInstallationMap(address, { lat: Number(place.y), lng: Number(place.x), placeName: place.place_name });
+          });
+          choices.appendChild(button);
+        });
+        mapMessage.appendChild(choices);
+        return;
+      }
       mapMessage.textContent = error.message === 'AMBIGUOUS_PLACE'
         ? '같은 이름의 장소가 여러 곳입니다. 신청 주소에 정확한 도로명 또는 지번주소를 입력해 주세요.'
         : error.message === 'ADDRESS_LOOKUP_FAILED'
@@ -217,7 +248,9 @@
         window.clearTimeout(timer);
         if (status !== services.Status.OK || !places.length) { reject(new Error('PLACE_NOT_FOUND')); return; }
         if (places.length !== 1 || pagination?.hasNextPage || Number(pagination?.totalCount || 1) > 1) {
-          reject(new Error('AMBIGUOUS_PLACE')); return;
+          const error = new Error('AMBIGUOUS_PLACE');
+          error.places = places.filter(function (place) { return Number.isFinite(Number(place.x)) && Number.isFinite(Number(place.y)); });
+          reject(error); return;
         }
         const place = places[0];
         const lat = Number(place.y), lng = Number(place.x);

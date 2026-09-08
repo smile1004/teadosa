@@ -32,6 +32,14 @@ export async function onRequestPut(context) {
       return jsonResponse({ success: false, code: 'PRECHECK_NOT_FOUND', message: '사전검토 신청을 찾을 수 없습니다.' }, 404);
     }
 
+    if (status === 'completed') {
+      const review = await env.DB.prepare('SELECT published_at FROM precheck_reviews WHERE request_id = ? LIMIT 1')
+        .bind(requestId).first();
+      if (!review?.published_at) {
+        return jsonResponse({ success: false, code: 'RESULT_NOT_PUBLISHED', message: '검토완료는 결과 공개 후 가능합니다. 신청 상세에서 검토결과를 작성하고 「검토완료 · 회원에게 공개」를 눌러 주세요.' }, 400);
+      }
+    }
+
     if (status === 'supplement_required' && !supplementNote) {
       return jsonResponse({
         success: false,

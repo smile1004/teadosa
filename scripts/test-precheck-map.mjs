@@ -3,10 +3,10 @@ import vm from 'node:vm';
 import { readFile } from 'node:fs/promises';
 const source = await readFile(new URL('../precheck/result/js/script.js', import.meta.url), 'utf8');
 async function run(mode) {
+  const element = () => ({hidden:true,textContent:'',innerHTML:'',children:[],events:{},classList:{toggle(){}},setAttribute(){},removeAttribute(){},appendChild(child){this.children.push(child);},addEventListener(name,fn){this.events[name]=fn;}});
   const nodes = new Map();
   const get = id => {
-    if (!nodes.has(id)) nodes.set(id, { hidden:true, textContent:'', innerHTML:'', classList:{toggle(){}},
-      setAttribute(){}, removeAttribute(){}, addEventListener(){} });
+    if (!nodes.has(id)) nodes.set(id, element());
     return nodes.get(id);
   };
   let relayouts=0, mapsCreated=0, placeQuery='';
@@ -26,14 +26,22 @@ async function run(mode) {
       addControl(){} relayout(){relayouts++;} setCenter(){}
     },event:{addListener(){}}
   }};
-  vm.runInNewContext(source,{window,document:{getElementById:get,querySelectorAll:()=>[],createElement:()=>({})},URLSearchParams,Intl,console:{error(){}},AbortSignal});
+  vm.runInNewContext(source,{window,document:{getElementById:get,querySelectorAll:()=>[],createElement:element},URLSearchParams,Intl,console:{error(){}},AbortSignal});
   await new Promise(resolve=>setImmediate(resolve));
   if(mode==='timeout') {
     for(const callback of timerCallbacks.values())callback();
     await new Promise(resolve=>setImmediate(resolve));
   }
   if(mode==='ok'||mode==='place') {assert.equal(mapsCreated,1);assert.equal(relayouts,1);assert.equal(get('result-map-message').hidden,true);}
-  else if(mode==='place-ambiguous'){assert.equal(mapsCreated,0);assert.match(get('result-map-message').textContent,/여러 곳/);}
+  else if(mode==='place-ambiguous'){
+    assert.equal(mapsCreated,0);
+    const choices=get('result-map-message').children[0];
+    assert.equal(choices.children.length,4);
+    choices.children[2].events.click();
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.equal(mapsCreated,1);
+    assert.equal(get('result-map-message').hidden,true);
+  }
   else {assert.equal(get('result-map-message').hidden,false);assert.match(get('result-map-message').textContent,/불러오지 못했습니다/);}
   if(mode.startsWith('place'))assert.equal(placeQuery,'전주시 완산구 효자엘르디움에듀파크');
   if(mode==='place')assert.match(get('result-map-address').textContent,/대표 위치/);

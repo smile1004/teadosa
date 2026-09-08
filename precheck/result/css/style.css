@@ -623,3 +623,11 @@ a{color:inherit;text-decoration:none}
 .expected-capacity-calculation{white-space:pre-line;line-height:1.8;background:#f3f7fa;padding:14px;border-radius:10px;font-size:14px;color:#354052}
 .expected-capacity-calculation:empty{display:none}
 #expected-capacity-card{margin-top:20px;border-top:1px solid #e5e7eb;padding-top:20px}
+.result-map-choices{width:min(100%,520px);max-height:100%;overflow-y:auto;text-align:left;padding:8px}
+.result-map-choices>strong{display:block;font-size:16px;color:#284c38}
+.result-map-choices>p{font-size:12px;line-height:1.6;margin:8px 0 14px}
+.result-map-choices button{display:block;width:100%;padding:12px 14px;margin:8px 0;border:1px solid #cadbcf;border-radius:10px;background:#fff;text-align:left;cursor:pointer;color:#2c4133}
+.result-map-choices button:hover,.result-map-choices button:focus-visible{border-color:#31825b;background:#edf7f1}
+.result-map-choices button strong,.result-map-choices button span{display:block;font:inherit}
+.result-map-choices button strong{font-size:14px;font-weight:700}
+.result-map-choices button span{font-size:12px;margin-top:5px;color:#65766a}

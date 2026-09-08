@@ -49,7 +49,6 @@ export async function onRequestGet(context) {
         reviewedAt: row.reviewed_at,
         publishedAt: row.published_at,
         resultAvailable: Boolean(
-          row.status === 'completed' &&
           row.review_id &&
           row.published_at
         )
