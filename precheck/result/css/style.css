@@ -642,7 +642,7 @@ a{color:inherit;text-decoration:none}
 .capacity-result-details{display:flex;flex-direction:column;padding:16px 20px;border:1px solid #e3e9e6;border-radius:12px;background:#fff;min-width:0}
 .capacity-result-details h4{margin:0 0 10px;color:#354b40;font-size:14px}
 .capacity-result-details .expected-capacity-basis{margin:0 0 8px;color:#63716a;font-size:13px;line-height:1.7}
-.capacity-result-footnote{display:block;margin-top:auto;color:#7c887f;font-size:12px;line-height:1.6}
+.capacity-result-footnote{display:block;margin-top:auto;color:#7c887f;font-size:13px;line-height:1.7}
 .capacity-result-details .expected-capacity-calculation{margin:0;padding:14px 16px;background:#f5f8f6;color:#40594b;font-size:13px;line-height:1.9;overflow-wrap:anywhere}
 #expected-capacity-card .expected-capacity-notice{margin-top:20px;padding:20px 22px;background:#f8faf9;border:1px solid #e2e9e5;border-left:3px solid #82a28e;border-radius:10px;color:#586a5f;font-size:13px;line-height:1.9}
 .expected-capacity-notice>strong{display:block;margin-bottom:7px;color:#355542;font-size:13px}
