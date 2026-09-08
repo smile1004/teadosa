@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>사전검토 신청 상세 | 태양광도사 관리자</title>
-  <link href="admin/css/style.css?v=3.6" rel="stylesheet">
+  <link href="admin/css/style.css?v=3.7" rel="stylesheet">
 </head>
 <body class="admin-body">
   <div class="admin-app">
@@ -132,7 +132,7 @@
                     <label class="full"><span>설치용량(kW) · 자동 계산</span><input id="capacity-installed-kw" type="number" step="0.001" readonly placeholder="면적 입력 후 산정"><small>모듈수량 × 640W ÷ 1,000</small></label>
                     <label><span>여유공간율(%) · 자동 입력</span><input id="capacity-free-rate" type="number" value="30" readonly></label>
                     <label><span>설치공간율(%) · 자동 입력</span><input id="capacity-install-rate" type="number" value="70" readonly></label>
-                    <label class="full"><span>최종 계산값 · 예상 설치용량(kW)</span><input id="expected-capacity" type="number" min="0" step="0.01" readonly placeholder="면적 입력 후 산정"><small>설치용량 × 설치공간율 70%</small></label>
+                    <label class="full capacity-final-field"><span>최종 계산값 · 예상 설치용량(kW)</span><input id="expected-capacity" type="number" min="0" step="0.01" readonly placeholder="면적 입력 후 산정"><small>설치용량 × 설치공간율 70%</small></label>
                     <p id="capacity-calculation" class="full expected-capacity-calculation" role="status" aria-live="polite"></p>
                     <label class="full"><span>산정 근거</span><textarea id="capacity-basis" rows="4" maxlength="2000" placeholder="예: 제출된 배치도 기준 645W급 모듈 581매 적용"></textarea></label>
                     <label class="full"><span>참고용 예상 배치도</span><input id="capacity-layout-file" type="file" accept="image/jpeg,image/png,image/webp"><small>JPG·PNG·WEBP, 8MB 이하. 저장 시 웹용 이미지로 최적화됩니다.</small></label>
@@ -160,7 +160,7 @@
   <script src="common/js/api.js?v=2.4"></script>
   <script src="common/js/auth.js?v=2.4"></script>
   <script src="common/js/admin-layout.js?v=2.7"></script>
-  <script src="common/js/admin-precheck-detail.js?v=3.1"></script>
+  <script src="common/js/admin-precheck-detail.js?v=3.2"></script>
 </body>
 </html>
 

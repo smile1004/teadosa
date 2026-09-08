@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
-import { calculateCapacity, capacityFormulaText } from '../common/js/precheck-capacity.mjs';
+import { calculateCapacity, capacityFormulaText, applicationArea } from '../common/js/precheck-capacity.mjs';
+assert.equal(applicationArea({site:{siteArea:411}}),411);
+assert.equal(applicationArea({siteArea:286}),286);
+assert.equal(applicationArea({site:{siteArea:0},siteArea:286}),0);
 
 for (const [area, count, capacity] of [[411,152,68.10],[286,105,47.04],[813,301,134.85],[4104,1520,680.96]]) {
   const result = calculateCapacity(area);
@@ -23,7 +26,7 @@ const { onRequestPut } = await import('data:text/javascript;base64,' + Buffer.fr
 let stored;
 const DB = { prepare(sql) { return { bind(...args) { return {
   async first() {
-    if (sql.includes('FROM precheck_requests')) return {id:1, request_no:'TEST',form_data:JSON.stringify({siteArea:411})};
+    if (sql.includes('FROM precheck_requests')) return {id:1, request_no:'TEST',form_data:JSON.stringify({site:{siteArea:411}})};
     if (sql.includes('SELECT id, published_at')) return stored ? {id:1,published_at:stored.published_at} : null;
     return stored;
   },
@@ -82,7 +85,7 @@ function adminNode(id) {
 }
 let adminInit, submitted;
 const adminWindow = {location:{search:'?id=1'},addEventListener(event,callback){adminInit=callback;},TaeDoSAAuth:{
-  getAdminPrecheckDetail:async()=>({response:{ok:true},result:{success:true,request:{formData:{siteArea:411}},review:null}}),
+  getAdminPrecheckDetail:async()=>({response:{ok:true},result:{success:true,request:{formData:{site:{siteArea:411}}},review:{resultData:{capacityAssessment:{areaM2:null}}}}}),
   saveAdminPrecheckReview:async(id,payload)=>{
     submitted=payload;
     const result=await save(payload.capacityAssessment);
@@ -90,8 +93,8 @@ const adminWindow = {location:{search:'?id=1'},addEventListener(event,callback){
   }
 }};
 const adminSource=(await readFile(new URL('../common/js/admin-precheck-detail.js',import.meta.url),'utf8'))
-  .replace("import('/common/js/precheck-capacity.mjs?v=1')",'Promise.resolve(capacityModule)');
-vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText}});
+  .replace("import('/common/js/precheck-capacity.mjs?v=2')",'Promise.resolve(capacityModule)');
+vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText,applicationArea}});
 await adminInit();
 assert.equal(adminNode('capacity-area').value,411);
 assert.equal(adminNode('expected-capacity').value,'68.10');
@@ -114,7 +117,7 @@ adminWindow.TaeDoSAAuth.getAdminPrecheckDetail=async()=>{
   detailLoads++;
   return {response:{ok:true},result:{success:true,request:{formData:{}},review:null}};
 };
-vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText}});
+vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText,applicationArea}});
 await new Promise(resolve=>setImmediate(resolve));
 assert.equal(detailLoads,1,'must initialize even when adminready has already fired');
 assert.equal(adminNode('capacity-area').value,'');

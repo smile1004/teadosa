@@ -1,5 +1,5 @@
 import { requireAdmin, jsonResponse } from '../../../../_lib/admin-auth.js';
-import { calculateCapacity, capacityFormulaText } from '../../../../../common/js/precheck-capacity.mjs';
+import { calculateCapacity, capacityFormulaText, applicationArea } from '../../../../../common/js/precheck-capacity.mjs';
 
 const INSTALLATION_STATUS = ['undetermined', 'possible', 'conditional', 'not_possible'];
 const ITEM_STATUS = ['info', 'ok', 'conditional', 'hold', 'not_possible'];
@@ -32,7 +32,7 @@ export async function onRequestPut(context) {
 
     const installationPossible = enumValue(body?.installationPossible, INSTALLATION_STATUS, 'undetermined');
     const area = Object.prototype.hasOwnProperty.call(body?.capacityAssessment || {}, 'areaM2')
-      ? body.capacityAssessment.areaM2 : parseJson(target.form_data, {}).siteArea;
+      ? body.capacityAssessment.areaM2 : applicationArea(parseJson(target.form_data, {}));
     let calculation;
     try { calculation = calculateCapacity(area); }
     catch (error) {

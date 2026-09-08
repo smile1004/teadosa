@@ -1,4 +1,8 @@
 // Agreed area-based estimate. Keep module-count flooring before the space allowance.
+export function applicationArea(formData) {
+  return formData?.site?.siteArea ?? formData?.siteArea ?? null;
+}
+
 export function calculateCapacity(area) {
   if (area === null || area === undefined) return null;
   if (typeof area !== 'number' && typeof area !== 'string') throw new Error('면적은 숫자로 입력해 주세요.');

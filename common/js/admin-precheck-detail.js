@@ -8,6 +8,7 @@
   const el = {};
   let calculateCapacity;
   let capacityFormulaText;
+  let applicationArea;
   let initializationStarted = false;
 
   window.addEventListener('teadosa:adminready', init, { once: true });
@@ -19,7 +20,7 @@
     initializationStarted = true;
     mapElements();
     try {
-      ({ calculateCapacity, capacityFormulaText } = await import('/common/js/precheck-capacity.mjs?v=1'));
+      ({ calculateCapacity, capacityFormulaText, applicationArea } = await import('/common/js/precheck-capacity.mjs?v=2'));
     } catch (error) {
       initializationStarted = false;
       showMessage('자동 계산 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요.', true);
@@ -105,7 +106,8 @@
 
   function renderRequest() {
     const r = state.request || {};
-    const data = r.formData || {};
+    const formData = r.formData || {};
+    const data = { ...formData, ...formData.site, memo: formData.request?.memo ?? formData.memo };
 
     el.requestStatus.textContent = statusLabel(r.status);
     el.requestStatus.className = 'precheck-detail-status status-' + (r.status || 'received');
@@ -160,8 +162,8 @@
     el.installationPossible.value = review.installationPossible || 'undetermined';
     el.expectedCapacity.value = review.expectedCapacity ?? '';
     const capacity = review.resultData?.capacityAssessment || {};
-    el.capacityArea.value = Object.prototype.hasOwnProperty.call(capacity, 'areaM2')
-      ? (capacity.areaM2 ?? '') : (state.request?.formData?.siteArea ?? '');
+    el.capacityArea.value = capacity.areaM2 !== null && capacity.areaM2 !== undefined && capacity.areaM2 !== ''
+      ? capacity.areaM2 : (applicationArea(state.request?.formData) ?? '');
     updateCapacity();
     el.capacityBasis.value = capacity.basis || '';
     state.capacityImageDataUrl = validImageDataUrl(capacity.layoutImageDataUrl) ? capacity.layoutImageDataUrl : '';
