@@ -1413,6 +1413,6 @@ main{
 .precheck-floating .pc-review-message{grid-column:1 / -1;box-sizing:border-box;margin:0;padding:27px 24px;border-top:1px solid #e5ebdf;text-align:center;background:#fafcf8}
 .precheck-floating .pc-review-message p{margin:0!important;color:#788172!important;font-size:clamp(16px,1.6vw,20px)!important;line-height:1.7!important;letter-spacing:-.5px;word-break:keep-all}
 .precheck-floating .pc-review-message strong{display:inline!important;color:#253321!important;font-size:inherit!important;font-weight:800!important}
-.pc-review-highlight{color:var(--start-green)}
+.pc-review-highlight{color:var(--start-orange)}
 @media(max-width:760px){.precheck-floating .pc-review-message{padding:22px 18px}}
 @media(max-width:640px){.hero .pc-hero-apply{width:100%;max-width:330px;min-height:46px;box-sizing:border-box}}
