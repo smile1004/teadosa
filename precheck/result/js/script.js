@@ -40,6 +40,7 @@
       render(result.request, result.review);
       showMessage('');
       content.hidden = false;
+      renderInstallationMap(result.request.siteAddress || '');
     } catch (error) {
       showMessage(error.message || '검토결과를 불러오지 못했습니다.', true);
     }
@@ -69,8 +70,6 @@
     document.getElementById('result-basic-info').innerHTML = rows.map(function (row) {
       return '<div class="label">' + escapeHtml(row[0]) + '</div><div class="value">' + escapeHtml(row[1]) + '</div>';
     }).join('');
-
-    renderInstallationMap(request.siteAddress || '');
 
     const items = review.resultData?.items || [];
     const box = document.getElementById('result-items');
@@ -128,12 +127,13 @@
     else image.removeAttribute('src');
   }
 
-  function renderInstallationMap(address) {
+  async function renderInstallationMap(address) {
     const mapNode = document.getElementById('result-map');
     const addressNode = document.getElementById('result-map-address');
     const mapMessage = document.getElementById('result-map-message');
 
     if (!mapNode || !addressNode || !mapMessage) return;
+    mapMessage.hidden = false;
     addressNode.textContent = address || '신청 주소 정보 없음';
 
     if (!address) {
@@ -146,8 +146,14 @@
       return;
     }
 
-    window.kakao.maps.load(function () {
-      findCoordinates(address).then(function (coordinates) {
+    try {
+      await new Promise(function (resolve, reject) {
+        const timer = window.setTimeout(function () { reject(new Error('MAP_SDK_TIMEOUT')); }, 15000);
+        window.kakao.maps.load(function () { window.clearTimeout(timer); resolve(); });
+      });
+      let coordinates;
+      try { coordinates = await findCoordinates(address); }
+      catch (error) { throw new Error(error.message === 'AMBIGUOUS_PLACE' ? 'AMBIGUOUS_PLACE' : 'ADDRESS_LOOKUP_FAILED'); }
         const center = new window.kakao.maps.LatLng(coordinates.lat, coordinates.lng);
         const map = new window.kakao.maps.Map(mapNode, {
           center: center,
@@ -170,26 +176,68 @@
         void marker;
         void overlay;
         bindMapControls(map, mapNode);
+        map.relayout();
+        map.setCenter(center);
         mapMessage.hidden = true;
         mapNode.setAttribute('aria-label', address + ' 태양광 설치 가능 위치 지도');
-      }).catch(function () {
-        mapMessage.textContent = '신청 주소의 지도 위치를 찾지 못했습니다.';
-      });
-    });
+        if (coordinates.placeName) {
+          addressNode.textContent = address + ' · 지도: ' + coordinates.placeName + ' 단지·건물 대표 위치';
+        }
+    } catch (error) {
+      console.error('사전검토 지도 표시 오류:', error);
+      mapMessage.hidden = false;
+      mapMessage.textContent = error.message === 'AMBIGUOUS_PLACE'
+        ? '같은 이름의 장소가 여러 곳입니다. 신청 주소에 정확한 도로명 또는 지번주소를 입력해 주세요.'
+        : error.message === 'ADDRESS_LOOKUP_FAILED'
+        ? '신청 주소의 지도 위치를 찾지 못했습니다. 도로명 또는 지번주소를 확인해 주세요.'
+        : '지도 화면을 불러오지 못했습니다. 새로고침 후 다시 확인해 주세요.';
+    }
   }
 
-  function findCoordinates(address) {
-    return findCoordinatesWithKakao(address).catch(function () {
-      return findCoordinatesWithVWorld(address, 'road').catch(function () {
-        return findCoordinatesWithVWorld(address, 'parcel');
-      });
+  async function findCoordinates(address) {
+    const original = String(address || '').trim();
+    // Strip only trailing unit information; preserve legal-dong and lot numbers.
+    const buildingAddress = original.replace(/(?:\s+\d+\s*동)?\s+\d+\s*호\s*$/, '')
+      .replace(/\s+\d+\s*동\s*$/, '').trim();
+    for (const candidate of [...new Set([original, buildingAddress])]) {
+      try { return await findCoordinatesWithKakao(candidate); } catch (error) { /* next candidate */ }
+    }
+    try { return await findCoordinatesWithKakaoPlace(buildingAddress); }
+    catch (error) { if (error.message === 'AMBIGUOUS_PLACE') throw error; }
+    try { return await findCoordinatesWithVWorld(buildingAddress, 'road'); }
+    catch (error) { return findCoordinatesWithVWorld(buildingAddress, 'parcel'); }
+  }
+
+  function findCoordinatesWithKakaoPlace(query) {
+    return new Promise(function (resolve, reject) {
+      const services = window.kakao.maps.services;
+      if (!services?.Places) { reject(new Error('PLACES_UNAVAILABLE')); return; }
+      const timer = window.setTimeout(function () { reject(new Error('PLACE_TIMEOUT')); }, 8000);
+      new services.Places().keywordSearch(query, function (places, status, pagination) {
+        window.clearTimeout(timer);
+        if (status !== services.Status.OK || !places.length) { reject(new Error('PLACE_NOT_FOUND')); return; }
+        if (places.length !== 1 || pagination?.hasNextPage || Number(pagination?.totalCount || 1) > 1) {
+          reject(new Error('AMBIGUOUS_PLACE')); return;
+        }
+        const place = places[0];
+        const lat = Number(place.y), lng = Number(place.x);
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) { reject(new Error('INVALID_PLACE')); return; }
+        resolve({ lat, lng, placeName: place.place_name });
+      }, { size: 15 });
     });
   }
 
   function findCoordinatesWithKakao(address) {
     return new Promise(function (resolve, reject) {
+      const timer = window.setTimeout(function () { reject(new Error('KAKAO_ADDRESS_TIMEOUT')); }, 8000);
+      if (!window.kakao.maps.services?.Geocoder) {
+        window.clearTimeout(timer);
+        reject(new Error('KAKAO_GEOCODER_UNAVAILABLE'));
+        return;
+      }
       const geocoder = new window.kakao.maps.services.Geocoder();
       geocoder.addressSearch(address, function (result, status) {
+        window.clearTimeout(timer);
         if (status === window.kakao.maps.services.Status.OK && result[0]) {
           resolve({ lat: Number(result[0].y), lng: Number(result[0].x) });
         } else {
@@ -206,7 +254,7 @@
       format: 'json', type: type, key: VWORLD_KEY
     });
 
-    return fetch('https://api.vworld.kr/req/address?' + params.toString())
+    return fetch('https://api.vworld.kr/req/address?' + params.toString(), { signal: AbortSignal.timeout(8000) })
       .then(function (response) {
         if (!response.ok) throw new Error('VWORLD_REQUEST_FAILED');
         return response.json();
