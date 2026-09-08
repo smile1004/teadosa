@@ -20,7 +20,7 @@
     initializationStarted = true;
     mapElements();
     try {
-      ({ calculateCapacity, capacityFormulaText, applicationArea } = await import('/common/js/precheck-capacity.mjs?v=2'));
+      ({ calculateCapacity, capacityFormulaText, applicationArea } = await import('/common/js/precheck-capacity.mjs?v=3'));
     } catch (error) {
       initializationStarted = false;
       showMessage('자동 계산 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요.', true);
@@ -164,8 +164,9 @@
     const capacity = review.resultData?.capacityAssessment || {};
     el.capacityArea.value = capacity.areaM2 !== null && capacity.areaM2 !== undefined && capacity.areaM2 !== ''
       ? capacity.areaM2 : (applicationArea(state.request?.formData) ?? '');
-    updateCapacity();
     el.capacityBasis.value = capacity.basis || '';
+    state.autoBasis = capacity.formulaText || '';
+    updateCapacity();
     state.capacityImageDataUrl = validImageDataUrl(capacity.layoutImageDataUrl) ? capacity.layoutImageDataUrl : '';
     state.capacityImageName = capacity.layoutImageName || '';
     if (el.capacityLayoutFile) el.capacityLayoutFile.value = '';
@@ -226,14 +227,18 @@
       el.expectedCapacity.value = calculation ? calculation.finalKw.toFixed(2) : '';
       el.moduleCount.value = calculation ? calculation.moduleCount : '';
       el.installedKw.value = calculation ? calculation.installedKw.toFixed(3) : '';
-      el.capacityCalculation.textContent = capacityFormulaText(calculation);
+      const formula = calculation ? capacityFormulaText(calculation) : '';
+      let notes = el.capacityBasis.value.trim();
+      if (state.autoBasis && notes.startsWith(state.autoBasis)) notes = notes.slice(state.autoBasis.length).trim();
+      el.capacityBasis.value = [formula, notes].filter(Boolean).join('\n\n');
+      state.autoBasis = formula;
       return true;
     } catch (error) {
       el.capacityArea.setCustomValidity(error.message);
       el.expectedCapacity.value = '';
       el.moduleCount.value = '';
       el.installedKw.value = '';
-      el.capacityCalculation.textContent = error.message;
+      if (el.capacityCalculation) el.capacityCalculation.textContent = error.message;
       return false;
     }
   }

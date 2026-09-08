@@ -23,7 +23,7 @@ export function calculateCapacity(area) {
 export function capacityFormulaText(value) {
   if (!value) return '면적 입력 후 산정됩니다.';
   const n = number => number.toLocaleString('ko-KR', { maximumFractionDigits: 3 });
-  return `기준 면적 ${n(value.areaM2)}㎡ ÷ 모듈면적 2.700㎡ → ${n(value.moduleCount)}장(내림)\n` +
-    `${n(value.moduleCount)}장 × 640W ÷ 1,000 = ${n(value.installedKw)}kW\n` +
+  return `기준 면적 ${n(value.areaM2)}㎡ ÷ 모듈면적 2.700㎡ → ${n(value.moduleCount)}장,\n` +
+    `${n(value.moduleCount)}장 × 640W ÷ 1,000 = ${n(value.installedKw)}kW (설치용량),\n` +
     `설치공간율 70%(여유공간율 30%) 적용 → 예상 설치용량 ${value.finalKw.toFixed(2)}kW`;
 }

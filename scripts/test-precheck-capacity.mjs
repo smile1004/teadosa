@@ -71,7 +71,7 @@ const window = {location:{search:'?id=1'},TaeDoSAAuth:{
 vm.runInNewContext(await readFile(new URL('../precheck/result/js/script.js', import.meta.url),'utf8'),{window,document,URLSearchParams,Intl,console});
 await new Promise(resolve=>setImmediate(resolve));
 assert.equal(nodes.get('expected-capacity-value').textContent,'47.04 kW');
-assert.match(nodes.get('expected-capacity-calculation').textContent,/105장/);
+assert.match(nodes.get('expected-capacity-basis').textContent,/105장/);
 assert.equal(nodes.get('expected-capacity-card').hidden,false);
 assert.match(nodes.get('result-items').innerHTML,/현장조건 검토/);
 // Admin: application-area prefill, live edit, save payload, and reload.
@@ -82,7 +82,7 @@ function adminNode(id) {
     addEventListener(event, callback) { this.events[event] = callback; },
     querySelector(selector) { return adminNode(id + selector); },
     setCustomValidity(message) { this.validationMessage = message; },
-    reportValidity(){},removeAttribute(){},scrollIntoView(){}
+    reportValidity(){},removeAttribute(){},scrollIntoView(){},appendChild(){}
   });
   return adminNodes.get(id);
 }
@@ -96,20 +96,25 @@ const adminWindow = {location:{search:'?id=1'},addEventListener(event,callback){
   }
 }};
 const adminSource=(await readFile(new URL('../common/js/admin-precheck-detail.js',import.meta.url),'utf8'))
-  .replace("import('/common/js/precheck-capacity.mjs?v=2')",'Promise.resolve(capacityModule)');
-vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText,applicationArea}});
+  .replace("import('/common/js/precheck-capacity.mjs?v=3')",'Promise.resolve(capacityModule)');
+vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode,createElement:()=>({})},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText,applicationArea}});
 await adminInit();
 assert.equal(adminNode('capacity-area').value,411);
 assert.equal(adminNode('expected-capacity').value,'68.10');
 assert.equal(adminNode('capacity-module-count').value,152);
 assert.equal(adminNode('capacity-installed-kw').value,'97.280');
+assert.equal(adminNode('capacity-basis').value,capacityFormulaText(calculateCapacity(411)));
+adminNode('capacity-basis').value += '\n\n현장 추가 확인 필요';
 adminNode('capacity-area').value='813';
 adminNode('capacity-area').events.input();
 assert.equal(adminNode('expected-capacity').value,'134.85');
 assert.equal(adminNode('capacity-module-count').value,301);
+assert.equal(adminNode('capacity-basis').value,capacityFormulaText(calculateCapacity(813)) + '\n\n현장 추가 확인 필요');
 adminNode('save-review').events.click();
 await new Promise(resolve=>setImmediate(resolve));
 assert.equal(submitted.capacityAssessment.areaM2,813);
+assert.equal(adminNode('capacity-basis').value,submitted.capacityAssessment.basis);
+assert.equal((adminNode('capacity-basis').value.match(/기준 면적/g) || []).length,1);
 assert.equal(adminNode('capacity-area').value,813);
 assert.equal(adminNode('expected-capacity').value,'134.85');
 // Reproduce authentication finishing before the detail script is loaded.
@@ -120,7 +125,7 @@ adminWindow.TaeDoSAAuth.getAdminPrecheckDetail=async()=>{
   detailLoads++;
   return {response:{ok:true},result:{success:true,request:{formData:{}},review:null}};
 };
-vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText,applicationArea}});
+vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode,createElement:()=>({})},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText,applicationArea}});
 await new Promise(resolve=>setImmediate(resolve));
 assert.equal(detailLoads,1,'must initialize even when adminready has already fired');
 assert.equal(adminNode('capacity-area').value,'');
