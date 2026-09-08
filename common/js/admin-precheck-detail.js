@@ -168,6 +168,7 @@
     el.capacityBasis.value = capacity.basis || '';
     state.capacityImageDataUrl = validImageDataUrl(capacity.layoutImageDataUrl) ? capacity.layoutImageDataUrl : '';
     state.capacityImageName = capacity.layoutImageName || '';
+    if (el.capacityLayoutFile) el.capacityLayoutFile.value = '';
     renderCapacityImagePreview();
     el.overallOpinion.value = review.overallOpinion || '';
     el.customerNotice.value = review.customerNotice || DEFAULT_CUSTOMER_NOTICE;
@@ -359,6 +360,13 @@
 
   function renderCapacityImagePreview() {
     const visible = validImageDataUrl(state.capacityImageDataUrl);
+    const savedImage = state.review?.resultData?.capacityAssessment?.layoutImageDataUrl || '';
+    const status = document.getElementById('capacity-layout-status');
+    if (status) {
+      status.textContent = visible
+        ? (state.capacityImageDataUrl === savedImage ? '등록 완료' : '새 배치도 선택됨 · 저장 대기') + (state.capacityImageName ? ' — ' + state.capacityImageName : '')
+        : (validImageDataUrl(savedImage) ? '삭제 대기 · 임시저장 또는 공개하면 삭제됩니다.' : '등록된 배치도가 없습니다.');
+    }
     el.capacityLayoutPreviewWrap.hidden = !visible;
     if (visible) el.capacityLayoutPreview.src = state.capacityImageDataUrl;
     else el.capacityLayoutPreview.removeAttribute('src');
