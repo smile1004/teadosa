@@ -1410,8 +1410,10 @@ main{
 .hero .pc-hero-apply{display:inline-flex;align-items:center;justify-content:center;gap:24px;margin-top:22px;min-height:48px;padding:0 24px;border:1px solid var(--start-green);border-radius:12px;background:var(--start-green);color:#fff;font-size:15px;font-weight:800;letter-spacing:-.2px;text-decoration:none;line-height:1.4;box-shadow:0 8px 20px rgba(79,127,52,.13);transition:background .18s ease,border-color .18s ease,transform .18s ease}
 .hero .pc-hero-apply:hover{background:#40692a;border-color:#40692a;transform:translateY(-1px)}
 .hero .pc-hero-apply:focus-visible{outline:3px solid rgba(79,127,52,.25);outline-offset:3px}
-.pc-review-message{width:min(1180px,calc(100% - 40px));box-sizing:border-box;margin:32px auto 0;padding:26px 20px;border-radius:16px;background:#f0f6eb;border:1px solid #e0ead8;text-align:center}
-.pc-review-message p{margin:0;color:#677460;font-size:16px;line-height:1.8;word-break:keep-all}
-.pc-review-message strong{color:#365c22;font-size:clamp(19px,2.2vw,26px);font-weight:800;letter-spacing:-.7px}
-@media(max-width:760px){.pc-review-message{width:calc(100% - 28px);margin-top:22px;padding:22px 18px}.pc-review-message p{font-size:14px}}
+.pc-review-message{width:min(1180px,calc(100% - 40px));box-sizing:border-box;margin:0 auto;padding:78px 20px 32px;text-align:center}
+.pc-review-message p{margin:0;word-break:keep-all}
+.pc-review-lead{display:block;margin-bottom:16px;color:#788172;font-size:18px;font-weight:500;letter-spacing:-.3px}
+.pc-review-message strong{display:block;color:#253321;font-size:clamp(27px,3.2vw,40px);line-height:1.5;font-weight:800;letter-spacing:-1.3px}
+.pc-review-highlight{color:var(--start-green);background:linear-gradient(transparent 78%,#e7efdf 78%,#e7efdf 94%,transparent 94%)}
+@media(max-width:760px){.pc-review-message{width:calc(100% - 28px);padding:54px 0 16px}.pc-review-lead{font-size:15px;margin-bottom:12px}.pc-review-message strong{font-size:clamp(23px,5.5vw,32px);letter-spacing:-.8px}}
 @media(max-width:640px){.hero .pc-hero-apply{width:100%;max-width:330px;min-height:46px;box-sizing:border-box}}
