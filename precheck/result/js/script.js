@@ -177,9 +177,10 @@
           yAnchor: 1.55
         });
 
-        void marker;
-        void overlay;
-        bindMapControls(map, mapNode);
+        bindMapControls(map, mapNode, function (measuring) {
+          marker.setMap(measuring ? null : map);
+          overlay.setMap(measuring ? null : map);
+        });
         map.relayout();
         map.setCenter(center);
         mapMessage.hidden = true;
@@ -299,7 +300,7 @@
       });
   }
 
-  function bindMapControls(map, mapNode) {
+  function bindMapControls(map, mapNode, onMeasurementChange) {
     const typeButtons = document.querySelectorAll('[data-map-type]');
     const cadastralButton = document.getElementById('result-map-cadastral');
     const trafficButton = document.getElementById('result-map-traffic');
@@ -393,6 +394,7 @@
     }
 
     function setMeasureButtonState() {
+      if (onMeasurementChange) onMeasurementChange(Boolean(measureMode));
       if (distanceButton) {
         const active = measureMode === 'distance';
         distanceButton.classList.toggle('is-active', active);
