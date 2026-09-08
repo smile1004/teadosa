@@ -90,6 +90,11 @@
 .capacity-layout-preview{padding:12px;border:1px solid #dce2e8;border-radius:12px;background:#fff}
 .capacity-layout-preview img{display:block;width:100%;max-height:520px;object-fit:contain;background:#f5f7f8}
 .capacity-layout-preview button{margin-top:10px}
+.capacity-layout-meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px 14px}
+.capacity-layout-meta>strong{font-size:13px;line-height:1.5}
+.capacity-layout-meta #capacity-layout-status{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0;font-size:12px;font-weight:400;line-height:1.5;color:#7a8795;min-width:0}
+.capacity-layout-state{display:inline-block;padding:3px 8px;border-radius:5px;background:#f0f4f2;color:#577163;font-size:11px;font-weight:600;white-space:nowrap}
+.capacity-layout-filename{overflow-wrap:anywhere}
 @media(max-width:760px){.capacity-review-fields{grid-template-columns:1fr;padding:16px;gap:18px}.capacity-review-fields .capacity-final-field{padding:16px}}
 
 

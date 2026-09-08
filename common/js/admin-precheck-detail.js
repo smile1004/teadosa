@@ -363,9 +363,17 @@
     const savedImage = state.review?.resultData?.capacityAssessment?.layoutImageDataUrl || '';
     const status = document.getElementById('capacity-layout-status');
     if (status) {
-      status.textContent = visible
-        ? (state.capacityImageDataUrl === savedImage ? '등록 완료' : '새 배치도 선택됨 · 저장 대기') + (state.capacityImageName ? ' — ' + state.capacityImageName : '')
-        : (validImageDataUrl(savedImage) ? '삭제 대기 · 임시저장 또는 공개하면 삭제됩니다.' : '등록된 배치도가 없습니다.');
+      status.textContent = '';
+      const badge = document.createElement('span');
+      badge.className = 'capacity-layout-state';
+      badge.textContent = visible
+        ? (state.capacityImageDataUrl === savedImage ? '등록 완료' : '저장 대기')
+        : (validImageDataUrl(savedImage) ? '삭제 대기' : '미등록');
+      status.appendChild(badge);
+      const filename = document.createElement('span');
+      filename.className = 'capacity-layout-filename';
+      filename.textContent = visible ? state.capacityImageName : (validImageDataUrl(savedImage) ? '저장하면 삭제됩니다.' : '등록된 배치도가 없습니다.');
+      status.appendChild(filename);
     }
     el.capacityLayoutPreviewWrap.hidden = !visible;
     if (visible) el.capacityLayoutPreview.src = state.capacityImageDataUrl;
