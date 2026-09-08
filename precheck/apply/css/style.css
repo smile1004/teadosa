@@ -1102,7 +1102,7 @@ body.taedo-has-fixed-header main{
   color:#3f733b;
   font-weight:800;
 }
-.precheck-expert-notice{margin:24px 0 0;padding:22px 0 0;border-top:1px solid #dfe7d7;text-align:left}
+.precheck-expert-notice{margin:24px 0 0;padding:22px 0 0;border-top:1px solid #dfe7d7;text-align:center}
 .precheck-expert-notice p{margin:0;color:#788172;font-size:18px;line-height:1.7;letter-spacing:-.4px;word-break:keep-all}
 .precheck-expert-notice strong{color:#253321;font-weight:800}
 .precheck-expert-notice strong span{color:#d88422}
