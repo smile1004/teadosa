@@ -59,12 +59,16 @@
     setText('summary-published-at', formatDate(review.publishedAt));
 
     const data = request.formData || {};
+    const siteArea = data.site?.siteArea ?? data.siteArea;
+    const siteAreaText = siteArea !== null && siteArea !== undefined && String(siteArea).trim() !== '' && Number.isFinite(Number(siteArea)) && Number(siteArea) >= 0
+      ? Number(siteArea).toLocaleString('ko-KR') + ' ㎡'
+      : '미입력';
     const rows = [
       ['신청자', request.applicantName || '-'],
       ['설치주소', request.siteAddress || '-'],
       ['사업지 유형', siteTypeLabel(data.siteType || request.siteType)],
       ['용도', purposeLabel(data.purpose || request.purpose)],
-      ['검토 기준 예상용량', review.expectedCapacity === null || review.expectedCapacity === undefined ? '-' : Number(review.expectedCapacity).toLocaleString('ko-KR') + ' kW']
+      ['부지면적', siteAreaText]
     ];
 
     document.getElementById('result-basic-info').innerHTML = rows.map(function (row) {
