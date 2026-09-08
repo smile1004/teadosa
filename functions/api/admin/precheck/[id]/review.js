@@ -45,6 +45,7 @@ export async function onRequestPut(context) {
     const items = normalizeItems(body?.items);
     const capacityAssessment = normalizeCapacityAssessment(body?.capacityAssessment);
     Object.assign(capacityAssessment, {
+      basis: capacityAssessment.basis || capacityFormulaText(calculation),
       areaM2: calculation?.areaM2 ?? null,
       calculation,
       formulaText: capacityFormulaText(calculation)
