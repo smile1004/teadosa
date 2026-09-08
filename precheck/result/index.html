@@ -9,7 +9,7 @@
   <link href="common/css/shared-layout.css" rel="stylesheet">
   <link href="common/css/shared-menu.css" rel="stylesheet">
   <link href="common/css/common.css" rel="stylesheet">
-  <link href="precheck/result/css/style.css?v=3.4" rel="stylesheet">
+  <link href="precheck/result/css/style.css?v=3.6" rel="stylesheet">
 </head>
 <body>
   <script src="common/js/site-config.js"></script>
@@ -70,6 +70,17 @@
           <section class="card">
             <div class="result-section-head"><h2>검토 결과</h2></div>
             <div id="result-items" class="result-items"></div>
+          <section id="expected-capacity-card" class="expected-capacity-card" hidden>
+            <h3>예상 설치용량</h3>
+            <div class="expected-capacity-summary"><span>사전검토 예상용량</span><strong id="expected-capacity-value">-</strong></div>
+            <p id="expected-capacity-basis" class="expected-capacity-basis"></p>
+            <p id="expected-capacity-calculation" class="expected-capacity-calculation"></p>
+            <figure id="capacity-layout-figure" class="capacity-layout-figure" hidden>
+              <img id="capacity-layout-image" alt="참고용 예상 태양광 모듈 배치도">
+              <figcaption>[참고용] 예상 태양광 모듈 배치도</figcaption>
+            </figure>
+            <div class="expected-capacity-notice">본 예상 설치용량과 배치도는 신청자료를 기준으로 작성한 사전검토용 참고자료이며, 실제 공사계획 또는 확정된 설비배치안이 아닙니다. 최종 설치용량은 현장조사와 상세설계를 통해 확정해야 합니다.</div>
+          </section>
           </section>
 
           <section class="card">
@@ -93,6 +104,6 @@
 
   <script src="common/js/components/footer.js"></script>
   <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=994a8bd27a552e20d6853062c8e6fb27&libraries=services&autoload=false"></script>
-  <script src="precheck/result/js/script.js?v=3.3"></script>
+  <script src="precheck/result/js/script.js?v=3.5"></script>
 </body>
 </html>

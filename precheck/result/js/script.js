@@ -91,6 +91,8 @@
       }).join('');
     }
 
+    renderExpectedCapacity(review);
+
     document.getElementById('overall-opinion-view').textContent = review.overallOpinion || '-';
 
     const noticeCard = document.getElementById('customer-notice-card');
@@ -102,6 +104,28 @@
     } else {
       noticeCard.hidden = true;
     }
+  }
+
+  function renderExpectedCapacity(review) {
+    const card = document.getElementById('expected-capacity-card');
+    const valueNode = document.getElementById('expected-capacity-value');
+    const basisNode = document.getElementById('expected-capacity-basis');
+    const figure = document.getElementById('capacity-layout-figure');
+    const image = document.getElementById('capacity-layout-image');
+    if (!card || !valueNode || !basisNode || !figure || !image) return;
+
+    const capacity = review.resultData?.capacityAssessment || {};
+    const hasValue = review.expectedCapacity !== null && review.expectedCapacity !== undefined && review.expectedCapacity !== '';
+    const hasImage = /^data:image\/(jpeg|png|webp);base64,/i.test(String(capacity.layoutImageDataUrl || ''));
+    card.hidden = false;
+
+    valueNode.textContent = hasValue ? Number(review.expectedCapacity).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kW' : '면적 확인 후 산정';
+    const calculationNode = document.getElementById('expected-capacity-calculation');
+    if (calculationNode) calculationNode.textContent = capacity.formulaText || '';
+    basisNode.textContent = capacity.basis || '신청자료와 확인 가능한 면적을 기준으로 개략 산정했습니다.';
+    figure.hidden = !hasImage;
+    if (hasImage) image.src = capacity.layoutImageDataUrl;
+    else image.removeAttribute('src');
   }
 
   function renderInstallationMap(address) {

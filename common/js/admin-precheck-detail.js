@@ -4,12 +4,15 @@
   const auth = window.TaeDoSAAuth;
   if (!auth) return;
 
-  const state = { requestId: null, request: null, review: null };
+  const state = { requestId: null, request: null, review: null, capacityImageDataUrl: '', capacityImageName: '' };
   const el = {};
+  let calculateCapacity;
+  let capacityFormulaText;
 
   window.addEventListener('teadosa:adminready', init, { once: true });
 
   async function init() {
+    ({ calculateCapacity, capacityFormulaText } = await import('/common/js/precheck-capacity.mjs?v=1'));
     const params = new URLSearchParams(window.location.search);
     state.requestId = Number.parseInt(params.get('id'), 10);
 
@@ -37,6 +40,13 @@
     el.publishStatus = document.getElementById('publish-status-badge');
     el.installationPossible = document.getElementById('installation-possible');
     el.expectedCapacity = document.getElementById('expected-capacity');
+    el.capacityArea = document.getElementById('capacity-area');
+    el.capacityCalculation = document.getElementById('capacity-calculation');
+    el.capacityBasis = document.getElementById('capacity-basis');
+    el.capacityLayoutFile = document.getElementById('capacity-layout-file');
+    el.capacityLayoutPreviewWrap = document.getElementById('capacity-layout-preview-wrap');
+    el.capacityLayoutPreview = document.getElementById('capacity-layout-preview');
+    el.removeCapacityLayout = document.getElementById('remove-capacity-layout');
     el.items = document.getElementById('review-items');
     el.overallOpinion = document.getElementById('overall-opinion');
     el.customerNotice = document.getElementById('customer-notice');
@@ -46,11 +56,14 @@
   }
 
   function bindEvents() {
+    el.capacityArea.addEventListener('input', updateCapacity);
     el.save.addEventListener('click', function () { saveReview(false); });
     el.publish.addEventListener('click', function () {
       if (!window.confirm('검토결과를 저장하고 회원에게 공개하시겠습니까?')) return;
       saveReview(true);
     });
+    if (el.capacityLayoutFile) el.capacityLayoutFile.addEventListener('change', handleCapacityImage);
+    if (el.removeCapacityLayout) el.removeCapacityLayout.addEventListener('click', clearCapacityImage);
   }
 
   async function loadDetail() {
@@ -133,6 +146,14 @@
 
     el.installationPossible.value = review.installationPossible || 'undetermined';
     el.expectedCapacity.value = review.expectedCapacity ?? '';
+    const capacity = review.resultData?.capacityAssessment || {};
+    el.capacityArea.value = Object.prototype.hasOwnProperty.call(capacity, 'areaM2')
+      ? (capacity.areaM2 ?? '') : (state.request?.formData?.siteArea ?? '');
+    updateCapacity();
+    el.capacityBasis.value = capacity.basis || '';
+    state.capacityImageDataUrl = validImageDataUrl(capacity.layoutImageDataUrl) ? capacity.layoutImageDataUrl : '';
+    state.capacityImageName = capacity.layoutImageName || '';
+    renderCapacityImagePreview();
     el.overallOpinion.value = review.overallOpinion || '';
     el.customerNotice.value = review.customerNotice || DEFAULT_CUSTOMER_NOTICE;
     el.internalMemo.value = review.internalMemo || '';
@@ -182,10 +203,32 @@
     });
   }
 
+  function updateCapacity() {
+    try {
+      const calculation = calculateCapacity(el.capacityArea.value);
+      el.capacityArea.setCustomValidity('');
+      el.expectedCapacity.value = calculation ? calculation.finalKw.toFixed(2) : '';
+      el.capacityCalculation.textContent = capacityFormulaText(calculation);
+      return true;
+    } catch (error) {
+      el.capacityArea.setCustomValidity(error.message);
+      el.expectedCapacity.value = '';
+      el.capacityCalculation.textContent = error.message;
+      return false;
+    }
+  }
+
   async function saveReview(publish) {
+    if (!updateCapacity()) { el.capacityArea.reportValidity(); return; }
     const payload = {
       installationPossible: el.installationPossible.value,
       expectedCapacity: el.expectedCapacity.value === '' ? null : Number(el.expectedCapacity.value),
+      capacityAssessment: {
+        areaM2: el.capacityArea.value === '' ? null : Number(el.capacityArea.value),
+        basis: el.capacityBasis.value.trim(),
+        layoutImageDataUrl: state.capacityImageDataUrl,
+        layoutImageName: state.capacityImageName
+      },
       items: collectItems(),
       overallOpinion: el.overallOpinion.value.trim(),
       customerNotice: el.customerNotice.value.trim(),
@@ -237,6 +280,73 @@
     [el.save, el.publish].forEach(function (node) {
       if (node) node.disabled = active;
     });
+  }
+
+  async function handleCapacityImage(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (!/^image\/(jpeg|png|webp)$/i.test(file.type)) {
+      showActionMessage('배치도는 JPG, PNG 또는 WEBP 이미지만 등록할 수 있습니다.', true);
+      event.target.value = '';
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      showActionMessage('배치도 이미지 크기는 8MB 이하여야 합니다.', true);
+      event.target.value = '';
+      return;
+    }
+    try {
+      const optimizedImage = await optimizeImage(file, 1600, 0.82);
+      if (optimizedImage.length > 2500000) throw new Error('IMAGE_TOO_LARGE');
+      state.capacityImageDataUrl = optimizedImage;
+      state.capacityImageName = file.name.slice(0, 120);
+      renderCapacityImagePreview();
+      showActionMessage('배치도 이미지가 준비되었습니다. 임시저장 또는 공개 버튼을 눌러 저장해 주세요.');
+    } catch {
+      showActionMessage('배치도 이미지를 처리하지 못했습니다.', true);
+    }
+  }
+
+  function optimizeImage(file, maxWidth, quality) {
+    return new Promise(function (resolve, reject) {
+      const reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = function () {
+        const image = new Image();
+        image.onerror = reject;
+        image.onload = function () {
+          const scale = Math.min(1, maxWidth / image.width);
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(image.width * scale));
+          canvas.height = Math.max(1, Math.round(image.height * scale));
+          const context = canvas.getContext('2d');
+          context.fillStyle = '#ffffff';
+          context.fillRect(0, 0, canvas.width, canvas.height);
+          context.drawImage(image, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        image.src = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function clearCapacityImage() {
+    state.capacityImageDataUrl = '';
+    state.capacityImageName = '';
+    if (el.capacityLayoutFile) el.capacityLayoutFile.value = '';
+    renderCapacityImagePreview();
+  }
+
+  function renderCapacityImagePreview() {
+    const visible = validImageDataUrl(state.capacityImageDataUrl);
+    el.capacityLayoutPreviewWrap.hidden = !visible;
+    if (visible) el.capacityLayoutPreview.src = state.capacityImageDataUrl;
+    else el.capacityLayoutPreview.removeAttribute('src');
+  }
+
+  function validImageDataUrl(value) {
+    return /^data:image\/(jpeg|png|webp);base64,/i.test(String(value || ''));
   }
 
   function showActionMessage(message, error) {

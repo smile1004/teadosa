@@ -1,4 +1,5 @@
 import { requireAdmin, jsonResponse } from '../../../../_lib/admin-auth.js';
+import { calculateCapacity, capacityFormulaText } from '../../../../../common/js/precheck-capacity.mjs';
 
 const INSTALLATION_STATUS = ['undetermined', 'possible', 'conditional', 'not_possible'];
 const ITEM_STATUS = ['info', 'ok', 'conditional', 'hold', 'not_possible'];
@@ -22,7 +23,7 @@ export async function onRequestPut(context) {
       return jsonResponse({ success: false, code: 'INVALID_JSON', message: '입력 내용을 확인해 주세요.' }, 400);
     }
 
-    const target = await env.DB.prepare('SELECT id, request_no FROM precheck_requests WHERE id = ? LIMIT 1')
+    const target = await env.DB.prepare('SELECT id, request_no, form_data FROM precheck_requests WHERE id = ? LIMIT 1')
       .bind(requestId).first();
 
     if (!target) {
@@ -30,11 +31,24 @@ export async function onRequestPut(context) {
     }
 
     const installationPossible = enumValue(body?.installationPossible, INSTALLATION_STATUS, 'undetermined');
-    const expectedCapacity = nullableNumber(body?.expectedCapacity);
+    const area = Object.prototype.hasOwnProperty.call(body?.capacityAssessment || {}, 'areaM2')
+      ? body.capacityAssessment.areaM2 : parseJson(target.form_data, {}).siteArea;
+    let calculation;
+    try { calculation = calculateCapacity(area); }
+    catch (error) {
+      return jsonResponse({ success: false, code: 'INVALID_CAPACITY_AREA', message: error.message }, 400);
+    }
+    const expectedCapacity = calculation?.finalKw ?? null;
     const overallOpinion = textValue(body?.overallOpinion, 5000);
     const customerNotice = textValue(body?.customerNotice, 5000) || DEFAULT_CUSTOMER_NOTICE;
     const internalMemo = textValue(body?.internalMemo, 5000);
     const items = normalizeItems(body?.items);
+    const capacityAssessment = normalizeCapacityAssessment(body?.capacityAssessment);
+    Object.assign(capacityAssessment, {
+      areaM2: calculation?.areaM2 ?? null,
+      calculation,
+      formulaText: capacityFormulaText(calculation)
+    });
     const publish = Boolean(body?.publish);
 
     if (publish && installationPossible === 'undetermined') {
@@ -45,8 +59,8 @@ export async function onRequestPut(context) {
     }
 
     const nowIso = new Date().toISOString();
-    const resultVersion = 'PRECHECK_RESULT_V2';
-    const resultData = JSON.stringify({ items });
+    const resultVersion = 'PRECHECK_RESULT_V3';
+    const resultData = JSON.stringify({ items, capacityAssessment });
 
     const existingReview = await env.DB.prepare('SELECT id, published_at FROM precheck_reviews WHERE request_id = ? LIMIT 1')
       .bind(requestId).first();
@@ -200,11 +214,6 @@ function enumValue(value, allowed, fallback) {
   const v = typeof value === 'string' ? value.trim() : '';
   return allowed.includes(v) ? v : fallback;
 }
-function nullableNumber(value) {
-  if (value === '' || value === null || value === undefined) return null;
-  const number = Number(value);
-  return Number.isFinite(number) && number >= 0 ? number : null;
-}
 function normalizeItems(items) {
   if (!Array.isArray(items)) return [];
   return items.slice(0, 30).map((item, index) => ({
@@ -213,6 +222,15 @@ function normalizeItems(items) {
     status: enumValue(item?.status, ITEM_STATUS, 'info'),
     content: textValue(item?.content, 3000)
   })).filter((item) => item.title || item.content);
+}
+function normalizeCapacityAssessment(value) {
+  const image = typeof value?.layoutImageDataUrl === 'string' ? value.layoutImageDataUrl.trim() : '';
+  const validImage = /^data:image\/(jpeg|png|webp);base64,/i.test(image) && image.length <= 2500000;
+  return {
+    basis: textValue(value?.basis, 2000),
+    layoutImageDataUrl: validImage ? image : '',
+    layoutImageName: textValue(value?.layoutImageName, 120)
+  };
 }
 function parseJson(value, fallback) {
   if (!value) return fallback;
