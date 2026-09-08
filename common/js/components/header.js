@@ -26,6 +26,13 @@
     'href="start/construction-plan/index.html"><strong>공사계획신고</strong>'
   );
 
+  ['materials', 'plant-listings'].forEach(function (section) {
+    headerHtml = headerHtml.replace(
+      'class="nav-link" href="index.html#' + section + '"',
+      'class="nav-link" role="link" aria-disabled="true"'
+    );
+  });
+
   var config = window.TAEDOSA_CONFIG || {};
   var routes = config.routes || {};
   var routeMap = {
