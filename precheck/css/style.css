@@ -1410,10 +1410,10 @@ main{
 .hero .pc-hero-apply{display:inline-flex;align-items:center;justify-content:center;gap:24px;margin-top:22px;min-height:48px;padding:0 24px;border:1px solid var(--start-green);border-radius:12px;background:var(--start-green);color:#fff;font-size:15px;font-weight:800;letter-spacing:-.2px;text-decoration:none;line-height:1.4;box-shadow:0 8px 20px rgba(79,127,52,.13);transition:background .18s ease,border-color .18s ease,transform .18s ease}
 .hero .pc-hero-apply:hover{background:#40692a;border-color:#40692a;transform:translateY(-1px)}
 .hero .pc-hero-apply:focus-visible{outline:3px solid rgba(79,127,52,.25);outline-offset:3px}
-.pc-review-message{width:min(1180px,calc(100% - 40px));box-sizing:border-box;margin:0 auto;padding:78px 20px 32px;text-align:center}
-.pc-review-message p{margin:0;word-break:keep-all}
-.pc-review-lead{display:block;margin-bottom:16px;color:#788172;font-size:18px;font-weight:500;letter-spacing:-.3px}
-.pc-review-message strong{display:block;color:#253321;font-size:clamp(27px,3.2vw,40px);line-height:1.5;font-weight:800;letter-spacing:-1.3px}
-.pc-review-highlight{color:var(--start-green);background:linear-gradient(transparent 78%,#e7efdf 78%,#e7efdf 94%,transparent 94%)}
-@media(max-width:760px){.pc-review-message{width:calc(100% - 28px);padding:54px 0 16px}.pc-review-lead{font-size:15px;margin-bottom:12px}.pc-review-message strong{font-size:clamp(23px,5.5vw,32px);letter-spacing:-.8px}}
+.pc-review-message{width:min(1120px,calc(100% - 56px));box-sizing:border-box;margin:0 auto;padding:64px 0 20px;text-align:left}
+.pc-review-message p{display:grid;grid-template-columns:1fr 2.5fr;align-items:center;gap:36px;margin:0;word-break:keep-all}
+.pc-review-lead{display:block;color:#788172;font-size:18px;font-weight:500;letter-spacing:-.3px}
+.pc-review-message strong{display:block;padding-left:36px;border-left:3px solid var(--start-green);color:#253321;font-size:clamp(26px,2.8vw,36px);line-height:1.55;font-weight:800;letter-spacing:-1.2px}
+.pc-review-highlight{color:var(--start-green)}
+@media(max-width:760px){.pc-review-message{width:calc(100% - 40px);padding:44px 0 12px}.pc-review-message p{grid-template-columns:1fr;gap:14px}.pc-review-lead{font-size:15px;padding-left:19px}.pc-review-message strong{font-size:clamp(22px,5.3vw,30px);letter-spacing:-.8px;padding-left:16px}}
 @media(max-width:640px){.hero .pc-hero-apply{width:100%;max-width:330px;min-height:46px;box-sizing:border-box}}
