@@ -53,6 +53,9 @@
 <p>기본정보를 입력하면 검토 결과와 이어서 가능한 서비스를 안내받을 수 있습니다.</p>
 </div>
 </a>
+<aside class="pc-review-message" aria-label="전문 담당자 직접 검토 안내">
+  <p>AI 자동 판정 대신, <strong><span class="pc-review-highlight">전문 담당자가 직접</span> 정확하고 정밀하게 검토합니다.</strong></p>
+</aside>
 </div>
 </section>`
   };
