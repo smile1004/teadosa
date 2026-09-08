@@ -95,12 +95,44 @@ vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:admi
 await adminInit();
 assert.equal(adminNode('capacity-area').value,411);
 assert.equal(adminNode('expected-capacity').value,'68.10');
+assert.equal(adminNode('capacity-module-count').value,152);
+assert.equal(adminNode('capacity-installed-kw').value,'97.280');
 adminNode('capacity-area').value='813';
 adminNode('capacity-area').events.input();
 assert.equal(adminNode('expected-capacity').value,'134.85');
+assert.equal(adminNode('capacity-module-count').value,301);
 adminNode('save-review').events.click();
 await new Promise(resolve=>setImmediate(resolve));
 assert.equal(submitted.capacityAssessment.areaM2,813);
 assert.equal(adminNode('capacity-area').value,813);
 assert.equal(adminNode('expected-capacity').value,'134.85');
-console.log('PASS: supplied examples, edge cases, server insert/update/publish, tamper resistance, image preservation, result rendering, admin prefill/edit/save/reload.');
+// Reproduce authentication finishing before the detail script is loaded.
+adminNodes.clear();
+adminNode('admin-protected-content').hidden=false;
+let detailLoads=0;
+adminWindow.TaeDoSAAuth.getAdminPrecheckDetail=async()=>{
+  detailLoads++;
+  return {response:{ok:true},result:{success:true,request:{formData:{}},review:null}};
+};
+vm.runInNewContext(adminSource,{window:adminWindow,document:{getElementById:adminNode},URLSearchParams,Intl,console,capacityModule:{calculateCapacity,capacityFormulaText}});
+await new Promise(resolve=>setImmediate(resolve));
+assert.equal(detailLoads,1,'must initialize even when adminready has already fired');
+assert.equal(adminNode('capacity-area').value,'');
+assert.equal(adminNode('expected-capacity').value,'');
+adminNode('capacity-area').value='411';
+adminNode('capacity-area').events.input();
+assert.equal(adminNode('expected-capacity').value,'68.10');
+assert.equal(adminNode('capacity-module-count').value,152);
+assert.equal(adminNode('capacity-installed-kw').value,'97.280');
+await adminInit();
+assert.equal(detailLoads,1,'duplicate ready event must not overwrite edits');
+adminNode('capacity-area').value='';
+adminNode('capacity-area').events.change();
+assert.equal(adminNode('capacity-module-count').value,'');
+assert.equal(adminNode('capacity-installed-kw').value,'');
+assert.equal(adminNode('expected-capacity').value,'');
+const adminHtml=await readFile(new URL('../admin/precheck/detail/index.html',import.meta.url),'utf8');
+for (const [id,value] of [['capacity-module-area','2.700'],['capacity-module-power','640'],['capacity-free-rate','30'],['capacity-install-rate','70']]) {
+  assert.match(adminHtml,new RegExp(`id="${id}"[^>]*value="${value}"[^>]*readonly`));
+}
+console.log('PASS: supplied examples, server persistence, result rendering, admin prefill/edit/save/reload, late script loading, empty area, intermediate fields and default constants.');

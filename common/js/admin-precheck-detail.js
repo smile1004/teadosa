@@ -8,15 +8,25 @@
   const el = {};
   let calculateCapacity;
   let capacityFormulaText;
+  let initializationStarted = false;
 
   window.addEventListener('teadosa:adminready', init, { once: true });
+  // Authentication may finish while this script is still downloading.
+  if (document.getElementById('admin-protected-content')?.hidden === false) init();
 
   async function init() {
-    ({ calculateCapacity, capacityFormulaText } = await import('/common/js/precheck-capacity.mjs?v=1'));
+    if (initializationStarted) return;
+    initializationStarted = true;
+    mapElements();
+    try {
+      ({ calculateCapacity, capacityFormulaText } = await import('/common/js/precheck-capacity.mjs?v=1'));
+    } catch (error) {
+      initializationStarted = false;
+      showMessage('자동 계산 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요.', true);
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     state.requestId = Number.parseInt(params.get('id'), 10);
-
-    mapElements();
 
     if (!Number.isInteger(state.requestId) || state.requestId < 1) {
       showMessage('올바른 사전검토 신청번호가 아닙니다.', true);
@@ -42,6 +52,8 @@
     el.expectedCapacity = document.getElementById('expected-capacity');
     el.capacityArea = document.getElementById('capacity-area');
     el.capacityCalculation = document.getElementById('capacity-calculation');
+    el.moduleCount = document.getElementById('capacity-module-count');
+    el.installedKw = document.getElementById('capacity-installed-kw');
     el.capacityBasis = document.getElementById('capacity-basis');
     el.capacityLayoutFile = document.getElementById('capacity-layout-file');
     el.capacityLayoutPreviewWrap = document.getElementById('capacity-layout-preview-wrap');
@@ -57,6 +69,7 @@
 
   function bindEvents() {
     el.capacityArea.addEventListener('input', updateCapacity);
+    el.capacityArea.addEventListener('change', updateCapacity);
     el.save.addEventListener('click', function () { saveReview(false); });
     el.publish.addEventListener('click', function () {
       if (!window.confirm('검토결과를 저장하고 회원에게 공개하시겠습니까?')) return;
@@ -208,11 +221,15 @@
       const calculation = calculateCapacity(el.capacityArea.value);
       el.capacityArea.setCustomValidity('');
       el.expectedCapacity.value = calculation ? calculation.finalKw.toFixed(2) : '';
+      el.moduleCount.value = calculation ? calculation.moduleCount : '';
+      el.installedKw.value = calculation ? calculation.installedKw.toFixed(3) : '';
       el.capacityCalculation.textContent = capacityFormulaText(calculation);
       return true;
     } catch (error) {
       el.capacityArea.setCustomValidity(error.message);
       el.expectedCapacity.value = '';
+      el.moduleCount.value = '';
+      el.installedKw.value = '';
       el.capacityCalculation.textContent = error.message;
       return false;
     }
