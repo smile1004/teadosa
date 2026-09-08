@@ -1106,4 +1106,5 @@ body.taedo-has-fixed-header main{
 .precheck-expert-notice p{margin:0;color:#788172;font-size:18px;line-height:1.7;letter-spacing:-.4px;word-break:keep-all}
 .precheck-expert-notice strong{color:#253321;font-weight:800}
 .precheck-expert-notice strong span{color:#d88422}
+.capacity-area-guide{grid-column:1 / -1;margin:0;color:#68766a;font-size:13px;line-height:1.7;word-break:keep-all}
 @media(max-width:640px){.precheck-expert-notice{padding-top:18px;margin-top:20px}.precheck-expert-notice p{font-size:15px}}
