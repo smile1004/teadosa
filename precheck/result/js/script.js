@@ -121,7 +121,7 @@
     valueNode.textContent = hasValue ? Number(review.expectedCapacity).toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' kW' : '면적 확인 후 산정';
     const calculationNode = document.getElementById('expected-capacity-calculation');
     if (calculationNode) calculationNode.textContent = capacity.formulaText || '';
-    basisNode.textContent = capacity.basis || '신청자료와 확인 가능한 면적을 기준으로 개략 산정했습니다.';
+    basisNode.textContent = capacity.basis || '신청서에 기재된 부지면적에 모듈 규격과 설치공간율을 적용하여 예상 설치용량을 산정했습니다.';
     figure.hidden = !hasImage;
     if (hasImage) image.src = capacity.layoutImageDataUrl;
     else image.removeAttribute('src');
