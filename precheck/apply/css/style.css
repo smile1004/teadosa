@@ -1106,5 +1106,13 @@ body.taedo-has-fixed-header main{
 .precheck-expert-notice p{margin:0;color:#788172;font-size:18px;line-height:1.7;letter-spacing:-.4px;word-break:keep-all}
 .precheck-expert-notice strong{color:#253321;font-weight:800}
 .precheck-expert-notice strong span{color:#d88422}
-.capacity-area-guide{grid-column:1 / -1;margin:0;color:#68766a;font-size:13px;line-height:1.7;word-break:keep-all}
 @media(max-width:640px){.precheck-expert-notice{padding-top:18px;margin-top:20px}.precheck-expert-notice p{font-size:15px}}
+.precheck-form-card .required{color:#d88422!important}
+.precheck-form-card .section-title-row h3{font-size:19px}
+.precheck-form-card .section-title-row p{font-size:14px;line-height:1.6}
+.precheck-form-card label,.precheck-form-card .choice span{font-size:15px!important}
+.precheck-form-card input,.precheck-form-card textarea,.precheck-form-card select{font-size:16px!important}
+.precheck-form-card .input-with-unit span{font-size:14px}
+.precheck-form-card .textarea-meta{font-size:13px}
+.precheck-form-card .guide,.precheck-login-guide,.precheck-top-login-notice{font-size:14px!important}
+.precheck-form-card button{font-size:15px!important}
