@@ -52,7 +52,7 @@ function changeAddressMode(mode) {
     for (const [name,value] of Object.entries(values)) form.elements.namedItem(name).value = value || '';
     document.getElementById('selected-address').value = (data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress) || data.address;
     document.getElementById('rows').replaceChildren(); document.getElementById('raw').textContent = '아직 조회하지 않았습니다.';
-    document.getElementById('status').textContent = '주소가 선택됐습니다. 한전 조회는 지번을 제외한 지역 범위로 진행합니다.';
+    document.getElementById('status').textContent = '주소가 선택됐습니다. 입력된 지번을 포함해 조회합니다.';
     searchDialog.close();
   }}).embed(roadPanel);
 }
@@ -120,8 +120,7 @@ document.getElementById('address-search').addEventListener('click', () => {
 form.addEventListener('submit', event => {
   event.preventDefault();
   const input = Object.fromEntries(new FormData(form));
-  delete input.addrJibun;
-  runKepco(input, !String(input.substCd || '').trim());
+  runKepco(input, !String(input.addrJibun || '').trim() && !String(input.substCd || '').trim());
 });
 async function runKepco(input, regional) {
   const button = document.getElementById('query-button');
@@ -139,7 +138,7 @@ async function runKepco(input, regional) {
     status.textContent = (result.message || '응답을 확인해 주세요.');
     if (result.upstreamStatus === 404) status.textContent = '주소 입력은 완료됐지만 한전 API가 해당 조회 조건에 404 NotFound를 반환했습니다. 주소 검색 오류나 여유용량 0을 뜻하지 않습니다.';
 
-    if (regional) status.textContent = `[${scope} 범위 조회 · 지번 제외] ${result.message || '응답을 확인해 주세요.'} 이 결과는 선택한 필지의 연결 선로를 확정하지 않습니다.`;
+    if (regional) status.textContent = `[${scope} 범위 조회 · 지번 제외] ${status.textContent} 이 결과는 선택한 필지의 연결 선로를 확정하지 않습니다.`;
     if (result.elapsedMs !== undefined) status.textContent += ` (${result.elapsedMs}ms)`;
     raw.textContent = JSON.stringify({...result,queryScope:regional?'지역 범위 (지번 제외)':'입력 조건',requestConditions:input}, null, 2);
     for (const row of result.rows || []) {
