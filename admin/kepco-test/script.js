@@ -19,7 +19,48 @@ openSearch.textContent = '주소 검색창 열기';
 searchFields.before(openSearch);
 searchDialog.append(dialogTitle, closeSearch, searchFields, addressStatus, document.getElementById('land-results'));
 document.body.append(searchDialog);
-openSearch.addEventListener('click', () => { searchDialog.showModal(); addressQuery.focus(); });
+let addressMode = 'road';
+let searchVersion = 0;
+const modeBar = document.createElement('div'); modeBar.className = 'address-modes';
+const roadTab = document.createElement('button'); roadTab.type = 'button'; roadTab.textContent = '도로명 검색';
+const parcelTab = document.createElement('button'); parcelTab.type = 'button'; parcelTab.textContent = '지번 검색';
+modeBar.append(roadTab, parcelTab); searchFields.before(modeBar);
+const roadPanel = document.createElement('div'); roadPanel.className = 'road-search-panel';
+const switchParcel = document.createElement('button'); switchParcel.type = 'button'; switchParcel.className = 'switch-parcel';
+switchParcel.textContent = '도로명주소가 검색되지 않나요? 지번으로 검색';
+searchFields.before(roadPanel, switchParcel);
+function changeAddressMode(mode) {
+  addressMode = mode; searchVersion++;
+  roadTab.setAttribute('aria-pressed', String(mode === 'road'));
+  parcelTab.setAttribute('aria-pressed', String(mode === 'parcel'));
+  roadPanel.hidden = switchParcel.hidden = mode !== 'road';
+  searchFields.hidden = mode !== 'parcel';
+  document.getElementById('land-results').replaceChildren(); addressStatus.textContent = '';
+  if (mode === 'parcel') { addressQuery.placeholder = '예: 완주군 이서면 용서리 571, 고산리 산335'; addressQuery.focus(); return; }
+  const Postcode = window.daum?.Postcode || window.kakao?.Postcode;
+  if (!Postcode) { addressStatus.textContent = '도로명 검색을 불러오지 못했습니다. 지번 검색을 이용하거나 새로고침해 주세요.'; return; }
+  const version = searchVersion; roadPanel.replaceChildren();
+  new Postcode({width:'100%',height:'100%',onsearch(data) {
+    if (version !== searchVersion) return;
+    if (!data.count) addressStatus.textContent = '도로명 검색 결과가 없습니다. 위 지번 검색으로 전환해 주세요.';
+  },oncomplete(data) {
+    if (version !== searchVersion) return;
+    const code = String(data.bcode || '');
+    if (!/^\d{10}$/.test(code)) { addressStatus.textContent = '지역코드를 확인하지 못했습니다. 지번 검색을 이용해 주세요.'; return; }
+    const lot = (data.jibunAddress || '').match(/(?:^|\s)(산\s*)?(\d+(?:-\d+)?)\s*$/);
+    const values = {metroCd:code.slice(0,2),cityCd:code.slice(2,5),addrLidong:data.bname1 || data.bname,addrLi:data.bname1 ? (data.bname2 || data.bname) : '',addrJibun:lot ? (lot[1]?'산':'')+lot[2] : '',substCd:''};
+    for (const [name,value] of Object.entries(values)) form.elements.namedItem(name).value = value || '';
+    document.getElementById('selected-address').value = (data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress) || data.address;
+    document.getElementById('rows').replaceChildren(); document.getElementById('raw').textContent = '아직 조회하지 않았습니다.';
+    document.getElementById('status').textContent = '주소가 선택됐습니다. 한전 조회는 지번을 제외한 지역 범위로 진행합니다.';
+    searchDialog.close();
+  }}).embed(roadPanel);
+}
+roadTab.addEventListener('click',()=>changeAddressMode('road'));
+parcelTab.addEventListener('click',()=>changeAddressMode('parcel'));
+switchParcel.addEventListener('click',()=>changeAddressMode('parcel'));
+openSearch.addEventListener('click', () => { searchDialog.showModal(); changeAddressMode('road'); });
+searchDialog.addEventListener('close',()=>{searchVersion++;});
 document.getElementById('address-search').textContent = '검색';
 addressQuery.addEventListener('keydown', event => {
   if (event.key === 'Enter' && !event.isComposing) { event.preventDefault(); document.getElementById('address-search').click(); }
@@ -29,6 +70,7 @@ document.getElementById('address-search').addEventListener('click', () => {
   if (!query) { addressStatus.textContent = '위 주소 검색어 칸에 도로명주소 또는 토지 지번을 입력해 주세요.'; addressQuery.focus(); return; }
   searchParcel(query);
 });async function searchParcel(query) {
+  const version = ++searchVersion;
   const results = document.getElementById('land-results');
   results.replaceChildren();
 
@@ -48,6 +90,7 @@ document.getElementById('address-search').addEventListener('click', () => {
         }, { analyze_type: 'exact', size: 30 });
       });
     });
+    if (version !== searchVersion || addressMode !== 'parcel') return;
     const parcels = rows.filter(row => row.address?.b_code && row.address?.main_address_no);
     addressStatus.textContent = parcels.length ? '검색된 지번주소를 선택해 주세요.' : '지번 검색 결과가 없습니다. 시군구·읍면동·리·번지를 확인해 주세요.';
     for (const row of parcels) {
@@ -69,6 +112,7 @@ document.getElementById('address-search').addEventListener('click', () => {
       results.appendChild(choose);
     }
   } catch {
+    if (version !== searchVersion) return;
     addressStatus.textContent = '지도 주소 검색에 연결하지 못했습니다. 카카오 지도 API의 허용 도메인 및 연결 상태를 확인해 주세요.';
   } finally { button.disabled = false; }
 }
