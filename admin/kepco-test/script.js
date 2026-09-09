@@ -72,10 +72,7 @@ document.getElementById('address-search').addEventListener('click', () => {
     addressStatus.textContent = '지도 주소 검색에 연결하지 못했습니다. 카카오 지도 API의 허용 도메인 및 연결 상태를 확인해 주세요.';
   } finally { button.disabled = false; }
 }
-if (location.hostname === '127.0.0.1' || location.hostname === 'localhost') {
-  const login = document.querySelector('a[href="/admin/login/"]');
-  if (login) login.hidden = true;
-}
+
 form.addEventListener('submit', async event => {
   event.preventDefault();
   const button = document.getElementById('query-button');
@@ -86,7 +83,7 @@ form.addEventListener('submit', async event => {
   try {
     const response = await fetch('/api/admin/kepco-test', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.fromEntries(new FormData(form))) });
     const result = await response.json();
-    status.textContent = [401,403].includes(response.status) ? '관리자 로그인 후 다시 조회해 주세요.' : (result.message || '응답을 확인해 주세요.');
+    status.textContent = (result.message || '응답을 확인해 주세요.');
     if (result.upstreamStatus === 404) status.textContent = '주소 입력은 완료됐지만 한전 API가 해당 조회 조건에 404 NotFound를 반환했습니다. 주소 검색 오류나 여유용량 0을 뜻하지 않습니다.';
     if (result.elapsedMs !== undefined) status.textContent += ` (${result.elapsedMs}ms)`;
     raw.textContent = JSON.stringify(result, null, 2);
@@ -101,4 +98,3 @@ form.addEventListener('submit', async event => {
   } catch { status.textContent = '조회 서버에 연결할 수 없습니다. 정적 미리보기에서는 API가 작동하지 않습니다.'; }
   finally { button.disabled = false; }
 });
-

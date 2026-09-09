@@ -1,7 +1,5 @@
 const form=document.getElementById('ordin-form');
-if(location.hostname==='127.0.0.1'||location.hostname==='localhost'){
-  const login=document.querySelector('a[href="/admin/login/"]');if(login)login.hidden=true;
-}
+
 const listStatus=document.getElementById('list-status');
 let page=1,total=0,conditions=null,busy=false;
 const prev=document.getElementById('prev'),next=document.getElementById('next');
@@ -9,7 +7,7 @@ function paging(){prev.disabled=busy||page<=1;next.disabled=busy||page*20>=total
 async function request(input){
   const response=await fetch('/api/admin/ordin-test',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify(input)});
   const result=await response.json();document.getElementById('ordin-raw').textContent=JSON.stringify(result,null,2);
-  if(!response.ok) throw Error([401,403].includes(response.status)?'관리자 로그인 후 조회해 주세요.':result.message||'조회하지 못했습니다.');
+  if(!response.ok) throw Error(result.message||'조회하지 못했습니다.');
   return result;
 }
 async function search(targetPage){

@@ -1,6 +1,6 @@
 # 지자체 조례 조회 테스트
 
-배포 주소: /test2 (test2.html). 관리자 계정 로그인 후 사용합니다.
+배포 주소: /test2 (test2.html). 로그인 없이 사용하는 테스트 페이지입니다.
 Cloudflare Pages Production에 LAW_API_OC를 Secret으로 등록하고 재배포하세요.
 국가법령정보 공동활용에서 승인된 OC를 사용합니다. 한전 키와는 별개입니다.
 현행 자치법규의 목록 JSON 및 본문 JSON 신청이 필요합니다.
