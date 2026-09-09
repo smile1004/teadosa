@@ -13,3 +13,10 @@ const detail=await queryOrdin({mode:'detail',id:'123'},'private-oc',async url=>{
 });assert.equal(detail.body.detail.조문.조내용,'본문');
 const fail=await queryOrdin({query:'x'},'private-oc',async()=>{throw Error('private-oc');});assert.ok(!JSON.stringify(fail).includes('private-oc'));
 console.log('PASS: input validation, official request fields, single result, detail, error and OC redaction');
+const rejected=await queryOrdin({query:'태양광'},' private-oc ',async url=>{
+  assert.equal(new URL(url).searchParams.get('OC'),'private-oc');
+  return Response.json({result:'필수입력요소 검증에 실패하였습니다.',msg:'필수 입력값이 존재하지 않습니다. 요청 URL을 확인해 주세요.'});
+});
+assert.equal(rejected.body.code,'LAW_REQUEST_REJECTED');
+assert.match(rejected.body.message,/필수 입력값/);
+assert.equal((await queryOrdin({query:'태양광'},'   ')).status,503);

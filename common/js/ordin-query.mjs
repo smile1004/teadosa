@@ -1,4 +1,5 @@
 export async function queryOrdin(input, oc, fetcher = fetch) {
+  oc = String(oc || '').trim();
   if (!oc) return {status:503, body:{message:'서버에 LAW_API_OC를 설정해 주세요. 국가법령정보에서 승인받은 OC 인증값을 사용합니다.'}};
   const detail = input?.mode === 'detail';
   const params = new URLSearchParams({OC:oc,target:'ordin',type:'JSON'});
@@ -29,6 +30,7 @@ export async function queryOrdin(input, oc, fetcher = fetch) {
     try {payload=JSON.parse(raw);} catch {
       return {status:502,body:{message:'법령 API가 JSON 대신 다른 응답을 반환했습니다. 승인 상태와 등록 도메인·호출 IP를 확인해 주세요.',upstreamStatus:response.status,elapsedMs:Date.now()-start,raw:raw.slice(0,4000)}};
     }
+    if (payload && typeof payload.msg === 'string') return {status:502,body:{message:`국가법령정보 API: ${payload.msg}`,code:'LAW_REQUEST_REJECTED',upstreamStatus:response.status,payload}};
     if (!response.ok) return {status:502,body:{message:'법령 API에서 오류를 반환했습니다.',upstreamStatus:response.status,payload}};
     if (detail) {
       if (!payload?.자치법규) return {status:502,body:{message:'조례 본문을 받지 못했습니다. 원본 응답을 확인해 주세요.',payload}};
