@@ -14,3 +14,13 @@ assert.ok(!JSON.stringify(result).includes('test-key'));
 assert.equal((await queryKepco(input,'test-key',async()=>new Response('<html>error</html>'))).status,502);
 assert.equal((await queryKepco(input,'test-key',async()=>{throw Error('secret URL');})).status,502);
 console.log('PASS: input checks, query encoding, zero/missing capacity, key redaction, non-JSON and connection errors');
+const failed = await queryKepco(input,'test-key',async()=>{throw Error('secret URL test-key');});
+assert.equal(failed.body.code,'KEPCO_CONNECTION_FAILED');
+assert.ok(!JSON.stringify(failed).includes('test-key'));
+const redirected = await queryKepco(input,'test-key',async(url,options)=>{
+  assert.equal(options.redirect,'manual');
+  return new Response(null,{status:302,headers:{Location:'https://example.com/?apiKey=test-key'}});
+});
+assert.equal(redirected.body.code,'KEPCO_REDIRECT');
+assert.ok(!JSON.stringify(redirected).includes('test-key'));
+console.log('PASS: connection and redirect diagnostics redact credentials');
