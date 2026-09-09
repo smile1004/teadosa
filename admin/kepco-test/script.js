@@ -73,17 +73,11 @@ document.getElementById('address-search').addEventListener('click', () => {
   } finally { button.disabled = false; }
 }
 
-const regionalButton = document.createElement('button');
-regionalButton.type = 'button'; regionalButton.hidden = true;
-document.getElementById('status').after(regionalButton);
-let regionalInput = null;
-regionalButton.addEventListener('click', () => {
-  if (regionalInput) runKepco({...regionalInput, addrJibun:''}, true);
-});
-form.addEventListener('input', () => { regionalButton.hidden = true; regionalInput = null; });
 form.addEventListener('submit', event => {
   event.preventDefault();
-  runKepco(Object.fromEntries(new FormData(form)), false);
+  const input = Object.fromEntries(new FormData(form));
+  delete input.addrJibun;
+  runKepco(input, !String(input.substCd || '').trim());
 });
 async function runKepco(input, regional) {
   const button = document.getElementById('query-button');
@@ -92,19 +86,15 @@ async function runKepco(input, regional) {
   const raw = document.getElementById('raw');
   if (button.disabled) return;
   const scope = [input.addrLidong,input.addrLi].filter(Boolean).join(' ');
-  regionalButton.hidden = true;
-  regionalInput = null;
+
+
   button.disabled = true; tbody.replaceChildren(); raw.textContent = ''; status.textContent = '한전 API 조회 중…';
   try {
     const response = await fetch('/api/admin/kepco-test', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:JSON.stringify(input) });
     const result = await response.json();
     status.textContent = (result.message || '응답을 확인해 주세요.');
     if (result.upstreamStatus === 404) status.textContent = '주소 입력은 완료됐지만 한전 API가 해당 조회 조건에 404 NotFound를 반환했습니다. 주소 검색 오류나 여유용량 0을 뜻하지 않습니다.';
-    if (!regional && result.upstreamStatus === 404 && input.addrJibun && !input.substCd && input.metroCd && input.cityCd && input.addrLidong) {
-      regionalInput = {...input};
-      regionalButton.textContent = `${scope} 범위로 조회 (지번 제외)`;
-      regionalButton.hidden = false;
-    }
+
     if (regional) status.textContent = `[${scope} 범위 조회 · 지번 제외] ${result.message || '응답을 확인해 주세요.'} 이 결과는 선택한 필지의 연결 선로를 확정하지 않습니다.`;
     if (result.elapsedMs !== undefined) status.textContent += ` (${result.elapsedMs}ms)`;
     raw.textContent = JSON.stringify({...result,queryScope:regional?'지역 범위 (지번 제외)':'입력 조건',requestConditions:input}, null, 2);
