@@ -50,6 +50,22 @@ function renderAttachmentLinks(detail,text,parent){
   }
   parent.append(box);
 }
+function formatArticleText(raw){
+  let text=String(raw||'');
+  text=text.replace(/([\u2460-\u2473])/g,'\n$1');
+  text=text.replace(/(?<![\d.])(\d{1,2})\.(?!\d)/g,'\n$1.');
+  return text.split('\n').map(s=>s.trim()).filter(Boolean);
+}
+function renderArticleBody(text,container){
+  const lines=formatArticleText(text);
+  for(const line of lines){
+    const div=document.createElement('div');
+    div.style.marginTop='4px';
+    if(/^\d{1,2}\./.test(line))div.style.marginLeft='16px';
+    div.textContent=line;
+    container.append(div);
+  }
+}
 async function search(region,keyword,org,sborg){
   if(busy)return;busy=true;document.getElementById('search-button').disabled=true;
   rows.replaceChildren();listStatus.textContent='도시계획 조례 검색 중…';
@@ -84,7 +100,8 @@ async function renderOrdinance(row,keyword){
     for(const a of matched){
       const block=document.createElement('div');block.style.cssText='margin-top:10px;padding:12px;border:2px solid #2f7d32;border-radius:8px;background:#f3f9f3;';
       const t=document.createElement('strong');t.textContent=a.조제목||'(제목 없음)';
-      const body=document.createElement('div');body.style.cssText='white-space:pre-wrap;margin-top:6px;line-height:1.6;';body.textContent=a.조내용||'';
+      const body=document.createElement('div');body.style.cssText='margin-top:6px;line-height:1.6;';
+      renderArticleBody(a.조내용||'',body);
       block.append(t,body);
       renderAttachmentLinks(result.detail,a.조내용,block);
       card.append(block);
