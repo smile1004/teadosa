@@ -1,5 +1,4 @@
 const form=document.getElementById('ordin-form');
-
 const listStatus=document.getElementById('list-status');
 let page=1,total=0,conditions=null,busy=false;
 const prev=document.getElementById('prev'),next=document.getElementById('next');
@@ -22,7 +21,36 @@ function renderFields(value,parent,path=''){
   if(typeof value==='object'){for(const [key,item] of Object.entries(value))renderFields(item,parent,Array.isArray(value)?path:`${path?path+' / ':''}${key}`);return;}
   const block=document.createElement('div');block.className='body-field';const label=document.createElement('strong');label.textContent=path;const text=document.createElement('div');text.textContent=String(value);block.append(label,text);parent.append(block);
 }
+const SOLAR_KEYWORDS=['태양광','발전시설','발전설비','신재생에너지','재생에너지'];
+function findSolarArticles(detail){
+  const list=detail?.조문?.조;
+  if(!Array.isArray(list))return[];
+  return list.filter(a=>SOLAR_KEYWORDS.some(k=>(a.조내용||'').includes(k)||(a.조제목||'').includes(k)));
+}
+function renderSolarHighlight(detail,parent){
+  const box=document.createElement('div');
+  box.style.cssText='border:2px solid #2f7d32;border-radius:8px;padding:14px;margin-bottom:18px;background:#f3f9f3;';
+  const h=document.createElement('h4');h.style.cssText='margin:0 0 10px;color:#2f7d32;';
+  const matched=findSolarArticles(detail);
+  h.textContent=matched.length?`🔆 태양광 발전시설 관련 조문 (${matched.length}건)`:'🔆 태양광 발전시설 관련 조문';
+  box.append(h);
+  if(matched.length){
+    for(const a of matched){
+      const block=document.createElement('div');block.style.cssText='margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid #d7e6d8;';
+      const title=document.createElement('strong');title.textContent=a.조제목||'(제목 없음)';
+      const body=document.createElement('div');body.style.cssText='white-space:pre-wrap;margin-top:6px;line-height:1.6;';body.textContent=a.조내용||'';
+      block.append(title,body);box.append(block);
+    }
+  }else{
+    const p=document.createElement('p');p.style.margin='0';p.textContent='이 조례에서는 태양광/발전시설 관련 조문을 찾지 못했습니다.';
+    box.append(p);
+  }
+  parent.append(box);
+}
 async function detail(row,button){button.disabled=true;const section=document.getElementById('detail-section');section.hidden=false;document.getElementById('detail-title').textContent=row.자치법규명;const status=document.getElementById('detail-status');status.textContent='본문 조회 중…';const content=document.getElementById('detail-content');content.replaceChildren();section.scrollIntoView({behavior:'smooth'});
-  try{const result=await request({mode:'detail',id:String(row.자치법규ID)});status.textContent=result.message;renderFields(result.detail,content);}catch(error){status.textContent=error.message;}finally{button.disabled=false;}
+  try{const result=await request({mode:'detail',id:String(row.자치법규ID)});status.textContent=result.message;
+    renderSolarHighlight(result.detail,content);
+    const full=document.createElement('details');const summary=document.createElement('summary');summary.textContent='전체 조문 보기';full.append(summary);renderFields(result.detail,full);content.append(full);
+  }catch(error){status.textContent=error.message;}finally{button.disabled=false;}
 }
 form.addEventListener('submit',event=>{event.preventDefault();if(busy)return;conditions=Object.fromEntries(new FormData(form));search(1);});prev.addEventListener('click',()=>search(page-1));next.addEventListener('click',()=>search(page+1));
