@@ -21,6 +21,35 @@ function findMatchingArticles(detail,keyword){
 function isPlanningOrdinance(name){
   return /계획\s*조례$/.test(String(name||'').trim());
 }
+function extractAttachmentRefs(text){
+  const nums=new Set();const re=/별표\s*(\d+)/g;let m;
+  while((m=re.exec(String(text||'')))){nums.add(Number(m[1]));}
+  return[...nums];
+}
+function getAttachmentUnits(detail){
+  const units=detail?.별표?.별표단위;
+  if(!units)return[];
+  return Array.isArray(units)?units:[units];
+}
+function renderAttachmentLinks(detail,text,parent){
+  const refs=extractAttachmentRefs(text);
+  if(!refs.length)return;
+  const units=getAttachmentUnits(detail);
+  const box=document.createElement('div');box.style.cssText='margin-top:8px;padding:8px;background:#fff;border:1px dashed #9bbf9d;border-radius:6px;';
+  for(const num of refs){
+    const found=units.find(u=>Number(u.별표번호)===num);
+    const line=document.createElement('div');line.style.marginBottom='4px';
+    if(found&&found.별표첨부파일명){
+      const a=document.createElement('a');a.href=found.별표첨부파일명;a.target='_blank';a.rel='noopener';
+      a.textContent=`📎 별표 ${num}: ${found.별표제목||'첨부파일'} 다운로드 (${found.별표첨부파일구분||'파일'})`;
+      line.append(a);
+    }else{
+      line.textContent=`⚠️ 별표 ${num}은 API 응답에 포함되어 있지 않습니다. law.go.kr(국가법령정보 자치법규)에서 직접 확인해 주세요.`;
+    }
+    box.append(line);
+  }
+  parent.append(box);
+}
 async function search(region,keyword,org,sborg){
   if(busy)return;busy=true;document.getElementById('search-button').disabled=true;
   rows.replaceChildren();listStatus.textContent='도시계획 조례 검색 중…';
@@ -56,7 +85,9 @@ async function renderOrdinance(row,keyword){
       const block=document.createElement('div');block.style.cssText='margin-top:10px;padding:12px;border:2px solid #2f7d32;border-radius:8px;background:#f3f9f3;';
       const t=document.createElement('strong');t.textContent=a.조제목||'(제목 없음)';
       const body=document.createElement('div');body.style.cssText='white-space:pre-wrap;margin-top:6px;line-height:1.6;';body.textContent=a.조내용||'';
-      block.append(t,body);card.append(block);
+      block.append(t,body);
+      renderAttachmentLinks(result.detail,a.조내용,block);
+      card.append(block);
     }
   }catch(error){status.textContent=error.message||'본문을 조회하지 못했습니다.';}
 }
