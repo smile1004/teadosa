@@ -21,6 +21,13 @@ function findMatchingArticles(detail,keyword){
 function isPlanningOrdinance(name){
   return /계획\s*조례$/.test(String(name||'').trim());
 }
+function formatArticleNumber(codeArr){
+  const code=String(codeArr?.[0]||'').padStart(6,'0');
+  const artNum=Number.parseInt(code.slice(0,4),10);
+  const branch=Number.parseInt(code.slice(4,6),10);
+  if(!Number.isFinite(artNum)||artNum<=0)return'';
+  return branch>0?`제${artNum}조의${branch}`:`제${artNum}조`;
+}
 function extractAttachmentRefs(text){
   const nums=new Set();const re=/별표\s*(\d+)/g;let m;
   while((m=re.exec(String(text||'')))){nums.add(Number(m[1]));}
@@ -40,7 +47,7 @@ function renderAttachmentLinks(detail,text,parent){
     const found=units.find(u=>Number(u.별표번호)===num);
     const line=document.createElement('div');line.style.marginBottom='4px';
     if(found&&found.별표첨부파일명){
-      const a=document.createElement('a');a.href=found.별표첨부파일명;a.target='_blank';a.rel='noopener';
+      const a=document.createElement('a');a.href=found.별표첨부파일명;
       a.textContent=`📎 별표 ${num}: ${found.별표제목||'첨부파일'} 다운로드 (${found.별표첨부파일구분||'파일'})`;
       line.append(a);
     }else{
@@ -52,6 +59,7 @@ function renderAttachmentLinks(detail,text,parent){
 }
 function formatArticleText(raw){
   let text=String(raw||'');
+  text=text.replace(/^제\d+조(?:의\d+)?\([^)]*\)\s*/,'');
   text=text.replace(/([\u2460-\u2473])/g,'\n$1');
   const placeholders=[];
   text=text.replace(/[<\[][^<>\[\]]*[>\]]/g,(m)=>{placeholders.push(m);return `\u0000${placeholders.length-1}\u0000`;});
@@ -102,7 +110,8 @@ async function renderOrdinance(row,keyword){
     if(!matched.length){const p=document.createElement('p');p.textContent=`"${keyword}" 관련 조항을 찾지 못했습니다.`;card.append(p);return;}
     for(const a of matched){
       const block=document.createElement('div');block.style.cssText='margin-top:10px;padding:12px;border:2px solid #2f7d32;border-radius:8px;background:#f3f9f3;';
-      const t=document.createElement('strong');t.textContent=a.조제목||'(제목 없음)';
+      const artNo=formatArticleNumber(a.조문번호);
+      const t=document.createElement('strong');t.textContent=artNo?`${artNo} ${a.조제목||''}`:(a.조제목||'(제목 없음)');
       const body=document.createElement('div');body.style.cssText='margin-top:6px;line-height:1.6;';
       renderArticleBody(a.조내용||'',body);
       block.append(t,body);
