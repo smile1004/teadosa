@@ -24,7 +24,7 @@ export async function queryOrdin(input, oc, fetcher = fetch) {
   const controller = new AbortController(); let timeout = false;
   const timer = setTimeout(()=>{timeout=true;controller.abort();},20000);
   try {
-    const response = await fetcher(`https://www.law.go.kr/DRF/${detail?'lawService':'lawSearch'}.do?${params}`,{signal:controller.signal,redirect:'manual'});
+    const response = await fetcher(`https://www.law.go.kr/DRF/${detail?'lawService':'lawSearch'}.do?${params}`,{signal:controller.signal,redirect:'manual',headers:{Referer:'https://teadosa.pages.dev/',Origin:'https://teadosa.pages.dev'}});
     const raw = (await response.text()).split(oc).join('[인증값 숨김]');
     let payload;
     try {payload=JSON.parse(raw);} catch {
