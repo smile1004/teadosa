@@ -53,66 +53,7 @@ function renderAttachmentLinks(detail,text,parent){
 function formatArticleText(raw){
   let text=String(raw||'');
   text=text.replace(/([\u2460-\u2473])/g,'\n$1');
+  const placeholders=[];
+  text=text.replace(/[<\[][^<>\[\]]*[>\]]/g,(m)=>{placeholders.push(m);return `\u0000${placeholders.length-1}\u0000`;});
   text=text.replace(/(?<![\d.])(\d{1,2})\.(?!\d)/g,'\n$1.');
-  return text.split('\n').map(s=>s.trim()).filter(Boolean);
-}
-function renderArticleBody(text,container){
-  const lines=formatArticleText(text);
-  for(const line of lines){
-    const div=document.createElement('div');
-    div.style.marginTop='4px';
-    if(/^\d{1,2}\./.test(line))div.style.marginLeft='16px';
-    div.textContent=line;
-    container.append(div);
-  }
-}
-async function search(region,keyword,org,sborg){
-  if(busy)return;busy=true;document.getElementById('search-button').disabled=true;
-  rows.replaceChildren();listStatus.textContent='도시계획 조례 검색 중…';
-  try{
-    const conditions={query:`${region} 계획`,search:'1',page:'1'};
-    if(org)conditions.org=org;
-    if(sborg)conditions.sborg=sborg;
-    const result=await request(conditions);
-    const candidates=(result.rows||[]).filter(r=>isPlanningOrdinance(r.자치법규명));
-    if(!candidates.length){
-      listStatus.textContent=`"${region}"의 도시계획/군계획 조례를 찾지 못했습니다. (전체 검색결과 ${result.rows?.length||0}건 중 일치 없음)`;
-      return;
-    }
-    listStatus.textContent=`${candidates.length}건 확인 중…`;
-    for(const row of candidates.slice(0,5)){await renderOrdinance(row,keyword);}
-    listStatus.textContent=`${Math.min(candidates.length,5)}건 확인 완료`;
-  }catch(error){listStatus.textContent=error.message||'조회 서버에 연결하지 못했습니다.';}
-  finally{busy=false;document.getElementById('search-button').disabled=false;}
-}
-async function renderOrdinance(row,keyword){
-  const card=document.createElement('article');card.className='ordin-card';
-  const title=document.createElement('h3');title.textContent=row.자치법규명||'제목 미제공';
-  const meta=document.createElement('p');meta.textContent=`${row.지자체기관명||''} · 시행일 ${row.시행일자||'미제공'} · 공포일 ${row.공포일자||'미제공'}`;
-  card.append(title,meta);
-  const status=document.createElement('p');status.textContent='관련 조항 확인 중…';card.append(status);
-  rows.append(card);
-  try{
-    const result=await request({mode:'detail',id:String(row.자치법규ID)});
-    const matched=findMatchingArticles(result.detail,keyword);
-    status.remove();
-    if(!matched.length){const p=document.createElement('p');p.textContent=`"${keyword}" 관련 조항을 찾지 못했습니다.`;card.append(p);return;}
-    for(const a of matched){
-      const block=document.createElement('div');block.style.cssText='margin-top:10px;padding:12px;border:2px solid #2f7d32;border-radius:8px;background:#f3f9f3;';
-      const t=document.createElement('strong');t.textContent=a.조제목||'(제목 없음)';
-      const body=document.createElement('div');body.style.cssText='margin-top:6px;line-height:1.6;';
-      renderArticleBody(a.조내용||'',body);
-      block.append(t,body);
-      renderAttachmentLinks(result.detail,a.조내용,block);
-      card.append(block);
-    }
-  }catch(error){status.textContent=error.message||'본문을 조회하지 못했습니다.';}
-}
-form.addEventListener('submit',event=>{
-  event.preventDefault();if(busy)return;
-  const data=Object.fromEntries(new FormData(form));
-  const region=String(data.region||'').trim();
-  const keyword=String(data.keyword||'').trim();
-  if(!region||!keyword)return;
-  search(region,keyword,data.org,data.sborg);
-});
+  text=text.replace(/\u0000(\d+)\u0000/g,(_,i)=>placeholders[Number(
