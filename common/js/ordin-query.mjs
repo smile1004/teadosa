@@ -33,10 +33,9 @@ export async function queryOrdin(input, oc, fetcher = fetch) {
     if (payload && typeof payload.msg === 'string') return {status:502,body:{message:`국가법령정보 API: ${payload.msg}`,code:'LAW_REQUEST_REJECTED',upstreamStatus:response.status,payload}};
     if (!response.ok) return {status:502,body:{message:'법령 API에서 오류를 반환했습니다.',upstreamStatus:response.status,payload}};
     if (detail) {
-if (detail) {
-  if (!payload?.LawService) return {status:502,body:{message:'조례 본문을 받지 못했습니다. 원본 응답을 확인해 주세요.',payload}};
-  return {status:200,body:{message:'조례 본문을 조회했습니다.',detail:payload.LawService,payload}};
-}
+      if (!payload?.LawService) return {status:502,body:{message:'조례 본문을 받지 못했습니다. 원본 응답을 확인해 주세요.',payload}};
+      return {status:200,body:{message:'조례 본문을 조회했습니다.',detail:payload.LawService,payload}};
+    }
     const root=payload?.OrdinSearch;
     if (!root || root.totalCnt === undefined) return {status:502,body:{message:'검색 목록을 받지 못했습니다. OC 승인 상태와 원본 응답을 확인해 주세요.',payload}};
     const rows=root.law ? (Array.isArray(root.law)?root.law:[root.law]) : [];
