@@ -161,6 +161,8 @@ body {
 .license-timeline-item:last-child::before{display:none}
 .license-timeline-marker{position:relative;z-index:1;width:18px;height:18px;margin-top:2px;border:4px solid #fff;border-radius:50%;background:#d88422;box-shadow:0 0 0 2px #f1c48f}
 .license-timeline-content{min-width:0}
+.extra-history-item .license-timeline-content{grid-column:2;overflow-wrap:anywhere}
+@media(max-width:720px){.extra-history-item .precheck-history-main{width:100%}}
 .license-timeline-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .license-timeline-head strong{color:#354634;font-size:14px}
 .license-timeline-head time{flex:0 0 auto;color:#7b877a;font-size:12px}
@@ -222,6 +224,8 @@ body {
   .progress-overview-card.primary small{grid-column:1}
   .progress-overview-card strong{font-size:24px}
   .mypage-section-nav{top:72px;gap:4px;margin:0 -4px;padding:6px;overflow-x:auto;border-radius:12px}
+  .mypage-content .mypage-section-nav{flex-wrap:nowrap}
+  #mypage-content #ppa-history-section,#mypage-content #construction-plan-history-section{scroll-margin-top:130px}
   .mypage-section-nav a{min-width:112px;min-height:40px;padding:0 10px;font-size:12px;white-space:nowrap}
   #license-history-section,#development-history-section,#precheck-history-section,#account-section{scroll-margin-top:130px}
   .mypage-card,.mypage-actions{padding:20px 17px;border-radius:16px}

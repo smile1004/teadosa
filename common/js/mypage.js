@@ -85,21 +85,41 @@
 
   async function loadExtraHistory(type, title) {
     const section = document.getElementById(type + '-history-section');
+    if (!section) return;
     const list = section.querySelector('.precheck-history-list');
     const notice = section.querySelector('.precheck-history-message');
+    notice.hidden = false;
+    notice.classList.remove('error');
+    notice.textContent = '신청내역을 확인하고 있습니다.';
+    list.hidden = true;
     try {
       const out = await window.TaeDoSAApi.request('/api/' + type + '/my-requests');
       if (!out.response.ok || !out.result.success) throw Error(out.result.message || '신청내역을 불러오지 못했습니다.');
-      const requests = out.result.requests || [];
+      const requests = Array.isArray(out.result.requests) ? out.result.requests : [];
       extraRequests[type] = requests;
       updateProgressOverview();
-      list.innerHTML = requests.length ? requests.map(item => {
-        const timeline = (item.statusHistory || []).map(entry => '<div class="license-timeline-item"><div class="license-timeline-content"><div class="license-timeline-head"><strong>' + escapeHtml(licenseStatusLabel(entry.status)) + '</strong><time>' + escapeHtml(formatLicenseDateTime(entry.changedAt)) + '</time></div>' + (entry.customerNotice ? '<p>' + escapeHtml(entry.customerNotice).replace(/\n/g, '<br>') + '</p>' : '') + '</div></div>').join('');
-        return '<article class="precheck-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong>' + escapeHtml(item.requestNo) + '</strong><span class="precheck-status">' + escapeHtml(licenseStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress) + '</p><div class="precheck-history-meta">신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</div><div class="license-status-timeline">' + timeline + '</div></div><div class="precheck-history-action">' + applicationButtons(type, item.id) + '</div></article>';
-      }).join('') : '<div class="precheck-history-empty"><strong>' + title + ' 신청내역이 없습니다.</strong></div>';
+      list.innerHTML = renderExtraHistory(type, title, requests);
       list.hidden = false;
       notice.hidden = true;
     } catch (error) { notice.textContent = error.message; notice.classList.add('error'); }
+  }
+
+  function renderExtraHistory(type, title, requests) {
+    if (!requests.length) return '<div class="precheck-history-empty"><strong>' + escapeHtml(title) + ' 신청내역이 없습니다.</strong><p>서비스가 필요한 경우 신청서를 작성해 주세요.</p><a href="/start/' + type + '/apply/">' + escapeHtml(title) + ' 신청하기</a></div>';
+    return requests.map(function (item) {
+      let history = Array.isArray(item.statusHistory) ? item.statusHistory : [];
+      if (!history.length && item.submittedAt) history = [{ status: 'received', customerNotice: '', changedAt: item.submittedAt }];
+      const timeline = history.length ? '<div class="license-status-timeline" aria-label="진행상태 변경 이력">' + history.map(function (entry) {
+        return '<div class="license-timeline-item"><span class="license-timeline-marker" aria-hidden="true"></span><div class="license-timeline-content"><div class="license-timeline-head"><strong>' + escapeHtml(extraStatusLabel(entry.status)) + '</strong><time datetime="' + escapeHtml(entry.changedAt || '') + '">' + escapeHtml(formatLicenseDateTime(entry.changedAt)) + '</time></div>' + (entry.customerNotice ? '<p>' + escapeHtml(entry.customerNotice).replace(/\n/g, '<br>') + '</p>' : '') + '</div></div>';
+      }).join('') + '</div>' : '<p class="license-timeline-empty">저장된 진행 이력이 없습니다.</p>';
+      const notice = item.customerNotice && !history.some(entry => entry.customerNotice === item.customerNotice)
+        ? '<div class="license-customer-notice"><strong>최근 고객 안내</strong><p>' + escapeHtml(item.customerNotice).replace(/\n/g, '<br>') + '</p></div>' : '';
+      return '<article class="precheck-history-item license-history-item extra-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">' + escapeHtml(item.requestNo || '-') + '</strong><span class="precheck-status license-' + escapeHtml(item.status || 'received') + '">' + escapeHtml(extraStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress || '사업지 주소 미등록') + '</p><div class="precheck-history-meta"><span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatPrecheckDate(item.updatedAt)) + '</span></div>' + timeline + notice + '</div><div class="license-progress" aria-label="' + escapeHtml(extraStatusLabel(item.status)) + '"><span>' + escapeHtml(licenseProgress(item.status)) + '</span>' + applicationButtons(type, item.id) + '</div></article>';
+    }).join('');
+  }
+
+  function extraStatusLabel(value) {
+    return ({ received: '접수', consulting: '상담중', contracted: '계약완료', documents: '서류준비', submitted: '접수완료', supplement_required: '보완요청', completed: '완료', cancelled: '취소' })[value] || value || '-';
   }
 
   async function loadDevelopmentHistory() {
