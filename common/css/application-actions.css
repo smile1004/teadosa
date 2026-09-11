@@ -1,0 +1,16 @@
+.application-actions{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 6px 8px;vertical-align:middle}
+.application-actions button,.application-dialog button{font:inherit;font-size:13px;font-weight:650;line-height:1.4;padding:8px 14px;border:1px solid #ced8e0;background:#fff;color:#243849;border-radius:8px;cursor:pointer;white-space:nowrap}
+.application-actions .application-delete,.application-dialog .application-delete{color:#b42318;border-color:#f3c4c0;background:#fff8f7}
+.application-actions button:hover,.application-dialog button:hover{filter:brightness(.96)}
+.application-actions button:focus-visible,.application-dialog :focus-visible{outline:3px solid #3298db;outline-offset:2px}
+.application-dialog{box-sizing:border-box;width:min(560px,calc(100% - 32px));max-height:85vh;border:0;border-radius:18px;padding:28px;color:#243849;box-shadow:0 24px 80px #142a4055}
+.application-dialog::backdrop{background:#10253588}
+.application-dialog h2{font-size:22px;margin:0 0 8px}.application-number{color:#687887;font-size:13px;margin:0 0 22px}
+.application-fields{display:grid;gap:16px}.application-fields label{display:grid;gap:7px;font-size:14px;font-weight:600}
+.application-fields input,.application-fields textarea{box-sizing:border-box;width:100%;font:inherit;font-weight:400;color:#243849;background:#fff;border:1px solid #ced8e0;border-radius:8px;padding:11px 12px}.application-fields textarea{resize:vertical}
+.application-dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.application-dialog .application-save{background:#176b50;color:#fff;border-color:#176b50}
+.application-feedback{color:#b42318;font-size:14px}.application-dialog button:disabled{opacity:.5;cursor:wait}
+.application-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:10000;background:#174d3b;color:#fff;padding:14px 24px;border-radius:12px;box-shadow:0 8px 30px #0002}
+.license-progress:has(.application-actions){flex-direction:column;padding:10px;background:transparent;gap:8px}.license-progress .application-actions{margin:0}.license-progress>span:first-child{padding:8px 14px;border-radius:8px;background:#eef5e9}
+#ppa-history-section{order:6;scroll-margin-top:155px}#construction-plan-history-section{order:7;scroll-margin-top:155px}#account-section{order:8}.business-summary-card{order:9}#account-actions-section{order:10}#password-change-section,#profile-edit-section{order:11}.mypage-section-nav{flex-wrap:wrap}.precheck-history-action .application-actions{display:flex;justify-content:flex-end;margin-top:10px}
+@media(max-width:600px){.application-dialog{padding:22px}.application-actions{margin-left:0}.application-actions button{padding:8px 12px}}

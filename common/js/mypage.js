@@ -38,6 +38,7 @@
   let currentPrecheckRequests = [];
   let currentLicenseRequests = [];
   let currentDevelopmentRequests = [];
+  const extraRequests = { ppa: [], 'construction-plan': [] };
 
   if (!session || !auth || !validation || !content || !message || !accountInfo || !editForm) return;
 
@@ -76,9 +77,29 @@
       await loadPrecheckHistory();
       await loadLicenseHistory();
       await loadDevelopmentHistory();
+      await Promise.all([loadExtraHistory('ppa', '한전PPA'), loadExtraHistory('construction-plan', '공사계획신고')]);
     } catch (error) {
       showMainError(error && error.message ? error.message : '회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
+  }
+
+  async function loadExtraHistory(type, title) {
+    const section = document.getElementById(type + '-history-section');
+    const list = section.querySelector('.precheck-history-list');
+    const notice = section.querySelector('.precheck-history-message');
+    try {
+      const out = await window.TaeDoSAApi.request('/api/' + type + '/my-requests');
+      if (!out.response.ok || !out.result.success) throw Error(out.result.message || '신청내역을 불러오지 못했습니다.');
+      const requests = out.result.requests || [];
+      extraRequests[type] = requests;
+      updateProgressOverview();
+      list.innerHTML = requests.length ? requests.map(item => {
+        const timeline = (item.statusHistory || []).map(entry => '<div class="license-timeline-item"><div class="license-timeline-content"><div class="license-timeline-head"><strong>' + escapeHtml(licenseStatusLabel(entry.status)) + '</strong><time>' + escapeHtml(formatLicenseDateTime(entry.changedAt)) + '</time></div>' + (entry.customerNotice ? '<p>' + escapeHtml(entry.customerNotice).replace(/\n/g, '<br>') + '</p>' : '') + '</div></div>').join('');
+        return '<article class="precheck-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong>' + escapeHtml(item.requestNo) + '</strong><span class="precheck-status">' + escapeHtml(licenseStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress) + '</p><div class="precheck-history-meta">신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</div><div class="license-status-timeline">' + timeline + '</div></div><div class="precheck-history-action">' + applicationButtons(type, item.id) + '</div></article>';
+      }).join('') : '<div class="precheck-history-empty"><strong>' + title + ' 신청내역이 없습니다.</strong></div>';
+      list.hidden = false;
+      notice.hidden = true;
+    } catch (error) { notice.textContent = error.message; notice.classList.add('error'); }
   }
 
   async function loadDevelopmentHistory() {
@@ -91,7 +112,7 @@
   function renderDevelopmentHistory(requests) {
     currentDevelopmentRequests=requests;updateProgressOverview();
     if(!requests.length){developmentHistoryList.innerHTML='<div class="precheck-history-empty"><strong>개발행위허가 신청내역이 없습니다.</strong><p>개발행위허가 서비스가 필요한 경우 신청서를 작성해 주세요.</p><a href="/start/development/apply/">개발행위허가 신청하기</a></div>';}
-    else{developmentHistoryList.innerHTML=requests.map(function(item){var history=Array.isArray(item.statusHistory)?item.statusHistory:[];if(!history.length&&item.submittedAt)history=[{status:'received',customerNotice:'',changedAt:item.submittedAt}];var timeline='<div class="license-status-timeline" aria-label="진행상태 변경 이력">'+history.map(function(entry){return'<div class="license-timeline-item"><span class="license-timeline-marker" aria-hidden="true"></span><div class="license-timeline-content"><div class="license-timeline-head"><strong>'+escapeHtml(developmentStatusLabel(entry.status))+'</strong><time datetime="'+escapeHtml(entry.changedAt||'')+'">'+escapeHtml(formatLicenseDateTime(entry.changedAt))+'</time></div>'+(entry.customerNotice?'<p>'+escapeHtml(entry.customerNotice).replace(/\n/g,'<br>')+'</p>':'')+'</div></div>';}).join('')+'</div>';return'<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">'+escapeHtml(item.requestNo||'-')+'</strong><span class="precheck-status license-'+escapeHtml(item.status||'received')+'">'+escapeHtml(developmentStatusLabel(item.status))+'</span></div><p class="precheck-site-address">'+escapeHtml(item.siteAddress||'사업지 주소 미등록')+'</p><div class="precheck-history-meta"><span>신청일 '+escapeHtml(formatPrecheckDate(item.submittedAt))+'</span><span>최근 변경 '+escapeHtml(formatPrecheckDate(item.updatedAt))+'</span></div>'+timeline+'</div><div class="license-progress" aria-label="'+escapeHtml(developmentStatusLabel(item.status))+'"><span>'+escapeHtml(developmentProgress(item.status))+'</span></div></article>';}).join('');}
+    else{developmentHistoryList.innerHTML=requests.map(function(item){var history=Array.isArray(item.statusHistory)?item.statusHistory:[];if(!history.length&&item.submittedAt)history=[{status:'received',customerNotice:'',changedAt:item.submittedAt}];var timeline='<div class="license-status-timeline" aria-label="진행상태 변경 이력">'+history.map(function(entry){return'<div class="license-timeline-item"><span class="license-timeline-marker" aria-hidden="true"></span><div class="license-timeline-content"><div class="license-timeline-head"><strong>'+escapeHtml(developmentStatusLabel(entry.status))+'</strong><time datetime="'+escapeHtml(entry.changedAt||'')+'">'+escapeHtml(formatLicenseDateTime(entry.changedAt))+'</time></div>'+(entry.customerNotice?'<p>'+escapeHtml(entry.customerNotice).replace(/\n/g,'<br>')+'</p>':'')+'</div></div>';}).join('')+'</div>';return'<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">'+escapeHtml(item.requestNo||'-')+'</strong><span class="precheck-status license-'+escapeHtml(item.status||'received')+'">'+escapeHtml(developmentStatusLabel(item.status))+'</span></div><p class="precheck-site-address">'+escapeHtml(item.siteAddress||'사업지 주소 미등록')+'</p><div class="precheck-history-meta"><span>신청일 '+escapeHtml(formatPrecheckDate(item.submittedAt))+'</span><span>최근 변경 '+escapeHtml(formatPrecheckDate(item.updatedAt))+'</span></div>'+timeline+'</div><div class="license-progress" aria-label="'+escapeHtml(developmentStatusLabel(item.status))+'"><span>'+escapeHtml(developmentProgress(item.status))+'</span>' + applicationButtons('development', item.id) + '</div></article>';}).join('');}
     developmentHistoryList.hidden=false;developmentHistoryMessage.hidden=true;
   }
 
@@ -122,7 +143,7 @@
         var timeline = history.length ? '<div class="license-status-timeline" aria-label="진행상태 변경 이력">' + history.map(function(entry){
           return '<div class="license-timeline-item"><span class="license-timeline-marker" aria-hidden="true"></span><div class="license-timeline-content"><div class="license-timeline-head"><strong>' + escapeHtml(licenseStatusLabel(entry.status)) + '</strong><time datetime="' + escapeHtml(entry.changedAt || '') + '">' + escapeHtml(formatLicenseDateTime(entry.changedAt)) + '</time></div>' + (entry.customerNotice ? '<p>' + escapeHtml(entry.customerNotice).replace(/\n/g,'<br>') + '</p>' : '') + '</div></div>';
         }).join('') + '</div>' : '<p class="license-timeline-empty">저장된 진행 이력이 없습니다.</p>';
-        return '<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">' + escapeHtml(item.requestNo || '-') + '</strong><span class="precheck-status license-' + escapeHtml(item.status || 'received') + '">' + escapeHtml(licenseStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress || '설치주소 미등록') + '</p><div class="precheck-history-meta"><span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatPrecheckDate(item.updatedAt)) + '</span></div>' + timeline + '</div><div class="license-progress" aria-label="' + escapeHtml(licenseStatusLabel(item.status)) + '"><span>' + escapeHtml(licenseProgress(item.status)) + '</span></div></article>';
+        return '<article class="precheck-history-item license-history-item"><div class="precheck-history-main"><div class="precheck-history-top"><strong class="precheck-request-no">' + escapeHtml(item.requestNo || '-') + '</strong><span class="precheck-status license-' + escapeHtml(item.status || 'received') + '">' + escapeHtml(licenseStatusLabel(item.status)) + '</span></div><p class="precheck-site-address">' + escapeHtml(item.siteAddress || '설치주소 미등록') + '</p><div class="precheck-history-meta"><span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span><span>최근 변경 ' + escapeHtml(formatPrecheckDate(item.updatedAt)) + '</span></div>' + timeline + '</div><div class="license-progress" aria-label="' + escapeHtml(licenseStatusLabel(item.status)) + '"><span>' + escapeHtml(licenseProgress(item.status)) + '</span>' + applicationButtons('license', item.id) + '</div></article>';
       }).join('');
     }
     licenseHistoryList.hidden = false; licenseHistoryMessage.hidden = true;
@@ -230,13 +251,15 @@
               '</div><p>' + escapeHtml(item.supplementNote).replace(/\n/g, '<br>') + '</p></div>'
             : '') +
         '</div>' +
-        '<div class="precheck-history-action">' + resultButton + '</div>' +
+        '<div class="precheck-history-action">' + resultButton + applicationButtons('precheck', item.id) + '</div>' +
       '</article>';
     }).join('');
 
     precheckHistoryList.hidden = false;
     precheckHistoryMessage.hidden = true;
   }
+
+  function applicationButtons(type, id) { return window.TaeDoSAApplicationActions ? window.TaeDoSAApplicationActions.buttons(type, id) : ''; }
 
   function precheckStatusLabel(value) {
     return ({
@@ -251,7 +274,8 @@
     const activePrecheck = currentPrecheckRequests.filter(function (item) { return item.status !== 'completed'; }).length;
     const activeLicense = currentLicenseRequests.filter(function (item) { return item.status !== 'completed' && item.status !== 'cancelled'; }).length;
     const activeDevelopment = currentDevelopmentRequests.filter(function (item) { return item.status !== 'completed' && item.status !== 'cancelled'; }).length;
-    setText('mypage-active-count', activePrecheck + activeLicense + activeDevelopment);
+    const activeExtra = Object.values(extraRequests).flat().filter(item => !['completed', 'cancelled'].includes(item.status)).length;
+    setText('mypage-active-count', activePrecheck + activeLicense + activeDevelopment + activeExtra);
     setText('mypage-precheck-count', currentPrecheckRequests.length);
     setText('mypage-license-count', currentLicenseRequests.length);
     setText('mypage-precheck-nav-count', currentPrecheckRequests.length);

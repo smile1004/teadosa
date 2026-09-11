@@ -10,6 +10,7 @@
   <link href="common/css/shared-menu.css?v=2.0" rel="stylesheet">
   <link href="common/css/common.css?v=2.0" rel="stylesheet">
   <link href="mypage/css/style.css?v=3.0" rel="stylesheet">
+<link rel="stylesheet" href="/common/css/application-actions.css?v=1.0">
 </head>
 <body>
   <script src="common/js/site-config.js?v=2.0"></script>
@@ -41,9 +42,19 @@
           <a class="active" href="/mypage/#license-history-section"><span>발전사업허가 신청</span><b id="mypage-license-nav-count">0</b></a>
           <a href="/mypage/#development-history-section"><span>개발행위허가 신청</span><b id="mypage-development-nav-count">0</b></a>
           <a href="/mypage/#precheck-history-section"><span>사전검토 신청</span><b id="mypage-precheck-nav-count">0</b></a>
+          <a href="/mypage/#ppa-history-section"><span>한전PPA 신청</span></a>
+          <a href="/mypage/#construction-plan-history-section"><span>공사계획신고 신청</span></a>
           <a href="/mypage/#account-section"><span>회원정보</span></a>
         </nav>
 
+        <section id="ppa-history-section" class="mypage-card precheck-history-card" aria-labelledby="ppa-history-title">
+          <div class="mypage-card-head"><h2 id="ppa-history-title">한전PPA 신청내역</h2><a class="mypage-button secondary" href="/start/ppa/apply/">한전PPA 신청</a></div>
+          <p class="precheck-history-message">신청내역을 확인하고 있습니다.</p><div class="precheck-history-list" hidden></div>
+        </section>
+        <section id="construction-plan-history-section" class="mypage-card precheck-history-card" aria-labelledby="construction-plan-history-title">
+          <div class="mypage-card-head"><h2 id="construction-plan-history-title">공사계획신고 신청내역</h2><a class="mypage-button secondary" href="/start/construction-plan/apply/">공사계획신고 신청</a></div>
+          <p class="precheck-history-message">신청내역을 확인하고 있습니다.</p><div class="precheck-history-list" hidden></div>
+        </section>
         <section id="account-section" class="mypage-card account-summary-card" aria-labelledby="account-title">
           <div class="mypage-card-head"><div><p class="mypage-card-kicker">ACCOUNT</p><h2 id="account-title">기본 회원정보</h2></div><span id="member-type-badge" class="mypage-badge"></span></div>
           <details class="mypage-account-details">
@@ -160,6 +171,7 @@
 
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <script src="common/js/components/footer.js?v=2.0"></script>
-  <script src="common/js/mypage.js?v=3.2"></script>
+  <script src="/common/js/application-actions.js?v=1.0"></script>
+  <script src="common/js/mypage.js?v=3.3"></script>
 </body>
 </html>
