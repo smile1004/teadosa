@@ -58,7 +58,6 @@
   }
 
   function render(call, notes) {
-    if (!d.getElementById('cs-note-author').value) d.getElementById('cs-note-author').value = call.receiver || '';
     d.getElementById('cs-detail-title').textContent = (call.name || '이름 미입력') + ' · ' + phone(call.phone);
     var badge = d.getElementById('cs-detail-status');
     badge.textContent = statusLabel(call.status);
@@ -89,7 +88,7 @@
     }
     list.innerHTML = notes.map(function (n) {
       return '<article class="cs-note-item">' +
-        '<div class="cs-note-meta">' + esc(datetime(n.createdAt)) + ' · ' + esc(n.author || '-') +
+        '<div class="cs-note-meta">' + esc(datetime(n.createdAt)) + ' · ' + esc(n.author || '') +
         ' <span class="status-badge ' + esc(n.status) + '">' + esc(statusLabel(n.status)) + '</span></div>' +
         '<p>' + esc(n.note || '').replace(/\n/g, '<br>') + '</p>' +
         '</article>';
@@ -117,6 +116,7 @@
     d.getElementById('cs-note-form').hidden = true;
     d.getElementById('cs-note-show').hidden = false;
     d.getElementById('cs-note-text').value = '';
+    d.getElementById('cs-note-author').value = '';
     actionMessage('cs-note-message', '');
   }
 

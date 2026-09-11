@@ -1,5 +1,9 @@
--- CS 전화상담 관리 (홈페이지 / 태투사 / 에잇솔라) v1
-PRAGMA foreign_keys = ON;
+ALTER TABLE cs_calls RENAME TO cs_calls_old;
+
+DROP INDEX IF EXISTS idx_cs_calls_status;
+DROP INDEX IF EXISTS idx_cs_calls_category;
+DROP INDEX IF EXISTS idx_cs_calls_call_date;
+DROP INDEX IF EXISTS idx_cs_calls_created;
 
 CREATE TABLE IF NOT EXISTS cs_calls (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -18,21 +22,12 @@ CREATE TABLE IF NOT EXISTS cs_calls (
   FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE SET NULL
 );
 
+INSERT INTO cs_calls (id, category, call_date, phone, customer_name, address, content, channel, receiver, status, created_by, created_at, updated_at)
+SELECT id, category, call_date, phone, customer_name, address, content, channel, receiver, status, created_by, created_at, updated_at FROM cs_calls_old;
+
+DROP TABLE cs_calls_old;
+
 CREATE INDEX IF NOT EXISTS idx_cs_calls_status ON cs_calls(status);
 CREATE INDEX IF NOT EXISTS idx_cs_calls_category ON cs_calls(category);
 CREATE INDEX IF NOT EXISTS idx_cs_calls_call_date ON cs_calls(call_date);
 CREATE INDEX IF NOT EXISTS idx_cs_calls_created ON cs_calls(created_at);
-
-CREATE TABLE IF NOT EXISTS cs_call_notes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  call_id INTEGER NOT NULL,
-  status TEXT NOT NULL CHECK (status IN ('waiting','in_progress','done')),
-  author TEXT NOT NULL,
-  note TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (call_id) REFERENCES cs_calls(id) ON DELETE CASCADE,
-  FOREIGN KEY (created_by) REFERENCES members(id) ON DELETE SET NULL
-);
-
-CREATE INDEX IF NOT EXISTS idx_cs_call_notes_call ON cs_call_notes(call_id, created_at);

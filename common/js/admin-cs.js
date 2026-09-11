@@ -70,11 +70,11 @@
         '<td><span class="category-chip ' + esc(x.category) + '">' + esc(categoryLabel(x.category)) + '</span></td>' +
         '<td><strong>' + esc(x.name || '-') + '</strong></td>' +
         '<td class="cs-cell-phone">' + esc(phone(x.phone)) + '</td>' +
-        '<td class="cs-cell-clamp" title="' + esc(x.content || '') + '">' + esc(x.content || '-') + '</td>' +
+        '<td class="cs-cell-clamp" title="' + esc(x.content || '') + '">' + esc(x.content || '') + '</td>' +
         '<td>' + esc(x.channel || '-') + '</td>' +
         '<td>' + esc(x.receiver || '-') + '</td>' +
         '<td><span class="status-badge ' + esc(x.status) + '">' + esc(statusLabel(x.status)) + '</span></td>' +
-        '<td class="cs-cell-clamp" title="' + esc(x.lastNote || '') + '">' + (x.lastNote ? esc(x.lastNote) : '<span class="cs-muted">-</span>') + '</td>' +
+        '<td class="cs-cell-clamp" title="' + esc(x.lastNote || '') + '">' + esc(x.lastNote || '') + '</td>' +
         '<td><a class="admin-table-link" href="/admin/cs/detail/?id=' + encodeURIComponent(x.id) + '">상세관리</a></td>' +
         '</tr>';
     }).join('') : '<tr><td colspan="10" class="empty-row">상담내역이 없습니다.</td></tr>';

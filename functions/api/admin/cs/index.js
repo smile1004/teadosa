@@ -84,7 +84,6 @@ export async function onRequestPost({ request, env }) {
     const category = String(body.category || '');
     if (!CATEGORIES.includes(category)) return invalid('구분(홈페이지/태투사/에잇솔라)을 선택해 주세요.');
     const phone = text(body.phone, 30);
-    if (!phone) return invalid('전화번호를 입력해 주세요.');
     const callDate = normalizeDateOnly(body.callDate) || todayStr();
     const customerName = text(body.name, 60);
     const address = text(body.address, 300);
@@ -100,7 +99,7 @@ export async function onRequestPost({ request, env }) {
     const result = await env.DB.prepare(`
       INSERT INTO cs_calls (category, call_date, phone, customer_name, address, content, channel, receiver, status, created_by, created_at, updated_at)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
-    `).bind(category, callDate, phone, customerName || null, address || null, content || null, channel || null, receiver, status, auth.admin.member_id, now, now).run();
+    `).bind(category, callDate, phone || null, customerName || null, address || null, content || null, channel || null, receiver, status, auth.admin.member_id, now, now).run();
 
     if (!result.success) throw new Error('상담 등록 실패');
     const callId = result.meta && result.meta.last_row_id;

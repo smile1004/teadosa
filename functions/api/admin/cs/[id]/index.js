@@ -65,7 +65,7 @@ export async function onRequestPut({ request, env, params }) {
       fields.push('category=?'); bindings.push(body.category);
     }
     if (body.callDate !== undefined) { fields.push('call_date=?'); bindings.push(normalizeDateOnly(body.callDate) || todayStr()); }
-    if (body.phone !== undefined) { fields.push('phone=?'); bindings.push(text(body.phone, 30)); }
+    if (body.phone !== undefined) { fields.push('phone=?'); bindings.push(text(body.phone, 30) || null); }
     if (body.name !== undefined) { fields.push('customer_name=?'); bindings.push(text(body.name, 60) || null); }
     if (body.address !== undefined) { fields.push('address=?'); bindings.push(text(body.address, 300) || null); }
     if (body.content !== undefined) { fields.push('content=?'); bindings.push(text(body.content, 1000) || null); }
