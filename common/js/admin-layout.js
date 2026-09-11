@@ -1,6 +1,15 @@
 (function (window, document) {
   'use strict';
 
+  const serviceMenu = [
+    ['/admin/precheck/', '사전검토 관리'],
+    ['/admin/license/', '발전사업허가 관리'],
+    ['/admin/development/', '개발행위허가 관리'],
+    ['/admin/ppa/', '한전PPA 관리'],
+    ['/admin/construction-plan/', '공사계획신고 관리']
+  ];
+  renderServiceMenu();
+
   const auth = window.TaeDoSAAuth;
   if (!auth) return;
 
@@ -40,8 +49,26 @@
     });
   }
 
+  function renderServiceMenu() {
+    const nav = document.querySelector('.admin-nav');
+    if (!nav) return;
+    const heading = Array.from(nav.children).find(function (node) {
+      return node.tagName === 'P' && node.textContent.trim() === '서비스 관리';
+    });
+    if (!heading) return;
+    let next = heading.nextElementSibling;
+    while (next && next.tagName !== 'P') {
+      const old = next;
+      next = next.nextElementSibling;
+      old.remove();
+    }
+    heading.insertAdjacentHTML('afterend', serviceMenu.map(function (item) {
+      return '<a data-admin-path="' + item[0] + '" href="' + item[0] + '"><span aria-hidden="true">□</span>' + item[1] + '</a>';
+    }).join(''));
+  }
+
   function markActiveMenu() {
-    const currentPath = window.location.pathname.replace(/\/+$/, '/') || '/';
+    const currentPath = window.location.pathname.replace(/index\.html$/, '').replace(/\/+$/, '/') || '/';
     document.querySelectorAll('[data-admin-path]').forEach(function (link) {
       const path = link.getAttribute('data-admin-path');
       const active = path === '/admin/' ? currentPath === '/admin/' : currentPath.startsWith(path);
