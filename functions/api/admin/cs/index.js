@@ -87,7 +87,7 @@ export async function onRequestPost({ request, env }) {
     const callDate = normalizeDateOnly(body.callDate) || todayStr();
     const customerName = text(body.name, 60);
     const address = text(body.address, 300);
-    const content = text(body.content, 1000);
+    const content = stripWrap(text(body.content, 1000));
     const channel = text(body.channel, 60);
     const receiver = text(body.receiver, 40);
     if (!receiver) return invalid('문의접수자를 입력해 주세요.');
@@ -119,6 +119,7 @@ export async function onRequestPost({ request, env }) {
 }
 
 function text(v, n) { return String(v ?? '').normalize('NFKC').trim().slice(0, n); }
+function stripWrap(v) { const s = String(v || ''); if (s.length < 2) return s; const pairs = { '"': '"', '“': '”', "'": "'" }; if (pairs[s[0]] === s[s.length - 1]) return s.slice(1, -1).trim(); return s; }
 function clamp(v, min, max, f) { const n = Number.parseInt(v, 10); return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : f; }
 function invalid(message) { return jsonResponse({ success: false, code: 'INVALID_REQUEST', message }, 400); }
 function todayStr() { return new Date().toISOString().slice(0, 10); }
