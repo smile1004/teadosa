@@ -5,9 +5,11 @@
   const api = window.TaeDoSAApi;
   if (!api) return;
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
-  function buttons(type, id) {
+  function buttons(type, id, action) {
     if (!types.includes(type) || !/^[1-9]\d*$/.test(String(id))) return '';
-    return '<span class="application-actions"><button type="button" data-application-action="edit" data-type="' + type + '" data-id="' + id + '">수정</button><button type="button" class="application-delete" data-application-action="delete" data-type="' + type + '" data-id="' + id + '">삭제</button></span>';
+    const edit = '<button type="button" data-application-action="edit" data-type="' + type + '" data-id="' + id + '">' + (admin ? '신청내용 수정' : '수정') + '</button>';
+    const remove = '<button type="button" class="application-delete" data-application-action="delete" data-type="' + type + '" data-id="' + id + '">삭제</button>';
+    return '<span class="application-actions">' + (action === 'delete' ? remove : action === 'edit' ? edit : edit + remove) + '</span>';
   }
   window.TaeDoSAApplicationActions = { buttons };
   const dialog = document.createElement('dialog');
@@ -72,16 +74,23 @@
   }
   if (admin) {
     function attach() {
-      document.querySelectorAll('a[href*="/admin/"][href*="/detail/?id="]').forEach(link => {
-        if (link.dataset.applicationActionsAttached) return;
+      document.querySelectorAll('a[href*="/admin/"][href*="/detail/"]').forEach(link => {
         const url = new URL(link.href), match = url.pathname.match(/^\/admin\/([^/]+)\/detail\/(?:index\.html)?$/);
         if (!match || !types.includes(match[1])) return;
-        link.dataset.applicationActionsAttached = 'true';
-        link.insertAdjacentHTML('afterend', buttons(match[1], url.searchParams.get('id')));
+        if (link.textContent !== '상세보기') link.textContent = '상세보기';
       });
       const match = location.pathname.match(/^\/admin\/([^/]+)\/detail\/(?:index\.html)?$/);
       const head = document.querySelector('#admin-protected-content .admin-page-head');
-      if (match && head && !head.querySelector('.application-actions')) head.insertAdjacentHTML('beforeend', buttons(match[1], new URLSearchParams(location.search).get('id')));
+      const content = document.getElementById('admin-protected-content');
+      const id = new URLSearchParams(location.search).get('id');
+      if (!match || !types.includes(match[1]) || !head || !content || !/^[1-9]\d*$/.test(id || '')) return;
+      if (!head.querySelector('.application-actions')) head.insertAdjacentHTML('beforeend', buttons(match[1], id, 'edit'));
+      if (!content.querySelector('.application-delete-section')) {
+        const guidance = match[1] === 'precheck'
+          ? '중복·테스트 신청을 정리할 때 사용하세요. 삭제하면 신청서와 검토결과가 함께 삭제됩니다.'
+          : '중복·테스트 신청을 정리할 때 사용하세요. 진행한 신청은 진행상태를 취소로 변경하면 처리이력이 유지됩니다.';
+        content.insertAdjacentHTML('beforeend', '<section class="application-delete-section" aria-label="신청 삭제"><div><h2>신청 삭제</h2><p>' + guidance + '</p></div>' + buttons(match[1], id, 'delete') + '</section>');
+      }
     }
     attach();
     new MutationObserver(attach).observe(document.querySelector('.admin-main') || document.body, { childList: true, subtree: true });
