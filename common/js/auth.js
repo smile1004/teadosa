@@ -180,6 +180,13 @@
   async function getAdminConstructionPlanDetail(requestId) { return request('/api/admin/construction-plan/' + encodeURIComponent(requestId), { method: 'GET' }); }
   async function updateAdminConstructionPlanStatus(requestId, payload) { return request('/api/admin/construction-plan/' + encodeURIComponent(requestId) + '/status', { method: 'PUT', body: payload }); }
 
+  async function getAdminCsCalls(params) { const query = new URLSearchParams(params || {}); return request('/api/admin/cs?' + query.toString(), { method: 'GET' }); }
+  async function createCsCall(payload) { return request('/api/admin/cs', { method: 'POST', body: payload }); }
+  async function getAdminCsCallDetail(callId) { return request('/api/admin/cs/' + encodeURIComponent(callId), { method: 'GET' }); }
+  async function updateCsCall(callId, payload) { return request('/api/admin/cs/' + encodeURIComponent(callId), { method: 'PUT', body: payload }); }
+  async function addCsCallNote(callId, payload) { return request('/api/admin/cs/' + encodeURIComponent(callId) + '/notes', { method: 'POST', body: payload }); }
+  async function deleteCsCall(callId) { return request('/api/admin/cs/' + encodeURIComponent(callId), { method: 'DELETE' }); }
+
   async function checkDuplicate(field, value) {
     return request('/api/auth/check-duplicate', {
       method: 'POST',
@@ -228,6 +235,12 @@
     getAdminConstructionPlanRequests: getAdminConstructionPlanRequests,
     getAdminConstructionPlanDetail: getAdminConstructionPlanDetail,
     updateAdminConstructionPlanStatus: updateAdminConstructionPlanStatus,
-    checkDuplicate: checkDuplicate
+    checkDuplicate: checkDuplicate,
+    getAdminCsCalls: getAdminCsCalls,
+    createCsCall: createCsCall,
+    getAdminCsCallDetail: getAdminCsCallDetail,
+    updateCsCall: updateCsCall,
+    addCsCallNote: addCsCallNote,
+    deleteCsCall: deleteCsCall
   });
 })(window);

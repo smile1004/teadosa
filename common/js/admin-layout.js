@@ -2,6 +2,7 @@
   'use strict';
 
   const serviceMenu = [
+    ['/admin/cs/', 'CS 상담 관리'],
     ['/admin/precheck/', '사전검토 관리'],
     ['/admin/license/', '발전사업허가 관리'],
     ['/admin/development/', '개발행위허가 관리'],

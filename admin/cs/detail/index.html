@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<base href="../../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>CS 상담 상세 | 태양광도사 관리자</title>
+<link href="admin/css/style.css?v=2.9" rel="stylesheet">
+</head>
+<body class="admin-body">
+<div class="admin-app">
+<aside class="admin-sidebar">
+<a class="admin-brand" href="/admin/" aria-label="태도 관리자 홈">
+<img class="admin-brand-logo" src="admin/images/taedo-logo-vertical.png" alt="태도(주) TAEDO">
+<span class="admin-brand-admin">ADMIN SYSTEM</span>
+</a>
+<nav class="admin-nav">
+<p>운영 관리</p>
+<a data-admin-path="/admin/" href="/admin/">
+<span>⌂</span>대시보드</a>
+<a data-admin-path="/admin/members/" href="/admin/members/">
+<span>♙</span>회원관리</a>
+<p>서비스 관리</p>
+        <a data-admin-path="/admin/cs/" href="/admin/cs/"><span aria-hidden="true">□</span>CS 상담 관리</a>
+        <a data-admin-path="/admin/precheck/" href="/admin/precheck/"><span aria-hidden="true">□</span>사전검토 관리</a>
+        <a data-admin-path="/admin/license/" href="/admin/license/"><span aria-hidden="true">□</span>발전사업허가 관리</a>
+        <a data-admin-path="/admin/development/" href="/admin/development/"><span aria-hidden="true">□</span>개발행위허가 관리</a>
+        <a data-admin-path="/admin/ppa/" href="/admin/ppa/"><span aria-hidden="true">□</span>한전PPA 관리</a>
+        <a data-admin-path="/admin/construction-plan/" href="/admin/construction-plan/"><span aria-hidden="true">□</span>공사계획신고 관리</a>
+        </nav>
+<a class="admin-site-link" href="/">사이트로 돌아가기</a>
+</aside>
+<div class="admin-workspace">
+<header class="admin-topbar">
+<div>
+<button class="admin-menu-button" type="button">☰</button>
+<span class="admin-breadcrumb">관리자 / CS 상담 관리 / 상세</span>
+</div>
+<div class="admin-account">
+<span id="admin-user-name">관리자님</span>
+<button id="admin-logout" type="button">로그아웃</button>
+</div>
+</header>
+<main class="admin-main">
+<p id="admin-access-message" class="admin-message">관리자 권한을 확인하고 있습니다.</p>
+<div id="admin-protected-content" hidden>
+<section class="admin-page-head">
+<div>
+<p class="admin-eyebrow">CS CALL</p>
+<h1 id="cs-detail-title">상담 상세</h1>
+<p>상담 내용을 수정하고 처리 기록을 이어서 남길 수 있습니다.</p>
+</div>
+<a class="admin-button secondary" href="/admin/cs/">목록으로</a>
+</section>
+<p id="cs-detail-message" class="admin-inline-message">
+</p>
+<section class="admin-panel">
+<div class="panel-head">
+<div>
+<p class="panel-kicker">BASIC</p>
+<h2>기본정보</h2>
+</div>
+<span id="cs-detail-status" class="status-badge"></span>
+</div>
+<form id="cs-edit-form" class="cs-form">
+<label>
+<span>구분</span>
+<select id="cs-edit-category">
+<option value="homepage">홈페이지</option>
+<option value="taedo">태투사</option>
+<option value="eightsolar">에잇솔라</option>
+</select>
+</label>
+<div class="cs-form-row">
+<label>
+<span>상담일자</span>
+<input id="cs-edit-date" type="date">
+</label>
+<label>
+<span>전화번호</span>
+<input id="cs-edit-phone" type="text" maxlength="30">
+</label>
+</div>
+<label>
+<span>이름</span>
+<input id="cs-edit-name" type="text" maxlength="60">
+</label>
+<label>
+<span>주소</span>
+<textarea id="cs-edit-address" rows="2" maxlength="300"></textarea>
+</label>
+<label>
+<span>문의내용</span>
+<textarea id="cs-edit-content" rows="2" maxlength="1000"></textarea>
+</label>
+<div class="cs-form-row">
+<label>
+<span>유입경로</span>
+<input id="cs-edit-channel" type="text" maxlength="60" list="cs-channel-suggestions">
+</label>
+<label>
+<span>문의접수자</span>
+<input id="cs-edit-receiver" type="text" maxlength="40">
+</label>
+</div>
+<p class="admin-help-text">항목을 수정하고 다른 곳을 클릭하면 자동으로 저장됩니다.</p>
+</form>
+</section>
+<section class="admin-panel">
+<div class="panel-head">
+<div>
+<p class="panel-kicker">HISTORY</p>
+<h2>처리 기록</h2>
+</div>
+</div>
+<p class="admin-help-text" style="margin-top:-6px;">현재 상태는 상단 배지에 표시됩니다. 상태를 바꾸려면 아래에서 새 기록을 추가하세요.</p>
+<div id="cs-notes-list" class="cs-notes-list"></div>
+<button id="cs-note-show" class="admin-button secondary cs-note-toggle" type="button">+ 처리 기록 추가 (담당자·처리상태·내용)</button>
+<form id="cs-note-form" class="cs-form" hidden>
+<label>
+<span>처리상태</span>
+<select id="cs-note-status">
+<option value="waiting">대기</option>
+<option value="in_progress">진행중</option>
+<option value="done">완료</option>
+</select>
+</label>
+<label>
+<span>담당자(작성자)</span>
+<input id="cs-note-author" type="text" maxlength="40" placeholder="이름">
+</label>
+<label>
+<span>처리내용</span>
+<textarea id="cs-note-text" rows="3" maxlength="2000" placeholder="예: 직접통화 - 김OO 팀장에게 전달"></textarea>
+</label>
+<p id="cs-note-message" class="admin-inline-message" hidden></p>
+<div class="cs-form-actions">
+<button class="admin-button secondary" type="button" id="cs-note-cancel">취소</button>
+<button class="admin-button primary" type="submit">기록 추가</button>
+</div>
+</form>
+</section>
+<section class="admin-panel">
+<div class="panel-head">
+<div>
+<p class="panel-kicker">DANGER ZONE</p>
+<h2>상담 삭제</h2>
+</div>
+</div>
+<p class="admin-help-text">삭제하면 처리 기록을 포함해 복구할 수 없습니다.</p>
+<button id="cs-delete" class="admin-button danger" type="button">이 상담 내역 삭제</button>
+</section>
+</div>
+</main>
+</div>
+</div>
+
+<datalist id="cs-channel-suggestions">
+<option value="홈페이지">
+<option value="태투사블로그">
+<option value="태투사톡톡">
+<option value="태투사메일">
+<option value="에잇솔라블로그">
+<option value="에잇솔라톡톡">
+<option value="에잇솔라메일">
+<option value="에잇솔라유튜브">
+</datalist>
+
+<div id="cs-confirm-overlay" class="cs-modal-overlay" hidden>
+<div class="cs-modal cs-modal-small">
+<h2>상담 내역을 삭제할까요?</h2>
+<p class="admin-help-text">삭제하면 처리 기록을 포함해 복구할 수 없습니다.</p>
+<div class="cs-form-actions">
+<button class="admin-button secondary" type="button" id="cs-confirm-cancel">취소</button>
+<button class="admin-button danger" type="button" id="cs-confirm-delete">삭제</button>
+</div>
+</div>
+</div>
+
+<script src="common/js/api.js?v=2.3">
+</script>
+<script src="common/js/auth.js?v=3.2">
+</script>
+<script src="common/js/admin-layout.js?v=2.9">
+</script>
+<script src="common/js/admin-cs-detail.js?v=1.0">
+</script>
+</body>
+</html>
