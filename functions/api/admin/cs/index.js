@@ -114,7 +114,7 @@ export async function onRequestPost({ request, env }) {
     return jsonResponse({ success: true, code: 'CS_CALL_CREATED', message: '상담이 등록되었습니다.', call: { id: callId } });
   } catch (err) {
     console.error('CS 상담 등록 오류:', err);
-    return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '상담을 등록하는 중 오류가 발생했습니다.' }, 500);
+    return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '상담을 등록하는 중 오류가 발생했습니다.', debug: String((err && err.message) || err) }, 500);
   }
 }
 
