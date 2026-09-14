@@ -2,7 +2,7 @@
   'use strict';
   var auth = w.TaeDoSAAuth;
   if (!auth) return;
-  var state = { page: 1, totalPages: 1, receiver: '', processor: '' };
+  var state = { page: 1, totalPages: 1, receiver: '', processor: '', month: '' };
 
   w.addEventListener('teadosa:adminready', init, { once: true });
 
@@ -14,6 +14,7 @@
     d.getElementById('cs-status-filter').value = q.get('status') || '';
     state.receiver = q.get('receiver') || '';
     state.processor = q.get('processor') || '';
+    state.month = q.get('month') || '';
     state.page = Number(q.get('page')) || 1;
     d.getElementById('cs-new-date').value = todayStr();
     load();
@@ -31,6 +32,7 @@
       d.getElementById('cs-status-filter').value = '';
       state.receiver = '';
       state.processor = '';
+      state.month = '';
       state.page = 1;
       load();
     });
@@ -45,10 +47,10 @@
       state.page = 1;
       load();
     });
-    d.getElementById('cs-breakdown-status').addEventListener('click', function (e) {
+    d.getElementById('cs-breakdown-month').addEventListener('click', function (e) {
       var btn = e.target.closest('[data-value]');
       if (!btn) return;
-      d.getElementById('cs-status-filter').value = btn.getAttribute('data-value');
+      state.month = btn.getAttribute('data-value');
       state.page = 1;
       load();
     });
@@ -89,16 +91,17 @@
       var status = d.getElementById('cs-status-filter').value;
       var receiver = state.receiver || '';
       var processor = state.processor || '';
-      var out = await auth.getAdminCsCalls({ search: search, category: category, status: status, receiver: receiver, processor: processor, page: state.page, pageSize: 30 });
+      var month = state.month || '';
+      var out = await auth.getAdminCsCalls({ search: search, category: category, status: status, receiver: receiver, processor: processor, month: month, page: state.page, pageSize: 30 });
       var r = out.result || {};
       if (!out.response.ok || !r.success) throw new Error(r.message || '목록을 불러오지 못했습니다.');
       render(r.calls || []);
-      summary(r.summary || {}, { category: category, status: status, receiver: receiver, processor: processor });
+      summary(r.summary || {}, { category: category, status: status, receiver: receiver, processor: processor, month: month });
       state.totalPages = (r.pagination && r.pagination.totalPages) || 1;
       d.getElementById('cs-page-status').textContent = state.page + ' / ' + state.totalPages;
       d.getElementById('cs-previous-page').disabled = state.page <= 1;
       d.getElementById('cs-next-page').disabled = state.page >= state.totalPages;
-      history.replaceState(null, '', '/admin/cs/?' + new URLSearchParams({ search: search, category: category, status: status, receiver: receiver, processor: processor, page: state.page }).toString());
+      history.replaceState(null, '', '/admin/cs/?' + new URLSearchParams({ search: search, category: category, status: status, receiver: receiver, processor: processor, month: month, page: state.page }).toString());
       message('');
     } catch (e) {
       message(e.message, true);
@@ -134,9 +137,7 @@
     renderBreakdown('cs-breakdown-category', [
       ['', '전체', total], ['homepage', '홈페이지', cat.homepage], ['taedo', '태투사', cat.taedo], ['eightsolar', '에잇솔라', cat.eightsolar]
     ], active.category || '');
-    renderBreakdown('cs-breakdown-status', [
-      ['', '전체', total], ['waiting', '대기', by.waiting], ['in_progress', '진행중', by.in_progress], ['done', '완료', by.done]
-    ], active.status || '');
+    renderBreakdown('cs-breakdown-month', [['', '전체', total]].concat((s.byMonth || []).map(function (x) { return [x.month, monthLabel(x.month), x.count]; })), active.month || '');
     renderBreakdown('cs-breakdown-receiver', [['', '전체', total]].concat((s.byReceiver || []).map(function (x) { return [x.receiver, x.receiver, x.count]; })), active.receiver || '');
     renderBreakdown('cs-breakdown-processor', [['', '전체', total]].concat((s.byProcessor || []).map(function (x) { return [x.author, x.author, x.count]; })), active.processor || '');
   }
@@ -207,6 +208,7 @@
   function set(id, v) { d.getElementById(id).textContent = Number(v || 0).toLocaleString('ko-KR'); }
   function categoryLabel(v) { return ({ homepage: '홈페이지', taedo: '태투사', eightsolar: '에잇솔라' })[v] || v; }
   function statusLabel(v) { return ({ waiting: '대기', in_progress: '진행중', done: '완료' })[v] || v; }
+  function monthLabel(v) { var m = /^(\d{4})-(\d{2})$/.exec(v || ''); return m ? (m[1] + '년 ' + Number(m[2]) + '월') : (v || '미지정'); }
   function phone(v) { var x = String(v || '').replace(/\D/g, ''); return x.length === 11 ? x.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3') : (v || '-'); }
   function date(v) { return v ? String(v).replace(/-/g, '.') : '-'; }
   function todayStr() { var d2 = new Date(); return d2.getFullYear() + '-' + String(d2.getMonth() + 1).padStart(2, '0') + '-' + String(d2.getDate()).padStart(2, '0'); }
