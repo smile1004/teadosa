@@ -12,6 +12,7 @@ export async function onRequestGet({ request, env }) {
     const search = text(u.searchParams.get('search'), 100);
     const category = CATEGORIES.includes(u.searchParams.get('category')) ? u.searchParams.get('category') : '';
     const status = STATUSES.includes(u.searchParams.get('status')) ? u.searchParams.get('status') : '';
+    const receiver = text(u.searchParams.get('receiver'), 40);
     const page = clamp(u.searchParams.get('page'), 1, 100000, 1);
     const pageSize = clamp(u.searchParams.get('pageSize'), 1, 100, 30);
     const offset = (page - 1) * pageSize;
@@ -25,6 +26,10 @@ export async function onRequestGet({ request, env }) {
     }
     if (category) { conditions.push('c.category=?'); bindings.push(category); }
     if (status) { conditions.push('c.status=?'); bindings.push(status); }
+    if (receiver) {
+      if (receiver === '미지정') conditions.push("(c.receiver IS NULL OR TRIM(c.receiver) = '')");
+      else { conditions.push('c.receiver=?'); bindings.push(receiver); }
+    }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const count = await env.DB.prepare(`SELECT COUNT(*) total FROM cs_calls c ${where}`).bind(...bindings).first();

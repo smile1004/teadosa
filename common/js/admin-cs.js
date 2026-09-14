@@ -2,7 +2,7 @@
   'use strict';
   var auth = w.TaeDoSAAuth;
   if (!auth) return;
-  var state = { page: 1, totalPages: 1 };
+  var state = { page: 1, totalPages: 1, receiver: '' };
 
   w.addEventListener('teadosa:adminready', init, { once: true });
 
@@ -12,6 +12,7 @@
     d.getElementById('cs-search').value = q.get('search') || '';
     d.getElementById('cs-category-filter').value = q.get('category') || '';
     d.getElementById('cs-status-filter').value = q.get('status') || '';
+    state.receiver = q.get('receiver') || '';
     state.page = Number(q.get('page')) || 1;
     d.getElementById('cs-new-date').value = todayStr();
     load();
@@ -27,12 +28,35 @@
       d.getElementById('cs-search').value = '';
       d.getElementById('cs-category-filter').value = '';
       d.getElementById('cs-status-filter').value = '';
+      state.receiver = '';
       state.page = 1;
       load();
     });
     d.getElementById('refresh-cs').addEventListener('click', load);
     d.getElementById('cs-previous-page').addEventListener('click', function () { if (state.page > 1) { state.page--; load(); } });
     d.getElementById('cs-next-page').addEventListener('click', function () { if (state.page < state.totalPages) { state.page++; load(); } });
+
+    d.getElementById('cs-breakdown-category').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-value]');
+      if (!btn) return;
+      d.getElementById('cs-category-filter').value = btn.getAttribute('data-value');
+      state.page = 1;
+      load();
+    });
+    d.getElementById('cs-breakdown-status').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-value]');
+      if (!btn) return;
+      d.getElementById('cs-status-filter').value = btn.getAttribute('data-value');
+      state.page = 1;
+      load();
+    });
+    d.getElementById('cs-breakdown-receiver').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-value]');
+      if (!btn) return;
+      state.receiver = btn.getAttribute('data-value');
+      state.page = 1;
+      load();
+    });
 
     d.getElementById('open-cs-create').addEventListener('click', openCreate);
     d.getElementById('cs-create-close').addEventListener('click', closeCreate);
@@ -47,16 +71,17 @@
       var search = d.getElementById('cs-search').value.trim();
       var category = d.getElementById('cs-category-filter').value;
       var status = d.getElementById('cs-status-filter').value;
-      var out = await auth.getAdminCsCalls({ search: search, category: category, status: status, page: state.page, pageSize: 30 });
+      var receiver = state.receiver || '';
+      var out = await auth.getAdminCsCalls({ search: search, category: category, status: status, receiver: receiver, page: state.page, pageSize: 30 });
       var r = out.result || {};
       if (!out.response.ok || !r.success) throw new Error(r.message || '목록을 불러오지 못했습니다.');
       render(r.calls || []);
-      summary(r.summary || {});
+      summary(r.summary || {}, { category: category, status: status, receiver: receiver });
       state.totalPages = (r.pagination && r.pagination.totalPages) || 1;
       d.getElementById('cs-page-status').textContent = state.page + ' / ' + state.totalPages;
       d.getElementById('cs-previous-page').disabled = state.page <= 1;
       d.getElementById('cs-next-page').disabled = state.page >= state.totalPages;
-      history.replaceState(null, '', '/admin/cs/?' + new URLSearchParams({ search: search, category: category, status: status, page: state.page }).toString());
+      history.replaceState(null, '', '/admin/cs/?' + new URLSearchParams({ search: search, category: category, status: status, receiver: receiver, page: state.page }).toString());
       message('');
     } catch (e) {
       message(e.message, true);
@@ -80,27 +105,31 @@
     }).join('') : '<tr><td colspan="10" class="empty-row">상담내역이 없습니다.</td></tr>';
   }
 
-  function summary(s) {
+  function summary(s, active) {
+    active = active || {};
     var by = s.byStatus || {};
     var cat = s.byCategory || {};
+    var total = Number(s.total || 0);
     set('cs-total-count', s.total);
     set('cs-waiting-count', by.waiting);
     set('cs-progress-count', by.in_progress);
     set('cs-done-count', by.done);
     renderBreakdown('cs-breakdown-category', [
-      ['홈페이지', cat.homepage], ['태투사', cat.taedo], ['에잇솔라', cat.eightsolar]
-    ]);
+      ['', '전체', total], ['homepage', '홈페이지', cat.homepage], ['taedo', '태투사', cat.taedo], ['eightsolar', '에잇솔라', cat.eightsolar]
+    ], active.category || '');
     renderBreakdown('cs-breakdown-status', [
-      ['대기', by.waiting], ['진행중', by.in_progress], ['완료', by.done]
-    ]);
-    renderBreakdown('cs-breakdown-receiver', (s.byReceiver || []).map(function (x) { return [x.receiver, x.count]; }));
+      ['', '전체', total], ['waiting', '대기', by.waiting], ['in_progress', '진행중', by.in_progress], ['done', '완료', by.done]
+    ], active.status || '');
+    renderBreakdown('cs-breakdown-receiver', [['', '전체', total]].concat((s.byReceiver || []).map(function (x) { return [x.receiver, x.receiver, x.count]; })), active.receiver || '');
   }
 
-  function renderBreakdown(id, pairs) {
+  function renderBreakdown(id, items, activeValue) {
     var el = d.getElementById(id);
     if (!el) return;
-    el.innerHTML = pairs.length ? pairs.map(function (p) {
-      return '<span class="cs-chip">' + esc(p[0]) + ' <b>' + Number(p[1] || 0).toLocaleString('ko-KR') + '</b></span>';
+    el.innerHTML = items.length ? items.map(function (it) {
+      var value = it[0], label = it[1], count = it[2];
+      var isActive = value === (activeValue || '');
+      return '<button type="button" class="cs-chip' + (isActive ? ' active' : '') + '" data-value="' + esc(value) + '">' + esc(label) + ' <b>' + Number(count || 0).toLocaleString('ko-KR') + '</b></button>';
     }).join('') : '<span class="cs-chip cs-muted">데이터 없음</span>';
   }
 
