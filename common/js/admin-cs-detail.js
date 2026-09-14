@@ -2,7 +2,7 @@
   'use strict';
   var auth = w.TaeDoSAAuth;
   if (!auth) return;
-  var id = 0, started = false, currentCall = null;
+  var id = 0, started = false, currentCall = null, currentNotes = [], editingNoteId = null;
 
   w.addEventListener('teadosa:adminready', init, { once: true });
   if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', wait); else wait();
@@ -25,6 +25,7 @@
     d.getElementById('cs-note-show').addEventListener('click', expandNote);
     d.getElementById('cs-note-cancel').addEventListener('click', collapseNote);
     d.getElementById('cs-note-form').addEventListener('submit', submitNote);
+    d.getElementById('cs-notes-list').addEventListener('click', onNoteClick);
     d.getElementById('cs-delete').addEventListener('click', openConfirm);
     d.getElementById('cs-confirm-cancel').addEventListener('click', closeConfirm);
     d.getElementById('cs-confirm-delete').addEventListener('click', doDelete);
@@ -50,7 +51,8 @@
       var r = out.result || {};
       if (!out.response.ok || !r.success) throw new Error(r.message || '상담내역을 불러오지 못했습니다.');
       currentCall = r.call;
-      render(r.call, r.notes || []);
+      currentNotes = r.notes || [];
+      render(r.call, currentNotes);
       message('');
     } catch (e) {
       message(e.message, true);
@@ -95,7 +97,8 @@
       return;
     }
     list.innerHTML = notes.slice().reverse().map(function (n) {
-      return '<article class="cs-note-item ' + esc(n.status) + '">' +
+      var editing = n.id === editingNoteId;
+      return '<article class="cs-note-item cs-note-clickable' + (editing ? ' cs-note-editing' : '') + ' ' + esc(n.status) + '" data-note-id="' + esc(n.id) + '">' +
         '<div class="cs-note-meta">' + esc(datetime(n.createdAt)) + ' · ' + esc(n.author || '') +
         ' <span class="status-badge ' + esc(n.status) + '">' + esc(statusLabel(n.status)) + '</span></div>' +
         '<p>' + esc(n.note || '').replace(/\n/g, '<br>') + '</p>' +
@@ -116,16 +119,48 @@
   }
 
   function expandNote() {
+    editingNoteId = null;
+    setNoteFormMode();
+    d.getElementById('cs-note-status').value = currentCall ? currentCall.status : 'waiting';
+    d.getElementById('cs-note-author').value = '';
+    d.getElementById('cs-note-text').value = '';
     d.getElementById('cs-note-form').hidden = false;
     d.getElementById('cs-note-show').hidden = true;
     d.getElementById('cs-note-text').focus();
+    renderNotes(currentNotes);
   }
   function collapseNote() {
+    editingNoteId = null;
     d.getElementById('cs-note-form').hidden = true;
     d.getElementById('cs-note-show').hidden = false;
     d.getElementById('cs-note-text').value = '';
     d.getElementById('cs-note-author').value = '';
     actionMessage('cs-note-message', '');
+    setNoteFormMode();
+    renderNotes(currentNotes);
+  }
+
+  function onNoteClick(e) {
+    var article = e.target.closest('[data-note-id]');
+    if (!article) return;
+    var noteId = Number(article.getAttribute('data-note-id'));
+    var note = currentNotes.filter(function (n) { return n.id === noteId; })[0];
+    if (!note) return;
+    editingNoteId = noteId;
+    setNoteFormMode();
+    d.getElementById('cs-note-status').value = note.status;
+    d.getElementById('cs-note-author').value = note.author || '';
+    d.getElementById('cs-note-text').value = note.note || '';
+    d.getElementById('cs-note-form').hidden = false;
+    d.getElementById('cs-note-show').hidden = true;
+    actionMessage('cs-note-message', '');
+    renderNotes(currentNotes);
+    d.getElementById('cs-note-text').focus();
+  }
+
+  function setNoteFormMode() {
+    var button = d.getElementById('cs-note-form').querySelector('button[type="submit"]');
+    button.textContent = editingNoteId ? '수정 저장' : '기록 추가';
   }
 
   async function submitNote(e) {
@@ -144,13 +179,15 @@
     button.disabled = true;
     actionMessage('cs-note-message', '저장하고 있습니다.');
     try {
-      var out = await auth.addCsCallNote(id, { status: statusValue, author: author, note: note });
+      var out = editingNoteId
+        ? await auth.updateCsCallNote(id, editingNoteId, { status: statusValue, author: author, note: note })
+        : await auth.addCsCallNote(id, { status: statusValue, author: author, note: note });
       var r = out.result || {};
-      if (!out.response.ok || !r.success) throw new Error(r.message || '기록을 추가하지 못했습니다.');
+      if (!out.response.ok || !r.success) throw new Error(r.message || (editingNoteId ? '기록을 수정하지 못했습니다.' : '기록을 추가하지 못했습니다.'));
       collapseNote();
       await load();
     } catch (err) {
-      actionMessage('cs-note-message', err.message || '기록 추가 중 오류가 발생했습니다.', true);
+      actionMessage('cs-note-message', err.message || '저장 중 오류가 발생했습니다.', true);
     } finally {
       button.disabled = false;
     }

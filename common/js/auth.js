@@ -185,6 +185,7 @@
   async function getAdminCsCallDetail(callId) { return request('/api/admin/cs/' + encodeURIComponent(callId), { method: 'GET' }); }
   async function updateCsCall(callId, payload) { return request('/api/admin/cs/' + encodeURIComponent(callId), { method: 'PUT', body: payload }); }
   async function addCsCallNote(callId, payload) { return request('/api/admin/cs/' + encodeURIComponent(callId) + '/notes', { method: 'POST', body: payload }); }
+  async function updateCsCallNote(callId, noteId, payload) { return request('/api/admin/cs/' + encodeURIComponent(callId) + '/notes/' + encodeURIComponent(noteId), { method: 'PUT', body: payload }); }
   async function deleteCsCall(callId) { return request('/api/admin/cs/' + encodeURIComponent(callId), { method: 'DELETE' }); }
 
   async function checkDuplicate(field, value) {
@@ -241,6 +242,7 @@
     getAdminCsCallDetail: getAdminCsCallDetail,
     updateCsCall: updateCsCall,
     addCsCallNote: addCsCallNote,
+    updateCsCallNote: updateCsCallNote,
     deleteCsCall: deleteCsCall
   });
 })(window);
