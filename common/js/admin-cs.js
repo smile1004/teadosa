@@ -2,7 +2,7 @@
   'use strict';
   var auth = w.TaeDoSAAuth;
   if (!auth) return;
-  var state = { page: 1, totalPages: 1, receiver: '', processor: '', month: '' };
+  var state = { page: 1, totalPages: 1, receiver: '', processor: '', month: '', status: '' };
 
   w.addEventListener('teadosa:adminready', init, { once: true });
 
@@ -11,7 +11,7 @@
     var q = new URLSearchParams(location.search);
     d.getElementById('cs-search').value = q.get('search') || '';
     d.getElementById('cs-category-filter').value = q.get('category') || '';
-    d.getElementById('cs-status-filter').value = q.get('status') || '';
+    state.status = q.get('status') || '';
     state.receiver = q.get('receiver') || '';
     state.processor = q.get('processor') || '';
     state.month = q.get('month') || '';
@@ -29,7 +29,7 @@
     d.getElementById('cs-reset-filter').addEventListener('click', function () {
       d.getElementById('cs-search').value = '';
       d.getElementById('cs-category-filter').value = '';
-      d.getElementById('cs-status-filter').value = '';
+      state.status = '';
       state.receiver = '';
       state.processor = '';
       state.month = '';
@@ -71,7 +71,7 @@
     d.getElementById('cs-summary-cards').addEventListener('click', function (e) {
       var btn = e.target.closest('[data-value]');
       if (!btn) return;
-      d.getElementById('cs-status-filter').value = btn.getAttribute('data-value');
+      state.status = btn.getAttribute('data-value');
       state.page = 1;
       load();
     });
@@ -88,7 +88,7 @@
     try {
       var search = d.getElementById('cs-search').value.trim();
       var category = d.getElementById('cs-category-filter').value;
-      var status = d.getElementById('cs-status-filter').value;
+      var status = state.status || '';
       var receiver = state.receiver || '';
       var processor = state.processor || '';
       var month = state.month || '';
