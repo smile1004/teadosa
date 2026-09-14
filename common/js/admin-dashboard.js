@@ -19,6 +19,9 @@
       setText('dashboard-pending-members', result.summary.pendingBusinessMembers);
       setText('dashboard-pending-members-copy', result.summary.pendingBusinessMembers);
       setText('dashboard-approved-members', result.summary.approvedBusinessMembers);
+      setText('dashboard-svc-members-total', result.summary.totalMembers);
+      setText('dashboard-svc-members-pending', result.summary.pendingBusinessMembers);
+      renderServices(result.services || {});
       renderRecent(result.recentMembers || []);
       if (message) message.hidden = true;
     } catch (error) {
@@ -28,6 +31,15 @@
         message.textContent = error.message || '관리 현황을 불러오지 못했습니다.';
       }
     }
+  }
+
+  function renderServices(services) {
+    ['cs', 'precheck', 'license', 'development', 'ppa', 'constructionPlan'].forEach(function (key) {
+      const data = services[key] || {};
+      const slug = key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+      setText('dashboard-svc-' + slug + '-total', data.total);
+      setText('dashboard-svc-' + slug + '-pending', data.pending);
+    });
   }
 
   function renderRecent(members) {

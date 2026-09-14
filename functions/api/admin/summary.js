@@ -23,6 +23,15 @@ export async function onRequestGet(context) {
       LIMIT 5
     `).all();
 
+    const [csRow, precheckRow, licenseRow, developmentRow, ppaRow, constructionPlanRow] = await Promise.all([
+      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status <> 'done' THEN 1 ELSE 0 END) pending FROM cs_calls`).first().catch(() => null),
+      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status <> 'completed' THEN 1 ELSE 0 END) pending FROM precheck_requests`).first().catch(() => null),
+      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM generation_license_requests`).first().catch(() => null),
+      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM development_permit_requests`).first().catch(() => null),
+      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM ppa_requests`).first().catch(() => null),
+      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM construction_plan_requests`).first().catch(() => null),
+    ]);
+
     return jsonResponse({
       success: true,
       code: 'ADMIN_SUMMARY_LOADED',
@@ -32,6 +41,14 @@ export async function onRequestGet(context) {
         businessMembers: Number(counts?.business_members || 0),
         pendingBusinessMembers: Number(counts?.pending_business_members || 0),
         approvedBusinessMembers: Number(counts?.approved_business_members || 0),
+      },
+      services: {
+        cs: mapServiceCount(csRow),
+        precheck: mapServiceCount(precheckRow),
+        license: mapServiceCount(licenseRow),
+        development: mapServiceCount(developmentRow),
+        ppa: mapServiceCount(ppaRow),
+        constructionPlan: mapServiceCount(constructionPlanRow),
       },
       recentMembers: (recent.results || []).map((row) => ({
         id: row.id,
@@ -49,6 +66,8 @@ export async function onRequestGet(context) {
     return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '관리 현황을 불러오는 중 오류가 발생했습니다.' }, 500);
   }
 }
+
+function mapServiceCount(row) { return { total: Number(row?.total || 0), pending: Number(row?.pending || 0) }; }
 
 export function onRequestPost() { return methodNotAllowed(); }
 export function onRequestPut() { return methodNotAllowed(); }
