@@ -121,6 +121,7 @@
       ['', '전체', total], ['waiting', '대기', by.waiting], ['in_progress', '진행중', by.in_progress], ['done', '완료', by.done]
     ], active.status || '');
     renderBreakdown('cs-breakdown-receiver', [['', '전체', total]].concat((s.byReceiver || []).map(function (x) { return [x.receiver, x.receiver, x.count]; })), active.receiver || '');
+    renderStaticBreakdown('cs-breakdown-handler', (s.byHandler || []).map(function (x) { return [x.author, x.count]; }));
   }
 
   function renderBreakdown(id, items, activeValue) {
@@ -130,6 +131,14 @@
       var value = it[0], label = it[1], count = it[2];
       var isActive = value === (activeValue || '');
       return '<button type="button" class="cs-chip' + (isActive ? ' active' : '') + '" data-value="' + esc(value) + '">' + esc(label) + ' <b>' + Number(count || 0).toLocaleString('ko-KR') + '</b></button>';
+    }).join('') : '<span class="cs-chip cs-muted">데이터 없음</span>';
+  }
+
+  function renderStaticBreakdown(id, pairs) {
+    var el = d.getElementById(id);
+    if (!el) return;
+    el.innerHTML = pairs.length ? pairs.map(function (p) {
+      return '<span class="cs-chip cs-chip-static">' + esc(p[0]) + ' <b>' + Number(p[1] || 0).toLocaleString('ko-KR') + '</b></span>';
     }).join('') : '<span class="cs-chip cs-muted">데이터 없음</span>';
   }
 
