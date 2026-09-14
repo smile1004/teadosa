@@ -13,6 +13,7 @@ export async function onRequestGet({ request, env }) {
     const category = CATEGORIES.includes(u.searchParams.get('category')) ? u.searchParams.get('category') : '';
     const status = STATUSES.includes(u.searchParams.get('status')) ? u.searchParams.get('status') : '';
     const receiver = text(u.searchParams.get('receiver'), 40);
+    const processor = text(u.searchParams.get('processor'), 40);
     const page = clamp(u.searchParams.get('page'), 1, 100000, 1);
     const pageSize = clamp(u.searchParams.get('pageSize'), 1, 100, 30);
     const offset = (page - 1) * pageSize;
@@ -30,6 +31,10 @@ export async function onRequestGet({ request, env }) {
       if (receiver === '미지정') conditions.push("(c.receiver IS NULL OR TRIM(c.receiver) = '')");
       else { conditions.push('c.receiver=?'); bindings.push(receiver); }
     }
+    if (processor) {
+      conditions.push('EXISTS (SELECT 1 FROM cs_call_notes n WHERE n.call_id = c.id AND TRIM(n.author) = ?)');
+      bindings.push(processor);
+    }
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
     const count = await env.DB.prepare(`SELECT COUNT(*) total FROM cs_calls c ${where}`).bind(...bindings).first();
@@ -42,6 +47,11 @@ export async function onRequestGet({ request, env }) {
     `).all();
     const handlerSums = await env.DB.prepare(`
       SELECT COALESCE(NULLIF(TRIM(author), ''), '미지정') author, COUNT(*) count
+      FROM cs_call_notes GROUP BY COALESCE(NULLIF(TRIM(author), ''), '미지정')
+      ORDER BY count DESC
+    `).all();
+    const processorSums = await env.DB.prepare(`
+      SELECT COALESCE(NULLIF(TRIM(author), ''), '미지정') author, COUNT(DISTINCT call_id) count
       FROM cs_call_notes GROUP BY COALESCE(NULLIF(TRIM(author), ''), '미지정')
       ORDER BY count DESC
     `).all();
@@ -62,6 +72,7 @@ export async function onRequestGet({ request, env }) {
     const totalAll = byCategory.homepage + byCategory.taedo + byCategory.eightsolar;
     const byReceiver = (receiverSums.results || []).map((x) => ({ receiver: x.receiver, count: Number(x.count || 0) }));
     const byHandler = (handlerSums.results || []).map((x) => ({ author: x.author, count: Number(x.count || 0) }));
+    const byProcessor = (processorSums.results || []).map((x) => ({ author: x.author, count: Number(x.count || 0) }));
 
     return jsonResponse({
       success: true,
@@ -81,7 +92,7 @@ export async function onRequestGet({ request, env }) {
         createdAt: x.created_at,
         updatedAt: x.updated_at
       })),
-      summary: { total: totalAll, byCategory, byStatus, byReceiver, byHandler },
+      summary: { total: totalAll, byCategory, byStatus, byReceiver, byHandler, byProcessor },
       pagination: { page, pageSize, total, totalPages: Math.max(1, Math.ceil(total / pageSize)) }
     });
   } catch (err) {
