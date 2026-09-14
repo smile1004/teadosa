@@ -55,49 +55,52 @@
             <div>
 <p class="admin-eyebrow">DASHBOARD</p>
 <h1>운영 현황</h1>
-<p>회원 가입과 기업회원 승인 현황을 한눈에 확인합니다.</p>
+<p>회원 현황과 서비스 관리 현황을 확인합니다.</p>
 </div>
             <a class="admin-button primary" href="/admin/members/?approvalStatus=pending">승인 대기 회원 보기</a>
           </section>
 
           <p id="dashboard-message" class="admin-message" role="status">관리 현황을 불러오고 있습니다.</p>
 
-          <section class="dashboard-cards" aria-label="회원 현황">
-            <article>
+          <section class="admin-panel" aria-labelledby="dashboard-members-title">
+            <div class="panel-head">
+<div>
+<p class="panel-kicker">MEMBERS</p>
+<h2 id="dashboard-members-title">회원관리</h2>
+</div>
+</div>
+            <div class="dashboard-cards" aria-label="회원 현황">
+              <a href="/admin/members/">
 <span>전체 회원</span>
 <strong id="dashboard-total-members">0</strong>
 <small>등록된 전체 계정</small>
-</article>
-            <article>
+</a>
+              <a href="/admin/members/?memberType=personal">
 <span>개인회원</span>
 <strong id="dashboard-personal-members">0</strong>
 <small>개인 서비스 회원</small>
-</article>
-            <article>
+</a>
+              <a href="/admin/members/?memberType=business">
 <span>기업회원</span>
 <strong id="dashboard-business-members">0</strong>
 <small>기업 전문 회원</small>
-</article>
-            <article class="attention">
+</a>
+              <a class="attention" href="/admin/members/?approvalStatus=pending">
 <span>승인 대기</span>
 <strong id="dashboard-pending-members">0</strong>
 <small>관리자 확인 필요</small>
-</article>
+</a>
+            </div>
           </section>
 
           <section class="admin-panel" aria-labelledby="dashboard-services-title">
             <div class="panel-head">
 <div>
 <p class="panel-kicker">SERVICES</p>
-<h2 id="dashboard-services-title">회원관리 · 서비스 현황</h2>
+<h2 id="dashboard-services-title">서비스 관리 현황</h2>
 </div>
 </div>
             <div class="dashboard-service-grid" id="dashboard-service-grid">
-              <a class="dashboard-service-card" href="/admin/members/">
-<span class="dashboard-service-name">회원관리</span>
-<strong id="dashboard-svc-members-total">0</strong>
-<small><span id="dashboard-svc-members-pending">0</span>건 승인 대기</small>
-</a>
               <a class="dashboard-service-card" href="/admin/cs/">
 <span class="dashboard-service-name">CS 전화상담 관리</span>
 <strong id="dashboard-svc-cs-total">0</strong>
@@ -129,64 +132,6 @@
 <small><span id="dashboard-svc-construction-plan-pending">0</span>건 처리중</small>
 </a>
             </div>
-          </section>
-
-          <section class="admin-grid-two">
-            <article class="admin-panel">
-              <div class="panel-head">
-<div>
-<p class="panel-kicker">BUSINESS MEMBERS</p>
-<h2>기업회원 승인 현황</h2>
-</div>
-</div>
-              <div class="approval-overview">
-<div>
-<span>승인 완료</span>
-<strong id="dashboard-approved-members">0</strong>
-</div>
-<div>
-<span>승인 대기</span>
-<strong id="dashboard-pending-members-copy">-</strong>
-</div>
-</div>
-              <a class="admin-text-link" href="/admin/members/">회원관리에서 확인하기 →</a>
-            </article>
-            <article class="admin-panel quick-panel">
-              <div class="panel-head">
-<div>
-<p class="panel-kicker">QUICK MENU</p>
-<h2>빠른 메뉴</h2>
-</div>
-</div>
-              <a href="/admin/members/">전체 회원목록</a>
-              <a href="/admin/members/?memberType=business&approvalStatus=pending">승인 대기 기업회원</a>
-              <a href="/mypage/">내 회원정보 확인</a>
-            </article>
-          </section>
-
-          <section class="admin-panel">
-            <div class="panel-head">
-<div>
-<p class="panel-kicker">RECENT MEMBERS</p>
-<h2>최근 가입 회원</h2>
-</div>
-<a class="admin-text-link" href="/admin/members/">전체보기</a>
-</div>
-            <div class="table-wrap">
-<table class="member-table">
-<thead>
-<tr>
-<th>회원</th>
-<th>구분</th>
-<th>기업명</th>
-<th>상태</th>
-<th>가입일</th>
-</tr>
-</thead>
-<tbody id="recent-member-list">
-</tbody>
-</table>
-</div>
           </section>
         </div>
       </main>
