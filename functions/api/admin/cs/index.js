@@ -35,7 +35,7 @@ export async function onRequestGet({ request, env }) {
       SELECT c.id, c.category, c.call_date, c.phone, c.customer_name, c.address, c.content, c.channel, c.receiver, c.status, c.created_at, c.updated_at,
         (SELECT note FROM cs_call_notes n WHERE n.call_id = c.id ORDER BY n.created_at DESC, n.id DESC LIMIT 1) AS last_note
       FROM cs_calls c ${where}
-      ORDER BY c.created_at DESC, c.id DESC
+      ORDER BY c.call_date DESC, c.created_at DESC, c.id DESC
       LIMIT ? OFFSET ?
     `).bind(...bindings, pageSize, offset).all();
 
@@ -114,7 +114,7 @@ export async function onRequestPost({ request, env }) {
     return jsonResponse({ success: true, code: 'CS_CALL_CREATED', message: '상담이 등록되었습니다.', call: { id: callId } });
   } catch (err) {
     console.error('CS 상담 등록 오류:', err);
-    return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '상담을 등록하는 중 오류가 발생했습니다.', debug: String((err && err.message) || err) }, 500);
+    return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '상담을 등록하는 중 오류가 발생했습니다.' }, 500);
   }
 }
 
