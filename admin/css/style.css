@@ -136,8 +136,10 @@
 .dashboard-service-card{display:flex;flex-direction:column;gap:6px;padding:18px;border:1px solid #e0e6ed;border-radius:15px;background:#fff;box-shadow:0 8px 24px rgba(28,45,68,.05);text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s,border-color .12s}
 .dashboard-service-card:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(28,45,68,.09);border-color:#c7d2db}
 .dashboard-service-name{color:#6e7c8f;font-size:13px;font-weight:700}
-.dashboard-service-card strong{font-size:28px;color:#163152;letter-spacing:-.02em}
-.dashboard-service-card small{color:#e97625;font-weight:800;font-size:12px}
+.dashboard-service-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.dashboard-service-stats div{text-align:center;padding:8px 4px;border-radius:10px;background:#f5f8fb}
+.dashboard-service-stats span{display:block;color:#8995a5;font-size:10px;font-weight:700}
+.dashboard-service-stats strong{display:block;margin-top:3px;font-size:17px;color:#163152;letter-spacing:-.02em}
 .dashboard-cards a{display:block;padding:20px;border:1px solid #e0e6ed;border-radius:17px;background:#fff;box-shadow:0 8px 24px rgba(28,45,68,.05);text-decoration:none;color:inherit;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s}
 .dashboard-cards a:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(28,45,68,.09);border-color:#c7d2db}
 .dashboard-cards a span{display:block;color:#6e7c8f;font-size:13px}

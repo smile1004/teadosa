@@ -24,12 +24,48 @@ export async function onRequestGet(context) {
     `).all();
 
     const [csRow, precheckRow, licenseRow, developmentRow, ppaRow, constructionPlanRow] = await Promise.all([
-      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status <> 'done' THEN 1 ELSE 0 END) pending FROM cs_calls`).first().catch(() => null),
-      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status <> 'completed' THEN 1 ELSE 0 END) pending FROM precheck_requests`).first().catch(() => null),
-      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM generation_license_requests`).first().catch(() => null),
-      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM development_permit_requests`).first().catch(() => null),
-      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM ppa_requests`).first().catch(() => null),
-      env.DB.prepare(`SELECT COUNT(*) total, SUM(CASE WHEN status NOT IN ('completed','cancelled') THEN 1 ELSE 0 END) pending FROM construction_plan_requests`).first().catch(() => null),
+      env.DB.prepare(`
+        SELECT COUNT(*) total,
+          SUM(CASE WHEN status = 'waiting' THEN 1 ELSE 0 END) waiting,
+          SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) in_progress,
+          SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) done
+        FROM cs_calls
+      `).first().catch(() => null),
+      env.DB.prepare(`
+        SELECT COUNT(*) total,
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
+          SUM(CASE WHEN status IN ('reviewing','supplement_required') THEN 1 ELSE 0 END) in_progress,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) done
+        FROM precheck_requests
+      `).first().catch(() => null),
+      env.DB.prepare(`
+        SELECT COUNT(*) total,
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
+          SUM(CASE WHEN status IN ('consulting','contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
+          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+        FROM generation_license_requests
+      `).first().catch(() => null),
+      env.DB.prepare(`
+        SELECT COUNT(*) total,
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
+          SUM(CASE WHEN status IN ('consulting','contracted','site_review','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
+          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+        FROM development_permit_requests
+      `).first().catch(() => null),
+      env.DB.prepare(`
+        SELECT COUNT(*) total,
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
+          SUM(CASE WHEN status IN ('consulting','contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
+          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+        FROM ppa_requests
+      `).first().catch(() => null),
+      env.DB.prepare(`
+        SELECT COUNT(*) total,
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
+          SUM(CASE WHEN status IN ('consulting','contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
+          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+        FROM construction_plan_requests
+      `).first().catch(() => null),
     ]);
 
     return jsonResponse({
@@ -67,7 +103,14 @@ export async function onRequestGet(context) {
   }
 }
 
-function mapServiceCount(row) { return { total: Number(row?.total || 0), pending: Number(row?.pending || 0) }; }
+function mapServiceCount(row) {
+  return {
+    total: Number(row?.total || 0),
+    waiting: Number(row?.waiting || 0),
+    inProgress: Number(row?.in_progress || 0),
+    done: Number(row?.done || 0),
+  };
+}
 
 export function onRequestPost() { return methodNotAllowed(); }
 export function onRequestPut() { return methodNotAllowed(); }

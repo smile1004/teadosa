@@ -33,7 +33,9 @@
       const data = services[key] || {};
       const slug = key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
       setText('dashboard-svc-' + slug + '-total', data.total);
-      setText('dashboard-svc-' + slug + '-pending', data.pending);
+      setText('dashboard-svc-' + slug + '-waiting', data.waiting);
+      setText('dashboard-svc-' + slug + '-inprogress', data.inProgress);
+      setText('dashboard-svc-' + slug + '-done', data.done);
     });
   }
 
