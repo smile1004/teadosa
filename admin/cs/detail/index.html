@@ -63,7 +63,7 @@
 </div>
 <span id="cs-detail-status" class="status-badge"></span>
 </div>
-<form id="cs-edit-form" class="cs-form">
+<form id="cs-edit-form" class="cs-edit-grid">
 <label>
 <span>구분</span>
 <select id="cs-edit-category">
@@ -72,7 +72,6 @@
 <option value="eightsolar">에잇솔라</option>
 </select>
 </label>
-<div class="cs-form-row">
 <label>
 <span>상담일자</span>
 <input id="cs-edit-date" type="date">
@@ -81,20 +80,10 @@
 <span>전화번호</span>
 <input id="cs-edit-phone" type="text" maxlength="30">
 </label>
-</div>
 <label>
 <span>이름</span>
 <input id="cs-edit-name" type="text" maxlength="60">
 </label>
-<label>
-<span>주소</span>
-<textarea id="cs-edit-address" rows="2" maxlength="300"></textarea>
-</label>
-<label>
-<span>문의내용</span>
-<textarea id="cs-edit-content" rows="2" maxlength="1000"></textarea>
-</label>
-<div class="cs-form-row">
 <label>
 <span>유입경로</span>
 <input id="cs-edit-channel" type="text" maxlength="60" list="cs-channel-suggestions">
@@ -103,8 +92,15 @@
 <span>문의접수자</span>
 <input id="cs-edit-receiver" type="text" maxlength="40">
 </label>
-</div>
-<p class="admin-help-text">항목을 수정하고 다른 곳을 클릭하면 자동으로 저장됩니다.</p>
+<label class="cs-span-all">
+<span>주소</span>
+<textarea id="cs-edit-address" rows="2" maxlength="300"></textarea>
+</label>
+<label class="cs-span-all">
+<span>문의내용</span>
+<textarea id="cs-edit-content" rows="3" maxlength="1000"></textarea>
+</label>
+<p class="admin-help-text cs-span-all">항목을 수정하고 다른 곳을 클릭하면 자동으로 저장됩니다.</p>
 </form>
 </section>
 <section class="admin-panel">
