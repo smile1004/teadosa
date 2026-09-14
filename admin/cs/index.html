@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>CS 상담 관리 | 태양광도사 관리자</title>
-<link href="admin/css/style.css?v=2.9" rel="stylesheet">
+<link href="admin/css/style.css?v=3.0" rel="stylesheet">
 </head>
 <body class="admin-body">
 <div class="admin-app">
@@ -54,24 +54,24 @@
 <button id="open-cs-create" class="admin-button primary" type="button">+ 신규 상담 등록</button>
 </section>
 <section class="admin-summary cs-summary">
-<article>
+<article class="cs-tile cs-tile-total">
 <span>전체</span>
 <strong id="cs-total-count">0</strong>
 </article>
-<article>
+<article class="cs-tile cs-tile-waiting">
 <span>대기</span>
 <strong id="cs-waiting-count">0</strong>
 </article>
-<article>
+<article class="cs-tile cs-tile-progress">
 <span>진행중</span>
 <strong id="cs-progress-count">0</strong>
 </article>
-<article>
+<article class="cs-tile cs-tile-done">
 <span>완료</span>
 <strong id="cs-done-count">0</strong>
 </article>
 </section>
-<section class="admin-panel">
+<section class="admin-panel cs-filter-panel">
 <form id="cs-search-form" class="admin-filter cs-filter">
 <label>
 <span>구분</span>
@@ -149,8 +149,8 @@
 </div>
 <button id="cs-create-close" class="admin-button secondary" type="button">닫기</button>
 </div>
-<form id="cs-create-form" class="cs-form">
-<label>
+<form id="cs-create-form" class="cs-form cs-edit-grid">
+<label class="cs-span-all">
 <span>구분 *</span>
 <select id="cs-new-category" required>
 <option value="homepage">홈페이지</option>
@@ -158,7 +158,6 @@
 <option value="eightsolar">에잇솔라</option>
 </select>
 </label>
-<div class="cs-form-row">
 <label>
 <span>상담일자</span>
 <input id="cs-new-date" type="date">
@@ -167,20 +166,18 @@
 <span>전화번호</span>
 <input id="cs-new-phone" type="text" maxlength="30" placeholder="010-0000-0000">
 </label>
-</div>
-<label>
+<label class="cs-span-all">
 <span>이름</span>
 <input id="cs-new-name" type="text" maxlength="60">
 </label>
-<label>
+<label class="cs-span-all">
 <span>주소</span>
 <textarea id="cs-new-address" rows="2" maxlength="300"></textarea>
 </label>
-<label>
+<label class="cs-span-all">
 <span>문의내용</span>
 <textarea id="cs-new-content" rows="2" maxlength="1000" placeholder="예: 태양광설치 문의"></textarea>
 </label>
-<div class="cs-form-row">
 <label>
 <span>유입경로</span>
 <input id="cs-new-channel" type="text" maxlength="60" list="cs-channel-suggestions" placeholder="예: 태투사블로그">
@@ -189,7 +186,6 @@
 <span>문의접수자 *</span>
 <input id="cs-new-receiver" type="text" maxlength="40" required placeholder="이름">
 </label>
-</div>
 <label>
 <span>처리상태</span>
 <select id="cs-new-status">
@@ -198,13 +194,13 @@
 <option value="done">완료</option>
 </select>
 </label>
-<label>
+<label class="cs-span-all">
 <span>처리내용 (선택)</span>
 <textarea id="cs-new-first-note" rows="2" maxlength="2000" placeholder="예: 직접통화 - 김OO 팀장에게 전달"></textarea>
 </label>
-<p id="cs-create-message" class="admin-inline-message" hidden>
+<p id="cs-create-message" class="admin-inline-message cs-span-all" hidden>
 </p>
-<div class="cs-form-actions">
+<div class="cs-form-actions cs-span-all">
 <button class="admin-button secondary" type="button" id="cs-create-cancel">취소</button>
 <button class="admin-button primary" type="submit">등록</button>
 </div>
@@ -229,7 +225,7 @@
 </script>
 <script src="common/js/admin-layout.js?v=2.9">
 </script>
-<script src="common/js/admin-cs.js?v=1.0">
+<script src="common/js/admin-cs.js?v=1.1">
 </script>
 </body>
 </html>

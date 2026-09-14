@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>CS 상담 상세 | 태양광도사 관리자</title>
-<link href="admin/css/style.css?v=2.9" rel="stylesheet">
+<link href="admin/css/style.css?v=3.0" rel="stylesheet">
 </head>
 <body class="admin-body">
 <div class="admin-app">
@@ -49,13 +49,19 @@
 <div>
 <p class="admin-eyebrow">CS CALL</p>
 <h1 id="cs-detail-title">상담 상세</h1>
-<p>상담 내용을 수정하고 처리 기록을 이어서 남길 수 있습니다.</p>
+<div class="cs-detail-meta">
+<span id="cs-detail-category-chip" class="category-chip"></span>
+<span id="cs-detail-date-text" class="cs-meta-item">-</span>
+<span id="cs-detail-channel-text" class="cs-meta-item">-</span>
+<span id="cs-detail-receiver-text" class="cs-meta-item">-</span>
+</div>
 </div>
 <a class="admin-button secondary" href="/admin/cs/">목록으로</a>
 </section>
 <p id="cs-detail-message" class="admin-inline-message">
 </p>
-<section class="admin-panel">
+<section class="admin-grid-two cs-detail-grid">
+<article class="admin-panel">
 <div class="panel-head">
 <div>
 <p class="panel-kicker">BASIC</p>
@@ -63,7 +69,7 @@
 </div>
 <span id="cs-detail-status" class="status-badge"></span>
 </div>
-<form id="cs-edit-form" class="cs-edit-grid">
+<form id="cs-edit-form" class="cs-form cs-edit-grid">
 <label>
 <span>구분</span>
 <select id="cs-edit-category">
@@ -102,17 +108,17 @@
 </label>
 <p class="admin-help-text cs-span-all">항목을 수정하고 다른 곳을 클릭하면 자동으로 저장됩니다.</p>
 </form>
-</section>
-<section class="admin-panel">
+</article>
+<article class="admin-panel">
 <div class="panel-head">
 <div>
 <p class="panel-kicker">HISTORY</p>
 <h2>처리 기록</h2>
 </div>
 </div>
-<p class="admin-help-text" style="margin-top:-6px;">현재 상태는 상단 배지에 표시됩니다. 상태를 바꾸려면 아래에서 새 기록을 추가하세요.</p>
+<p class="admin-help-text cs-notes-hint">현재 상태는 왼쪽 기본정보의 배지에 표시됩니다. 상태를 바꾸려면 아래에서 새 기록을 추가하세요.</p>
 <div id="cs-notes-list" class="cs-notes-list"></div>
-<button id="cs-note-show" class="admin-button secondary cs-note-toggle" type="button">+ 처리 기록 추가 (담당자·처리상태·내용)</button>
+<button id="cs-note-show" class="admin-button secondary cs-note-toggle" type="button">+ 새 처리 기록 추가</button>
 <form id="cs-note-form" class="cs-form" hidden>
 <label>
 <span>처리상태</span>
@@ -136,16 +142,16 @@
 <button class="admin-button primary" type="submit">기록 추가</button>
 </div>
 </form>
+</article>
 </section>
-<section class="admin-panel">
-<div class="panel-head">
+<section class="admin-panel cs-danger-panel">
+<div class="cs-danger-row">
 <div>
-<p class="panel-kicker">DANGER ZONE</p>
-<h2>상담 삭제</h2>
-</div>
-</div>
+<strong>상담 내역 삭제</strong>
 <p class="admin-help-text">삭제하면 처리 기록을 포함해 복구할 수 없습니다.</p>
+</div>
 <button id="cs-delete" class="admin-button danger" type="button">이 상담 내역 삭제</button>
+</div>
 </section>
 </div>
 </main>
@@ -180,7 +186,7 @@
 </script>
 <script src="common/js/admin-layout.js?v=2.9">
 </script>
-<script src="common/js/admin-cs-detail.js?v=1.0">
+<script src="common/js/admin-cs-detail.js?v=1.1">
 </script>
 </body>
 </html>
