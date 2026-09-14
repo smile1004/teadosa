@@ -124,7 +124,8 @@
 .status-badge.in_progress{background:#fff1e0;color:#a9600f}
 .status-badge.done{background:#e9f7ef;color:#208451}
 .cs-summary{grid-template-columns:repeat(4,minmax(0,1fr))}
-.cs-tile{border-left:4px solid #d7e0e7}
+.cs-tile{border-left:4px solid #d7e0e7;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s}
+.cs-tile:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(28,45,68,.09)}
 .cs-tile-total{border-left-color:#163152}
 .cs-tile-waiting{border-left-color:#8a97a4}
 .cs-tile-progress{border-left-color:#e08a2c}

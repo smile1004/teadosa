@@ -45,11 +45,6 @@ export async function onRequestGet({ request, env }) {
       FROM cs_calls GROUP BY COALESCE(NULLIF(TRIM(receiver), ''), '미지정')
       ORDER BY count DESC
     `).all();
-    const handlerSums = await env.DB.prepare(`
-      SELECT COALESCE(NULLIF(TRIM(author), ''), '미지정') author, COUNT(*) count
-      FROM cs_call_notes GROUP BY COALESCE(NULLIF(TRIM(author), ''), '미지정')
-      ORDER BY count DESC
-    `).all();
     const processorSums = await env.DB.prepare(`
       SELECT COALESCE(NULLIF(TRIM(author), ''), '미지정') author, COUNT(DISTINCT call_id) count
       FROM cs_call_notes GROUP BY COALESCE(NULLIF(TRIM(author), ''), '미지정')
@@ -71,7 +66,6 @@ export async function onRequestGet({ request, env }) {
     (statusSums.results || []).forEach((x) => { if (byStatus[x.status] !== undefined) byStatus[x.status] = Number(x.count || 0); });
     const totalAll = byCategory.homepage + byCategory.taedo + byCategory.eightsolar;
     const byReceiver = (receiverSums.results || []).map((x) => ({ receiver: x.receiver, count: Number(x.count || 0) }));
-    const byHandler = (handlerSums.results || []).map((x) => ({ author: x.author, count: Number(x.count || 0) }));
     const byProcessor = (processorSums.results || []).map((x) => ({ author: x.author, count: Number(x.count || 0) }));
 
     return jsonResponse({
@@ -92,7 +86,7 @@ export async function onRequestGet({ request, env }) {
         createdAt: x.created_at,
         updatedAt: x.updated_at
       })),
-      summary: { total: totalAll, byCategory, byStatus, byReceiver, byHandler, byProcessor },
+      summary: { total: totalAll, byCategory, byStatus, byReceiver, byProcessor },
       pagination: { page, pageSize, total, totalPages: Math.max(1, Math.ceil(total / pageSize)) }
     });
   } catch (err) {

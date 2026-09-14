@@ -53,20 +53,20 @@
 </div>
 <button id="open-cs-create" class="admin-button primary" type="button">+ 신규 상담 등록</button>
 </section>
-<section class="admin-summary cs-summary">
-<article class="cs-tile cs-tile-total">
+<section class="admin-summary cs-summary" id="cs-summary-cards">
+<article class="cs-tile cs-tile-total" data-value="">
 <span>전체</span>
 <strong id="cs-total-count">0</strong>
 </article>
-<article class="cs-tile cs-tile-waiting">
+<article class="cs-tile cs-tile-waiting" data-value="waiting">
 <span>대기</span>
 <strong id="cs-waiting-count">0</strong>
 </article>
-<article class="cs-tile cs-tile-progress">
+<article class="cs-tile cs-tile-progress" data-value="in_progress">
 <span>진행중</span>
 <strong id="cs-progress-count">0</strong>
 </article>
-<article class="cs-tile cs-tile-done">
+<article class="cs-tile cs-tile-done" data-value="done">
 <span>완료</span>
 <strong id="cs-done-count">0</strong>
 </article>
@@ -88,11 +88,7 @@
 <span class="cs-breakdown-label">처리상태별</span>
 <div class="cs-breakdown-chips" id="cs-breakdown-status"></div>
 </div>
-<div class="cs-breakdown-row">
-<span class="cs-breakdown-label">담당자별 처리 건수</span>
-<div class="cs-breakdown-chips" id="cs-breakdown-handler"></div>
-</div>
-<p class="admin-help-text">구분별·문의접수자별·처리 담당자별·처리상태별은 클릭하면 목록이 필터링됩니다 (처리 담당자별은 처리 기록을 남긴 담당자 기준으로 상담을 찾습니다). 담당자별 처리 건수는 담당자가 남긴 처리 기록 건수 기준의 참고 통계입니다.</p>
+<p class="admin-help-text">위 전체/대기/진행중/완료 카드와 구분별·문의접수자별·처리 담당자별·처리상태별 항목은 클릭하면 목록이 필터링됩니다 (처리 담당자별은 처리 기록을 남긴 담당자 기준으로 상담을 찾습니다).</p>
 </section>
 <section class="admin-panel cs-filter-panel">
 <form id="cs-search-form" class="admin-filter cs-filter">
