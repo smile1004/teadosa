@@ -134,7 +134,7 @@
 .admin-summary article[data-value]:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(28,45,68,.09)}
 .dashboard-service-list{display:flex;flex-direction:column;gap:10px}
 .dashboard-service-row{display:flex;align-items:stretch;gap:12px;flex-wrap:nowrap}
-.dashboard-service-row-name{flex:0 0 auto;width:176px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;border-radius:14px;background:#163152;color:#fff;font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1.3;text-decoration:none}
+.dashboard-service-row-name{flex:0 0 auto;width:176px;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px 12px;border-radius:14px;background:#eaf1fa;border:1px solid #d7e3f0;color:#1c3a5e;font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1.3;text-decoration:none}
 .dashboard-service-cards{flex:1 1 auto;min-width:0;display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto}
 .dashboard-service-cards a{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:16px 4px;border:1px solid #e0e6ed;border-radius:12px;background:#fff;box-shadow:0 6px 16px rgba(28,45,68,.05);text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s,border-color .12s}
 .dashboard-service-cards a:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(28,45,68,.09);border-color:#c7d2db}
