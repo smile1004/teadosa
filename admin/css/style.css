@@ -150,8 +150,8 @@
 .cs-filter label{display:grid;gap:6px;color:#34475a;font-size:12px;font-weight:800}
 .cs-filter input,.cs-filter select{padding:10px 12px;border:1px solid #d7e0e7;border-radius:9px;background:#fff;font:inherit;font-size:13px}
 .cs-filter input[type="text"]{min-width:200px}
-.cs-filter .search-field{flex:1 1 420px}
-.cs-filter .search-field input{width:100%;min-width:280px}
+.cs-filter .search-field{flex:0 0 auto}
+.cs-filter .search-field input{width:320px}
 .cs-filter .admin-button{height:38px}
 .cs-table tbody tr:hover{background:#f8fafc}
 .admin-table-link{color:#2467a3;font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap}
