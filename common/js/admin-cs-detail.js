@@ -131,14 +131,20 @@
   async function submitNote(e) {
     e.preventDefault();
     var button = d.getElementById('cs-note-form').querySelector('button[type="submit"]');
-    var note = d.getElementById('cs-note-text').value.trim();
-    if (!note) return actionMessage('cs-note-message', '처리내용을 입력해 주세요.', true);
+    var noteField = d.getElementById('cs-note-text');
+    var note = noteField.value.trim();
+    var statusValue = d.getElementById('cs-note-status').value;
+    if (!note) {
+      var ok = window.confirm('처리내용을 입력하지 않았습니다.\n"상태 변경: ' + statusLabel(statusValue) + '" 로 자동 기록하고 저장할까요?');
+      if (!ok) { noteField.focus(); return; }
+      note = '상태 변경: ' + statusLabel(statusValue);
+    }
     var author = d.getElementById('cs-note-author').value.trim();
     if (!author) return actionMessage('cs-note-message', '담당자(작성자)를 선택해 주세요.', true);
     button.disabled = true;
     actionMessage('cs-note-message', '저장하고 있습니다.');
     try {
-      var out = await auth.addCsCallNote(id, { status: d.getElementById('cs-note-status').value, author: author, note: note });
+      var out = await auth.addCsCallNote(id, { status: statusValue, author: author, note: note });
       var r = out.result || {};
       if (!out.response.ok || !r.success) throw new Error(r.message || '기록을 추가하지 못했습니다.');
       collapseNote();
