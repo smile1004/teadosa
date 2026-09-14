@@ -132,15 +132,9 @@
 .cs-tile-done{border-left-color:#2a9d63}
 .admin-summary article[data-value]{cursor:pointer;transition:transform .12s,box-shadow .12s}
 .admin-summary article[data-value]:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(28,45,68,.09)}
-.dashboard-service-grid{display:flex;flex-direction:column;gap:10px}
-.dashboard-service-row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:14px 16px;border:1px solid #e0e6ed;border-radius:15px;background:#fff;box-shadow:0 8px 24px rgba(28,45,68,.05);transition:box-shadow .12s,border-color .12s}
-.dashboard-service-row:hover{box-shadow:0 10px 26px rgba(28,45,68,.09);border-color:#c7d2db}
-.dashboard-service-row-name{color:#163152;font-size:14px;font-weight:800;text-decoration:none;min-width:130px}
-.dashboard-service-chips{display:flex;gap:8px;flex-wrap:wrap}
-.dashboard-service-chips a{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:60px;padding:6px 10px;border-radius:10px;background:#f5f8fb;text-decoration:none;transition:background .12s}
-.dashboard-service-chips a:hover{background:#eaf1fa}
-.dashboard-service-chips a span{color:#8995a5;font-size:10px;font-weight:700}
-.dashboard-service-chips a strong{display:block;margin-top:2px;font-size:16px;color:#163152;letter-spacing:-.02em}
+.dashboard-service-list{display:flex;flex-direction:column;gap:24px}
+.dashboard-service-block-title{margin:0 0 10px;font-size:14px;font-weight:800;color:#163152}
+.dashboard-service-cards{margin:0}
 .dashboard-cards a{display:block;padding:20px;border:1px solid #e0e6ed;border-radius:17px;background:#fff;box-shadow:0 8px 24px rgba(28,45,68,.05);text-decoration:none;color:inherit;cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s}
 .dashboard-cards a:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(28,45,68,.09);border-color:#c7d2db}
 .dashboard-cards a span{display:block;color:#6e7c8f;font-size:13px}
