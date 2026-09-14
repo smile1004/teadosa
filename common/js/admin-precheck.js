@@ -20,6 +20,7 @@
     el.previous = document.getElementById('precheck-previous-page');
     el.next = document.getElementById('precheck-next-page');
     el.pageStatus = document.getElementById('precheck-page-status');
+    el.summaryCards = document.getElementById('precheck-summary-cards');
 
     const params = new URLSearchParams(window.location.search);
     el.search.value = params.get('search') || '';
@@ -31,6 +32,14 @@
     el.previous.addEventListener('click', function () { if (state.page > 1) { state.page -= 1; loadRequests(); } });
     el.next.addEventListener('click', function () { if (state.page < state.totalPages) { state.page += 1; loadRequests(); } });
     el.body.addEventListener('change', handleStatusChange);
+    el.summaryCards.addEventListener('click', function (event) {
+      const card = event.target.closest('[data-value]');
+      if (!card) return;
+      el.status.value = card.getAttribute('data-value');
+      state.page = 1;
+      syncUrl();
+      loadRequests();
+    });
 
     loadRequests();
   }

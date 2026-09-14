@@ -1,14 +1,16 @@
 import { requireAdmin, jsonResponse } from '../../../_lib/admin-auth.js';
 
 const STATUSES = ['received','consulting','contracted','documents','submitted','supplement_required','completed','cancelled'];
+const ACTIVE_STATUSES = ['contracted','documents','submitted','supplement_required'];
 export async function onRequestGet({ request, env }) {
   try {
     const auth = await requireAdmin(request, env); if (auth.error) return auth.error;
-    const url = new URL(request.url); const search = text(url.searchParams.get('search'),100); const status = STATUSES.includes(url.searchParams.get('status')) ? url.searchParams.get('status') : '';
+    const url = new URL(request.url); const search = text(url.searchParams.get('search'),100); const rawStatus = url.searchParams.get('status'); const isActive = rawStatus === 'active'; const status = STATUSES.includes(rawStatus) ? rawStatus : '';
     const page = clamp(url.searchParams.get('page'),1,100000,1); const pageSize=clamp(url.searchParams.get('pageSize'),1,50,20); const offset=(page-1)*pageSize;
     const conditions=[]; const bindings=[];
     if(search){ const like=`%${search.replace(/[\\%_]/g,'\\$&')}%`; conditions.push(`(r.request_no LIKE ? ESCAPE '\\' OR r.applicant_name LIKE ? ESCAPE '\\' OR r.phone LIKE ? ESCAPE '\\' OR r.email LIKE ? ESCAPE '\\' OR r.site_address LIKE ? ESCAPE '\\')`); bindings.push(like,like,like,like,like); }
-    if(status){conditions.push('r.status = ?');bindings.push(status);} const where=conditions.length?`WHERE ${conditions.join(' AND ')}`:'';
+    if(isActive){ conditions.push(`r.status IN (${ACTIVE_STATUSES.map(()=>'?').join(',')})`); bindings.push(...ACTIVE_STATUSES); }
+    else if(status){conditions.push('r.status = ?');bindings.push(status);} const where=conditions.length?`WHERE ${conditions.join(' AND ')}`:'';
     const count=await env.DB.prepare(`SELECT COUNT(*) total FROM generation_license_requests r ${where}`).bind(...bindings).first();
     const summaries=await env.DB.prepare('SELECT status, COUNT(*) count FROM generation_license_requests GROUP BY status').all();
     const rows=await env.DB.prepare(`SELECT r.id,r.request_no,r.applicant_name,r.phone,r.email,r.site_address,r.status,r.submitted_at,r.updated_at,m.username,m.member_type FROM generation_license_requests r LEFT JOIN members m ON m.id=r.member_id ${where} ORDER BY r.submitted_at DESC,r.id DESC LIMIT ? OFFSET ?`).bind(...bindings,pageSize,offset).all();

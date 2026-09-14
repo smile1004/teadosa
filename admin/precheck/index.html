@@ -39,12 +39,12 @@
             <a class="admin-button secondary" href="/admin/">대시보드</a>
           </section>
 
-          <section class="admin-summary precheck-summary" aria-label="사전검토 현황">
-            <article><span>전체 신청</span><strong id="precheck-total-count">0</strong></article>
-            <article><span>접수</span><strong id="precheck-received-count">0</strong></article>
-            <article><span>검토중</span><strong id="precheck-reviewing-count">0</strong></article>
-            <article><span>보완요청</span><strong id="precheck-supplement-count">0</strong></article>
-            <article><span>검토완료</span><strong id="precheck-completed-count">0</strong></article>
+          <section class="admin-summary precheck-summary" id="precheck-summary-cards" aria-label="사전검토 현황">
+            <article data-value=""><span>전체 신청</span><strong id="precheck-total-count">0</strong></article>
+            <article data-value="received"><span>접수</span><strong id="precheck-received-count">0</strong></article>
+            <article data-value="reviewing"><span>검토중</span><strong id="precheck-reviewing-count">0</strong></article>
+            <article data-value="supplement_required"><span>보완요청</span><strong id="precheck-supplement-count">0</strong></article>
+            <article data-value="completed"><span>검토완료</span><strong id="precheck-completed-count">0</strong></article>
           </section>
 
           <section class="admin-panel">

@@ -130,6 +130,8 @@
 .cs-tile-waiting{border-left-color:#8a97a4}
 .cs-tile-progress{border-left-color:#e08a2c}
 .cs-tile-done{border-left-color:#2a9d63}
+.admin-summary article[data-value]{cursor:pointer;transition:transform .12s,box-shadow .12s}
+.admin-summary article[data-value]:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(28,45,68,.09)}
 .category-chip{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#eef1f3;color:#5c6b7a}
 .category-chip.homepage{background:#eaf4ff;color:#2467a3}
 .category-chip.taedo{background:#fff1e4;color:#a65a17}
