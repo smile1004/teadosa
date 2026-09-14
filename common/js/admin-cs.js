@@ -82,10 +82,26 @@
 
   function summary(s) {
     var by = s.byStatus || {};
+    var cat = s.byCategory || {};
     set('cs-total-count', s.total);
     set('cs-waiting-count', by.waiting);
     set('cs-progress-count', by.in_progress);
     set('cs-done-count', by.done);
+    renderBreakdown('cs-breakdown-category', [
+      ['홈페이지', cat.homepage], ['태투사', cat.taedo], ['에잇솔라', cat.eightsolar]
+    ]);
+    renderBreakdown('cs-breakdown-status', [
+      ['대기', by.waiting], ['진행중', by.in_progress], ['완료', by.done]
+    ]);
+    renderBreakdown('cs-breakdown-receiver', (s.byReceiver || []).map(function (x) { return [x.receiver, x.count]; }));
+  }
+
+  function renderBreakdown(id, pairs) {
+    var el = d.getElementById(id);
+    if (!el) return;
+    el.innerHTML = pairs.length ? pairs.map(function (p) {
+      return '<span class="cs-chip">' + esc(p[0]) + ' <b>' + Number(p[1] || 0).toLocaleString('ko-KR') + '</b></span>';
+    }).join('') : '<span class="cs-chip cs-muted">데이터 없음</span>';
   }
 
   function openCreate() {
