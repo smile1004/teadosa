@@ -62,6 +62,14 @@
     var badge = d.getElementById('cs-detail-status');
     badge.textContent = statusLabel(call.status);
     badge.className = 'status-badge ' + call.status;
+
+    var chip = d.getElementById('cs-detail-category-chip');
+    chip.textContent = categoryLabel(call.category);
+    chip.className = 'category-chip ' + call.category;
+    d.getElementById('cs-detail-date-text').textContent = call.callDate ? String(call.callDate).replace(/-/g, '.') : '상담일자 미입력';
+    d.getElementById('cs-detail-channel-text').textContent = call.channel || '유입경로 미입력';
+    d.getElementById('cs-detail-receiver-text').textContent = call.receiver ? (call.receiver + ' 접수') : '접수자 미입력';
+
     setIfNotFocused('cs-edit-category', call.category);
     setIfNotFocused('cs-edit-date', call.callDate || '');
     setIfNotFocused('cs-edit-phone', call.phone || '');
@@ -86,8 +94,8 @@
       list.innerHTML = '<p class="cs-note-empty">아직 처리 기록이 없습니다.</p>';
       return;
     }
-    list.innerHTML = notes.map(function (n) {
-      return '<article class="cs-note-item">' +
+    list.innerHTML = notes.slice().reverse().map(function (n) {
+      return '<article class="cs-note-item ' + esc(n.status) + '">' +
         '<div class="cs-note-meta">' + esc(datetime(n.createdAt)) + ' · ' + esc(n.author || '') +
         ' <span class="status-badge ' + esc(n.status) + '">' + esc(statusLabel(n.status)) + '</span></div>' +
         '<p>' + esc(n.note || '').replace(/\n/g, '<br>') + '</p>' +
@@ -126,7 +134,7 @@
     var note = d.getElementById('cs-note-text').value.trim();
     if (!note) return actionMessage('cs-note-message', '처리내용을 입력해 주세요.', true);
     var author = d.getElementById('cs-note-author').value.trim();
-    if (!author) return actionMessage('cs-note-message', '담당자(작성자)를 입력해 주세요.', true);
+    if (!author) return actionMessage('cs-note-message', '담당자(작성자)를 선택해 주세요.', true);
     button.disabled = true;
     actionMessage('cs-note-message', '저장하고 있습니다.');
     try {
@@ -173,7 +181,8 @@
     x.classList.toggle('error', !!e);
   }
   function statusLabel(v) { return ({ waiting: '대기', in_progress: '진행중', done: '완료' })[v] || v; }
-  function phone(v) { var x = String(v || '').replace(/\D/g, ''); return x.length === 11 ? x.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3') : (v || '-'); }
+  function categoryLabel(v) { return ({ homepage: '홈페이지', taedo: '태투사', eightsolar: '에잇솔라' })[v] || v; }
+  function phone(v) { var x = String(v || '').replace(/\D/g, ''); return x.length === 11 ? x.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3') : (v || '전화번호 미입력'); }
   function datetime(v) { var x = new Date(v); return isNaN(x) ? '-' : new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium', timeStyle: 'short' }).format(x); }
   function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]; }); }
 })(window, document);

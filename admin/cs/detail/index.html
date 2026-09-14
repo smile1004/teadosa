@@ -22,7 +22,7 @@
 <a data-admin-path="/admin/members/" href="/admin/members/">
 <span>♙</span>회원관리</a>
 <p>서비스 관리</p>
-        <a data-admin-path="/admin/cs/" href="/admin/cs/"><span aria-hidden="true">□</span>CS 상담 관리</a>
+        <a data-admin-path="/admin/cs/" href="/admin/cs/"><span aria-hidden="true">□</span>CS 전화상담 관리</a>
         <a data-admin-path="/admin/precheck/" href="/admin/precheck/"><span aria-hidden="true">□</span>사전검토 관리</a>
         <a data-admin-path="/admin/license/" href="/admin/license/"><span aria-hidden="true">□</span>발전사업허가 관리</a>
         <a data-admin-path="/admin/development/" href="/admin/development/"><span aria-hidden="true">□</span>개발행위허가 관리</a>
@@ -35,7 +35,7 @@
 <header class="admin-topbar">
 <div>
 <button class="admin-menu-button" type="button">☰</button>
-<span class="admin-breadcrumb">관리자 / CS 상담 관리 / 상세</span>
+<span class="admin-breadcrumb">관리자 / CS 전화상담 관리 / 상세</span>
 </div>
 <div class="admin-account">
 <span id="admin-user-name">관리자님</span>
@@ -125,7 +125,17 @@
 <p class="admin-help-text cs-notes-hint">현재 상태는 왼쪽 기본정보의 배지에 표시됩니다. 상태를 바꾸려면 아래에서 새 기록을 추가하세요.</p>
 <div id="cs-notes-list" class="cs-notes-list"></div>
 <button id="cs-note-show" class="admin-button secondary cs-note-toggle" type="button">+ 새 처리 기록 추가</button>
-<form id="cs-note-form" class="cs-form" hidden>
+<form id="cs-note-form" class="cs-form cs-edit-grid" hidden>
+<label>
+<span>담당자(작성자)</span>
+<select id="cs-note-author">
+<option value="" disabled selected>선택하세요</option>
+<option value="신현지">신현지</option>
+<option value="최재훈">최재훈</option>
+<option value="최미연">최미연</option>
+<option value="박순진">박순진</option>
+</select>
+</label>
 <label>
 <span>처리상태</span>
 <select id="cs-note-status">
@@ -134,16 +144,12 @@
 <option value="done">완료</option>
 </select>
 </label>
-<label>
-<span>담당자(작성자)</span>
-<input id="cs-note-author" type="text" maxlength="40" placeholder="이름">
-</label>
-<label>
+<label class="cs-span-all">
 <span>처리내용</span>
 <textarea id="cs-note-text" rows="3" maxlength="2000" placeholder="예: 직접통화 - 김OO 팀장에게 전달"></textarea>
 </label>
-<p id="cs-note-message" class="admin-inline-message" hidden></p>
-<div class="cs-form-actions">
+<p id="cs-note-message" class="admin-inline-message cs-span-all" hidden></p>
+<div class="cs-form-actions cs-span-all">
 <button class="admin-button secondary" type="button" id="cs-note-cancel">취소</button>
 <button class="admin-button primary" type="submit">기록 추가</button>
 </div>
