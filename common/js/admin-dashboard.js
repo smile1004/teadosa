@@ -28,14 +28,22 @@
     }
   }
 
+  const SERVICE_FIELDS = {
+    cs: [['total', 'total'], ['waiting', 'waiting'], ['inprogress', 'inProgress'], ['done', 'done']],
+    precheck: [['total', 'total'], ['received', 'received'], ['reviewing', 'reviewing'], ['supplement', 'supplementRequired'], ['completed', 'completed']],
+    license: [['total', 'total'], ['received', 'received'], ['consulting', 'consulting'], ['active', 'active'], ['completed', 'completed']],
+    development: [['total', 'total'], ['received', 'received'], ['consulting', 'consulting'], ['active', 'active'], ['completed', 'completed']],
+    ppa: [['total', 'total'], ['received', 'received'], ['consulting', 'consulting'], ['active', 'active'], ['completed', 'completed']],
+    constructionPlan: [['total', 'total'], ['received', 'received'], ['consulting', 'consulting'], ['active', 'active'], ['completed', 'completed']],
+  };
+
   function renderServices(services) {
-    ['cs', 'precheck', 'license', 'development', 'ppa', 'constructionPlan'].forEach(function (key) {
+    Object.keys(SERVICE_FIELDS).forEach(function (key) {
       const data = services[key] || {};
       const slug = key.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-      setText('dashboard-svc-' + slug + '-total', data.total);
-      setText('dashboard-svc-' + slug + '-waiting', data.waiting);
-      setText('dashboard-svc-' + slug + '-inprogress', data.inProgress);
-      setText('dashboard-svc-' + slug + '-done', data.done);
+      SERVICE_FIELDS[key].forEach(function (pair) {
+        setText('dashboard-svc-' + slug + '-' + pair[0], data[pair[1]]);
+      });
     });
   }
 

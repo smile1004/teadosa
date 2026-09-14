@@ -33,37 +33,42 @@ export async function onRequestGet(context) {
       `).first().catch(() => null),
       env.DB.prepare(`
         SELECT COUNT(*) total,
-          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
-          SUM(CASE WHEN status IN ('reviewing','supplement_required') THEN 1 ELSE 0 END) in_progress,
-          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) done
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) received,
+          SUM(CASE WHEN status = 'reviewing' THEN 1 ELSE 0 END) reviewing,
+          SUM(CASE WHEN status = 'supplement_required' THEN 1 ELSE 0 END) supplement_required,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) completed
         FROM precheck_requests
       `).first().catch(() => null),
       env.DB.prepare(`
         SELECT COUNT(*) total,
-          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
-          SUM(CASE WHEN status IN ('consulting','contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
-          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) received,
+          SUM(CASE WHEN status = 'consulting' THEN 1 ELSE 0 END) consulting,
+          SUM(CASE WHEN status IN ('contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) active,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) completed
         FROM generation_license_requests
       `).first().catch(() => null),
       env.DB.prepare(`
         SELECT COUNT(*) total,
-          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
-          SUM(CASE WHEN status IN ('consulting','contracted','site_review','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
-          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) received,
+          SUM(CASE WHEN status = 'consulting' THEN 1 ELSE 0 END) consulting,
+          SUM(CASE WHEN status IN ('contracted','site_review','documents','submitted','supplement_required') THEN 1 ELSE 0 END) active,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) completed
         FROM development_permit_requests
       `).first().catch(() => null),
       env.DB.prepare(`
         SELECT COUNT(*) total,
-          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
-          SUM(CASE WHEN status IN ('consulting','contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
-          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) received,
+          SUM(CASE WHEN status = 'consulting' THEN 1 ELSE 0 END) consulting,
+          SUM(CASE WHEN status IN ('contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) active,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) completed
         FROM ppa_requests
       `).first().catch(() => null),
       env.DB.prepare(`
         SELECT COUNT(*) total,
-          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) waiting,
-          SUM(CASE WHEN status IN ('consulting','contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) in_progress,
-          SUM(CASE WHEN status IN ('completed','cancelled') THEN 1 ELSE 0 END) done
+          SUM(CASE WHEN status = 'received' THEN 1 ELSE 0 END) received,
+          SUM(CASE WHEN status = 'consulting' THEN 1 ELSE 0 END) consulting,
+          SUM(CASE WHEN status IN ('contracted','documents','submitted','supplement_required') THEN 1 ELSE 0 END) active,
+          SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) completed
         FROM construction_plan_requests
       `).first().catch(() => null),
     ]);
@@ -79,12 +84,12 @@ export async function onRequestGet(context) {
         approvedBusinessMembers: Number(counts?.approved_business_members || 0),
       },
       services: {
-        cs: mapServiceCount(csRow),
-        precheck: mapServiceCount(precheckRow),
-        license: mapServiceCount(licenseRow),
-        development: mapServiceCount(developmentRow),
-        ppa: mapServiceCount(ppaRow),
-        constructionPlan: mapServiceCount(constructionPlanRow),
+        cs: mapCsCount(csRow),
+        precheck: mapPrecheckCount(precheckRow),
+        license: mapStageCount(licenseRow),
+        development: mapStageCount(developmentRow),
+        ppa: mapStageCount(ppaRow),
+        constructionPlan: mapStageCount(constructionPlanRow),
       },
       recentMembers: (recent.results || []).map((row) => ({
         id: row.id,
@@ -103,12 +108,32 @@ export async function onRequestGet(context) {
   }
 }
 
-function mapServiceCount(row) {
+function mapCsCount(row) {
   return {
     total: Number(row?.total || 0),
     waiting: Number(row?.waiting || 0),
     inProgress: Number(row?.in_progress || 0),
     done: Number(row?.done || 0),
+  };
+}
+
+function mapPrecheckCount(row) {
+  return {
+    total: Number(row?.total || 0),
+    received: Number(row?.received || 0),
+    reviewing: Number(row?.reviewing || 0),
+    supplementRequired: Number(row?.supplement_required || 0),
+    completed: Number(row?.completed || 0),
+  };
+}
+
+function mapStageCount(row) {
+  return {
+    total: Number(row?.total || 0),
+    received: Number(row?.received || 0),
+    consulting: Number(row?.consulting || 0),
+    active: Number(row?.active || 0),
+    completed: Number(row?.completed || 0),
   };
 }
 

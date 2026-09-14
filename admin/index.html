@@ -101,60 +101,65 @@
 </div>
 </div>
             <div class="dashboard-service-grid" id="dashboard-service-grid">
-              <a class="dashboard-service-card" href="/admin/cs/">
-<span class="dashboard-service-name">CS 전화상담 관리</span>
-<div class="dashboard-service-stats">
-<div><span>전체</span><strong id="dashboard-svc-cs-total">0</strong></div>
-<div><span>대기</span><strong id="dashboard-svc-cs-waiting">0</strong></div>
-<div><span>진행중</span><strong id="dashboard-svc-cs-inprogress">0</strong></div>
-<div><span>완료</span><strong id="dashboard-svc-cs-done">0</strong></div>
+              <div class="dashboard-service-row">
+<a class="dashboard-service-row-name" href="/admin/cs/">CS 전화상담 관리</a>
+<div class="dashboard-service-chips">
+<a href="/admin/cs/"><span>전체</span><strong id="dashboard-svc-cs-total">0</strong></a>
+<a href="/admin/cs/?status=waiting"><span>대기</span><strong id="dashboard-svc-cs-waiting">0</strong></a>
+<a href="/admin/cs/?status=in_progress"><span>진행중</span><strong id="dashboard-svc-cs-inprogress">0</strong></a>
+<a href="/admin/cs/?status=done"><span>완료</span><strong id="dashboard-svc-cs-done">0</strong></a>
 </div>
-</a>
-              <a class="dashboard-service-card" href="/admin/precheck/">
-<span class="dashboard-service-name">사전검토 관리</span>
-<div class="dashboard-service-stats">
-<div><span>전체</span><strong id="dashboard-svc-precheck-total">0</strong></div>
-<div><span>대기</span><strong id="dashboard-svc-precheck-waiting">0</strong></div>
-<div><span>진행중</span><strong id="dashboard-svc-precheck-inprogress">0</strong></div>
-<div><span>완료</span><strong id="dashboard-svc-precheck-done">0</strong></div>
 </div>
-</a>
-              <a class="dashboard-service-card" href="/admin/license/">
-<span class="dashboard-service-name">발전사업허가 관리</span>
-<div class="dashboard-service-stats">
-<div><span>전체</span><strong id="dashboard-svc-license-total">0</strong></div>
-<div><span>대기</span><strong id="dashboard-svc-license-waiting">0</strong></div>
-<div><span>진행중</span><strong id="dashboard-svc-license-inprogress">0</strong></div>
-<div><span>완료</span><strong id="dashboard-svc-license-done">0</strong></div>
+              <div class="dashboard-service-row">
+<a class="dashboard-service-row-name" href="/admin/precheck/">사전검토 관리</a>
+<div class="dashboard-service-chips">
+<a href="/admin/precheck/"><span>전체</span><strong id="dashboard-svc-precheck-total">0</strong></a>
+<a href="/admin/precheck/?status=received"><span>접수</span><strong id="dashboard-svc-precheck-received">0</strong></a>
+<a href="/admin/precheck/?status=reviewing"><span>검토중</span><strong id="dashboard-svc-precheck-reviewing">0</strong></a>
+<a href="/admin/precheck/?status=supplement_required"><span>보완요청</span><strong id="dashboard-svc-precheck-supplement">0</strong></a>
+<a href="/admin/precheck/?status=completed"><span>검토완료</span><strong id="dashboard-svc-precheck-completed">0</strong></a>
 </div>
-</a>
-              <a class="dashboard-service-card" href="/admin/development/">
-<span class="dashboard-service-name">개발행위허가 관리</span>
-<div class="dashboard-service-stats">
-<div><span>전체</span><strong id="dashboard-svc-development-total">0</strong></div>
-<div><span>대기</span><strong id="dashboard-svc-development-waiting">0</strong></div>
-<div><span>진행중</span><strong id="dashboard-svc-development-inprogress">0</strong></div>
-<div><span>완료</span><strong id="dashboard-svc-development-done">0</strong></div>
 </div>
-</a>
-              <a class="dashboard-service-card" href="/admin/ppa/">
-<span class="dashboard-service-name">한전PPA 관리</span>
-<div class="dashboard-service-stats">
-<div><span>전체</span><strong id="dashboard-svc-ppa-total">0</strong></div>
-<div><span>대기</span><strong id="dashboard-svc-ppa-waiting">0</strong></div>
-<div><span>진행중</span><strong id="dashboard-svc-ppa-inprogress">0</strong></div>
-<div><span>완료</span><strong id="dashboard-svc-ppa-done">0</strong></div>
+              <div class="dashboard-service-row">
+<a class="dashboard-service-row-name" href="/admin/license/">발전사업허가 관리</a>
+<div class="dashboard-service-chips">
+<a href="/admin/license/"><span>전체</span><strong id="dashboard-svc-license-total">0</strong></a>
+<a href="/admin/license/?status=received"><span>접수</span><strong id="dashboard-svc-license-received">0</strong></a>
+<a href="/admin/license/?status=consulting"><span>상담중</span><strong id="dashboard-svc-license-consulting">0</strong></a>
+<a href="/admin/license/?status=active"><span>진행중</span><strong id="dashboard-svc-license-active">0</strong></a>
+<a href="/admin/license/?status=completed"><span>완료</span><strong id="dashboard-svc-license-completed">0</strong></a>
 </div>
-</a>
-              <a class="dashboard-service-card" href="/admin/construction-plan/">
-<span class="dashboard-service-name">공사계획신고 관리</span>
-<div class="dashboard-service-stats">
-<div><span>전체</span><strong id="dashboard-svc-construction-plan-total">0</strong></div>
-<div><span>대기</span><strong id="dashboard-svc-construction-plan-waiting">0</strong></div>
-<div><span>진행중</span><strong id="dashboard-svc-construction-plan-inprogress">0</strong></div>
-<div><span>완료</span><strong id="dashboard-svc-construction-plan-done">0</strong></div>
 </div>
-</a>
+              <div class="dashboard-service-row">
+<a class="dashboard-service-row-name" href="/admin/development/">개발행위허가 관리</a>
+<div class="dashboard-service-chips">
+<a href="/admin/development/"><span>전체</span><strong id="dashboard-svc-development-total">0</strong></a>
+<a href="/admin/development/?status=received"><span>접수</span><strong id="dashboard-svc-development-received">0</strong></a>
+<a href="/admin/development/?status=consulting"><span>상담중</span><strong id="dashboard-svc-development-consulting">0</strong></a>
+<a href="/admin/development/?status=active"><span>진행중</span><strong id="dashboard-svc-development-active">0</strong></a>
+<a href="/admin/development/?status=completed"><span>완료</span><strong id="dashboard-svc-development-completed">0</strong></a>
+</div>
+</div>
+              <div class="dashboard-service-row">
+<a class="dashboard-service-row-name" href="/admin/ppa/">한전PPA 관리</a>
+<div class="dashboard-service-chips">
+<a href="/admin/ppa/"><span>전체</span><strong id="dashboard-svc-ppa-total">0</strong></a>
+<a href="/admin/ppa/?status=received"><span>접수</span><strong id="dashboard-svc-ppa-received">0</strong></a>
+<a href="/admin/ppa/?status=consulting"><span>상담중</span><strong id="dashboard-svc-ppa-consulting">0</strong></a>
+<a href="/admin/ppa/?status=active"><span>진행중</span><strong id="dashboard-svc-ppa-active">0</strong></a>
+<a href="/admin/ppa/?status=completed"><span>완료</span><strong id="dashboard-svc-ppa-completed">0</strong></a>
+</div>
+</div>
+              <div class="dashboard-service-row">
+<a class="dashboard-service-row-name" href="/admin/construction-plan/">공사계획신고 관리</a>
+<div class="dashboard-service-chips">
+<a href="/admin/construction-plan/"><span>전체</span><strong id="dashboard-svc-construction-plan-total">0</strong></a>
+<a href="/admin/construction-plan/?status=received"><span>접수</span><strong id="dashboard-svc-construction-plan-received">0</strong></a>
+<a href="/admin/construction-plan/?status=consulting"><span>상담중</span><strong id="dashboard-svc-construction-plan-consulting">0</strong></a>
+<a href="/admin/construction-plan/?status=active"><span>진행중</span><strong id="dashboard-svc-construction-plan-active">0</strong></a>
+<a href="/admin/construction-plan/?status=completed"><span>완료</span><strong id="dashboard-svc-construction-plan-completed">0</strong></a>
+</div>
+</div>
             </div>
           </section>
         </div>
