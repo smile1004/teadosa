@@ -167,6 +167,7 @@
 .cs-edit-grid input,.cs-edit-grid select,.cs-edit-grid textarea{width:100%;padding:12px;border:1px solid #d7e0e7;border-radius:10px;background:#fff;font:inherit;font-size:14px}
 .cs-edit-grid textarea{resize:vertical}
 .cs-span-all{grid-column:1/-1}
+.cs-detail-grid{grid-template-columns:.82fr 1.18fr}
 .cs-notes-hint{margin-top:-6px}
 .cs-notes-list{display:grid;gap:10px;margin-bottom:14px}
 .cs-note-item{padding:14px 16px;border:1px solid #e1e7ec;border-left:4px solid #d7e0e7;border-radius:11px;background:#fafcfd}
