@@ -8,7 +8,7 @@ export async function onRequestGet({ request, env, waitUntil }) {
   const headers = { 'Cache-Control': 'no-store' };
   if (!env.SMP_API_KEY) return Response.json({ success: false, message: 'SMP 정보 연결을 준비 중입니다.' }, { status: 503, headers });
   const cache = typeof caches !== 'undefined' ? caches.default : null;
-  const cacheKey = new Request(new URL('/api/market/smp-cache-v1', request.url));
+  const cacheKey = new Request(new URL('/api/market/smp-cache-v2-weighted', request.url));
   let saved = recent;
   if (!saved && cache) {
     try { saved = await (await cache.match(cacheKey))?.json(); } catch { /* Fetch a fresh copy. */ }

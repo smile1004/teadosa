@@ -13,24 +13,30 @@ export function normalizeSmp(rows, now = new Date()) {
     // SMP can be zero or negative; missing prices must never become zero.
     const value = row.smp;
     const price = value === null || value === undefined || String(value).trim() === '' ? NaN : Number(value);
-    if (!Number.isInteger(hour) || hour < 1 || hour > 24 || !Number.isFinite(price)) { day.invalid = true; continue; }
-    if (day[region].has(hour) && day[region].get(hour) !== price) day.invalid = true;
-    day[region].set(hour, price);
+    const demandValue = row[region === 'land' ? 'mlfd' : 'jlfd'];
+    const demand = demandValue === null || demandValue === undefined || String(demandValue).trim() === '' ? NaN : Number(demandValue);
+    if (!Number.isInteger(hour) || hour < 1 || hour > 24 || !Number.isFinite(price) || !Number.isFinite(demand) || demand < 0) { day.invalid = true; continue; }
+    const previous = day[region].get(hour);
+    if (previous && (previous.price !== price || previous.demand !== demand)) day.invalid = true;
+    day[region].set(hour, { price, demand });
   }
   const date = [...days.keys()].sort().reverse().find(date => {
     const day = days.get(date);
-    return !day.invalid && day.land.size === 24 && day.jeju.size === 24;
+    return !day.invalid && ['land', 'jeju'].every(region => day[region].size === 24 && [...day[region].values()].reduce((sum, value) => sum + value.demand, 0) > 0);
   });
   if (!date) throw new Error('NO_COMPLETE_DAY');
   function area(region) {
     const values = [...days.get(date)[region].values()];
-    return { max: Math.max(...values), min: Math.min(...values), average: Number((values.reduce((a,b) => a+b, 0) / 24).toFixed(2)), sampleCount: 24 };
+    const prices = values.map(value => value.price);
+    const totalDemand = values.reduce((sum, value) => sum + value.demand, 0);
+    const weightedSum = values.reduce((sum, value) => sum + value.price * value.demand, 0);
+    return { max: Math.max(...prices), min: Math.min(...prices), average: Number((weightedSum / totalDemand).toFixed(2)), sampleCount: 24 };
   }
   return {
     tradeDate: `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)}`,
     unit: '원/kWh', source: '한국전력거래소',
     sourceUrl: 'https://www.data.go.kr/data/15131225/openapi.do',
-    averageMethod: '24시간 단순평균',
+    averageMethod: '지역별 수요예측량 가중평균',
     areas: { land: area('land'), jeju: area('jeju') }
   };
 }
