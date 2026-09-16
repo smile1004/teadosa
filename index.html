@@ -8,6 +8,7 @@
 <title>태양광도사 | 태양광 발전사업 온라인 플랫폼</title>
 <link href="common/css/shared-menu.css" rel="stylesheet"/>
 <link href="home/css/style.css" rel="stylesheet"/>
+<link href="home/css/market-info.css" rel="stylesheet"/>
 <style>
 /* =========================================================
    Hero 영상 → 지정 이미지 교체 전용
@@ -1537,6 +1538,40 @@ justify-content:center!important;
 <div class="enterprise-grid"><div class="enterprise-card"><strong>기술검토</strong><p>태양광 발전사업 기술검토 및 적정성 검토 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('https://teadosa.pages.dev/precheck/samples/structure-review/','structureReview','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>도면설계</strong><p>설계도면 및 시공도면 작성 서비스를 제공합니다.</p><div class="enterprise-actions"><span class="sample-link sample-disabled">샘플 준비중</span></div></div><div class="enterprise-card"><strong>현장실사</strong><p>현장조사 및 설치 가능 여부를 검토합니다.</p><div class="enterprise-actions"><a class="sample-link" href="#" onclick="window.open('https://teadosa.pages.dev/precheck/samples/field-inspection/','fieldInspection','width=620,height=800,resizable=yes,scrollbars=yes');return false;">결과물 샘플보기</a></div></div><div class="enterprise-card"><strong>공사</strong><p>태양광 발전설비 시공 서비스를 제공합니다.</p><div class="enterprise-actions"><a class="service-shortcut" href="#">서비스 바로가기</a></div></div></div>
 </div>
 </section>
+<section class="market-info-section" aria-label="발전사업 정보">
+<div class="section market-info-grid">
+<article class="market-info-card" aria-labelledby="rec-info-title">
+<h2 id="rec-info-title">REC 현물정산가격정보</h2>
+<div class="market-area-switch" role="group" aria-label="REC 지역 선택">
+<button type="button" aria-pressed="true">육지</button><button type="button" aria-pressed="false">제주</button>
+</div>
+<p class="market-unit">단위 : 원/REC</p>
+<dl class="market-values"><div><dt>거래월</dt><dd>—</dd></div><div><dt>최대</dt><dd>—</dd></div><div><dt>최소</dt><dd>—</dd></div><div><dt>평균</dt><dd>—</dd></div></dl>
+<p class="market-data-status" role="status">예시 데이터 · 실제 거래가격이 아닙니다</p>
+</article>
+<article class="market-info-card" aria-labelledby="smp-info-title">
+<h2 id="smp-info-title">SMP정보</h2>
+<div class="market-area-switch" role="group" aria-label="SMP 지역 선택">
+<button type="button" aria-pressed="true">육지</button><button type="button" aria-pressed="false">제주</button>
+</div>
+<p class="market-unit">단위 : 원/kWh</p>
+<dl class="market-values"><div><dt>거래일</dt><dd>—</dd></div><div><dt>최대</dt><dd>—</dd></div><div><dt>최소</dt><dd>—</dd></div><div><dt>평균</dt><dd>—</dd></div></dl>
+<p class="market-data-status" role="status">예시 데이터 · 실제 거래가격이 아닙니다</p>
+</article>
+<article class="market-info-card ordinance-quick-card" aria-labelledby="ordin-info-title">
+<h2 id="ordin-info-title">지자체 조례 조회</h2>
+<div class="ordin-quick-content">
+<p>사업 예정 지역의<br>태양광 관련 조례를 확인하세요.</p>
+<form id="home-ordin-form" action="/test2.html" method="get" target="_blank" rel="noopener">
+<label for="home-ordin-region">지역명</label>
+<div class="ordin-quick-input"><input id="home-ordin-region" name="region" required maxlength="150" pattern=".*\S.*" placeholder="예: 완주군" autocomplete="off"/><button type="submit">검색</button></div>
+<input type="hidden" name="keyword" value="개발행위허가"/>
+<p class="ordin-quick-hint">검색 결과는 새 창에서 열립니다.</p>
+</form>
+</div>
+</article>
+</div>
+</section>
 <section class="review-preview-section" id="reviews" aria-labelledby="review-preview-title">
 <div class="section">
 <div class="review-preview-head">
@@ -1589,5 +1624,5 @@ justify-content:center!important;
 <div aria-hidden="true" id="plant-listings"></div>
 </main>
 <script src="common/js/components/footer.js"></script>
-<script src="home/js/script.js"></script></body>
+<script src="home/js/script.js"></script><script src="home/js/market-info.js"></script></body>
 </html>
