@@ -50,7 +50,9 @@
 .notice-title a{display:block;color:#314b3f;text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .notice-state{display:inline-block;padding:3px 10px;border-radius:5px;background:#f0f2f1;color:#7a837e;font-size:12px;white-space:nowrap}
 .notice-state.is-active{background:#e5f2eb;color:#287354}
-.notice-date{font-size:12px;font-variant-numeric:tabular-nums}
+.notice-date,.notice-deadline{font-size:12px;font-variant-numeric:tabular-nums}
+.support-notice-help{margin:10px 0 8px;font-size:12px;line-height:1.5;color:#7b8c83}
+@media(max-width:640px){.notice-date::before{content:"등록일 "}.notice-deadline::before{content:"마감일 "}}
 .support-notices a:hover{color:#218665;text-decoration:underline}
 .support-notices a:focus-visible{outline:2px solid #238263;outline-offset:3px}
 .support-notice-status{margin:12px 0;color:#687d72;font-size:13px;line-height:1.5}

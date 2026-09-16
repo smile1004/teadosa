@@ -9,6 +9,8 @@ const result = parseSupportNotices(row(1, '2025-01-01') + row(7, '2026-09-11') +
 assert.deepEqual(result.map(item => item.id), ['7', '6', '5', '4', '3']);
 assert.equal(result[0].title, '지원사업 & 안내');
 assert.equal(result[0].publishedAt, '2026-09-11');
+assert.equal(result[0].deadline, '2050-01-01');
+assert.equal(parseSupportNotices(row(7, '2026-09-11').replace('2050-01-01', ''))[0].deadline, null);
 assert.equal(result[0].status, '진행');
 assert.equal(result[0].department, '담당부서');
 const numbered = row(7, '2026-09-11').replace('<td>공지</td>', '<td>307</td>');

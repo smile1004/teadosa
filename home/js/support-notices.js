@@ -36,6 +36,15 @@
       cell('notice-title').append(link);
       cell('notice-department', item.department || '—');
       cell('notice-date').append(date);
+      const deadlineCell = cell('notice-deadline');
+      if (item.deadline) {
+        const deadline = document.createElement('time');
+        deadline.dateTime = item.deadline;
+        deadline.textContent = item.deadline.replaceAll('-', '.');
+        deadlineCell.append(deadline);
+      } else {
+        deadlineCell.textContent = '—';
+      }
       fragment.append(row);
     });
     list.replaceChildren(fragment);
