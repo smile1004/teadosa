@@ -1,17 +1,28 @@
-// Layout samples only; these are not live prices.
-const marketSamples = {
-  rec: { '육지': ['2026.09', '71,900', '70,500', '71,335'], '제주': ['2026.09', '70,800', '69,200', '70,000'] },
-  smp: { '육지': ['2026.09.16(수)', '161.59', '90.09', '104.45'], '제주': ['2026.09.16(수)', '165.20', '92.30', '108.70'] }
-};
 document.querySelectorAll('.market-area-switch').forEach(function (group) {
   const card = group.closest('.market-info-card');
-  const samples = marketSamples[card.getAttribute('aria-labelledby') === 'rec-info-title' ? 'rec' : 'smp'];
+  const isRec = card.getAttribute('aria-labelledby') === 'rec-info-title';
+  const marketName = isRec ? 'REC' : 'SMP';
+  let marketData = null;
+  let selectedArea = '육지';
   function render(area) {
-    card.querySelectorAll('.market-values dd').forEach(function (value, index) {
-      value.textContent = samples[area][index];
-    });
+    selectedArea = area;
+      if (!marketData) return;
+      const prices = marketData.areas[area === '육지' ? 'land' : 'jeju'];
+      const format = value => value === null ? '—' : Number(value).toLocaleString('ko-KR', { minimumFractionDigits: isRec ? 0 : 2, maximumFractionDigits: 2 });
+      const values = [marketData.tradeDate.replaceAll('-', '.'), format(prices.max), format(prices.min), format(prices.average)];
+      card.querySelectorAll('.market-values dd').forEach((value, index) => { value.textContent = values[index]; });
+      const updated = new Date(marketData.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+      card.querySelector('.market-data-status').textContent = '출처: 한국전력거래소 · ' + updated + ' 조회' + (prices.noTrades ? ' · 거래 없음' : '') + (marketData.stale ? ' · 갱신 지연' : '') + (marketData.previousDay ? ' · 최근 제공 자료' : '');
   }
   render('육지');
+    fetch('/api/market/' + (isRec ? 'rec' : 'smp')).then(async response => {
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error('MARKET_UNAVAILABLE');
+      marketData = data;
+      render(selectedArea);
+    }).catch(() => {
+      card.querySelector('.market-data-status').textContent = marketName + ' 가격정보를 불러오지 못했습니다. 잠시 후 다시 확인해 주세요.';
+    });
   group.addEventListener('click', function (event) {
     const selected = event.target.closest('button');
     if (!selected) return;
