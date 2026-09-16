@@ -10,7 +10,7 @@ document.querySelectorAll('.market-area-switch').forEach(function (group) {
       const prices = marketData.areas[area === '육지' ? 'land' : 'jeju'];
       const format = value => value === null ? '—' : Number(value).toLocaleString('ko-KR', { minimumFractionDigits: isRec ? 0 : 2, maximumFractionDigits: 2 });
       const values = [marketData.tradeDate.replaceAll('-', '.'), format(prices.max), format(prices.min), format(prices.average)];
-      card.querySelectorAll('.market-values dd').forEach((value, index) => { value.textContent = values[index]; });
+      card.querySelectorAll('.market-date dd, .market-values dd').forEach((value, index) => { value.textContent = values[index]; });
       const updated = new Date(marketData.fetchedAt).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
       card.querySelector('.market-data-status').textContent = '출처: 한국전력거래소 · ' + updated + ' 조회' + (prices.noTrades ? ' · 거래 없음' : '') + (marketData.stale ? ' · 갱신 지연' : '') + (marketData.previousDay ? ' · 최근 제공 자료' : '');
   }
