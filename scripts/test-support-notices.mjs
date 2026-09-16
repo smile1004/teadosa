@@ -9,6 +9,11 @@ const result = parseSupportNotices(row(1, '2025-01-01') + row(7, '2026-09-11') +
 assert.deepEqual(result.map(item => item.id), ['7', '6', '5', '4', '3']);
 assert.equal(result[0].title, '지원사업 & 안내');
 assert.equal(result[0].publishedAt, '2026-09-11');
+assert.equal(result[0].status, '진행');
+assert.equal(result[0].department, '담당부서');
+const numbered = row(7, '2026-09-11').replace('<td>공지</td>', '<td>307</td>');
+assert.equal(parseSupportNotices(numbered + row(7, '2026-09-11'))[0].number, '307');
+assert.equal(parseSupportNotices(row(7, '2026-09-11') + numbered)[0].number, '307');
 assert.equal(result[0].url, 'https://www.knrec.or.kr/biz/pds/businoti/view.do?no=7');
 assert.throws(() => parseSupportNotices('<html>점검 중</html>'), /NOTICE_FORMAT_CHANGED/);
 console.log('지원사업공고: 중복 제거, 최신순 5개, 제목 디코딩, 원문 링크 제한, 비정상 응답 검사 통과');

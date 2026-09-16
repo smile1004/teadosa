@@ -10,7 +10,19 @@
     data.items.slice(0, 5).forEach(item => {
       const url = new URL(item.url);
       if (url.origin !== 'https://www.knrec.or.kr' || url.pathname !== '/biz/pds/businoti/view.do') throw new Error('INVALID_LINK');
-      const row = document.createElement('li');
+      const row = document.createElement('tr');
+      function cell(className, text) {
+        const element = document.createElement('td');
+        element.className = className;
+        if (text !== undefined) element.textContent = text;
+        row.append(element);
+        return element;
+      }
+      cell('notice-number', item.number || '—');
+      const state = document.createElement('span');
+      state.className = 'notice-state' + (item.status === '진행' ? ' is-active' : '');
+      state.textContent = item.status || '—';
+      cell('notice-status').append(state);
       const link = document.createElement('a');
       link.href = url.href;
       link.target = '_blank';
@@ -20,8 +32,10 @@
       const date = document.createElement('time');
       date.dateTime = item.publishedAt;
       date.textContent = item.publishedAt.replaceAll('-', '.');
-      link.append(title, date);
-      row.append(link);
+      link.append(title);
+      cell('notice-title').append(link);
+      cell('notice-department', item.department || '—');
+      cell('notice-date').append(date);
       fragment.append(row);
     });
     list.replaceChildren(fragment);

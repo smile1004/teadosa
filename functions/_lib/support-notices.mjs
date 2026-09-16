@@ -20,7 +20,11 @@ export function parseSupportNotices(html) {
     const title = plainText(link[2]);
     const publishedAt = plainText(cells[5]);
     if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(publishedAt) || !Number.isFinite(Date.parse(publishedAt))) continue;
-    unique.set(link[1], { id: link[1], title, publishedAt, url: `https://www.knrec.or.kr/biz/pds/businoti/view.do?no=${link[1]}` });
+    const number = plainText(cells[0]);
+    const previous = unique.get(link[1]);
+    unique.set(link[1], { id: link[1], number: /^\d+$/.test(number) ? number : previous?.number || number,
+      status: plainText(cells[1]), department: plainText(cells[4]),
+      title, publishedAt, url: `https://www.knrec.or.kr/biz/pds/businoti/view.do?no=${link[1]}` });
   }
   const items = [...unique.values()].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || Number(b.id) - Number(a.id)).slice(0, 5);
   if (!items.length) throw new Error('NOTICE_FORMAT_CHANGED');
