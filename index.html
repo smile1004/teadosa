@@ -1609,12 +1609,14 @@ justify-content:center!important;
 <article class="market-info-card ordinance-quick-card" aria-labelledby="ordin-info-title">
 <h2 id="ordin-info-title">지자체 조례 조회</h2>
 <div class="ordin-quick-content">
-<p>사업 예정 지역의<br>태양광 관련 조례를 확인하세요.</p>
+<p>사업 예정 지역의 지자체 조례를 확인하세요.</p>
 <form id="home-ordin-form" action="/test2.html" method="get" target="_blank" rel="noopener">
-<label for="home-ordin-region">지역명</label>
-<div class="ordin-quick-input"><input id="home-ordin-region" name="region" required maxlength="150" pattern=".*\S.*" placeholder="예: 완주군" autocomplete="off"/><button type="submit">검색</button></div>
-<input type="hidden" name="keyword" value="개발행위허가"/>
-<p class="ordin-quick-hint">검색 결과는 새 창에서 열립니다.</p>
+<div class="ordin-quick-fields">
+<label for="home-ordin-region">지역명<input id="home-ordin-region" name="region" required maxlength="150" pattern=".*\S.*" placeholder="예: 완주군" autocomplete="off"/></label>
+<label for="home-ordin-keyword">키워드<input id="home-ordin-keyword" name="keyword" required maxlength="100" pattern=".*\S.*" value="개발행위허가" placeholder="예: 개발행위허가"/></label>
+</div>
+<button class="ordin-search-button" type="submit">조례 검색</button>
+<p class="ordin-quick-hint">검색 결과는 별도 팝업 창에서 열립니다.</p>
 </form>
 </div>
 </article>

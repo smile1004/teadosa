@@ -23,10 +23,25 @@ document.querySelectorAll('.market-area-switch').forEach(function (group) {
 });
 
 document.getElementById('home-ordin-form').addEventListener('submit', function (event) {
-  const input = this.elements.namedItem('region');
-  input.value = input.value.trim();
-  if (!input.value) {
+  const region = this.elements.namedItem('region');
+  const keyword = this.elements.namedItem('keyword');
+  region.value = region.value.trim();
+  keyword.value = keyword.value.trim();
+  if (!this.reportValidity()) {
     event.preventDefault();
-    input.reportValidity();
+    return;
   }
+  const url = new URL(this.action, window.location.href);
+  url.search = new URLSearchParams({region: region.value, keyword: keyword.value}).toString();
+  const width = Math.min(1000, window.screen.availWidth);
+  const height = Math.min(820, window.screen.availHeight);
+  const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - width) / 2));
+  const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - height) / 2));
+  const popup = window.open('about:blank', '_blank',
+    `popup=yes,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes,width=${width},height=${height},left=${left},top=${top}`);
+  // When popups are blocked, leave the native new-window form submission available.
+  if (!popup) return;
+  popup.opener = null;
+  popup.location.replace(url.href);
+  event.preventDefault();
 });
