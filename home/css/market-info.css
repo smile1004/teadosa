@@ -42,7 +42,7 @@
 .support-notices-heading a{flex-shrink:0;color:#42755e;font-size:13px;text-decoration:none}
 .support-notices-source{margin:6px 0 14px;color:#687d72;font-size:12px}
 .support-notice-table{width:100%;table-layout:fixed;border-collapse:collapse;font-size:13px;line-height:1.5;color:#61776c}
-.notice-number-col{width:60px}.notice-state-col{width:90px}.notice-department-col{width:130px}.notice-date-col{width:104px}
+.notice-number-col{width:52px}.notice-state-col{width:80px}.notice-department-col{width:116px}.notice-date-col{width:96px}.notice-attachment-col{width:110px}
 .support-notice-table th{padding:10px 8px;background:#f3f7f4;border-top:1px solid #dce7e0;border-bottom:1px solid #dce7e0;font-weight:650;text-align:center}
 .support-notice-table td{padding:13px 8px;text-align:center;border-bottom:1px solid #eef2ef;overflow-wrap:anywhere}
 .support-notice-table tr:last-child td{border-bottom:0}
@@ -51,6 +51,7 @@
 .notice-state{display:inline-block;padding:3px 10px;border-radius:5px;background:#f0f2f1;color:#7a837e;font-size:12px;white-space:nowrap}
 .notice-state.is-active{background:#e5f2eb;color:#287354}
 .notice-date,.notice-deadline{font-size:12px;font-variant-numeric:tabular-nums}
+.notice-attachment a{display:inline-block;padding:4px 8px;border:1px solid #d8e7df;border-radius:5px;color:#42755e;text-decoration:none;font-size:12px;white-space:nowrap}
 .support-notice-help{margin:10px 0 8px;font-size:12px;line-height:1.5;color:#7b8c83}
 @media(max-width:640px){.notice-date::before{content:"등록일 "}.notice-deadline::before{content:"마감일 "}}
 .support-notices a:hover{color:#218665;text-decoration:underline}

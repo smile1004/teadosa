@@ -6,7 +6,7 @@ const HOUR = 3600000;
 export async function onRequestGet({ request, waitUntil }) {
   const headers = { 'Cache-Control': 'no-store' };
   const cache = typeof caches !== 'undefined' ? caches.default : null;
-  const key = new Request(new URL('/api/support-notices-cache-v3', request.url));
+  const key = new Request(new URL('/api/support-notices-cache-v4', request.url));
   let saved = recent;
   if (!saved && cache) {
     try { saved = await (await cache.match(key))?.json(); } catch { /* Retry upstream. */ }

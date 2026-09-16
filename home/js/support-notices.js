@@ -45,6 +45,18 @@
       } else {
         deadlineCell.textContent = '—';
       }
+      const attachmentCell = cell('notice-attachment');
+      if (item.hasAttachments) {
+        const attachmentLink = document.createElement('a');
+        attachmentLink.href = url.href;
+        attachmentLink.target = '_blank';
+        attachmentLink.rel = 'noopener noreferrer';
+        attachmentLink.textContent = '첨부파일 확인';
+        attachmentLink.setAttribute('aria-label', item.title + ' 첨부파일 확인 (공단 원문, 새 창)');
+        attachmentCell.append(attachmentLink);
+      } else {
+        attachmentCell.textContent = '—';
+      }
       fragment.append(row);
     });
     list.replaceChildren(fragment);

@@ -24,9 +24,11 @@ export function parseSupportNotices(html) {
     const deadlineText = plainText(cells[6] || '');
     const deadline = /^\d{4}-\d{2}-\d{2}$/.test(deadlineText) && Number.isFinite(Date.parse(deadlineText)) ? deadlineText : null;
     const previous = unique.get(link[1]);
+    const hasAttachments = /<a\b[^>]*\bclass=["'][^"']*\bico_(?:pdf|hwp|xls|xlsx|zip|doc|ppt|file)[\w-]*\b/i.test(cells[7] || '')
+      || /\bfile_down\s*\(/i.test(cells[7] || '');
     unique.set(link[1], { id: link[1], number: /^\d+$/.test(number) ? number : previous?.number || number,
       status: plainText(cells[1]), department: plainText(cells[4]),
-      title, publishedAt, deadline, url: `https://www.knrec.or.kr/biz/pds/businoti/view.do?no=${link[1]}` });
+      title, publishedAt, deadline, hasAttachments, url: `https://www.knrec.or.kr/biz/pds/businoti/view.do?no=${link[1]}` });
   }
   const items = [...unique.values()].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt) || Number(b.id) - Number(a.id)).slice(0, 5);
   if (!items.length) throw new Error('NOTICE_FORMAT_CHANGED');
@@ -34,7 +36,9 @@ export function parseSupportNotices(html) {
 }
 
 export async function fetchSupportNotices() {
-  const response = await fetch(SOURCE_URL, { signal: AbortSignal.timeout(15000), headers: { Accept: '*/*' } });
+  const response = await fetch(SOURCE_URL, { signal: AbortSignal.timeout(15000), headers: {
+    Accept: '*/*', 'User-Agent': 'Teadosa-NoticeReader/1.0', 'Accept-Encoding': 'identity'
+  } });
   if (!response.ok) throw new Error('NOTICE_SOURCE_UNAVAILABLE_' + response.status);
   const items = parseSupportNotices(await response.text());
   return { items, sourceUrl: SOURCE_URL, fetchedAt: new Date().toISOString() };
