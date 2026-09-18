@@ -269,10 +269,16 @@ async function updateSubstationMap(resultSubstations) {
   if (!window.kakao?.maps?.load) { section.hidden = true; return; }
   section.hidden = false;
 
+  const nearbyMatched = nearby.filter(n => n.match);
+
   list.replaceChildren();
   if (!nearby.length && !missing.length) {
     const li = document.createElement('li');
     li.textContent = `반경 ${NEARBY_RADIUS_KM}km 내에 좌표가 확보된 변전소가 없습니다.`;
+    list.appendChild(li);
+  } else if (!nearbyMatched.length && !missing.length) {
+    const li = document.createElement('li');
+    li.textContent = `반경 ${NEARBY_RADIUS_KM}km 내 변전소 중 이번 조회 결과에 해당하는 곳이 없습니다. 지도의 마커를 참고해 주세요.`;
     list.appendChild(li);
   } else if (missingNames.length && !selectedCoords) {
     const li = document.createElement('li');
@@ -284,7 +290,7 @@ async function updateSubstationMap(resultSubstations) {
     li.innerHTML = renderSubstBlock(n.name, null, n.match, '위치: 추정(정확한 좌표 없음, 조회 주소 인근에 표시)');
     list.appendChild(li);
   }
-  for (const n of nearby) {
+  for (const n of nearbyMatched) {
     const li = document.createElement('li');
     const distText = n.distanceKm !== null ? `${n.distanceKm.toFixed(1)}km` : null;
     li.innerHTML = renderSubstBlock(n.name, distText, n.match);
