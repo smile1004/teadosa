@@ -239,6 +239,7 @@ function renderSubstBlock(name, distanceText, match, extraLine) {
   if (detail) {
     lines.push(`변압기 번호: ${detail.mtrNo}`);
     lines.push(`배전선로: ${detail.dlNm}`);
+    lines.push(`변전소 여유용량: ${entry.vol1}kW`);
     lines.push(`변압기 여유용량: ${detail.vol2}kW`);
     lines.push(`선로 여유용량: ${detail.vol3}kW`);
   } else {
