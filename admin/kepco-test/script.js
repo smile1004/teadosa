@@ -201,22 +201,16 @@ function addLabeledMarker(pos, labelHtml) {
 }
 
 function findCapacityMatch(name, resultSubstations) {
-  if (resultSubstations.has(name)) return { entry: resultSubstations.get(name), fuzzy: false };
-  for (const [key, entry] of resultSubstations) {
-    if (name.length >= 2 && key.length >= 2 && (key.startsWith(name) || name.startsWith(key))) {
-      return { entry, fuzzy: true, matchedName: key };
-    }
-  }
-  return null;
+  if (!resultSubstations.has(name)) return null;
+  return { entry: resultSubstations.get(name) };
 }
 
 function formatSubstCapacity(match) {
   if (!match) return '이번 조회 결과에 없음';
-  const { entry, fuzzy, matchedName } = match;
+  const { entry } = match;
   const countText = entry.count > 1 ? ` (배전선로 ${entry.count}개)` : '';
   const likelyText = entry.likelyLine ? ` · 유력 선로 "${entry.likelyLine.dlNm}" 여유 ${entry.likelyLine.vol3}` : '';
-  const fuzzyText = fuzzy ? ` (이름 유사 "${matchedName}" 추정치, 확인 필요)` : '';
-  return `여유용량 ${entry.vol1}${countText}${likelyText}${fuzzyText}`;
+  return `여유용량 ${entry.vol1}${countText}${likelyText}`;
 }
 
 async function updateSubstationMap(resultSubstations) {
