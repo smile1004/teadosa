@@ -22,6 +22,7 @@ document.body.append(searchDialog);
 let addressMode = 'road';
 let searchVersion = 0;
 let selectedCoords = null;
+let selectedCoordsPromise = null;
 
 function geocodeAddress(query) {
   if (!query || !window.kakao?.maps?.load) return Promise.resolve(null);
@@ -67,7 +68,7 @@ function changeAddressMode(mode) {
     document.getElementById('rows').replaceChildren(); document.getElementById('raw').textContent = '아직 조회하지 않았습니다.';
     document.getElementById('status').textContent = '주소가 선택됐습니다. 입력된 지번을 포함해 조회합니다.';
     selectedCoords = null;
-    geocodeAddress(data.roadAddress || data.jibunAddress || data.address).then(coords => { selectedCoords = coords; });
+    selectedCoordsPromise = geocodeAddress(data.roadAddress || data.jibunAddress || data.address).then(coords => { selectedCoords = coords; return coords; });
     searchDialog.close();
   }}).embed(roadPanel);
 }
@@ -121,6 +122,7 @@ document.getElementById('address-search').addEventListener('click', () => {
         document.getElementById('raw').textContent = '아직 조회하지 않았습니다.';
         document.getElementById('status').textContent = '선택한 주소로 조회해 주세요.';
         selectedCoords = { lat: parseFloat(row.y), lng: parseFloat(row.x) };
+        selectedCoordsPromise = null;
         addressStatus.textContent = '토지 지번과 법정동 코드를 입력했습니다. 한전 API 조회를 눌러 주세요.';
         results.replaceChildren();
         searchDialog.close();
@@ -275,6 +277,7 @@ async function runKepcoCascade(input) {
       await runKepco(dongInput, true, { append: true, keywords });
     }
   }
+  if (selectedCoordsPromise) await selectedCoordsPromise;
   updateSubstationMap(resultSubstations);
 }
 
