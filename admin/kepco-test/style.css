@@ -14,7 +14,7 @@ tr.likely-match td{background:#eaf5ec}
 #capacity-rows tr.tree-lvl1 td:first-child{padding-left:32px;color:#4a5c50}
 #capacity-rows tr.tree-lvl2 td:first-child{padding-left:56px;color:#69776f}
 #capacity-rows tr.tree-lvl1,#capacity-rows tr.tree-lvl2{font-size:13px}
-#capacity-rows td:nth-child(2),#capacity-rows td:nth-child(3),#capacity-rows td:nth-child(4){text-align:right}
+#capacity-table th:nth-child(2),#capacity-table th:nth-child(3),#capacity-table th:nth-child(4),#capacity-table td:nth-child(2),#capacity-table td:nth-child(3),#capacity-table td:nth-child(4){text-align:right}
 .capacity-summary{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px;color:#38543e;margin:10px 0}
 .capacity-summary span{background:#edf5ee;border:1px solid #c5dccb;border-radius:999px;padding:4px 12px}
 
