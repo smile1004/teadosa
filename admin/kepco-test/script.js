@@ -190,14 +190,23 @@ function clearSubstMarkers() {
   substMarkers.forEach(m => m.setMap(null)); substMarkers = [];
   substOverlays.forEach(o => o.setMap(null)); substOverlays = [];
 }
-function addLabeledMarker(pos, labelHtml) {
-  const marker = new kakao.maps.Marker({ position: pos, map: substMap });
+function addLabeledMarker(pos, labelHtml, estimated) {
+  const marker = new kakao.maps.Marker({ position: pos, map: substMap, opacity: estimated ? 0.55 : 1 });
+  const border = estimated ? '1px dashed #d88422' : '1px solid #cddbcf';
   const overlay = new kakao.maps.CustomOverlay({
     position: pos, yAnchor: 1.5, zIndex: 2,
-    content: `<div style="padding:4px 8px;background:#fff;border:1px solid #cddbcf;border-radius:6px;font-size:12px;line-height:1.5;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.18)">${labelHtml}</div>`
+    content: `<div style="padding:4px 8px;background:#fff;border:${border};border-radius:6px;font-size:12px;line-height:1.5;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.18)">${labelHtml}</div>`
   });
   overlay.setMap(substMap);
   substMarkers.push(marker); substOverlays.push(overlay);
+}
+
+function estimatedPosition(center, index, total) {
+  const angle = (2 * Math.PI * index) / Math.max(total, 1);
+  const radiusKm = 0.18;
+  const dLat = (radiusKm / 111) * Math.cos(angle);
+  const dLng = (radiusKm / (111 * Math.cos(center.lat * Math.PI / 180))) * Math.sin(angle);
+  return { lat: center.lat + dLat, lng: center.lng + dLng };
 }
 
 function findCapacityMatch(name, resultSubstations) {
@@ -223,18 +232,30 @@ async function updateSubstationMap(resultSubstations) {
     ? nearby.filter(n => n.distanceKm <= NEARBY_RADIUS_KM).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, NEARBY_MAX)
     : nearby.filter(n => n.match);
 
-  if (!nearby.length && !selectedCoords) { section.hidden = true; return; }
+  const matchedNames = new Set(nearby.filter(n => n.match).map(n => n.name));
+  const missingNames = [...resultSubstations.keys()].filter(n => !matchedNames.has(n));
+  const missing = selectedCoords ? missingNames.map((name, i) => {
+    const pos = estimatedPosition(selectedCoords, i, missingNames.length);
+    return { name, lat: pos.lat, lng: pos.lng, match: { entry: resultSubstations.get(name) }, distanceKm: null, estimated: true };
+  }) : [];
+
+  if (!nearby.length && !missing.length && !selectedCoords) { section.hidden = true; return; }
   if (!window.kakao?.maps?.load) { section.hidden = true; return; }
   section.hidden = false;
 
   list.replaceChildren();
-  if (!nearby.length) {
+  if (!nearby.length && !missing.length) {
     const li = document.createElement('li');
     li.textContent = `반경 ${NEARBY_RADIUS_KM}km 내에 좌표가 확보된 변전소가 없습니다.`;
     list.appendChild(li);
-  } else if (resultSubstations.size && !nearby.some(n => n.match)) {
+  } else if (missingNames.length && !selectedCoords) {
     const li = document.createElement('li');
-    li.textContent = `이번 조회의 실제 변전소(${[...resultSubstations.keys()].join(', ')})는 좌표 데이터가 없어 지도에 표시할 수 없습니다. 아래는 참고용 인근 변전소 위치이며, 실제 연결 변전소가 아닙니다. 정확한 값은 표를 확인해 주세요.`;
+    li.textContent = `이번 조회의 실제 변전소(${missingNames.join(', ')})는 좌표 데이터가 없어 지도에 표시할 수 없습니다. 아래는 참고용 인근 변전소 위치이며, 실제 연결 변전소가 아닙니다. 정확한 값은 표를 확인해 주세요.`;
+    list.appendChild(li);
+  }
+  for (const n of missing) {
+    const li = document.createElement('li');
+    li.innerHTML = `<b>${n.name}변전소</b> · 위치 추정(정확한 좌표 없음, 조회 주소 인근에 표시) · ${formatSubstCapacity(n.match)}`;
     list.appendChild(li);
   }
   for (const n of nearby) {
@@ -252,9 +273,14 @@ async function updateSubstationMap(resultSubstations) {
       addLabeledMarker(pos, '검색한 주소');
       bounds.extend(pos);
     }
+    for (const n of missing) {
+      const pos = new kakao.maps.LatLng(n.lat, n.lng);
+      addLabeledMarker(pos, `<b>${n.name}변전소</b> (위치 추정)<br>${formatSubstCapacity(n.match)}`, true);
+      bounds.extend(pos);
+    }
     for (const n of nearby) {
       const pos = new kakao.maps.LatLng(n.lat, n.lng);
-      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${formatSubstCapacity(n.match)}`);
+      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${formatSubstCapacity(n.match)}`, false);
       bounds.extend(pos);
     }
     if (substMarkers.length) {
