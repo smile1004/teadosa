@@ -214,12 +214,23 @@ function findCapacityMatch(name, resultSubstations) {
   return { entry: resultSubstations.get(name) };
 }
 
-function formatSubstCapacity(match) {
-  if (!match) return '이번 조회 결과에 없음';
+function renderSubstBlock(name, distanceText, match, extraLine) {
+  const lines = [`변전소: ${name}`];
+  if (distanceText) lines.push(`거리: ${distanceText}`);
+  if (extraLine) lines.push(extraLine);
+  if (!match) { lines.push('여유용량: 이번 조회 결과에 없음'); return lines.join('<br>'); }
   const { entry } = match;
-  const countText = entry.count > 1 ? ` (배전선로 ${entry.count}개)` : '';
-  const likelyText = entry.likelyLine ? ` · 유력 선로 "${entry.likelyLine.dlNm}" 여유 ${entry.likelyLine.vol3}` : '';
-  return `여유용량 ${entry.vol1}${countText}${likelyText}`;
+  const detail = entry.likelyLine || (entry.lines.length === 1 ? entry.lines[0] : null);
+  if (detail) {
+    lines.push(`변압기 번호: ${detail.mtrNo}`);
+    lines.push(`배전선로: ${detail.dlNm}`);
+    lines.push(`변압기 여유용량: ${detail.vol2}kW`);
+    lines.push(`선로 여유용량: ${detail.vol3}kW`);
+  } else {
+    lines.push(`변전소 여유용량: ${entry.vol1}kW`);
+    lines.push(`배전선로 ${entry.lines.length}개 — 표를 확인해 주세요`);
+  }
+  return lines.join('<br>');
 }
 
 async function updateSubstationMap(resultSubstations) {
@@ -255,13 +266,13 @@ async function updateSubstationMap(resultSubstations) {
   }
   for (const n of missing) {
     const li = document.createElement('li');
-    li.innerHTML = `<b>${n.name}변전소</b> · 위치 추정(정확한 좌표 없음, 조회 주소 인근에 표시) · ${formatSubstCapacity(n.match)}`;
+    li.innerHTML = renderSubstBlock(n.name, null, n.match, '위치: 추정(정확한 좌표 없음, 조회 주소 인근에 표시)');
     list.appendChild(li);
   }
   for (const n of nearby) {
     const li = document.createElement('li');
-    const distText = n.distanceKm !== null ? ` · ${n.distanceKm.toFixed(1)}km` : '';
-    li.innerHTML = `<b>${n.name}변전소</b>${distText} · ${formatSubstCapacity(n.match)}`;
+    const distText = n.distanceKm !== null ? `${n.distanceKm.toFixed(1)}km` : null;
+    li.innerHTML = renderSubstBlock(n.name, distText, n.match);
     list.appendChild(li);
   }
 
@@ -275,12 +286,13 @@ async function updateSubstationMap(resultSubstations) {
     }
     for (const n of missing) {
       const pos = new kakao.maps.LatLng(n.lat, n.lng);
-      addLabeledMarker(pos, `<b>${n.name}변전소</b> (위치 추정)<br>${formatSubstCapacity(n.match)}`, true);
+      addLabeledMarker(pos, renderSubstBlock(n.name, null, n.match, '위치: 추정'), true);
       bounds.extend(pos);
     }
     for (const n of nearby) {
       const pos = new kakao.maps.LatLng(n.lat, n.lng);
-      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${formatSubstCapacity(n.match)}`, false);
+      const distText = n.distanceKm !== null ? `${n.distanceKm.toFixed(1)}km` : null;
+      addLabeledMarker(pos, renderSubstBlock(n.name, distText, n.match), false);
       bounds.extend(pos);
     }
     if (substMarkers.length) {
@@ -336,9 +348,11 @@ async function runKepco(input, regional, opts = {}) {
     for (const row of result.rows || []) {
       const likely = isLikelyMatch(row.dlNm, keywords);
       if (row.substNm) {
-        const entry = resultSubstations.get(row.substNm) || { vol1: row.vol1, count: 0, likelyLine: null };
-        entry.vol1 = row.vol1; entry.count += 1;
-        if (likely) entry.likelyLine = { dlNm: row.dlNm, vol3: row.vol3 };
+        const entry = resultSubstations.get(row.substNm) || { vol1: row.vol1, lines: [], likelyLine: null };
+        entry.vol1 = row.vol1;
+        const line = { mtrNo: row.mtrNo, dlNm: row.dlNm, vol2: row.vol2, vol3: row.vol3 };
+        entry.lines.push(line);
+        if (likely) entry.likelyLine = line;
         resultSubstations.set(row.substNm, entry);
       }
       const tr = document.createElement('tr');
