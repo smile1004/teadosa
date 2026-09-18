@@ -275,22 +275,21 @@ let resultSubstations = new Map();
 async function runKepcoCascade(input) {
   document.getElementById('rows').replaceChildren();
   document.getElementById('raw').textContent = '';
-  delete document.getElementById('status').dataset.finalText;
   resultSubstations = new Map();
   const hasJibun = !!String(input.addrJibun || '').trim();
   const hasSubst = !!String(input.substCd || '').trim();
   const hasLi = !!String(input.addrLi || '').trim();
 
-  let result = await runKepco(input, !hasJibun && !hasSubst, { append: true });
+  let result = await runKepco(input, !hasJibun && !hasSubst);
   if (hasJibun && !hasSubst && !(result && result.rows && result.rows.length)) {
     const keywords = extractAddressKeywords(input);
     addTierBanner(`지번(${input.addrJibun}) 완전일치 결과 없음 → 리 단위로 자동 재조회 결과값입니다.`);
     const liInput = { ...input, addrJibun: '' };
-    result = await runKepco(liInput, true, { append: true, keywords });
+    result = await runKepco(liInput, true, { keywords });
     if (hasLi && !(result && result.rows && result.rows.length)) {
       addTierBanner(`${input.addrLi} 범위에도 결과 없음 → 읍·면·동 전체로 자동 재조회 결과값입니다.`);
       const dongInput = { ...liInput, addrLi: '' };
-      await runKepco(dongInput, true, { append: true, keywords });
+      await runKepco(dongInput, true, { keywords });
     }
   }
   if (selectedCoordsPromise) await selectedCoordsPromise;
@@ -303,20 +302,15 @@ async function runKepco(input, regional, opts = {}) {
   const tbody = document.getElementById('rows');
   const raw = document.getElementById('raw');
   if (button.disabled) return null;
-  const scope = [input.addrLidong,input.addrLi].filter(Boolean).join(' ');
   const keywords = opts.keywords || [];
-  const previous = opts.append ? status.dataset.finalText || '' : '';
 
   button.disabled = true; status.textContent = '한전 API 조회 중…';
   try {
     const response = await fetch('/api/admin/kepco-test', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body:JSON.stringify(input) });
     const result = await response.json();
     let message = result.message || '응답을 확인해 주세요.';
-    if (result.upstreamStatus === 404) message = '한전 API가 해당 조회 조건에 404 NotFound를 반환했습니다. 주소 검색 오류나 여유용량 0을 뜻하지 않습니다.';
-    if (regional) message = `[${scope} 범위 조회 · 지번 제외] ${message} 이 결과는 선택한 필지의 연결 선로를 확정하지 않습니다.`;
     if (result.elapsedMs !== undefined) message += ` (${result.elapsedMs}ms)`;
-    const finalText = previous ? previous + ' / ' + message : message;
-    status.textContent = finalText; status.dataset.finalText = finalText;
+    status.textContent = message;
     const rawEntry = JSON.stringify({...result,queryScope:regional?'지역 범위 (지번 제외)':'입력 조건',requestConditions:input}, null, 2);
     raw.textContent = raw.textContent ? raw.textContent + '\n\n' + rawEntry : rawEntry;
     for (const row of result.rows || []) {
