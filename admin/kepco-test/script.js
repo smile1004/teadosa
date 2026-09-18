@@ -159,8 +159,23 @@ function isLikelyMatch(dlNm, keywords) {
 function addTierBanner(text) {
   const tbody = document.getElementById('rows');
   const tr = document.createElement('tr'); tr.className = 'tier-banner';
-  const td = document.createElement('td'); td.colSpan = 6; td.textContent = '▸ ' + text;
+  const td = document.createElement('td'); td.colSpan = 4; td.textContent = '▸ ' + text;
   tr.appendChild(td); tbody.appendChild(tr);
+}
+
+function fmtKw(v) {
+  return v === null || v === undefined || v === '' ? '미제공' : `${v}kW`;
+}
+
+function appendTreeRow(tbody, label, pwr, jsPwr, vol, level, likely) {
+  const tr = document.createElement('tr');
+  tr.className = `tree-lvl${level}` + (likely ? ' likely-match' : '');
+  for (const text of [label, fmtKw(pwr), fmtKw(jsPwr), fmtKw(vol)]) {
+    const td = document.createElement('td');
+    td.textContent = text;
+    tr.appendChild(td);
+  }
+  tbody.appendChild(tr);
 }
 
 const NEARBY_RADIUS_KM = 15;
@@ -345,6 +360,7 @@ async function runKepco(input, regional, opts = {}) {
     status.textContent = message;
     const rawEntry = JSON.stringify({...result,queryScope:regional?'지역 범위 (지번 제외)':'입력 조건',requestConditions:input}, null, 2);
     raw.textContent = raw.textContent ? raw.textContent + '\n\n' + rawEntry : rawEntry;
+    const substations = new Map();
     for (const row of result.rows || []) {
       const likely = isLikelyMatch(row.dlNm, keywords);
       if (row.substNm) {
@@ -355,15 +371,24 @@ async function runKepco(input, regional, opts = {}) {
         if (likely) entry.likelyLine = line;
         resultSubstations.set(row.substNm, entry);
       }
-      const tr = document.createElement('tr');
-      if (likely) tr.className = 'likely-match';
-      for (const field of ['substNm','mtrNo','dlNm','vol1','vol2','vol3']) {
-        const td = document.createElement('td');
-        let text = row[field] === null || row[field] === undefined || row[field] === '' ? '미제공' : String(row[field]);
-        if (field === 'dlNm' && likely) text += ' ★ 주소 키워드 일치 추정';
-        td.textContent = text; tr.appendChild(td);
+
+      const substKey = row.substNm ?? '미제공';
+      let subst = substations.get(substKey);
+      if (!subst) { subst = { substPwr: row.substPwr, jsSubstPwr: row.jsSubstPwr, vol1: row.vol1, transformers: new Map() }; substations.set(substKey, subst); }
+      const mtrKey = row.mtrNo ?? '미제공';
+      let mtr = subst.transformers.get(mtrKey);
+      if (!mtr) { mtr = { mtrPwr: row.mtrPwr, jsMtrPwr: row.jsMtrPwr, vol2: row.vol2, lines: [] }; subst.transformers.set(mtrKey, mtr); }
+      mtr.lines.push({ dlNm: row.dlNm, dlPwr: row.dlPwr, jsDlPwr: row.jsDlPwr, vol3: row.vol3, likely });
+    }
+    for (const [substNm, subst] of substations) {
+      appendTreeRow(tbody, substNm, subst.substPwr, subst.jsSubstPwr, subst.vol1, 0);
+      for (const [mtrNo, mtr] of subst.transformers) {
+        appendTreeRow(tbody, `주변압기 #${mtrNo}`, mtr.mtrPwr, mtr.jsMtrPwr, mtr.vol2, 1);
+        for (const line of mtr.lines) {
+          const label = line.likely ? `${line.dlNm} ★ 주소 키워드 일치 추정` : (line.dlNm ?? '미제공');
+          appendTreeRow(tbody, label, line.dlPwr, line.jsDlPwr, line.vol3, 2, line.likely);
+        }
       }
-      tbody.appendChild(tr);
     }
     return result;
   } catch { status.textContent = '조회 서버에 연결할 수 없습니다. 정적 미리보기에서는 API가 작동하지 않습니다.'; return null; }
