@@ -235,17 +235,11 @@ function renderSubstBlock(name, distanceText, match, extraLine) {
   if (extraLine) lines.push(extraLine);
   if (!match) { lines.push('여유용량: 이번 조회 결과에 없음'); return lines.join('<br>'); }
   const { entry } = match;
-  const detail = entry.likelyLine || (entry.lines.length === 1 ? entry.lines[0] : null);
-  if (detail) {
-    lines.push(`변압기 번호: ${detail.mtrNo}`);
-    lines.push(`배전선로: ${detail.dlNm}`);
-    lines.push(`변전소 여유용량: ${entry.vol1}kW`);
-    lines.push(`변압기 여유용량: ${detail.vol2}kW`);
-    lines.push(`선로 여유용량: ${detail.vol3}kW`);
-  } else {
-    lines.push(`변전소 여유용량: ${entry.vol1}kW`);
-    lines.push(`배전선로 ${entry.lines.length}개 — 표를 확인해 주세요`);
-  }
+  const detail = entry.likelyLine || entry.lines[0];
+  lines.push(`변압기 번호: ${detail.mtrNo}`);
+  lines.push(`배전선로: ${detail.dlNm}`);
+  lines.push(`변압기 여유용량: ${detail.vol2}kW`);
+  lines.push(`선로 여유용량: ${detail.vol3}kW`);
   return lines.join('<br>');
 }
 
