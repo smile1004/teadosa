@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>계통 여유용량 지도 – 분석 및 구현안</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f6f4;color:#253b30;font-family:Arial,'Malgun Gothic',sans-serif;font-size:15px}
+main{max-width:1120px;margin:48px auto;padding:0 24px}
+header.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:30px}
+.eyebrow{color:#d88422;font-size:12px;font-weight:bold;letter-spacing:2px}
+h1{font-size:28px;margin:12px 0}
+h2{font-size:19px;margin:0 0 15px}
+h3{font-size:16px;margin:0 0 10px}
+p{line-height:1.7;color:#69776f}
+a{color:#32704d}
+nav{display:flex;gap:8px;flex-shrink:0}
+nav a{padding:10px 16px;border-radius:8px;background:#edf2ee;color:#38543e;border:1px solid #cddbcf;text-decoration:none;font-size:14px;font-weight:bold;white-space:nowrap}
+nav a.home{background:#4f7f34;color:#fff;border:0}
+section{padding:26px;margin-bottom:20px;background:white;border:1px solid #dfe7e1;border-radius:16px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #e6ece8;vertical-align:top}
+th{background:#f3f7f4;white-space:nowrap}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:6px}
+.stat{padding:16px;background:#f6f9f6;border:1px solid #e2ebe4;border-radius:12px}
+.stat b{display:block;font-size:22px;color:#32704d}
+.stat span{font-size:12px;color:#8a978f}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:bold}
+.badge.ok{background:#e6f2e5;color:#32704d}
+.badge.gap{background:#fdeeea;color:#b8492f}
+ol.flow{padding-left:20px}
+ol.flow li{margin-bottom:8px;line-height:1.7}
+.phase{border:1px solid #dfe7e1;border-radius:12px;padding:18px;margin-bottom:14px}
+.phase h3{color:#32704d}
+.note{font-size:13px;background:#fbf6ec;border:1px solid #eee0c2;border-radius:10px;padding:12px 14px;color:#7a5c1e}
+/* prototype */
+.proto-wrap{display:grid;grid-template-columns:280px 1fr;gap:20px}
+@media(max-width:800px){.proto-wrap{grid-template-columns:1fr}}
+.proto-panel{border:1px solid #dfe7e1;border-radius:12px;padding:16px}
+.proto-panel label{font-size:13px;font-weight:bold;display:block;margin-bottom:6px}
+.proto-panel input[type=number]{width:100%;padding:10px;border:1px solid #ccd8cf;border-radius:8px;font-size:15px;margin-bottom:10px}
+.proto-panel button{width:100%;padding:11px;border:0;border-radius:9px;background:#4f7f34;color:#fff;font-weight:bold;cursor:pointer;font-size:14px}
+.proto-panel .toggle{display:flex;align-items:center;gap:8px;margin:14px 0;font-size:13px;font-weight:normal}
+#result-list{margin-top:12px;max-height:220px;overflow:auto;font-size:13px}
+#result-list .item{padding:8px 10px;border:1px solid #e2ebe4;border-radius:8px;margin-bottom:6px;cursor:pointer;background:#f8faf8}
+#result-list .item:hover{background:#eef5ee}
+#result-list .item b{color:#32704d}
+.map-box{position:relative;height:420px;background:
+  linear-gradient(#eef3ee,#eef3ee) padding-box,
+  repeating-linear-gradient(0deg,#e2ebe4 0 1px,transparent 1px 40px),
+  repeating-linear-gradient(90deg,#e2ebe4 0 1px,transparent 1px 40px);
+  border:1px solid #dfe7e1;border-radius:12px;overflow:hidden}
+.map-box svg{position:absolute;inset:0;width:100%;height:100%}
+.pin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);
+  background:#b7c3ba;border:2px solid #8a978f;cursor:pointer;transition:.15s}
+.pin span{display:block;transform:rotate(45deg);text-align:center;line-height:22px;font-size:11px;font-weight:bold;color:#fff}
+.pin.match{background:#4f7f34;border-color:#32704d}
+.map-caption{position:absolute;left:10px;bottom:8px;font-size:11px;color:#8a978f;background:rgba(255,255,255,.7);padding:2px 8px;border-radius:6px}
+#detail-card{margin-top:14px;padding:14px;border:1px solid #dfe7e1;border-radius:10px;background:#f9fbf9;font-size:13px;display:none}
+#detail-card dl{display:grid;grid-template-columns:96px 1fr;gap:6px 10px;margin:0}
+#detail-card dt{color:#8a978f}
+#detail-card dd{margin:0;font-weight:bold}
+footer.src{font-size:12px;color:#8a978f;margin-top:6px}
+</style>
+</head>
+<body>
+<main>
+
+<header class="page-head">
+  <div>
+    <p class="eyebrow">GRID MAP · 벤치마킹 분석</p>
+    <h1>계통 여유용량 지도 — re100market 분석 &amp; 구현안</h1>
+    <p>re100market.com/intro의 "GRID MAP" 기능을 분석하고, 태양광도사가 이미 보유한 한전 API·카카오맵 연동을 바탕으로 단계적으로 구현할 수 있는 방법을 정리한 검토 문서 + 프로토타입입니다.<br>
+    (이 페이지는 내부 검토용이며, 하단 프로토타입은 실제 API를 호출하지 않는 가상 데이터 데모입니다.)</p>
+  </div>
+  <nav>
+    <a class="home" href="/">🏠 홈</a>
+    <a href="/test1">계통연계조회</a>
+    <a href="/test2">지자체조례조회</a>
+  </nav>
+</header>
+
+<section>
+  <h2>1. re100market.com "GRID MAP" 기능 분석</h2>
+  <p>인코어드테크놀로지스가 운영하는 "신재생 계통 지도"는 전력 공공데이터(전력거래소 EPSIS 등)와 AI 분석을 결합해, 재생에너지 후보지의 계통 접속 가능성과 사업성을 한 곳에서 확인하게 해주는 서비스입니다. 소개 페이지가 내세우는 핵심 지표는 다음과 같습니다.</p>
+  <div class="stat-row">
+    <div class="stat"><b>971개</b><span>변전소</span></div>
+    <div class="stat"><b>8,511개</b><span>배전선로</span></div>
+    <div class="stat"><b>4,506건</b><span>누적 사업성 분석</span></div>
+    <div class="stat"><b>718만+</b><span>전국 지번 커버리지</span></div>
+  </div>
+  <p>"여유용량부터 배전선로까지 한 흐름으로 확인"이라는 카피 아래, 실제 조작 흐름은 3단계로 안내됩니다.</p>
+  <ol class="flow">
+    <li><b>MW 임계값 입력 → 검색</b> — 사용자가 필요한 여유용량(MW)을 입력하면, 그 값 이상 접속 가능한 변전소만 즉시 필터링됩니다.</li>
+    <li><b>결과 모달에서 변전소 선택 → 지도에서 위치·여유용량 확인</b> — 번호가 매겨진 색상 핀으로 변전소 위치와 여유용량을 지도 위에서 함께 봅니다.</li>
+    <li><b>배전선로 해제(토글) → 색상별 라인으로 계통 구조 파악</b> — 변전소에서 뻗어나가는 배전선로를 색상별 라인으로 지도에 덧씌워 계통 구조를 파악합니다.</li>
+  </ol>
+  <p>이 흐름이 성립하려면 아래 데이터/기술 요소가 미리 갖춰져 있어야 합니다.</p>
+  <ul>
+    <li>전국 변전소의 <b>위경도 좌표 마스터 DB</b> (한전 오픈API 응답에는 좌표가 없어 별도 구축 필요)</li>
+    <li>변전소별 여유용량을 미리 조회해 두는 <b>캐시·배치 갱신 체계</b> (971개를 매번 사용자 요청 시 실시간 조회하면 응답이 느리고 API 정책에도 부담)</li>
+    <li>배전선로의 <b>공간정보(GIS 폴리라인)</b> — 별도 데이터셋 확보 필요</li>
+    <li>지도 위에 마커·라인을 그리고 클릭 상호작용을 처리하는 <b>지도 SDK 연동</b></li>
+  </ul>
+</section>
+
+<section>
+  <h2>2. 태양광도사 현재 보유 자산 vs 추가로 필요한 자산</h2>
+  <table>
+    <thead><tr><th>구성 요소</th><th>현재 상태</th><th>근거 / 비고</th></tr></thead>
+    <tbody>
+      <tr><td>한전 여유용량 API 연동</td><td><span class="badge ok">보유</span></td><td>한전 분산형전원 연계정보 오픈API, 주소 단건 조회 — <code>test1.html</code>, <code>functions/api/admin/kepco-test.js</code></td></tr>
+      <tr><td>지도 SDK</td><td><span class="badge ok">보유</span></td><td>카카오맵 SDK가 이미 <code>test1.html</code>에 로드되어 우편번호 검색에 사용 중</td></tr>
+      <tr><td>주소 → 좌표 지오코더</td><td><span class="badge ok">보유</span></td><td>Kakao Geocoder로 지번 검색 시 좌표 조회 로직 존재 (<code>script.js</code> <code>searchParcel()</code>) — 현재는 표시용으로만 쓰이고 저장하지 않음</td></tr>
+      <tr><td>배포/서버 인프라</td><td><span class="badge ok">보유</span></td><td>Cloudflare Pages + Functions, 캐시 헤더·서버리스 함수 자유롭게 추가 가능</td></tr>
+      <tr><td>변전소 좌표 마스터 DB</td><td><span class="badge gap">미보유</span></td><td>신규 구축 필요 (변전소명·코드를 1회 지오코딩해 저장)</td></tr>
+      <tr><td>여유용량 캐시/배치 갱신</td><td><span class="badge gap">미보유</span></td><td>현재는 요청마다 실시간 단건 조회만 가능 → 배치 잡 신규 구축 필요</td></tr>
+      <tr><td>배전선로 GIS 데이터</td><td><span class="badge gap">미보유</span></td><td>공공데이터포털 또는 한전 별도 신청 필요, 확보 난이도 높음</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. 단계별 구현 로드맵</h2>
+
+  <div class="phase">
+    <h3>Phase 1 · 즉시 적용 — 기존 단건 조회 결과를 지도로 시각화</h3>
+    <p><code>test1.html</code>의 조회 결과(현재는 표로만 표시)에 조회한 주소 지점 카카오맵 마커 1개를 추가하고, 여유용량 수치에 따라 마커 색상(녹색/주황/빨강)을 다르게 표시합니다. 새 데이터 구축이 필요 없어 가장 빠르게 적용 가능합니다.</p>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 2 · 변전소 마스터 DB 구축</h3>
+    <p>한전 변전소 코드/명 목록을 확보해 변전소별로 1회 Kakao Geocoder로 지오코딩한 뒤 위경도를 Cloudflare D1(또는 KV)에 저장합니다. 이후 Cron Trigger로 야간에 변전소코드별 한전 API를 순차 호출해 여유용량(vol1/vol2/vol3)을 갱신·캐시합니다. 사용자 요청은 실시간 API가 아니라 "최근 갱신된 캐시값 + 갱신 시각"을 조회하는 방식으로 전환해 속도와 API 호출량 문제를 동시에 해결합니다. 서비스 권역(예: 완주군 등 주요 시공 지역)부터 우선 구축하는 것을 권장합니다.</p>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 3 · MW 임계값 지도 검색 (re100market GRID MAP 벤치마킹)</h3>
+    <p>Phase 2의 캐시 DB를 기반으로, 사용자가 MW 임계값을 입력하면 조건을 만족하는 변전소만 지도에 마커로 표시합니다. 마커 클릭 시 변전소명·변압기·배전선로·각 단계 여유용량을 카드로 보여주고, 정확한 값이 필요하면 "지금 바로 정밀 조회" 버튼으로 <code>test1.html</code>의 실시간 단건 조회와 연결합니다. 아래 프로토타입이 이 단계의 UX를 가상 데이터로 미리 보여줍니다.</p>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 4 · 배전선로 오버레이 (선택 확장)</h3>
+    <p>공공데이터포털 또는 한전의 배전선로 공간정보를 확보할 수 있다면 폴리라인으로 렌더링해 배전선로명별 색상 구분을 추가합니다. 데이터 확보 난이도가 높으므로, 확보가 어려우면 이 단계는 생략하고 변전소 단위 정보만으로도 사업성 검토 가치는 충분합니다.</p>
+  </div>
+
+  <div class="note">
+    <b>주의사항</b><br>
+    · 한전 오픈API 이용약관상 대량/배치 자동 조회가 허용되는 범위인지 Phase 2 착수 전 반드시 재확인이 필요합니다.<br>
+    · re100market도 하단에 "전력 공공 데이터 · 전력거래소 EPSIS" 출처를 명시합니다. 태양광도사도 지도 페이지 하단에 "데이터 출처: 한국전력 분산형전원 연계정보 오픈API, 카카오맵" 표기를 유지해야 합니다.<br>
+    · 여유용량은 갱신 시점 기준 참고값이며, 실제 접속 가능 여부는 한전 검토가 필요하다는 기존 안내 문구("이 결과는 선택한 필지의 연결 선로를 확정하지 않습니다")의 톤을 그대로 유지합니다.
+  </div>
+</section>
+
+<section>
+  <h2>4. 프로토타입 (가상 데이터 데모)</h2>
+  <p>아래는 Phase 3 화면의 조작 흐름을 미리 검토하기 위한 가상 데이터 목업입니다. 실제 API 호출은 없으며, 지도도 실제 카카오맵이 아닌 좌표 목업입니다.</p>
+
+  <div class="proto-wrap">
+    <div class="proto-panel">
+      <label for="mw-input">여유용량 임계값 (MW)</label>
+      <input type="number" id="mw-input" value="3" min="0" step="0.1">
+      <button id="search-btn">찾기</button>
+      <div class="toggle"><input type="checkbox" id="line-toggle"><label for="line-toggle" style="margin:0;font-weight:normal">배전선로(가상) 표시</label></div>
+      <div id="result-list"></div>
+    </div>
+    <div>
+      <div class="map-box" id="map-box">
+        <svg id="line-layer" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+        <div class="map-caption">가상 좌표 · 완주군 일대 예시</div>
+      </div>
+      <div id="detail-card"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="src">
+  데이터 출처(프로토타입 예시 값): 실제 서비스 적용 시 한국전력 분산형전원 연계정보 오픈API, 카카오맵 · 본 페이지의 좌표·여유용량 수치는 검토용 가상 데이터입니다.
+</footer>
+
+</main>
+
+<script>
+const substations = [
+  { name:'이서변전소', x:20, y:30, vol1:8.2, vol2:5.1, vol3:3.4, mtrNo:'#1', dlNm:'이서길배전선로1' },
+  { name:'봉동변전소', x:55, y:20, vol1:2.1, vol2:1.5, vol3:0.9, mtrNo:'#2', dlNm:'봉동배전선로2' },
+  { name:'삼례변전소', x:70, y:45, vol1:12.4, vol2:9.8, vol3:6.2, mtrNo:'#1', dlNm:'삼례배전선로1' },
+  { name:'고산변전소', x:35, y:65, vol1:0.8, vol2:0.5, vol3:0.3, mtrNo:'#3', dlNm:'고산배전선로3' },
+  { name:'소양변전소', x:80, y:70, vol1:5.6, vol2:4.0, vol3:2.8, mtrNo:'#2', dlNm:'소양배전선로1' },
+  { name:'상관변전소', x:15, y:80, vol1:3.3, vol2:2.2, vol3:1.6, mtrNo:'#1', dlNm:'상관배전선로2' },
+  { name:'구이변전소', x:60, y:85, vol1:15.0, vol2:11.2, vol3:8.5, mtrNo:'#1', dlNm:'구이배전선로1' },
+  { name:'용진변전소', x:45, y:50, vol1:1.2, vol2:0.9, vol3:0.5, mtrNo:'#4', dlNm:'용진배전선로2' },
+];
+const lineColors = ['#32704d','#d88422','#4f7fbf','#a04fbf','#bf4f4f','#4fb0bf','#8fbf4f','#bf8f4f'];
+
+const mapBox = document.getElementById('map-box');
+const lineLayer = document.getElementById('line-layer');
+const resultList = document.getElementById('result-list');
+const detailCard = document.getElementById('detail-card');
+
+substations.forEach((s, i) => {
+  const pin = document.createElement('div');
+  pin.className = 'pin';
+  pin.style.left = s.x + '%';
+  pin.style.top = s.y + '%';
+  pin.innerHTML = '<span>' + (i + 1) + '</span>';
+  pin.addEventListener('click', () => showDetail(s));
+  mapBox.appendChild(pin);
+  s._pin = pin;
+});
+
+function showDetail(s) {
+  detailCard.style.display = 'block';
+  detailCard.innerHTML =
+    '<dl>' +
+    '<dt>변전소</dt><dd>' + s.name + '</dd>' +
+    '<dt>변압기 번호</dt><dd>' + s.mtrNo + '</dd>' +
+    '<dt>배전선로</dt><dd>' + s.dlNm + '</dd>' +
+    '<dt>변전소 여유용량</dt><dd>' + s.vol1.toFixed(1) + ' MW</dd>' +
+    '<dt>변압기 여유용량</dt><dd>' + s.vol2.toFixed(1) + ' MW</dd>' +
+    '<dt>선로 여유용량</dt><dd>' + s.vol3.toFixed(1) + ' MW</dd>' +
+    '</dl><p style="margin:10px 0 0;color:#8a978f">실제 서비스에서는 이 값이 한전 API 캐시 결과로 채워지고, "지금 바로 정밀 조회" 버튼으로 test1의 실시간 조회와 연결됩니다.</p>';
+}
+
+function runSearch() {
+  const threshold = parseFloat(document.getElementById('mw-input').value) || 0;
+  resultList.innerHTML = '';
+  const matched = substations.filter(s => s.vol1 >= threshold);
+  substations.forEach(s => s._pin.classList.toggle('match', s.vol1 >= threshold));
+  if (!matched.length) {
+    resultList.innerHTML = '<p style="color:#8a978f;margin:0">조건을 만족하는 변전소가 없습니다.</p>';
+  } else {
+    matched.sort((a, b) => b.vol1 - a.vol1).forEach((s, i) => {
+      const el = document.createElement('div');
+      el.className = 'item';
+      el.innerHTML = '<b>' + s.name + '</b> · ' + s.vol1.toFixed(1) + ' MW 여유';
+      el.addEventListener('click', () => showDetail(s));
+      resultList.appendChild(el);
+    });
+  }
+  detailCard.style.display = 'none';
+  drawLines();
+}
+
+function drawLines() {
+  lineLayer.innerHTML = '';
+  if (!document.getElementById('line-toggle').checked) return;
+  substations.forEach((s, i) => {
+    if (!s._pin.classList.contains('match')) return;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', s.x); line.setAttribute('y1', s.y);
+    line.setAttribute('x2', 50); line.setAttribute('y2', 50);
+    line.setAttribute('stroke', lineColors[i % lineColors.length]);
+    line.setAttribute('stroke-width', '0.6');
+    line.setAttribute('stroke-dasharray', '2,1.5');
+    lineLayer.appendChild(line);
+  });
+}
+
+document.getElementById('search-btn').addEventListener('click', runSearch);
+document.getElementById('line-toggle').addEventListener('change', drawLines);
+runSearch();
+</script>
+</body>
+</html>
