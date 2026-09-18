@@ -178,14 +178,25 @@ function haversineKm(a, b) {
   return R * 2 * Math.asin(Math.sqrt(s));
 }
 
-let substMap, substMarkers = [], substInfowindow;
+let substMap, substMarkers = [], substOverlays = [];
 function ensureSubstMap() {
   if (substMap) return substMap;
   substMap = new kakao.maps.Map(document.getElementById('subst-map'), { center: new kakao.maps.LatLng(35.905, 127.10), level: 10 });
-  substInfowindow = new kakao.maps.InfoWindow({ removable: true });
   return substMap;
 }
-function clearSubstMarkers() { substMarkers.forEach(m => m.setMap(null)); substMarkers = []; }
+function clearSubstMarkers() {
+  substMarkers.forEach(m => m.setMap(null)); substMarkers = [];
+  substOverlays.forEach(o => o.setMap(null)); substOverlays = [];
+}
+function addLabeledMarker(pos, labelHtml) {
+  const marker = new kakao.maps.Marker({ position: pos, map: substMap });
+  const overlay = new kakao.maps.CustomOverlay({
+    position: pos, yAnchor: 1.5, zIndex: 2,
+    content: `<div style="padding:4px 8px;background:#fff;border:1px solid #cddbcf;border-radius:6px;font-size:12px;line-height:1.5;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.18)">${labelHtml}</div>`
+  });
+  overlay.setMap(substMap);
+  substMarkers.push(marker); substOverlays.push(overlay);
+}
 
 async function updateSubstationMap(resultSubstations) {
   const section = document.getElementById('map-section');
@@ -220,22 +231,19 @@ async function updateSubstationMap(resultSubstations) {
     const bounds = new kakao.maps.LatLngBounds();
     if (selectedCoords) {
       const pos = new kakao.maps.LatLng(selectedCoords.lat, selectedCoords.lng);
-      const marker = new kakao.maps.Marker({ position: pos, map: substMap });
-      substInfowindow.setContent('<div style="padding:6px 8px;font-size:13px">검색한 주소</div>');
-      substInfowindow.open(substMap, marker);
-      substMarkers.push(marker); bounds.extend(pos);
+      addLabeledMarker(pos, '검색한 주소');
+      bounds.extend(pos);
     }
     for (const n of nearby) {
       const pos = new kakao.maps.LatLng(n.lat, n.lng);
-      const marker = new kakao.maps.Marker({ position: pos, map: substMap });
-      const capText = n.vol1 !== undefined ? `여유용량: ${n.vol1}` : '이번 조회 결과에 없음';
-      kakao.maps.event.addListener(marker, 'click', () => {
-        substInfowindow.setContent(`<div style="padding:6px 8px;font-size:13px">${n.name}변전소<br>${capText}</div>`);
-        substInfowindow.open(substMap, marker);
-      });
-      substMarkers.push(marker); bounds.extend(pos);
+      const capText = n.vol1 !== undefined ? `여유용량 ${n.vol1}` : '이번 조회 결과에 없음';
+      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${capText}`);
+      bounds.extend(pos);
     }
-    if (substMarkers.length) substMap.setBounds(bounds);
+    if (substMarkers.length) {
+      substMap.setBounds(bounds, 80, 80, 80, 80);
+      substMap.setLevel(substMap.getLevel() + 1);
+    }
   });
 }
 
@@ -253,11 +261,11 @@ async function runKepcoCascade(input) {
   let result = await runKepco(input, !hasJibun && !hasSubst, { append: true });
   if (hasJibun && !hasSubst && !(result && result.rows && result.rows.length)) {
     const keywords = extractAddressKeywords(input);
-    addTierBanner(`지번(${input.addrJibun}) 완전일치 결과 없음 → 리 단위로 자동 재조회합니다.`);
+    addTierBanner(`지번(${input.addrJibun}) 완전일치 결과 없음 → 리 단위로 자동 재조회 결과값입니다.`);
     const liInput = { ...input, addrJibun: '' };
     result = await runKepco(liInput, true, { append: true, keywords });
     if (hasLi && !(result && result.rows && result.rows.length)) {
-      addTierBanner(`${input.addrLi} 범위에도 결과 없음 → 읍·면·동 전체로 자동 재조회합니다.`);
+      addTierBanner(`${input.addrLi} 범위에도 결과 없음 → 읍·면·동 전체로 자동 재조회 결과값입니다.`);
       const dongInput = { ...liInput, addrLi: '' };
       await runKepco(dongInput, true, { append: true, keywords });
     }
