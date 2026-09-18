@@ -113,9 +113,9 @@ footer.src{font-size:12px;color:#8a978f;margin-top:6px}
     <tbody>
       <tr><td>한전 여유용량 API 연동</td><td><span class="badge ok">보유</span></td><td>한전 분산형전원 연계정보 오픈API, 주소 단건 조회 — <code>test1.html</code>, <code>functions/api/admin/kepco-test.js</code></td></tr>
       <tr><td>지도 SDK</td><td><span class="badge ok">보유</span></td><td>카카오맵 SDK가 이미 <code>test1.html</code>에 로드되어 우편번호 검색에 사용 중</td></tr>
-      <tr><td>주소 → 좌표 지오코더</td><td><span class="badge ok">보유</span></td><td>Kakao Geocoder로 지번 검색 시 좌표 조회 로직 존재 (<code>script.js</code> <code>searchParcel()</code>) — 현재는 표시용으로만 쓰이고 저장하지 않음</td></tr>
+      <tr><td>주소 → 좌표 지오코더</td><td><span class="badge ok">보유</span></td><td>Kakao Geocoder로 지번 검색 시 좌표 조회 로직 존재 (<code>script.js</code> <code>searchParcel()</code>) — 단, 변전소명은 카카오맵에 장소로 등록되어 있지 않아 이 지오코더로는 변전소 좌표를 딸 수 없음 (직접 검색 테스트로 확인)</td></tr>
       <tr><td>배포/서버 인프라</td><td><span class="badge ok">보유</span></td><td>Cloudflare Pages + Functions, 캐시 헤더·서버리스 함수 자유롭게 추가 가능</td></tr>
-      <tr><td>변전소 좌표 마스터 DB</td><td><span class="badge gap">미보유</span></td><td>신규 구축 필요 (변전소명·코드를 1회 지오코딩해 저장)</td></tr>
+      <tr><td>변전소 좌표 마스터 DB</td><td><span class="badge gap">미보유</span></td><td>신규 구축 필요 — 정부·한전 공식 데이터는 위치를 비식별화하므로 OpenStreetMap 등 대체 출처로 구축 (아래 4장 참고)</td></tr>
       <tr><td>여유용량 캐시/배치 갱신</td><td><span class="badge gap">미보유</span></td><td>현재는 요청마다 실시간 단건 조회만 가능 → 배치 잡 신규 구축 필요</td></tr>
       <tr><td>배전선로 GIS 데이터</td><td><span class="badge gap">미보유</span></td><td>공공데이터포털 또는 한전 별도 신청 필요, 확보 난이도 높음</td></tr>
     </tbody>
@@ -131,8 +131,16 @@ footer.src{font-size:12px;color:#8a978f;margin-top:6px}
   </div>
 
   <div class="phase">
-    <h3>Phase 2 · 변전소 마스터 DB 구축</h3>
-    <p>한전 변전소 코드/명 목록을 확보해 변전소별로 1회 Kakao Geocoder로 지오코딩한 뒤 위경도를 Cloudflare D1(또는 KV)에 저장합니다. 이후 Cron Trigger로 야간에 변전소코드별 한전 API를 순차 호출해 여유용량(vol1/vol2/vol3)을 갱신·캐시합니다. 사용자 요청은 실시간 API가 아니라 "최근 갱신된 캐시값 + 갱신 시각"을 조회하는 방식으로 전환해 속도와 API 호출량 문제를 동시에 해결합니다. 서비스 권역(예: 완주군 등 주요 시공 지역)부터 우선 구축하는 것을 권장합니다.</p>
+    <h3>Phase 2 · 변전소 마스터 DB 구축 (검증된 방법)</h3>
+    <p><b>직접 확인 결과, 당초 가정한 "카카오 지오코딩"은 불가능합니다.</b> 변전소명으로 카카오맵을 검색해도 장소 결과가 없고, 공공데이터포털의 "지역별 공급가능 변전소 정보"도 "국가기밀시설인 변전소의 정확한 위치 노출을 막기 위해" 시군구 단위로 비식별화되어 있으며, 한전 자체 "전력공급 여유지도"도 개별 좌표가 아닌 시군구 음영 지도만 제공합니다.</p>
+    <p>대신 <b>OpenStreetMap(Overpass API)</b>에서 실제 검증된 대안을 확인했습니다. 완주·전주 권역을 <code>power=substation</code> 태그로 조회해보니 전주변전소·남전주변전소·봉동변전소·팔봉변전소 등 실명 변전소가 정확한 위경도와 함께 등록되어 있었습니다. 구축 절차는 다음과 같습니다.</p>
+    <ol class="flow">
+      <li>Overpass API(무료, 키 불필요)로 서비스 권역 bounding box 안의 <code>power=substation</code> 노드·way를 조회해 이름+좌표 수집</li>
+      <li>수집한 이름을 한전 API 응답의 <code>substNm</code>(변전소명)과 매칭해 "변전소명 ↔ 좌표" 테이블 작성 (표기 차이는 수동 검수)</li>
+      <li>OSM에 없거나 이름이 비어있는 변전소는 카카오맵/브이월드 위성뷰에서 변전소 특유의 외형(울타리 안 변압기 야드, 송전탑 집결지)을 육안 식별해 좌표를 수동 보완 — 전국이 아니라 실제 시공 권역만 우선 진행</li>
+      <li>완성된 매핑 테이블을 Cloudflare D1(또는 KV)에 저장. 이후 Cron Trigger로 야간에 변전소코드별 한전 API를 순차 호출해 여유용량(vol1/vol2/vol3)을 갱신·캐시하고, 사용자 요청은 "최근 갱신된 캐시값 + 갱신 시각"을 조회하는 방식으로 전환</li>
+    </ol>
+    <p style="color:#8a978f;font-size:13px">한계: OSM 커버리지가 전국 971개를 다 채우지 못할 수 있어 서비스 권역 기준 사전 조사가 필요하고, 자원봉사자 편집 데이터라 오차·갱신 지연 가능성이 있습니다. ODbL 라이선스에 따라 "© OpenStreetMap contributors" 출처 표기가 필수입니다.</p>
   </div>
 
   <div class="phase">
@@ -148,7 +156,7 @@ footer.src{font-size:12px;color:#8a978f;margin-top:6px}
   <div class="note">
     <b>주의사항</b><br>
     · 한전 오픈API 이용약관상 대량/배치 자동 조회가 허용되는 범위인지 Phase 2 착수 전 반드시 재확인이 필요합니다.<br>
-    · re100market도 하단에 "전력 공공 데이터 · 전력거래소 EPSIS" 출처를 명시합니다. 태양광도사도 지도 페이지 하단에 "데이터 출처: 한국전력 분산형전원 연계정보 오픈API, 카카오맵" 표기를 유지해야 합니다.<br>
+    · re100market도 하단에 "전력 공공 데이터 · 전력거래소 EPSIS" 출처를 명시합니다. 태양광도사도 지도 페이지 하단에 "데이터 출처: 한국전력 분산형전원 연계정보 오픈API, OpenStreetMap contributors" 표기를 유지해야 하며, OSM은 ODbL 라이선스상 출처 표기가 의무 사항입니다.<br>
     · 여유용량은 갱신 시점 기준 참고값이며, 실제 접속 가능 여부는 한전 검토가 필요하다는 기존 안내 문구("이 결과는 선택한 필지의 연결 선로를 확정하지 않습니다")의 톤을 그대로 유지합니다.
   </div>
 </section>
