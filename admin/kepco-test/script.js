@@ -21,6 +21,19 @@ searchDialog.append(dialogTitle, closeSearch, searchFields, addressStatus, docum
 document.body.append(searchDialog);
 let addressMode = 'road';
 let searchVersion = 0;
+let selectedCoords = null;
+
+function geocodeAddress(query) {
+  if (!query || !window.kakao?.maps?.load) return Promise.resolve(null);
+  return new Promise(resolve => {
+    window.kakao.maps.load(() => {
+      new window.kakao.maps.services.Geocoder().addressSearch(query, (data, status) => {
+        if (status === window.kakao.maps.services.Status.OK && data[0]) resolve({ lat: parseFloat(data[0].y), lng: parseFloat(data[0].x) });
+        else resolve(null);
+      });
+    });
+  });
+}
 const modeBar = document.createElement('div'); modeBar.className = 'address-modes';
 const roadTab = document.createElement('button'); roadTab.type = 'button'; roadTab.textContent = '도로명 검색';
 const parcelTab = document.createElement('button'); parcelTab.type = 'button'; parcelTab.textContent = '지번 검색';
@@ -53,6 +66,8 @@ function changeAddressMode(mode) {
     document.getElementById('selected-address').value = (data.userSelectedType === 'R' ? data.roadAddress : data.jibunAddress) || data.address;
     document.getElementById('rows').replaceChildren(); document.getElementById('raw').textContent = '아직 조회하지 않았습니다.';
     document.getElementById('status').textContent = '주소가 선택됐습니다. 입력된 지번을 포함해 조회합니다.';
+    selectedCoords = null;
+    geocodeAddress(data.roadAddress || data.jibunAddress || data.address).then(coords => { selectedCoords = coords; });
     searchDialog.close();
   }}).embed(roadPanel);
 }
@@ -105,6 +120,7 @@ document.getElementById('address-search').addEventListener('click', () => {
         document.getElementById('rows').replaceChildren();
         document.getElementById('raw').textContent = '아직 조회하지 않았습니다.';
         document.getElementById('status').textContent = '선택한 주소로 조회해 주세요.';
+        selectedCoords = { lat: parseFloat(row.y), lng: parseFloat(row.x) };
         addressStatus.textContent = '토지 지번과 법정동 코드를 입력했습니다. 한전 API 조회를 눌러 주세요.';
         results.replaceChildren();
         searchDialog.close();
@@ -145,10 +161,91 @@ function addTierBanner(text) {
   tr.appendChild(td); tbody.appendChild(tr);
 }
 
+const NEARBY_RADIUS_KM = 15;
+const NEARBY_MAX = 6;
+let substationCoords = null;
+async function loadSubstationCoords() {
+  if (!substationCoords) {
+    substationCoords = await fetch('/admin/kepco-test/substations.json').then(r => r.ok ? r.json() : {}).catch(() => ({}));
+  }
+  return substationCoords;
+}
+
+function haversineKm(a, b) {
+  const R = 6371, toRad = d => d * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat), dLng = toRad(b.lng - a.lng);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.asin(Math.sqrt(s));
+}
+
+let substMap, substMarkers = [], substInfowindow;
+function ensureSubstMap() {
+  if (substMap) return substMap;
+  substMap = new kakao.maps.Map(document.getElementById('subst-map'), { center: new kakao.maps.LatLng(35.905, 127.10), level: 10 });
+  substInfowindow = new kakao.maps.InfoWindow({ removable: true });
+  return substMap;
+}
+function clearSubstMarkers() { substMarkers.forEach(m => m.setMap(null)); substMarkers = []; }
+
+async function updateSubstationMap(resultSubstations) {
+  const section = document.getElementById('map-section');
+  const list = document.getElementById('nearby-list');
+  const coords = await loadSubstationCoords();
+
+  let nearby = Object.keys(coords).map(name => ({ name, lat: coords[name].lat, lng: coords[name].lng, vol1: resultSubstations.get(name), distanceKm: selectedCoords ? haversineKm(selectedCoords, coords[name]) : null }));
+  nearby = selectedCoords
+    ? nearby.filter(n => n.distanceKm <= NEARBY_RADIUS_KM).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, NEARBY_MAX)
+    : nearby.filter(n => resultSubstations.has(n.name));
+
+  if (!nearby.length && !selectedCoords) { section.hidden = true; return; }
+  if (!window.kakao?.maps?.load) { section.hidden = true; return; }
+  section.hidden = false;
+
+  list.replaceChildren();
+  if (!nearby.length) {
+    const li = document.createElement('li');
+    li.textContent = `반경 ${NEARBY_RADIUS_KM}km 내에 좌표가 확보된 변전소가 없습니다 (일부 지역만 좌표 데이터가 있습니다).`;
+    list.appendChild(li);
+  }
+  for (const n of nearby) {
+    const li = document.createElement('li');
+    const distText = n.distanceKm !== null ? ` · ${n.distanceKm.toFixed(1)}km` : '';
+    const capText = n.vol1 !== undefined ? ` · 여유용량 ${n.vol1}` : ' · 이번 조회 결과에 없음';
+    li.innerHTML = `<b>${n.name}변전소</b>${distText}${capText}`;
+    list.appendChild(li);
+  }
+
+  window.kakao.maps.load(() => {
+    ensureSubstMap(); clearSubstMarkers();
+    const bounds = new kakao.maps.LatLngBounds();
+    if (selectedCoords) {
+      const pos = new kakao.maps.LatLng(selectedCoords.lat, selectedCoords.lng);
+      const marker = new kakao.maps.Marker({ position: pos, map: substMap });
+      substInfowindow.setContent('<div style="padding:6px 8px;font-size:13px">검색한 주소</div>');
+      substInfowindow.open(substMap, marker);
+      substMarkers.push(marker); bounds.extend(pos);
+    }
+    for (const n of nearby) {
+      const pos = new kakao.maps.LatLng(n.lat, n.lng);
+      const marker = new kakao.maps.Marker({ position: pos, map: substMap });
+      const capText = n.vol1 !== undefined ? `여유용량: ${n.vol1}` : '이번 조회 결과에 없음';
+      kakao.maps.event.addListener(marker, 'click', () => {
+        substInfowindow.setContent(`<div style="padding:6px 8px;font-size:13px">${n.name}변전소<br>${capText}</div>`);
+        substInfowindow.open(substMap, marker);
+      });
+      substMarkers.push(marker); bounds.extend(pos);
+    }
+    if (substMarkers.length) substMap.setBounds(bounds);
+  });
+}
+
+let resultSubstations = new Map();
+
 async function runKepcoCascade(input) {
   document.getElementById('rows').replaceChildren();
   document.getElementById('raw').textContent = '';
   delete document.getElementById('status').dataset.finalText;
+  resultSubstations = new Map();
   const hasJibun = !!String(input.addrJibun || '').trim();
   const hasSubst = !!String(input.substCd || '').trim();
   const hasLi = !!String(input.addrLi || '').trim();
@@ -165,6 +262,7 @@ async function runKepcoCascade(input) {
       await runKepco(dongInput, true, { append: true, keywords });
     }
   }
+  updateSubstationMap(resultSubstations);
 }
 
 async function runKepco(input, regional, opts = {}) {
@@ -190,6 +288,7 @@ async function runKepco(input, regional, opts = {}) {
     const rawEntry = JSON.stringify({...result,queryScope:regional?'지역 범위 (지번 제외)':'입력 조건',requestConditions:input}, null, 2);
     raw.textContent = raw.textContent ? raw.textContent + '\n\n' + rawEntry : rawEntry;
     for (const row of result.rows || []) {
+      if (row.substNm) resultSubstations.set(row.substNm, row.vol1);
       const tr = document.createElement('tr');
       const likely = isLikelyMatch(row.dlNm, keywords);
       if (likely) tr.className = 'likely-match';

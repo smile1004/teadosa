@@ -9,3 +9,8 @@
 
 tr.tier-banner td{background:#f7f4e9;color:#8a6d1e;font-weight:bold;white-space:normal}
 tr.likely-match td{background:#eaf5ec}
+
+#subst-map{height:320px;border:1px solid #dfe7e1;border-radius:12px;margin-bottom:12px}
+#nearby-list{list-style:none;padding:0;margin:0 0 8px;display:flex;flex-direction:column;gap:6px}
+#nearby-list li{padding:8px 10px;border:1px solid #e2ebe4;border-radius:8px;background:#f8faf8;font-size:13px}
+#nearby-list li b{color:#32704d}
