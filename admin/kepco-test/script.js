@@ -198,12 +198,19 @@ function addLabeledMarker(pos, labelHtml) {
   substMarkers.push(marker); substOverlays.push(overlay);
 }
 
+function formatSubstCapacity(entry) {
+  if (!entry) return '이번 조회 결과에 없음';
+  const countText = entry.count > 1 ? ` (배전선로 ${entry.count}개)` : '';
+  const likelyText = entry.likelyLine ? ` · 유력 선로 "${entry.likelyLine.dlNm}" 여유 ${entry.likelyLine.vol3}` : '';
+  return `여유용량 ${entry.vol1}${countText}${likelyText}`;
+}
+
 async function updateSubstationMap(resultSubstations) {
   const section = document.getElementById('map-section');
   const list = document.getElementById('nearby-list');
   const coords = await loadSubstationCoords();
 
-  let nearby = Object.keys(coords).map(name => ({ name, lat: coords[name].lat, lng: coords[name].lng, vol1: resultSubstations.get(name), distanceKm: selectedCoords ? haversineKm(selectedCoords, coords[name]) : null }));
+  let nearby = Object.keys(coords).map(name => ({ name, lat: coords[name].lat, lng: coords[name].lng, entry: resultSubstations.get(name), distanceKm: selectedCoords ? haversineKm(selectedCoords, coords[name]) : null }));
   nearby = selectedCoords
     ? nearby.filter(n => n.distanceKm <= NEARBY_RADIUS_KM).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, NEARBY_MAX)
     : nearby.filter(n => resultSubstations.has(n.name));
@@ -221,8 +228,7 @@ async function updateSubstationMap(resultSubstations) {
   for (const n of nearby) {
     const li = document.createElement('li');
     const distText = n.distanceKm !== null ? ` · ${n.distanceKm.toFixed(1)}km` : '';
-    const capText = n.vol1 !== undefined ? ` · 여유용량 ${n.vol1}` : ' · 이번 조회 결과에 없음';
-    li.innerHTML = `<b>${n.name}변전소</b>${distText}${capText}`;
+    li.innerHTML = `<b>${n.name}변전소</b>${distText} · ${formatSubstCapacity(n.entry)}`;
     list.appendChild(li);
   }
 
@@ -236,8 +242,7 @@ async function updateSubstationMap(resultSubstations) {
     }
     for (const n of nearby) {
       const pos = new kakao.maps.LatLng(n.lat, n.lng);
-      const capText = n.vol1 !== undefined ? `여유용량 ${n.vol1}` : '이번 조회 결과에 없음';
-      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${capText}`);
+      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${formatSubstCapacity(n.entry)}`);
       bounds.extend(pos);
     }
     if (substMarkers.length) {
@@ -296,9 +301,14 @@ async function runKepco(input, regional, opts = {}) {
     const rawEntry = JSON.stringify({...result,queryScope:regional?'지역 범위 (지번 제외)':'입력 조건',requestConditions:input}, null, 2);
     raw.textContent = raw.textContent ? raw.textContent + '\n\n' + rawEntry : rawEntry;
     for (const row of result.rows || []) {
-      if (row.substNm) resultSubstations.set(row.substNm, row.vol1);
-      const tr = document.createElement('tr');
       const likely = isLikelyMatch(row.dlNm, keywords);
+      if (row.substNm) {
+        const entry = resultSubstations.get(row.substNm) || { vol1: row.vol1, count: 0, likelyLine: null };
+        entry.vol1 = row.vol1; entry.count += 1;
+        if (likely) entry.likelyLine = { dlNm: row.dlNm, vol3: row.vol3 };
+        resultSubstations.set(row.substNm, entry);
+      }
+      const tr = document.createElement('tr');
       if (likely) tr.className = 'likely-match';
       for (const field of ['substNm','mtrNo','dlNm','vol1','vol2','vol3']) {
         const td = document.createElement('td');
