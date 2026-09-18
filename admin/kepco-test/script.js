@@ -200,11 +200,23 @@ function addLabeledMarker(pos, labelHtml) {
   substMarkers.push(marker); substOverlays.push(overlay);
 }
 
-function formatSubstCapacity(entry) {
-  if (!entry) return '이번 조회 결과에 없음';
+function findCapacityMatch(name, resultSubstations) {
+  if (resultSubstations.has(name)) return { entry: resultSubstations.get(name), fuzzy: false };
+  for (const [key, entry] of resultSubstations) {
+    if (name.length >= 2 && key.length >= 2 && (key.startsWith(name) || name.startsWith(key))) {
+      return { entry, fuzzy: true, matchedName: key };
+    }
+  }
+  return null;
+}
+
+function formatSubstCapacity(match) {
+  if (!match) return '이번 조회 결과에 없음';
+  const { entry, fuzzy, matchedName } = match;
   const countText = entry.count > 1 ? ` (배전선로 ${entry.count}개)` : '';
   const likelyText = entry.likelyLine ? ` · 유력 선로 "${entry.likelyLine.dlNm}" 여유 ${entry.likelyLine.vol3}` : '';
-  return `여유용량 ${entry.vol1}${countText}${likelyText}`;
+  const fuzzyText = fuzzy ? ` (이름 유사 "${matchedName}" 추정치, 확인 필요)` : '';
+  return `여유용량 ${entry.vol1}${countText}${likelyText}${fuzzyText}`;
 }
 
 async function updateSubstationMap(resultSubstations) {
@@ -212,10 +224,10 @@ async function updateSubstationMap(resultSubstations) {
   const list = document.getElementById('nearby-list');
   const coords = await loadSubstationCoords();
 
-  let nearby = coords.map(s => ({ name: s.name, lat: s.lat, lng: s.lng, entry: resultSubstations.get(s.name), distanceKm: selectedCoords ? haversineKm(selectedCoords, s) : null }));
+  let nearby = coords.map(s => ({ name: s.name, lat: s.lat, lng: s.lng, match: findCapacityMatch(s.name, resultSubstations), distanceKm: selectedCoords ? haversineKm(selectedCoords, s) : null }));
   nearby = selectedCoords
     ? nearby.filter(n => n.distanceKm <= NEARBY_RADIUS_KM).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, NEARBY_MAX)
-    : nearby.filter(n => resultSubstations.has(n.name));
+    : nearby.filter(n => n.match);
 
   if (!nearby.length && !selectedCoords) { section.hidden = true; return; }
   if (!window.kakao?.maps?.load) { section.hidden = true; return; }
@@ -226,11 +238,15 @@ async function updateSubstationMap(resultSubstations) {
     const li = document.createElement('li');
     li.textContent = `반경 ${NEARBY_RADIUS_KM}km 내에 좌표가 확보된 변전소가 없습니다.`;
     list.appendChild(li);
+  } else if (resultSubstations.size && !nearby.some(n => n.match)) {
+    const li = document.createElement('li');
+    li.textContent = `이번 조회의 실제 변전소(${[...resultSubstations.keys()].join(', ')})는 좌표 데이터가 없어 지도에 표시할 수 없습니다. 아래는 참고용 인근 변전소 위치이며, 실제 연결 변전소가 아닙니다. 정확한 값은 표를 확인해 주세요.`;
+    list.appendChild(li);
   }
   for (const n of nearby) {
     const li = document.createElement('li');
     const distText = n.distanceKm !== null ? ` · ${n.distanceKm.toFixed(1)}km` : '';
-    li.innerHTML = `<b>${n.name}변전소</b>${distText} · ${formatSubstCapacity(n.entry)}`;
+    li.innerHTML = `<b>${n.name}변전소</b>${distText} · ${formatSubstCapacity(n.match)}`;
     list.appendChild(li);
   }
 
@@ -244,7 +260,7 @@ async function updateSubstationMap(resultSubstations) {
     }
     for (const n of nearby) {
       const pos = new kakao.maps.LatLng(n.lat, n.lng);
-      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${formatSubstCapacity(n.entry)}`);
+      addLabeledMarker(pos, `<b>${n.name}변전소</b><br>${formatSubstCapacity(n.match)}`);
       bounds.extend(pos);
     }
     if (substMarkers.length) {
