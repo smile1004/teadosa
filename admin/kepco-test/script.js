@@ -391,6 +391,68 @@ capacityForm.addEventListener('submit', event => {
   runCapacitySearch(Object.fromEntries(new FormData(capacityForm)));
 });
 
+const capacityRegionQuery = document.getElementById('capacity-region-query');
+document.getElementById('capacity-region-search').addEventListener('click', () => {
+  const query = capacityRegionQuery.value.trim();
+  const status = document.getElementById('capacity-region-status');
+  if (!query) { status.textContent = '지역명을 입력해 주세요.'; capacityRegionQuery.focus(); return; }
+  searchCapacityRegion(query);
+});
+capacityRegionQuery.addEventListener('keydown', event => {
+  if (event.key === 'Enter' && !event.isComposing) { event.preventDefault(); document.getElementById('capacity-region-search').click(); }
+});
+
+async function searchCapacityRegion(query) {
+  const status = document.getElementById('capacity-region-status');
+  const results = document.getElementById('capacity-region-results');
+  const button = document.getElementById('capacity-region-search');
+  results.replaceChildren();
+  status.textContent = '지역 검색 중…';
+  button.disabled = true;
+  try {
+    const rows = await new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('timeout')), 12000);
+      if (!window.kakao?.maps?.load) { clearTimeout(timer); reject(new Error('sdk')); return; }
+      window.kakao.maps.load(() => {
+        new window.kakao.maps.services.Geocoder().addressSearch(query, (data, status2) => {
+          clearTimeout(timer);
+          if (status2 === window.kakao.maps.services.Status.OK) resolve(data);
+          else if (status2 === window.kakao.maps.services.Status.ZERO_RESULT) resolve([]);
+          else reject(new Error('query'));
+        }, { size: 15 });
+      });
+    });
+    const seen = new Set();
+    const candidates = [];
+    for (const row of rows) {
+      const a = row.address;
+      if (!a?.b_code) continue;
+      const locality = (a.region_3depth_name || '').trim().split(/\s+/).filter(Boolean);
+      const key = `${a.region_1depth_name}|${a.region_2depth_name}|${locality[0] || ''}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      candidates.push({ a, lidong: locality[0] || '' });
+    }
+    status.textContent = candidates.length ? '검색된 지역을 선택해 주세요.' : '검색 결과가 없습니다. 시군구·읍면동 명칭을 다르게 입력해 보세요.';
+    for (const { a, lidong } of candidates) {
+      const label = [a.region_1depth_name, a.region_2depth_name, lidong].filter(Boolean).join(' ');
+      const choose = document.createElement('button');
+      choose.type = 'button'; choose.className = 'parcel-choice'; choose.textContent = label + ' · 이 지역 선택';
+      choose.addEventListener('click', () => {
+        capacityForm.elements.namedItem('csMetroCd').value = a.b_code.slice(0, 2);
+        capacityForm.elements.namedItem('csCityCd').value = a.b_code.slice(2, 5);
+        capacityForm.elements.namedItem('csAddrLidong').value = lidong;
+        capacityRegionQuery.value = label;
+        results.replaceChildren();
+        status.textContent = '지역이 선택됐습니다. 여유용량 검색을 눌러 주세요.';
+      });
+      results.appendChild(choose);
+    }
+  } catch {
+    status.textContent = '지역 검색에 연결하지 못했습니다. 코드를 직접 입력해 주세요.';
+  } finally { button.disabled = false; }
+}
+
 async function runCapacitySearch(input) {
   const button = document.getElementById('capacity-search-button');
   const status = document.getElementById('capacity-status');

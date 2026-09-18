@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>한전 연계정보 API 테스트</title><link rel="stylesheet" href="style.css"></head>
 <body><main><header><h1>한전 계통연계 정보 조회</h1><p>조회 조건을 입력해 발급된 API의 응답을 확인합니다.</p></header>
-<section><h2>여유용량 검색 결과</h2><p>시도·시군구·읍면동과 기준 여유용량(kW)을 입력하면, 그 지역에 있는 변전소를 변전소·주변압기·배전선로 단위로 한 번에 조회합니다.</p><form id="capacity-form"><div class="fields">
+<section><h2>여유용량 검색 결과</h2><p>지역명을 검색해 선택하면 시도·시군구·읍면동 코드가 자동 입력됩니다. 기준 여유용량(kW)을 입력하면, 그 지역에 있는 변전소를 변전소·주변압기·배전선로 단위로 한 번에 조회합니다.</p><div class="region-search"><label>지역명 검색<input id="capacity-region-query" placeholder="예: 완주군 봉동읍, 전주시 완산구"></label><button type="button" id="capacity-region-search">검색</button></div><div id="capacity-region-results"></div><p id="capacity-region-status" class="hint" role="status"></p><form id="capacity-form"><div class="fields">
 <label>시도코드<input name="csMetroCd" maxlength="2" pattern="[0-9]{2}" placeholder="예: 44"></label>
 <label>시군구코드<input name="csCityCd" maxlength="3" pattern="[0-9]{3}" placeholder="예: 131"></label>
 <label>읍·면·동<input name="csAddrLidong" maxlength="80"></label>
