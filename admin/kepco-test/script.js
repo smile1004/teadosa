@@ -168,7 +168,7 @@ const NEARBY_MAX = 6;
 let substationCoords = null;
 async function loadSubstationCoords() {
   if (!substationCoords) {
-    substationCoords = await fetch('/admin/kepco-test/substations.json').then(r => r.ok ? r.json() : {}).catch(() => ({}));
+    substationCoords = await fetch('/admin/kepco-test/substations.json').then(r => r.ok ? r.json() : []).catch(() => []);
   }
   return substationCoords;
 }
@@ -212,7 +212,7 @@ async function updateSubstationMap(resultSubstations) {
   const list = document.getElementById('nearby-list');
   const coords = await loadSubstationCoords();
 
-  let nearby = Object.keys(coords).map(name => ({ name, lat: coords[name].lat, lng: coords[name].lng, entry: resultSubstations.get(name), distanceKm: selectedCoords ? haversineKm(selectedCoords, coords[name]) : null }));
+  let nearby = coords.map(s => ({ name: s.name, lat: s.lat, lng: s.lng, entry: resultSubstations.get(s.name), distanceKm: selectedCoords ? haversineKm(selectedCoords, s) : null }));
   nearby = selectedCoords
     ? nearby.filter(n => n.distanceKm <= NEARBY_RADIUS_KM).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, NEARBY_MAX)
     : nearby.filter(n => resultSubstations.has(n.name));
@@ -224,7 +224,7 @@ async function updateSubstationMap(resultSubstations) {
   list.replaceChildren();
   if (!nearby.length) {
     const li = document.createElement('li');
-    li.textContent = `반경 ${NEARBY_RADIUS_KM}km 내에 좌표가 확보된 변전소가 없습니다 (일부 지역만 좌표 데이터가 있습니다).`;
+    li.textContent = `반경 ${NEARBY_RADIUS_KM}km 내에 좌표가 확보된 변전소가 없습니다.`;
     list.appendChild(li);
   }
   for (const n of nearby) {
