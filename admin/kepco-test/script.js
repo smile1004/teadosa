@@ -159,7 +159,7 @@ function isLikelyMatch(dlNm, keywords) {
 function addTierBanner(text) {
   const tbody = document.getElementById('rows');
   const tr = document.createElement('tr'); tr.className = 'tier-banner';
-  const td = document.createElement('td'); td.colSpan = 4; td.textContent = '▸ ' + text;
+  const td = document.createElement('td'); td.colSpan = 6; td.textContent = '▸ ' + text;
   tr.appendChild(td); tbody.appendChild(tr);
 }
 
@@ -360,7 +360,6 @@ async function runKepco(input, regional, opts = {}) {
     status.textContent = message;
     const rawEntry = JSON.stringify({...result,queryScope:regional?'지역 범위 (지번 제외)':'입력 조건',requestConditions:input}, null, 2);
     raw.textContent = raw.textContent ? raw.textContent + '\n\n' + rawEntry : rawEntry;
-    const substations = new Map();
     for (const row of result.rows || []) {
       const likely = isLikelyMatch(row.dlNm, keywords);
       if (row.substNm) {
@@ -371,26 +370,69 @@ async function runKepco(input, regional, opts = {}) {
         if (likely) entry.likelyLine = line;
         resultSubstations.set(row.substNm, entry);
       }
+      const tr = document.createElement('tr');
+      if (likely) tr.className = 'likely-match';
+      for (const field of ['substNm','mtrNo','dlNm','vol1','vol2','vol3']) {
+        const td = document.createElement('td');
+        let text = row[field] === null || row[field] === undefined || row[field] === '' ? '미제공' : String(row[field]);
+        if (field === 'dlNm' && likely) text += ' ★ 주소 키워드 일치 추정';
+        td.textContent = text; tr.appendChild(td);
+      }
+      tbody.appendChild(tr);
+    }
+    return result;
+  } catch { status.textContent = '조회 서버에 연결할 수 없습니다. 정적 미리보기에서는 API가 작동하지 않습니다.'; return null; }
+  finally { button.disabled = false; }
+}
 
+const capacityForm = document.getElementById('capacity-form');
+capacityForm.addEventListener('submit', event => {
+  event.preventDefault();
+  runCapacitySearch(Object.fromEntries(new FormData(capacityForm)));
+});
+
+async function runCapacitySearch(input) {
+  const button = document.getElementById('capacity-search-button');
+  const status = document.getElementById('capacity-status');
+  const tbody = document.getElementById('capacity-rows');
+  if (button.disabled) return;
+  const threshold = Number(input.csThreshold) || 0;
+  if (!input.csMetroCd || !input.csCityCd || !input.csAddrLidong) {
+    status.textContent = '시도코드·시군구코드·읍면동을 모두 입력해 주세요.';
+    return;
+  }
+
+  button.disabled = true; tbody.replaceChildren(); status.textContent = '조회 중…';
+  try {
+    const response = await fetch('/api/admin/kepco-test', { method:'POST', credentials:'same-origin', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ metroCd: input.csMetroCd, cityCd: input.csCityCd, addrLidong: input.csAddrLidong, addrLi: '', addrJibun: '', substCd: '' }) });
+    const result = await response.json();
+    if (!(result.rows || []).length) {
+      status.textContent = result.message || '조회된 데이터가 없습니다.';
+      return;
+    }
+    const rows = result.rows.filter(row => (row.vol1 || 0) >= threshold);
+    const substNames = new Set(rows.map(row => row.substNm));
+    status.textContent = rows.length
+      ? `변전소 ${substNames.size}개 · 기준: 여유용량 ${threshold}kW 이상`
+      : `기준(여유용량 ${threshold}kW 이상)을 만족하는 변전소가 없습니다.`;
+
+    const substations = new Map();
+    for (const row of rows) {
       const substKey = row.substNm ?? '미제공';
       let subst = substations.get(substKey);
       if (!subst) { subst = { substPwr: row.substPwr, jsSubstPwr: row.jsSubstPwr, vol1: row.vol1, transformers: new Map() }; substations.set(substKey, subst); }
       const mtrKey = row.mtrNo ?? '미제공';
       let mtr = subst.transformers.get(mtrKey);
       if (!mtr) { mtr = { mtrPwr: row.mtrPwr, jsMtrPwr: row.jsMtrPwr, vol2: row.vol2, lines: [] }; subst.transformers.set(mtrKey, mtr); }
-      mtr.lines.push({ dlNm: row.dlNm, dlPwr: row.dlPwr, jsDlPwr: row.jsDlPwr, vol3: row.vol3, likely });
+      mtr.lines.push({ dlNm: row.dlNm, dlPwr: row.dlPwr, jsDlPwr: row.jsDlPwr, vol3: row.vol3 });
     }
     for (const [substNm, subst] of substations) {
       appendTreeRow(tbody, substNm, subst.substPwr, subst.jsSubstPwr, subst.vol1, 0);
       for (const [mtrNo, mtr] of subst.transformers) {
         appendTreeRow(tbody, `주변압기 #${mtrNo}`, mtr.mtrPwr, mtr.jsMtrPwr, mtr.vol2, 1);
-        for (const line of mtr.lines) {
-          const label = line.likely ? `${line.dlNm} ★ 주소 키워드 일치 추정` : (line.dlNm ?? '미제공');
-          appendTreeRow(tbody, label, line.dlPwr, line.jsDlPwr, line.vol3, 2, line.likely);
-        }
+        for (const line of mtr.lines) appendTreeRow(tbody, line.dlNm ?? '미제공', line.dlPwr, line.jsDlPwr, line.vol3, 2);
       }
     }
-    return result;
-  } catch { status.textContent = '조회 서버에 연결할 수 없습니다. 정적 미리보기에서는 API가 작동하지 않습니다.'; return null; }
+  } catch { status.textContent = '조회 서버에 연결할 수 없습니다. 정적 미리보기에서는 API가 작동하지 않습니다.'; }
   finally { button.disabled = false; }
 }
