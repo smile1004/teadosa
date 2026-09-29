@@ -1123,3 +1123,10 @@ body.taedo-has-fixed-header main{
 .input-with-unit-select select{flex:0 0 76px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--text);font-weight:800;cursor:pointer;outline:none;transition:.2s ease}
 .input-with-unit-select select:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(33,169,87,.12)}
 .area-converted{display:block;margin-top:6px;font-size:13px;color:#77817b}
+.precheck-form-card .required{color:#e03131!important;font-size:1.25em;font-weight:900;line-height:1;vertical-align:-2px;margin-left:2px}
+.precheck-required-notice{margin:0 0 22px;padding:14px 18px;border:1px solid #f3d3a8;border-left:4px solid #e03131;border-radius:12px;background:#fffaf1}
+.precheck-required-notice p{margin:0;color:#4b5563;font-size:15px;line-height:1.65;word-break:keep-all}
+.precheck-required-notice p+p{margin-top:4px}
+.precheck-required-notice strong{color:#253321;font-weight:800}
+.precheck-required-notice .required{margin:0 2px 0 0}
+@media(max-width:640px){.precheck-required-notice{padding:12px 14px}.precheck-required-notice p{font-size:14px}}
