@@ -62,8 +62,9 @@
   let watchTimer = null;
 
   async function openSigning(id, button) {
-    signingWindow = window.open('', 'modusign-signing', 'width=1000,height=900');
-    if (signingWindow) signingWindow.document.write('<p style="font-family:sans-serif;padding:24px">모두싸인 서명 화면을 여는 중입니다…</p>');
+    // A fresh window each time: reusing a named window could briefly show a previous (expired) 모두싸인 page.
+    signingWindow = window.open('', '_blank', 'width=1000,height=900');
+    try { if (signingWindow) signingWindow.document.write('<p style="font-family:sans-serif;padding:24px">모두싸인 서명 화면을 여는 중입니다…</p>'); } catch {}
     button.disabled = true;
     button.textContent = '서명 화면 여는 중';
     try {
@@ -87,7 +88,7 @@
       dialog = document.createElement('dialog');
       dialog.className = 'mypage-contract-dialog waiting';
       dialog.innerHTML = '<strong>새 창에서 전자계약 서명을 진행해 주세요.</strong>' +
-        '<p>서명을 마치고 서명 창을 닫으면 자동으로 결과가 반영됩니다. 새 창이 보이지 않으면 브라우저의 팝업 차단을 해제해 주세요.</p>' +
+        '<p>서명이 완료되면 이 화면에 자동으로 반영됩니다. 새 창이 보이지 않으면 브라우저의 팝업 차단을 해제해 주세요.</p>' +
         '<div class="mypage-contract-dialog-actions"><button type="button" data-close>닫기</button><button type="button" class="primary" data-check>서명 완료 확인</button></div>';
       dialog.querySelector('[data-close]').addEventListener('click', function () { dialog.close(); });
       dialog.querySelector('[data-check]').addEventListener('click', function () { checkStatus(true); });
@@ -95,24 +96,49 @@
     }
     dialog.dataset.contractId = id;
     if (!dialog.open) dialog.showModal();
+    // 모두싸인 may stay on its own page after signing, so don't rely on the window closing:
+    // every 4s read our DB (updated by the webhook), and check 모두싸인 directly when the window closes or the tab regains focus.
+    let ticks = 0;
     window.clearInterval(watchTimer);
     watchTimer = window.setInterval(function () {
+      ticks++;
       if (signingWindow && signingWindow.closed) {
         window.clearInterval(watchTimer);
         checkStatus(false);
+      } else if (ticks % 4 === 0) {
+        pollDatabase(id);
       }
+      if (ticks > 1800) window.clearInterval(watchTimer); // stop after 30 minutes
     }, 1000);
   }
 
+  window.addEventListener('focus', function () {
+    if (dialog && dialog.open) checkStatus(false, true);
+  });
+
+  async function pollDatabase(id) {
+    try {
+      const out = await api.request('/api/contracts/my');
+      const contract = out.result && (out.result.contracts || []).find(function (c) { return String(c.id) === String(id); });
+      if (contract && contract.status !== 'requested') finish();
+    } catch {}
+  }
+
+  function finish() {
+    window.clearInterval(watchTimer);
+    try { if (signingWindow && !signingWindow.closed) signingWindow.close(); } catch {}
+    window.location.reload();
+  }
+
   // The webhook may lag behind, so check the status right away when the signing window closes.
-  async function checkStatus(manual) {
+  async function checkStatus(manual, keepOpen) {
     const id = dialog && dialog.dataset.contractId;
     if (!id) return;
     try {
       const out = await api.request('/api/contracts/' + encodeURIComponent(id) + '/refresh', { method: 'POST' });
-      if (out.response.ok && out.result.success && out.result.contract.status !== 'requested') { window.location.reload(); return; }
+      if (out.response.ok && out.result.success && out.result.contract.status !== 'requested') { finish(); return; }
       if (manual) window.alert('아직 서명이 완료되지 않았습니다. 서명 창에서 서명을 마친 뒤 다시 확인해 주세요.');
-      else if (dialog.open) dialog.close();
+      else if (!keepOpen && dialog.open) dialog.close();
     } catch {
       if (manual) window.alert('계약 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
