@@ -24,7 +24,7 @@
         return;
       }
 
-      const services = await import('/common/js/precheck-services.mjs?v=1');
+      const services = await import('/common/js/precheck-services.mjs?v=2');
       const requestId = new URLSearchParams(window.location.search).get('id') || '';
       const outcome = await auth.getPrecheckResult(requestId);
       const result = outcome.result || {};
@@ -62,7 +62,7 @@
 
     document.getElementById('serviceList').innerHTML = list.map(function (s) {
       const ok = available.has(s.key);
-      const price = services.formatWon(s.min) + ' ~ ' + services.formatWon(s.max) + '원';
+      const price = services.priceText(s);
       const action = !ok
         ? '<span class="unavailable-label">신청 불가</span>'
         : s.href
@@ -75,19 +75,25 @@
     }).join('');
 
     const picked = list.filter(function (s) { return available.has(s.key); });
-    const min = picked.reduce(function (sum, s) { return sum + s.min; }, 0);
-    const max = picked.reduce(function (sum, s) { return sum + s.max; }, 0);
-    setText('totalPrice', picked.length ? services.formatWon(min) + '원 ~ ' + services.formatWon(max) + '원' : '신청 가능한 서비스가 없습니다');
+    const priced = picked.filter(services.hasPrice);
+    const min = priced.reduce(function (sum, s) { return sum + s.min; }, 0);
+    const max = priced.reduce(function (sum, s) { return sum + s.max; }, 0);
+    const extra = picked.length > priced.length ? ' + 별도 견적' : '';
+    setText('totalPrice', !picked.length ? '신청 가능한 서비스가 없습니다'
+      : priced.length ? services.formatWon(min) + '원 ~ ' + services.formatWon(max) + '원' + extra : '별도 견적');
 
     document.getElementById('packageTable').innerHTML =
-      '<thead><tr><th>' + spec.label + ' 패키지</th><th>항목</th><th>가격</th></tr></thead><tbody>' +
-      spec.packages.map(function (p) {
+      '<thead><tr><th>패키지상품</th><th>항목</th><th>가격</th></tr></thead><tbody>' +
+      services.packagesForType(selection.type).map(function (p) {
         const ok = p.codes.every(function (code) { return availableCodes.has(code); });
         const action = ok
           ? '<button class="package-apply-btn" type="button" data-toast="' + escapeHtml(p.name + ' 패키지 신청으로 연결됩니다.') + '">신청하기</button>'
           : '<span class="unavailable-label">신청 불가</span>';
-        return '<tr class="' + (ok ? '' : 'unavailable') + '"><td>' + escapeHtml(p.name) + '</td><td>' + p.codes.join(', ') +
-          '</td><td><div class="package-price-cell"><span>' + escapeHtml(p.price) + '</span>' + action + '</div></td></tr>';
+        const items = p.services.map(function (s) { return s.code + ' ' + s.name; }).join(', ');
+        const note = Math.round(p.discount * 100) + '% 할인' + (p.unpriced.length ? ' · ' + p.unpriced.map(function (s) { return s.name; }).join(', ') + ' 별도 견적' : '');
+        return '<tr class="' + (ok ? '' : 'unavailable') + '"><td>' + escapeHtml(p.name) + '</td><td>' + escapeHtml(items) +
+          '</td><td><div class="package-price-cell"><span>' + services.formatWon(p.min) + ' ~ ' + services.formatWon(p.max) + '원' +
+          '<small class="package-note">' + escapeHtml(note) + '</small></span>' + action + '</div></td></tr>';
       }).join('') + '</tbody>';
 
     content.addEventListener('click', function (event) {

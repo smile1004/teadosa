@@ -22,7 +22,7 @@
     mapElements();
     try {
       ({ calculateCapacity, capacityFormulaText, applicationArea } = await import('/common/js/precheck-capacity.mjs?v=3'));
-      services = await import('/common/js/precheck-services.mjs?v=1');
+      services = await import('/common/js/precheck-services.mjs?v=2');
     } catch (error) {
       initializationStarted = false;
       showMessage('자동 계산 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요.', true);
@@ -230,7 +230,7 @@
         '<input type="checkbox" value="' + escapeAttr(service.key) + '"' + (checked.has(service.key) ? ' checked' : '') + '>' +
         '<span class="code">' + escapeHtml(service.code) + '</span>' +
         '<span><strong>' + escapeHtml(service.name) + '</strong>' + (service.note ? '<small>' + escapeHtml(service.note) + '</small>' : '') + '</span>' +
-        '<span class="price">' + services.formatWon(service.min) + ' ~ ' + services.formatWon(service.max) + '원</span>' +
+        '<span class="price">' + services.priceText(service) + '</span>' +
       '</label>';
     }).join('');
     updateServiceSummary();
