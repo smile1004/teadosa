@@ -22,7 +22,7 @@
     mapElements();
     try {
       ({ calculateCapacity, capacityFormulaText, applicationArea } = await import('/common/js/precheck-capacity.mjs?v=3'));
-      services = await import('/common/js/precheck-services.mjs?v=3');
+      services = await import('/common/js/precheck-services.mjs?v=4');
     } catch (error) {
       initializationStarted = false;
       showMessage('자동 계산 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요.', true);

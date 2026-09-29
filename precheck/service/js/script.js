@@ -24,7 +24,7 @@
         return;
       }
 
-      const services = await import('/common/js/precheck-services.mjs?v=3');
+      const services = await import('/common/js/precheck-services.mjs?v=4');
       const requestId = new URLSearchParams(window.location.search).get('id') || '';
       const outcome = await auth.getPrecheckResult(requestId);
       const result = outcome.result || {};

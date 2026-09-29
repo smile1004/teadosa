@@ -13,9 +13,9 @@ export const SERVICE_CATALOG = {
 
 // Package keys are stored in serviceSelection.packages, so never rename an existing key.
 const PACKAGES = [
-  { key: 'basic', name: 'BASIC 기본형', count: 2, discount: 0.05 },
-  { key: 'standard', name: 'STANDARD 완료형', count: 4, discount: 0.08 },
-  { key: 'premium', name: 'PREMIUM 프리미엄형', count: 6, discount: 0.1 }
+  { key: 'basic', name: 'BASIC 기본형', count: 2, discount: 0.1 },
+  { key: 'standard', name: 'STANDARD 완료형', count: 4, discount: 0.12 },
+  { key: 'premium', name: 'PREMIUM 프리미엄형', count: 6, discount: 0.15 }
 ];
 export const PACKAGE_KEYS = PACKAGES.map((pkg) => pkg.key);
 
