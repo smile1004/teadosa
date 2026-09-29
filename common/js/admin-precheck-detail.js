@@ -74,6 +74,9 @@
     el.serviceTypeInputs = document.querySelectorAll('input[name="service-type"]');
     el.serviceCheckAll = document.getElementById('service-check-all');
     el.serviceUncheckAll = document.getElementById('service-uncheck-all');
+    el.packageSummary = document.getElementById('package-selection-summary');
+    el.packageCheckAll = document.getElementById('package-check-all');
+    el.packageUncheckAll = document.getElementById('package-uncheck-all');
   }
 
   function bindEvents() {
@@ -109,6 +112,8 @@
     });
     el.serviceCheckAll.addEventListener('click', function () { setAllServices(true); });
     el.serviceUncheckAll.addEventListener('click', function () { setAllServices(false); });
+    el.packageCheckAll.addEventListener('click', function () { setAllPackages(true); });
+    el.packageUncheckAll.addEventListener('click', function () { setAllPackages(false); });
   }
 
   async function loadDetail() {
@@ -258,13 +263,18 @@
 
   function setAllServices(checked) {
     state.serviceChecks[state.serviceType] = new Set(checked ? services.SERVICE_TYPES[state.serviceType].services : []);
+    renderServiceSelection();
+  }
+
+  function setAllPackages(checked) {
     state.packageChecks[state.serviceType] = new Set(checked ? services.PACKAGE_KEYS : []);
     renderServiceSelection();
   }
 
   function updateServiceSummary() {
     const spec = services.SERVICE_TYPES[state.serviceType];
-    el.serviceSummary.textContent = spec.label + ' · 신청 가능 ' + state.serviceChecks[state.serviceType].size + '개 / 전체 ' + spec.services.length + '개 · 추천 패키지 ' + state.packageChecks[state.serviceType].size + '개 / 전체 ' + services.PACKAGE_KEYS.length + '개';
+    el.serviceSummary.textContent = spec.label + ' · 신청 가능 ' + state.serviceChecks[state.serviceType].size + '개 / 전체 ' + spec.services.length + '개';
+    el.packageSummary.textContent = spec.label + ' · 추천 패키지 ' + state.packageChecks[state.serviceType].size + '개 / 전체 ' + services.PACKAGE_KEYS.length + '개';
   }
 
   function collectServiceSelection() {
