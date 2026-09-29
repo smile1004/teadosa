@@ -193,5 +193,18 @@ a.apply-btn{display:inline-block;text-align:center}
 .unavailable-label{display:inline-block;padding:9px 14px;border-radius:9px;background:#f3f4f6;color:#9ca3af;font-size:13px;font-weight:800;white-space:nowrap;text-align:center}
 .package-table tr.unavailable td{color:#9ca3af}
 @media(max-width:760px){.result-link{display:inline-block;margin-top:12px}.service-card .unavailable-label{width:100%}}
-.package-note{display:block;margin-top:3px;font-size:12px;font-weight:600;color:#2f855a}
+.package-note{display:block;margin-top:3px;font-size:12px;font-weight:600;color:#6b7280}
+.package-table .package-name{white-space:nowrap}
 .package-table tr.unavailable .package-note{color:#9ca3af}
+.package-codes span{white-space:nowrap}
+@media(max-width:760px){
+  .package-table thead{display:none}
+  .package-table,.package-table tbody,.package-table tr,.package-table td{display:block;width:100%}
+  .package-table tr{padding:12px 14px;border-bottom:1px solid #e5e7eb}
+  .package-table tr:last-child{border-bottom:0}
+  .package-table td{padding:0;border:0}
+  .package-table .package-name{font-weight:800;color:#111827}
+  .package-table .package-codes{margin:4px 0 8px;color:#6b7280;font-size:13px}
+  .package-table tr.unavailable .package-name{color:#9ca3af}
+}
+@media(max-width:760px){.package-price-cell .unavailable-label{display:block;width:100%;margin-top:8px}}

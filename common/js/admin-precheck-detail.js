@@ -22,7 +22,7 @@
     mapElements();
     try {
       ({ calculateCapacity, capacityFormulaText, applicationArea } = await import('/common/js/precheck-capacity.mjs?v=3'));
-      services = await import('/common/js/precheck-services.mjs?v=2');
+      services = await import('/common/js/precheck-services.mjs?v=3');
     } catch (error) {
       initializationStarted = false;
       showMessage('자동 계산 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요.', true);
@@ -69,6 +69,7 @@
     el.save = document.getElementById('save-review');
     el.publish = document.getElementById('publish-review');
     el.serviceList = document.getElementById('service-selection-list');
+    el.packageList = document.getElementById('package-selection-list');
     el.serviceSummary = document.getElementById('service-selection-summary');
     el.serviceTypeInputs = document.querySelectorAll('input[name="service-type"]');
     el.serviceCheckAll = document.getElementById('service-check-all');
@@ -96,6 +97,13 @@
       const input = event.target.closest('input[type="checkbox"]');
       if (!input) return;
       const checked = state.serviceChecks[state.serviceType];
+      if (input.checked) checked.add(input.value); else checked.delete(input.value);
+      updateServiceSummary();
+    });
+    el.packageList.addEventListener('change', function (event) {
+      const input = event.target.closest('input[type="checkbox"]');
+      if (!input) return;
+      const checked = state.packageChecks[state.serviceType];
       if (input.checked) checked.add(input.value); else checked.delete(input.value);
       updateServiceSummary();
     });
@@ -215,8 +223,11 @@
     const saved = services.normalizeServiceSelection(review.resultData?.serviceSelection);
     const formData = state.request?.formData || {};
     state.serviceChecks = {};
+    state.packageChecks = {};
     Object.keys(services.SERVICE_TYPES).forEach(function (type) {
-      state.serviceChecks[type] = new Set(saved && saved.type === type ? saved.services : services.SERVICE_TYPES[type].services);
+      const own = saved && saved.type === type;
+      state.serviceChecks[type] = new Set(own ? saved.services : services.SERVICE_TYPES[type].services);
+      state.packageChecks[type] = new Set(own ? saved.packages : services.PACKAGE_KEYS);
     });
     state.serviceType = saved ? saved.type : services.defaultServiceType(formData.site?.siteType || formData.siteType || state.request?.siteType);
     renderServiceSelection();
@@ -233,21 +244,31 @@
         '<span class="price">' + services.priceText(service) + '</span>' +
       '</label>';
     }).join('');
+    const checkedPackages = state.packageChecks[state.serviceType];
+    el.packageList.innerHTML = services.packagesForType(state.serviceType).map(function (pkg) {
+      return '<label class="service-selection-item package">' +
+        '<input type="checkbox" value="' + escapeAttr(pkg.key) + '"' + (checkedPackages.has(pkg.key) ? ' checked' : '') + '>' +
+        '<span><strong class="package-name">' + escapeHtml(pkg.name) + '</strong><small>' + escapeHtml(pkg.codes.join(', ')) + '</small></span>' +
+        '<span class="price">' + services.formatWon(pkg.min) + ' ~ ' + services.formatWon(pkg.max) + '원' +
+          (pkg.unpriced.length ? '<small>' + escapeHtml(pkg.unpriced.map(function (x) { return x.name; }).join(', ')) + ' 별도 견적</small>' : '') + '</span>' +
+      '</label>';
+    }).join('');
     updateServiceSummary();
   }
 
   function setAllServices(checked) {
     state.serviceChecks[state.serviceType] = new Set(checked ? services.SERVICE_TYPES[state.serviceType].services : []);
+    state.packageChecks[state.serviceType] = new Set(checked ? services.PACKAGE_KEYS : []);
     renderServiceSelection();
   }
 
   function updateServiceSummary() {
     const spec = services.SERVICE_TYPES[state.serviceType];
-    el.serviceSummary.textContent = spec.label + ' · 신청 가능 ' + state.serviceChecks[state.serviceType].size + '개 / 전체 ' + spec.services.length + '개';
+    el.serviceSummary.textContent = spec.label + ' · 신청 가능 ' + state.serviceChecks[state.serviceType].size + '개 / 전체 ' + spec.services.length + '개 · 추천 패키지 ' + state.packageChecks[state.serviceType].size + '개 / 전체 ' + services.PACKAGE_KEYS.length + '개';
   }
 
   function collectServiceSelection() {
-    return { type: state.serviceType, services: Array.from(state.serviceChecks[state.serviceType]) };
+    return { type: state.serviceType, services: Array.from(state.serviceChecks[state.serviceType]), packages: Array.from(state.packageChecks[state.serviceType]) };
   }
 
   function findByTitle(items, keyword) {

@@ -235,3 +235,8 @@
 .service-selection-item .price{font-size:13px;color:#435466;white-space:nowrap}
 .service-selection-summary{grid-column:1/-1;margin:0;font-size:13px;color:#206344;font-weight:700}
 @media(max-width:760px){.service-selection-item{grid-template-columns:auto 46px minmax(0,1fr)}.service-selection-item .price{grid-column:3;white-space:normal}}
+.service-selection-subtitle{grid-column:1/-1;margin:6px 0 0;font-size:14px;font-weight:800;color:#354052}
+.service-selection-item.package{grid-template-columns:auto minmax(0,1fr) auto}
+.service-selection-item .package-name{white-space:nowrap}
+.service-selection-item .price small{text-align:right}
+@media(max-width:760px){.service-selection-item.package{grid-template-columns:auto minmax(0,1fr)}.service-selection-item.package .price{grid-column:2}.service-selection-item .price small{text-align:left}}

@@ -11,11 +11,13 @@ export const SERVICE_CATALOG = {
   development_completion: { name: '개발행위 준공', note: '개발행위 준공검사 및 완료 절차 지원' }
 };
 
+// Package keys are stored in serviceSelection.packages, so never rename an existing key.
 const PACKAGES = [
-  { name: 'BASIC 기본형', count: 2, discount: 0.05 },
-  { name: 'STANDARD 완료형', count: 4, discount: 0.08 },
-  { name: 'PREMIUM 프리미엄형', count: 6, discount: 0.1 }
+  { key: 'basic', name: 'BASIC 기본형', count: 2, discount: 0.05 },
+  { key: 'standard', name: 'STANDARD 완료형', count: 4, discount: 0.08 },
+  { key: 'premium', name: 'PREMIUM 프리미엄형', count: 6, discount: 0.1 }
 ];
+export const PACKAGE_KEYS = PACKAGES.map((pkg) => pkg.key);
 
 export const SERVICE_TYPES = {
   land: {
@@ -51,6 +53,7 @@ export function packagesForType(type) {
     const priced = included.filter(hasPrice);
     const rate = 1 - pkg.discount;
     return {
+      key: pkg.key,
       name: pkg.name,
       discount: pkg.discount,
       services: included,
@@ -72,7 +75,12 @@ export function normalizeServiceSelection(value) {
   if (!type) return null;
   const allowed = SERVICE_TYPES[type].services;
   const picked = Array.isArray(value.services) ? value.services : [];
-  return { type, services: allowed.filter((key) => picked.includes(key)) };
+  const services = allowed.filter((key) => picked.includes(key));
+  // Selections saved before packages were chosen fall back to packages whose services are all available.
+  const packages = Array.isArray(value.packages)
+    ? PACKAGE_KEYS.filter((key) => value.packages.includes(key))
+    : packagesForType(type).filter((pkg) => pkg.services.every((s) => services.includes(s.key))).map((pkg) => pkg.key);
+  return { type, services, packages };
 }
 
 export function formatWon(value) {

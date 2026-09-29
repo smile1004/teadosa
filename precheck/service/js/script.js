@@ -24,7 +24,7 @@
         return;
       }
 
-      const services = await import('/common/js/precheck-services.mjs?v=2');
+      const services = await import('/common/js/precheck-services.mjs?v=3');
       const requestId = new URLSearchParams(window.location.search).get('id') || '';
       const outcome = await auth.getPrecheckResult(requestId);
       const result = outcome.result || {};
@@ -53,7 +53,6 @@
     const spec = services.SERVICE_TYPES[selection.type];
     const list = services.servicesForType(selection.type);
     const available = new Set(selection.services);
-    const availableCodes = new Set(list.filter(function (s) { return available.has(s.key); }).map(function (s) { return s.code; }));
 
     setText('summaryPossibility', possibilityLabel(review.installationPossible));
     setText('summaryType', spec.label);
@@ -85,15 +84,13 @@
     document.getElementById('packageTable').innerHTML =
       '<thead><tr><th>패키지상품</th><th>항목</th><th>가격</th></tr></thead><tbody>' +
       services.packagesForType(selection.type).map(function (p) {
-        const ok = p.codes.every(function (code) { return availableCodes.has(code); });
+        const ok = selection.packages.includes(p.key);
         const action = ok
           ? '<button class="package-apply-btn" type="button" data-toast="' + escapeHtml(p.name + ' 패키지 신청으로 연결됩니다.') + '">신청하기</button>'
           : '<span class="unavailable-label">신청 불가</span>';
-        const items = p.services.map(function (s) { return s.code + ' ' + s.name; }).join(', ');
-        const note = Math.round(p.discount * 100) + '% 할인' + (p.unpriced.length ? ' · ' + p.unpriced.map(function (s) { return s.name; }).join(', ') + ' 별도 견적' : '');
-        return '<tr class="' + (ok ? '' : 'unavailable') + '"><td>' + escapeHtml(p.name) + '</td><td>' + escapeHtml(items) +
-          '</td><td><div class="package-price-cell"><span>' + services.formatWon(p.min) + ' ~ ' + services.formatWon(p.max) + '원' +
-          '<small class="package-note">' + escapeHtml(note) + '</small></span>' + action + '</div></td></tr>';
+        const note = p.unpriced.length ? '<small class="package-note">' + escapeHtml(p.unpriced.map(function (s) { return s.name; }).join(', ') + ' 별도 견적') + '</small>' : '';
+        return '<tr class="' + (ok ? '' : 'unavailable') + '"><td class="package-name">' + escapeHtml(p.name) + '</td><td class="package-codes">' + p.codes.map(function (c) { return '<span>' + c + '</span>'; }).join(', ') +
+          '</td><td><div class="package-price-cell"><span>' + services.formatWon(p.min) + ' ~ ' + services.formatWon(p.max) + '원' + note + '</span>' + action + '</div></td></tr>';
       }).join('') + '</tbody>';
 
     content.addEventListener('click', function (event) {
