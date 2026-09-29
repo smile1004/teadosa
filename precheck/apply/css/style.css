@@ -1130,3 +1130,5 @@ body.taedo-has-fixed-header main{
 .precheck-required-notice strong{color:#253321;font-weight:800}
 .precheck-required-notice .required{margin:0 2px 0 0}
 @media(max-width:640px){.precheck-required-notice{padding:12px 14px}.precheck-required-notice p{font-size:14px}}
+.area-capacity-hint{display:block;margin-top:6px;font-size:13px;line-height:1.55;color:#4f7f34;word-break:keep-all}
+.area-capacity-hint strong{font-weight:800}
