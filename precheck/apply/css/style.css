@@ -1118,3 +1118,8 @@ body.taedo-has-fixed-header main{
 .precheck-form-card .textarea-meta{font-size:13px}
 .precheck-form-card .guide,.precheck-login-guide,.precheck-top-login-notice{font-size:14px!important}
 .precheck-form-card button{font-size:15px!important}
+.input-with-unit-select{display:flex;gap:8px;align-items:stretch}
+.input-with-unit-select input{flex:1;min-width:0}
+.input-with-unit-select select{flex:0 0 76px;min-height:44px;padding:0 10px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--text);font-weight:800;cursor:pointer;outline:none;transition:.2s ease}
+.input-with-unit-select select:focus{border-color:var(--green);box-shadow:0 0 0 4px rgba(33,169,87,.12)}
+.area-converted{display:block;margin-top:6px;font-size:13px;color:#77817b}

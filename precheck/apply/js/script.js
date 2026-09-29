@@ -12,6 +12,10 @@
   const emailInput = document.getElementById('email');
   const memoInput = document.getElementById('memo');
   const memoCount = document.getElementById('memoCount');
+  const siteAreaInput = document.getElementById('siteArea');
+  const siteAreaUnit = document.getElementById('siteAreaUnit');
+  const siteAreaConverted = document.getElementById('siteAreaConverted');
+  const SQM_PER_PYEONG = 3.305785;
 
   if (!auth || !form) return;
 
@@ -149,7 +153,7 @@
       siteType: radioValue('siteType'),
       purpose: radioValue('purpose'),
       plannedCapacity: numberValue('plannedCapacity'),
-      siteArea: numberValue('siteArea'),
+      siteArea: siteAreaInSquareMeters(),
       landCategory: valueOf('landCategory'),
       zoningArea: valueOf('zoningArea'),
       ownership: radioValue('ownership'),
@@ -248,6 +252,7 @@
     setInput('address', prefill.address);
     setInput('plannedCapacity', prefill.plannedCapacity);
     setInput('siteArea', prefill.siteArea);
+    updateSiteAreaConverted();
     setInput('landCategory', prefill.landCategory);
     setInput('zoningArea', prefill.zoningArea);
     setInput('memo', prefill.memo);
@@ -291,6 +296,29 @@
     const element = document.getElementById(id);
     return element ? element.value.trim() : '';
   }
+
+  function siteAreaInSquareMeters() {
+    const area = numberValue('siteArea');
+    if (area === null || !siteAreaUnit || siteAreaUnit.value !== 'pyeong') return area;
+    return Math.round(area * SQM_PER_PYEONG * 100) / 100;
+  }
+
+  function updateSiteAreaConverted() {
+    if (!siteAreaConverted) return;
+    const area = numberValue('siteArea');
+    if (area === null || !siteAreaUnit) {
+      siteAreaConverted.hidden = true;
+      return;
+    }
+    const isPyeong = siteAreaUnit.value === 'pyeong';
+    const converted = isPyeong ? area * SQM_PER_PYEONG : area / SQM_PER_PYEONG;
+    const text = converted.toLocaleString('ko-KR', { maximumFractionDigits: 2 });
+    siteAreaConverted.textContent = '≈ ' + text + (isPyeong ? ' ㎡ (㎡로 환산하여 접수됩니다)' : ' 평');
+    siteAreaConverted.hidden = false;
+  }
+
+  if (siteAreaInput) siteAreaInput.addEventListener('input', updateSiteAreaConverted);
+  if (siteAreaUnit) siteAreaUnit.addEventListener('change', updateSiteAreaConverted);
 
   function numberValue(id) {
     const text = valueOf(id);
