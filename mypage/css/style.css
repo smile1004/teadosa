@@ -257,3 +257,10 @@ body {
 .mypage-contract-dialog-head button{border:1px solid #d1d5db;border-radius:9px;background:#fff;padding:8px 12px;font-weight:700;cursor:pointer}
 .mypage-contract-dialog iframe{display:block;width:100%;height:calc(100% - 52px);border:0}
 @media(max-width:720px){.mypage-contract{flex-direction:column;align-items:stretch}.mypage-contract-dialog{width:100vw;height:100dvh;border-radius:0}}
+.mypage-contract-dialog.waiting{width:min(440px,92vw);height:auto;padding:24px;border-radius:16px}
+.mypage-contract-dialog.waiting strong{display:block;color:#24384d;font-size:16px}
+.mypage-contract-dialog.waiting p{margin:10px 0 18px;color:#5b6773;font-size:14px;line-height:1.6}
+.mypage-contract-dialog-actions{display:flex;justify-content:flex-end;gap:8px}
+.mypage-contract-dialog-actions button{min-height:38px;padding:0 14px;border:1px solid #d1d5db;border-radius:9px;background:#fff;font-weight:700;cursor:pointer}
+.mypage-contract-dialog-actions button.primary{border-color:#d88422;background:#d88422;color:#fff}
+@media(max-width:720px){.mypage-contract-dialog.waiting{width:92vw;height:auto;border-radius:16px}}

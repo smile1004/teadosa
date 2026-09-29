@@ -56,14 +56,24 @@
     if (button) openSigning(button.dataset.contractSign, button);
   });
 
+  // 모두싸인 서명 화면은 iframe 안에서는 브라우저의 제3자 쿠키 차단 때문에 modusign.co.kr로 넘어가며 막히므로 새 창으로 엽니다.
+  // The window is opened synchronously on the click (before the API call) so popup blockers allow it.
+  let signingWindow = null;
+  let watchTimer = null;
+
   async function openSigning(id, button) {
+    signingWindow = window.open('', 'modusign-signing', 'width=1000,height=900');
+    if (signingWindow) signingWindow.document.write('<p style="font-family:sans-serif;padding:24px">모두싸인 서명 화면을 여는 중입니다…</p>');
     button.disabled = true;
     button.textContent = '서명 화면 여는 중';
     try {
       const out = await api.request('/api/contracts/' + encodeURIComponent(id) + '/sign', { method: 'POST' });
       if (!out.response.ok || !out.result.success) throw new Error(out.result.message || '서명 화면을 열지 못했습니다.');
-      showDialog(id, out.result.embeddedUrl);
+      if (signingWindow && !signingWindow.closed) signingWindow.location.href = out.result.embeddedUrl;
+      else window.location.href = out.result.embeddedUrl; // popup blocked: continue in this tab
+      showWaiting(id);
     } catch (error) {
+      if (signingWindow && !signingWindow.closed) signingWindow.close();
       window.alert(error.message);
       if (/새로고침/.test(error.message)) window.location.reload();
     } finally {
@@ -72,35 +82,40 @@
     }
   }
 
-  function showDialog(id, url) {
+  function showWaiting(id) {
     if (!dialog) {
       dialog = document.createElement('dialog');
-      dialog.className = 'mypage-contract-dialog';
-      dialog.innerHTML = '<div class="mypage-contract-dialog-head"><strong>전자계약 서명</strong><button type="button" data-close>서명 마치고 닫기</button></div>' +
-        '<iframe title="모두싸인 전자계약 서명" allow="clipboard-write"></iframe>';
-      dialog.querySelector('[data-close]').addEventListener('click', function () {
-        dialog.close();
-        afterSigning();
-      });
-      dialog.addEventListener('close', afterSigning); // Esc key
+      dialog.className = 'mypage-contract-dialog waiting';
+      dialog.innerHTML = '<strong>새 창에서 전자계약 서명을 진행해 주세요.</strong>' +
+        '<p>서명을 마치고 서명 창을 닫으면 자동으로 결과가 반영됩니다. 새 창이 보이지 않으면 브라우저의 팝업 차단을 해제해 주세요.</p>' +
+        '<div class="mypage-contract-dialog-actions"><button type="button" data-close>닫기</button><button type="button" class="primary" data-check>서명 완료 확인</button></div>';
+      dialog.querySelector('[data-close]').addEventListener('click', function () { dialog.close(); });
+      dialog.querySelector('[data-check]').addEventListener('click', function () { checkStatus(true); });
       document.body.append(dialog);
     }
     dialog.dataset.contractId = id;
-    dialog.dataset.synced = '';
-    dialog.querySelector('iframe').src = url;
-    dialog.showModal();
+    if (!dialog.open) dialog.showModal();
+    window.clearInterval(watchTimer);
+    watchTimer = window.setInterval(function () {
+      if (signingWindow && signingWindow.closed) {
+        window.clearInterval(watchTimer);
+        checkStatus(false);
+      }
+    }, 1000);
   }
 
   // The webhook may lag behind, so check the status right away when the signing window closes.
-  async function afterSigning() {
-    if (dialog.dataset.synced) return;
-    dialog.dataset.synced = '1';
-    const id = dialog.dataset.contractId;
-    dialog.querySelector('iframe').src = 'about:blank';
+  async function checkStatus(manual) {
+    const id = dialog && dialog.dataset.contractId;
+    if (!id) return;
     try {
       const out = await api.request('/api/contracts/' + encodeURIComponent(id) + '/refresh', { method: 'POST' });
-      if (out.response.ok && out.result.success && out.result.contract.status !== 'requested') window.location.reload();
-    } catch {}
+      if (out.response.ok && out.result.success && out.result.contract.status !== 'requested') { window.location.reload(); return; }
+      if (manual) window.alert('아직 서명이 완료되지 않았습니다. 서명 창에서 서명을 마친 뒤 다시 확인해 주세요.');
+      else if (dialog.open) dialog.close();
+    } catch {
+      if (manual) window.alert('계약 상태를 확인하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    }
   }
 
   function formatDate(value) {
