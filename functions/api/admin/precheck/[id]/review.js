@@ -1,5 +1,6 @@
 import { requireAdmin, jsonResponse } from '../../../../_lib/admin-auth.js';
 import { calculateCapacity, capacityFormulaText, applicationArea } from '../../../../../common/js/precheck-capacity.mjs';
+import { normalizeServiceSelection } from '../../../../../common/js/precheck-services.mjs';
 
 const INSTALLATION_STATUS = ['undetermined', 'possible', 'conditional', 'not_possible'];
 const ITEM_STATUS = ['info', 'ok', 'conditional', 'hold', 'not_possible'];
@@ -61,7 +62,8 @@ export async function onRequestPut(context) {
 
     const nowIso = new Date().toISOString();
     const resultVersion = 'PRECHECK_RESULT_V3';
-    const resultData = JSON.stringify({ items, capacityAssessment });
+    const serviceSelection = normalizeServiceSelection(body?.serviceSelection);
+    const resultData = JSON.stringify({ items, capacityAssessment, serviceSelection });
 
     const existingReview = await env.DB.prepare('SELECT id, published_at FROM precheck_reviews WHERE request_id = ? LIMIT 1')
       .bind(requestId).first();

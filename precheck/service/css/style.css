@@ -179,3 +179,17 @@ a{color:inherit;text-decoration:none}
   .service-step-hero h1{font-size:28px}
 }
 
+
+/* ===== 가능 서비스 (관리자 등록 기준) ===== */
+.service-message{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:28px 22px;text-align:center;color:#4b5563;font-size:15px;line-height:1.7}
+.service-message.error{color:#b42318;border-color:#f3c7c2;background:#fff7f6}
+.result-link{border:1px solid #d1d5db;border-radius:999px;padding:9px 14px;font-weight:700;color:#4b5563;white-space:nowrap}
+.result-link:hover{border-color:#2f855a;color:#2f855a;background:#f4fbf6}
+a.apply-btn{display:inline-block;text-align:center}
+.service-card.unavailable{background:#f9fafb;color:#9ca3af}
+.service-card.unavailable:hover{transform:none;box-shadow:none;border-color:#e5e7eb}
+.service-card.unavailable .check{background:#eef0f2;color:#9ca3af}
+.service-card.unavailable .price{color:#9ca3af;text-decoration:line-through}
+.unavailable-label{display:inline-block;padding:9px 14px;border-radius:9px;background:#f3f4f6;color:#9ca3af;font-size:13px;font-weight:800;white-space:nowrap;text-align:center}
+.package-table tr.unavailable td{color:#9ca3af}
+@media(max-width:760px){.result-link{display:inline-block;margin-top:12px}.service-card .unavailable-label{width:100%}}

@@ -9,6 +9,7 @@
   let calculateCapacity;
   let capacityFormulaText;
   let applicationArea;
+  let services;
   let initializationStarted = false;
 
   window.addEventListener('teadosa:adminready', init, { once: true });
@@ -21,6 +22,7 @@
     mapElements();
     try {
       ({ calculateCapacity, capacityFormulaText, applicationArea } = await import('/common/js/precheck-capacity.mjs?v=3'));
+      services = await import('/common/js/precheck-services.mjs?v=1');
     } catch (error) {
       initializationStarted = false;
       showMessage('자동 계산 기능을 불러오지 못했습니다. 페이지를 새로고침해 주세요.', true);
@@ -66,6 +68,11 @@
     el.internalMemo = document.getElementById('internal-memo');
     el.save = document.getElementById('save-review');
     el.publish = document.getElementById('publish-review');
+    el.serviceList = document.getElementById('service-selection-list');
+    el.serviceSummary = document.getElementById('service-selection-summary');
+    el.serviceTypeInputs = document.querySelectorAll('input[name="service-type"]');
+    el.serviceCheckAll = document.getElementById('service-check-all');
+    el.serviceUncheckAll = document.getElementById('service-uncheck-all');
   }
 
   function bindEvents() {
@@ -78,6 +85,22 @@
     });
     if (el.capacityLayoutFile) el.capacityLayoutFile.addEventListener('change', handleCapacityImage);
     if (el.removeCapacityLayout) el.removeCapacityLayout.addEventListener('click', clearCapacityImage);
+    el.serviceTypeInputs.forEach(function (input) {
+      input.addEventListener('change', function () {
+        if (!input.checked) return;
+        state.serviceType = input.value;
+        renderServiceSelection();
+      });
+    });
+    el.serviceList.addEventListener('change', function (event) {
+      const input = event.target.closest('input[type="checkbox"]');
+      if (!input) return;
+      const checked = state.serviceChecks[state.serviceType];
+      if (input.checked) checked.add(input.value); else checked.delete(input.value);
+      updateServiceSummary();
+    });
+    el.serviceCheckAll.addEventListener('click', function () { setAllServices(true); });
+    el.serviceUncheckAll.addEventListener('click', function () { setAllServices(false); });
   }
 
   async function loadDetail() {
@@ -187,6 +210,44 @@
     setFixedItem('ordinance', byId.ordinance || findByTitle(savedItems, '조례'));
     setFixedItem('grid', byId.grid || findByTitle(savedItems, '한전'));
     setFixedItem('site', byId.site || findByTitle(savedItems, '현장'));
+
+    // Unsaved types start fully checked so the admin only unchecks what is not possible.
+    const saved = services.normalizeServiceSelection(review.resultData?.serviceSelection);
+    const formData = state.request?.formData || {};
+    state.serviceChecks = {};
+    Object.keys(services.SERVICE_TYPES).forEach(function (type) {
+      state.serviceChecks[type] = new Set(saved && saved.type === type ? saved.services : services.SERVICE_TYPES[type].services);
+    });
+    state.serviceType = saved ? saved.type : services.defaultServiceType(formData.site?.siteType || formData.siteType || state.request?.siteType);
+    renderServiceSelection();
+  }
+
+  function renderServiceSelection() {
+    el.serviceTypeInputs.forEach(function (input) { input.checked = input.value === state.serviceType; });
+    const checked = state.serviceChecks[state.serviceType];
+    el.serviceList.innerHTML = services.servicesForType(state.serviceType).map(function (service) {
+      return '<label class="service-selection-item">' +
+        '<input type="checkbox" value="' + escapeAttr(service.key) + '"' + (checked.has(service.key) ? ' checked' : '') + '>' +
+        '<span class="code">' + escapeHtml(service.code) + '</span>' +
+        '<span><strong>' + escapeHtml(service.name) + '</strong>' + (service.note ? '<small>' + escapeHtml(service.note) + '</small>' : '') + '</span>' +
+        '<span class="price">' + services.formatWon(service.min) + ' ~ ' + services.formatWon(service.max) + '원</span>' +
+      '</label>';
+    }).join('');
+    updateServiceSummary();
+  }
+
+  function setAllServices(checked) {
+    state.serviceChecks[state.serviceType] = new Set(checked ? services.SERVICE_TYPES[state.serviceType].services : []);
+    renderServiceSelection();
+  }
+
+  function updateServiceSummary() {
+    const spec = services.SERVICE_TYPES[state.serviceType];
+    el.serviceSummary.textContent = spec.label + ' · 신청 가능 ' + state.serviceChecks[state.serviceType].size + '개 / 전체 ' + spec.services.length + '개';
+  }
+
+  function collectServiceSelection() {
+    return { type: state.serviceType, services: Array.from(state.serviceChecks[state.serviceType]) };
   }
 
   function findByTitle(items, keyword) {
@@ -255,6 +316,7 @@
         layoutImageName: state.capacityImageName
       },
       items: collectItems(),
+      serviceSelection: collectServiceSelection(),
       overallOpinion: el.overallOpinion.value.trim(),
       customerNotice: el.customerNotice.value.trim(),
       internalMemo: el.internalMemo.value.trim(),
