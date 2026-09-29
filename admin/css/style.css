@@ -240,3 +240,17 @@
 .service-selection-item .package-name{white-space:nowrap}
 .service-selection-item .price small{text-align:right}
 @media(max-width:760px){.service-selection-item.package{grid-template-columns:auto minmax(0,1fr)}.service-selection-item.package .price{grid-column:2}.service-selection-item .price small{text-align:left}}
+/* ===== 전자계약 (모두싸인) ===== */
+.contract-admin-panel .panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.contract-admin-desc{margin:6px 0 12px;color:#667085;font-size:13px;line-height:1.6}
+.contract-admin-list{display:grid;gap:8px}
+.contract-admin-item{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border:1px solid #e1e7ec;border-radius:12px;background:#fafbfc}
+.contract-admin-item strong{display:block;font-size:14px;color:#172033;word-break:break-all}
+.contract-admin-item span{font-size:12px;color:#7b8593}
+.contract-admin-actions{display:flex;gap:6px;flex-wrap:wrap}
+.contract-status{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap}
+.contract-status.requested{background:#fff4e5;color:#b86a14}
+.contract-status.completed{background:#e9f7ef;color:#208451}
+.contract-status.rejected,.contract-status.failed{background:#fff0ee;color:#ac443b}
+.contract-status.canceled{background:#eef2f5;color:#6b7785}
+@media(max-width:760px){.contract-admin-item{grid-template-columns:1fr}.contract-admin-panel .panel-head{flex-direction:column}}
