@@ -78,9 +78,19 @@
       await loadLicenseHistory();
       await loadDevelopmentHistory();
       await Promise.all([loadExtraHistory('ppa', '한전PPA'), loadExtraHistory('construction-plan', '공사계획신고')]);
+      scrollToRequestedSection();
     } catch (error) {
       showMainError(error && error.message ? error.message : '회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
     }
+  }
+
+  // The content is hidden until login is confirmed, so the browser's own jump to #section misses; redo it once lists are loaded.
+  // Supports /mypage/#precheck-history-section and /mypage/?section=precheck.
+  function scrollToRequestedSection() {
+    const section = new URLSearchParams(window.location.search).get('section');
+    const id = section ? section + '-history-section' : decodeURIComponent(window.location.hash.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
   }
 
   async function loadExtraHistory(type, title) {
