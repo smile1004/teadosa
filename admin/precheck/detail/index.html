@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>사전검토 신청 상세 | 태양광도사 관리자</title>
-  <link href="admin/css/style.css?v=3.9" rel="stylesheet">
+  <link href="admin/css/style.css?v=4.0" rel="stylesheet">
 <link rel="stylesheet" href="/common/css/application-actions.css?v=1.1">
 </head>
 <body class="admin-body">
@@ -144,8 +144,13 @@
                   </div>
                 </section>
 
+                <section class="review-fixed-section overall-opinion-editor">
+                  <div class="review-fixed-title"><span>05</span><div><h4>종합의견</h4><p>회원에게 제공할 종합 검토의견을 입력합니다. 회원 공개 시 필수입니다.</p></div></div>
+                  <textarea id="overall-opinion" class="review-item-content" rows="6" maxlength="5000" placeholder="회원에게 제공할 종합 검토의견을 입력해 주세요."></textarea>
+                </section>
+
                 <section class="review-fixed-section service-selection-editor">
-                  <div class="review-fixed-title"><span>05</span><div><h4>신청 가능 서비스</h4><p>검토결과를 기준으로 신청 가능한 서비스를 체크합니다. 회원에게 공개되면 가능 서비스 확인 페이지에 표시됩니다.</p></div></div>
+                  <div class="review-fixed-title"><span>06</span><div><h4>신청 가능 서비스</h4><p>검토결과를 기준으로 신청 가능한 서비스를 체크합니다. 회원에게 공개되면 가능 서비스 확인 페이지에 표시됩니다.</p></div></div>
                   <div class="service-selection-toolbar">
                     <div class="service-type-options" role="radiogroup" aria-label="서비스 유형">
                       <label><input type="radio" name="service-type" value="land"><span>토지형</span></label>
@@ -161,7 +166,6 @@
                 </section>
               </div>
 
-              <label class="review-field full"><span>종합 의견</span><textarea id="overall-opinion" rows="6" maxlength="5000" placeholder="회원에게 제공할 종합 검토의견을 입력해 주세요."></textarea></label>
               <label class="review-field full"><span>고객 안내사항 <small class="auto-label">자동 입력</small></span><textarea id="customer-notice" rows="10" maxlength="5000"></textarea></label>
               <label class="review-field full internal"><span>관리자 내부 메모</span><textarea id="internal-memo" rows="4" maxlength="5000" placeholder="회원에게 공개되지 않는 내부 메모입니다."></textarea></label>
 
@@ -180,7 +184,7 @@
   <script src="common/js/api.js?v=2.4"></script>
   <script src="common/js/auth.js?v=2.4"></script>
   <script src="common/js/admin-layout.js?v=2.8"></script>
-  <script src="common/js/admin-precheck-detail.js?v=3.7"></script>
+  <script src="common/js/admin-precheck-detail.js?v=3.8"></script>
 <script src="/common/js/application-actions.js?v=1.1"></script>
 </body>
 </html>
