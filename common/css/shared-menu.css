@@ -275,6 +275,8 @@
   /* Lift the menu text so it lines up with the 무료사전검토 button and leaves room for the search row below. */
   .header .nav-item{padding-top:26px!important;padding-bottom:42px!important}
   .header .nav-item::after{bottom:38px!important}
+  /* The "/" separators are centred in the 88px bar; lift them by the same 8px so they sit on the menu text line. */
+  .header .nav-separator{position:relative!important;top:-8px!important}
 }
 @media (max-width:1180px) and (min-width:981px){
   .header .header-search-box{width:148px}
