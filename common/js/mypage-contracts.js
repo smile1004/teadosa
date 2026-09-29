@@ -95,21 +95,42 @@
       document.body.append(dialog);
     }
     dialog.dataset.contractId = id;
+    setWaitingText('새 창에서 전자계약 서명을 진행해 주세요.', '서명이 완료되면 이 화면에 자동으로 반영됩니다. 새 창이 보이지 않으면 브라우저의 팝업 차단을 해제해 주세요.');
     if (!dialog.open) dialog.showModal();
     // 모두싸인 may stay on its own page after signing, so don't rely on the window closing:
     // every 4s read our DB (updated by the webhook), and check 모두싸인 directly when the window closes or the tab regains focus.
+    // Right after signing, 모두싸인 is still producing the final PDF (status not yet COMPLETED), so a single
+    // check when the window closes is too early. After the window closes keep checking for up to 2 minutes.
     let ticks = 0;
+    let closedTicks = 0;
     window.clearInterval(watchTimer);
     watchTimer = window.setInterval(function () {
       ticks++;
-      if (signingWindow && signingWindow.closed) {
-        window.clearInterval(watchTimer);
-        checkStatus(false);
+      const closed = Boolean(signingWindow && signingWindow.closed);
+      if (closed) {
+        closedTicks++;
+        if (closedTicks === 1) {
+          setWaitingText('서명 결과를 확인하고 있습니다.', '모두싸인에서 계약서를 마무리하는 데 몇 초 걸릴 수 있습니다. 잠시만 기다려 주세요.');
+          checkStatus(false, true);
+        } else if (closedTicks % 3 === 0) {
+          pollDatabase(id);
+          if (closedTicks % 15 === 0) checkStatus(false, true);
+        }
+        if (closedTicks > 120) {
+          window.clearInterval(watchTimer);
+          setWaitingText('서명 완료가 아직 확인되지 않았습니다.', '서명을 끝까지 완료했다면 잠시 후 페이지를 새로고침해 주세요. 완료하지 않았다면 다시 서명해 주세요.');
+        }
       } else if (ticks % 4 === 0) {
         pollDatabase(id);
       }
       if (ticks > 1800) window.clearInterval(watchTimer); // stop after 30 minutes
     }, 1000);
+  }
+
+  function setWaitingText(title, body) {
+    if (!dialog) return;
+    dialog.querySelector('strong').textContent = title;
+    dialog.querySelector('p').textContent = body;
   }
 
   window.addEventListener('focus', function () {
