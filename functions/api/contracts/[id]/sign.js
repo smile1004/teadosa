@@ -3,6 +3,7 @@ import { modusignConfigured, getParticipantEmbeddedUrl, getDocument, applyDocume
 
 // POST /api/contracts/:id/sign → a fresh embedded signing URL (valid 10 minutes) for the owner of the contract
 export async function onRequestPost({ request, env, params }) {
+  const redirectUrl = (contract) => new URL('/contract/signed/?type=' + encodeURIComponent(contract.service_type) + '&id=' + contract.id, request.url).href;
   try {
     const auth = await requireMember(request, env);
     if (auth.error) return auth.error;
@@ -12,7 +13,7 @@ export async function onRequestPost({ request, env, params }) {
     if (!modusignConfigured(env)) return jsonResponse({ success: false, code: 'MODUSIGN_NOT_CONFIGURED', message: '전자계약 서비스가 준비되지 않았습니다.' }, 503);
 
     try {
-      const view = await getParticipantEmbeddedUrl(env, contract.modusign_document_id, contract.modusign_participant_id);
+      const view = await getParticipantEmbeddedUrl(env, contract.modusign_document_id, contract.modusign_participant_id, redirectUrl(contract));
       if (!view?.embeddedUrl) throw new Error('embeddedUrl 없음');
       return jsonResponse({ success: true, embeddedUrl: view.embeddedUrl });
     } catch (error) {

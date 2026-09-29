@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>전자계약 서명 완료 | 태양광도사</title>
+<style>
+  :root{color-scheme:light}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f7faf8;font-family:'Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;color:#24384d}
+  .box{width:min(420px,90vw);padding:32px 28px;border:1px solid #e3e9df;border-radius:18px;background:#fff;text-align:center;box-shadow:0 14px 34px rgba(64,92,52,.08)}
+  .mark{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;background:#e9f7ef;color:#208451;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900}
+  h1{margin:0 0 8px;font-size:20px}
+  p{margin:0 0 20px;color:#5b6773;font-size:14px;line-height:1.6}
+  a{display:inline-flex;padding:10px 16px;border-radius:10px;background:#d88422;color:#fff;font-weight:800;font-size:14px;text-decoration:none}
+</style>
+</head>
+<body>
+<main class="box">
+  <div class="mark" aria-hidden="true">✓</div>
+  <h1>전자계약 서명이 완료되었습니다</h1>
+  <p id="signed-message">계약 결과를 반영하고 있습니다. 잠시만 기다려 주세요.</p>
+  <a id="signed-link" href="/mypage/">마이페이지로 이동</a>
+</main>
+<script>
+  // 모두싸인 redirectUrl 도착 페이지: 계약 상태를 바로 동기화한 뒤,
+  // 마이페이지에서 연 새 창이면 창을 닫고(마이페이지가 닫힘을 감지해 새로고침), 아니면 마이페이지로 이동한다.
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var type = params.get('type') || '';
+    var id = params.get('id') || '';
+    var target = '/mypage/' + (/^(license|development|ppa|construction-plan)$/.test(type) ? '?section=' + type : '');
+    document.getElementById('signed-link').href = target;
+
+    var sync = /^[1-9]\d*$/.test(id)
+      ? fetch('/api/contracts/' + id + '/refresh', { method: 'POST', credentials: 'same-origin', headers: { Accept: 'application/json' } }).catch(function () {})
+      : Promise.resolve();
+
+    sync.then(function () {
+      var opener = null;
+      try { opener = window.opener && !window.opener.closed ? window.opener : null; } catch (e) {}
+      if (opener) {
+        document.getElementById('signed-message').textContent = '이 창은 자동으로 닫힙니다.';
+        window.setTimeout(function () { window.close(); }, 1200);
+      } else {
+        document.getElementById('signed-message').textContent = '잠시 후 마이페이지로 이동합니다.';
+        window.setTimeout(function () { window.location.replace(target); }, 1500);
+      }
+    });
+  })();
+</script>
+</body>
+</html>

@@ -68,8 +68,10 @@ export function createDocumentFromTemplate(env, { templateId, title, signerName,
 }
 
 // Embedded signing URL — valid for 10 minutes, so it is fetched each time the member clicks.
-export function getParticipantEmbeddedUrl(env, documentId, participantId) {
-  return modusignRequest(env, '/documents/' + encodeURIComponent(documentId) + '/participants/' + encodeURIComponent(participantId) + '/embedded-view');
+// redirectUrl: where 모두싸인 sends the signer after signing completes.
+export function getParticipantEmbeddedUrl(env, documentId, participantId, redirectUrl) {
+  const query = redirectUrl ? '?redirectUrl=' + encodeURIComponent(redirectUrl) : '';
+  return modusignRequest(env, '/documents/' + encodeURIComponent(documentId) + '/participants/' + encodeURIComponent(participantId) + '/embedded-view' + query);
 }
 
 export function getDocument(env, documentId) {
