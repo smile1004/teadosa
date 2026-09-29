@@ -252,6 +252,10 @@
       const resultButton = canViewResult
         ? '<a class="precheck-result-button available" href="/precheck/result/?id=' + encodeURIComponent(item.id) + '">결과확인</a>'
         : '<span class="precheck-result-button disabled" aria-disabled="true">' + pendingResultLabel(item.status) + '</span>';
+      const canViewServices = Boolean(canViewResult && item.servicesAvailable);
+      const serviceButton = canViewServices
+        ? '<a class="precheck-result-button service" href="/precheck/service/?id=' + encodeURIComponent(item.id) + '">가능서비스 확인</a>'
+        : '';
 
       return '<article class="precheck-history-item">' +
         '<div class="precheck-history-main">' +
@@ -264,6 +268,7 @@
             '<span>신청일 ' + escapeHtml(formatPrecheckDate(item.submittedAt)) + '</span>' +
             '<span>사업지 ' + escapeHtml(precheckSiteTypeLabel(item.siteType)) + '</span>' +
             (canViewResult ? '<span>결과 ' + escapeHtml(possibilityLabel(item.installationPossible)) + '</span>' : '') +
+            (canViewServices ? '<span>신청 가능 서비스 ' + escapeHtml(item.availableServiceCount) + '개</span>' : '') +
           '</div>' +
           (item.status === 'supplement_required' && item.supplementNote
             ? '<div class="precheck-supplement-box"><div class="precheck-supplement-head"><strong>보완요청사항</strong>' +
@@ -271,7 +276,7 @@
               '</div><p>' + escapeHtml(item.supplementNote).replace(/\n/g, '<br>') + '</p></div>'
             : '') +
         '</div>' +
-        '<div class="precheck-history-action">' + resultButton + applicationButtons('precheck', item.id) + '</div>' +
+        '<div class="precheck-history-action">' + resultButton + serviceButton + applicationButtons('precheck', item.id) + '</div>' +
       '</article>';
     }).join('');
 

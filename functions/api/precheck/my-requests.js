@@ -22,7 +22,9 @@ export async function onRequestGet(context) {
         pr.id AS review_id,
         pr.installation_possible,
         pr.reviewed_at,
-        pr.published_at
+        pr.published_at,
+        json_extract(pr.result_data, '$.serviceSelection.type') AS service_type,
+        json_array_length(pr.result_data, '$.serviceSelection.services') AS service_count
       FROM precheck_requests r
       LEFT JOIN precheck_reviews pr ON pr.request_id = r.id
       WHERE r.member_id = ?
@@ -51,7 +53,9 @@ export async function onRequestGet(context) {
         resultAvailable: Boolean(
           row.review_id &&
           row.published_at
-        )
+        ),
+        servicesAvailable: Boolean(row.published_at && row.service_type),
+        availableServiceCount: row.service_type ? Number(row.service_count || 0) : null
       }))
     });
   } catch (error) {
