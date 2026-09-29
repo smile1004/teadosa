@@ -7,7 +7,9 @@ import { modusignConfigured, getDocument, applyDocumentStatus } from '../../_lib
 const HANDLED_EVENTS = ['document_started', 'document_signed', 'document_all_signed', 'document_rejected', 'document_request_canceled', 'document_signing_canceled'];
 
 export async function onRequestPost({ request, env }) {
-  if (!env.MODUSIGN_WEBHOOK_TOKEN || !(await safeEqual(request.headers.get('x-webhook-token') || '', env.MODUSIGN_WEBHOOK_TOKEN))) {
+  // The 모두싸인 settings screen may not offer custom headers, so the token is also accepted as ?token= in the URL.
+  const token = request.headers.get('x-webhook-token') || new URL(request.url).searchParams.get('token') || '';
+  if (!env.MODUSIGN_WEBHOOK_TOKEN || !(await safeEqual(token, env.MODUSIGN_WEBHOOK_TOKEN))) {
     return jsonResponse({ success: false, code: 'UNAUTHORIZED' }, 401);
   }
   let body;
