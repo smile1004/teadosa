@@ -9,7 +9,7 @@
   if (!loader) return;
 
   (function ensureHeaderStylesheet() {
-    var stylesheetHref = new URL('../../css/shared-menu.css?v=2.6', loader.src).href;
+    var stylesheetHref = new URL('../../css/shared-menu.css?v=2.9', loader.src).href;
     var stylesheet = document.querySelector('link[rel="stylesheet"][href*="shared-menu.css"]');
     if (!stylesheet) {
       stylesheet = document.createElement('link');
@@ -60,7 +60,25 @@
     if (target) headerHtml = headerHtml.split('href="' + fallback + '"').join('href="' + target + '"');
   });
 
+  // Search sits in a zero-width slot between the nav and the action group, so on desktop it lines up
+  // under 고객 후기 / SITEMAP (items without dropdowns) and on mobile it becomes an icon next to MENU.
+  headerHtml = headerHtml.replace(
+    '<div class="header-action-group">',
+    '<div class="header-search">' +
+      '<button class="header-search-toggle" type="button" aria-label="검색 열기" aria-expanded="false">' +
+        '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M15.5 15.5 13 13"/></svg>' +
+      '</button>' +
+      '<form class="header-search-box" role="search" autocomplete="off">' +
+        '<svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="9" r="5.5"/><path d="M15.5 15.5 13 13"/></svg>' +
+        '<input class="header-search-input" type="search" placeholder="서비스 검색" aria-label="사이트 검색" maxlength="40">' +
+        '<div class="header-search-results" role="listbox" hidden></div>' +
+      '</form>' +
+    '</div>' +
+    '<div class="header-action-group">'
+  );
+
   loader.insertAdjacentHTML('beforebegin', headerHtml);
+  initHeaderSearch();
 
   var header = document.querySelector('.header');
   var mobileMenuButton = header && header.querySelector('.mobile');
@@ -102,6 +120,102 @@
 
     window.addEventListener('resize', function () {
       if (window.innerWidth > 980) setMobileMenu(false);
+    });
+  }
+
+  function initHeaderSearch() {
+    var root = document.querySelector('.header .header-search');
+    if (!root) return;
+    var headerEl = root.closest('.header');
+    var toggle = root.querySelector('.header-search-toggle');
+    var form = root.querySelector('.header-search-box');
+    var input = root.querySelector('.header-search-input');
+    var results = root.querySelector('.header-search-results');
+    var activeIndex = -1;
+    var matches = [];
+
+    // title · description · extra keywords · path. Paths are absolute because pages use different <base> hrefs.
+    var pages = [
+      ['사전검토 신청', '발전사업 가능여부 무료 검토 신청', '무료 사전검토 신청서 부지 설치 가능', '/precheck/apply/'],
+      ['사전검토 안내', '사전검토 서비스 소개', '사전검토 무료 검토 절차', '/precheck/'],
+      ['검토결과 확인', '검토 결과보고서 확인', '결과 보고서 예상 설치용량', '/precheck/result/'],
+      ['신청 가능 서비스 확인', '진행 가능 서비스 및 패키지 확인', '가능서비스 패키지 서비스 확인', '/precheck/service/'],
+      ['발전사업 시작하기', '토지형·지붕형·건물지원·금융지원 패키지', '패키지 B2C 토지 지붕 건물 금융', '/start/'],
+      ['발전사업 허가', '발전사업 허가 신청 및 관련 행정절차 지원', '발전사업허가 인허가 허가', '/start/license/'],
+      ['개발행위 허가', '개발행위 허가 신청 및 협의 절차 지원', '개발행위허가 토목 인허가 허가', '/start/development/'],
+      ['한전PPA 접수', '한전 전력수급계약 접수 절차 지원', '한전 PPA 전력수급계약 계통', '/start/ppa/'],
+      ['공사계획신고', '발전설비 공사 전 신고 절차 지원', '공사계획 신고 전기감리', '/start/construction-plan/'],
+      ['에관공 설비 신청', '발전설비 확인 및 등록 신청 지원', '에너지관리공단 에관공 RPS 설비확인', '/start/#services'],
+      ['개발행위 준공', '개발행위 준공검사 및 완료 절차 지원', '준공 준공검사 개발행위', '/start/#services'],
+      ['기업전문서비스(B2B)', '기술검토·도면설계·현장실사·공사', 'B2B 기업 기술검토 도면 설계 현장실사 시공 공사', '/#enterprise-services'],
+      ['조례 검색', '지자체 태양광 조례 확인', '조례 이격거리 지자체 규제', '/#ordin-info-title'],
+      ['태도사 소개', '태양광도사 서비스 소개', '회사 소개 태양광도사 태도', '/marketing.html'],
+      ['고객 후기', '고객 후기 모음', '후기 리뷰 사례', '/reviews/'],
+      ['마이페이지', '신청내역 및 회원정보 관리', '마이페이지 내정보 회원정보 신청내역', '/mypage/'],
+      ['사전검토 신청내역', '마이페이지 사전검토 신청내역', '신청내역 진행상태 내 신청', '/mypage/#precheck-history-section'],
+      ['사이트맵', '전체 메뉴 보기', 'SITEMAP 전체 메뉴', '/sitemap/']
+    ];
+
+    function normalize(text) { return String(text || '').toLowerCase().replace(/\s+/g, ''); }
+
+    function search(query) {
+      var q = normalize(query);
+      if (!q) return [];
+      return pages.map(function (page) {
+        var title = normalize(page[0]);
+        var score = title.indexOf(q) === 0 ? 3 : title.indexOf(q) >= 0 ? 2 : normalize(page[1] + page[2]).indexOf(q) >= 0 ? 1 : 0;
+        return { page: page, score: score };
+      }).filter(function (item) { return item.score > 0; })
+        .sort(function (a, b) { return b.score - a.score; })
+        .slice(0, 7)
+        .map(function (item) { return item.page; });
+    }
+
+    function render() {
+      matches = search(input.value);
+      activeIndex = matches.length ? 0 : -1;
+      if (!input.value.trim()) { results.hidden = true; results.innerHTML = ''; return; }
+      results.innerHTML = matches.length
+        ? matches.map(function (page, index) {
+            return '<a class="header-search-result' + (index === activeIndex ? ' active' : '') + '" role="option" href="' + escapeAttribute(page[3]) + '"><strong>' + escapeHtml(page[0]) + '</strong><span>' + escapeHtml(page[1]) + '</span></a>';
+          }).join('')
+        : '<p class="header-search-empty">검색 결과가 없습니다.</p><a class="header-search-result sitemap" href="/sitemap/"><strong>전체 사이트맵 보기</strong><span>모든 메뉴를 한눈에 확인</span></a>';
+      results.hidden = false;
+    }
+
+    function highlight(index) {
+      var items = results.querySelectorAll('.header-search-result');
+      if (!items.length) return;
+      activeIndex = (index + items.length) % items.length;
+      items.forEach(function (item, i) { item.classList.toggle('active', i === activeIndex); });
+    }
+
+    function close() {
+      results.hidden = true;
+      headerEl.classList.remove('header-search-open');
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+
+    input.addEventListener('input', render);
+    input.addEventListener('focus', function () { if (input.value.trim()) render(); });
+    input.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowDown') { event.preventDefault(); highlight(activeIndex + 1); }
+      else if (event.key === 'ArrowUp') { event.preventDefault(); highlight(activeIndex - 1); }
+      else if (event.key === 'Escape') { close(); input.blur(); }
+    });
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var target = results.querySelectorAll('.header-search-result')[Math.max(activeIndex, 0)];
+      if (target) window.location.href = target.getAttribute('href');
+    });
+    toggle.addEventListener('click', function () {
+      var open = !headerEl.classList.contains('header-search-open');
+      headerEl.classList.toggle('header-search-open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) input.focus(); else close();
+    });
+    document.addEventListener('click', function (event) {
+      if (!root.contains(event.target)) close();
     });
   }
 
