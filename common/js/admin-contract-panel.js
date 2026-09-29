@@ -64,7 +64,7 @@
             '<div><strong>' + esc(c.title) + '</strong><span>요청 ' + esc(datetime(c.requestedAt)) + (c.completedAt ? ' · 완료 ' + esc(datetime(c.completedAt)) : '') + '</span></div>' +
             '<span class="contract-status ' + esc(c.status) + '">' + esc(statusLabel(c.status)) + '</span>' +
             '<div class="contract-admin-actions">' +
-              (c.status === 'completed' ? '<a class="admin-button secondary" href="/api/contracts/' + c.id + '/download" target="_blank" rel="noopener">계약서 PDF</a>' : '') +
+              (c.status === 'completed' ? '<a class="admin-button secondary" href="/api/contracts/' + c.id + '/download" download>계약서 PDF</a>' : '') +
               '<button class="admin-button secondary" type="button" data-contract-refresh="' + c.id + '">상태 새로고침</button>' +
             '</div></article>';
         }).join('')

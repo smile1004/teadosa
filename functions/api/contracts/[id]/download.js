@@ -20,7 +20,20 @@ export async function onRequestGet({ request, env, params }) {
     const document = await getDocument(env, contract.modusign_document_id);
     const url = document?.file?.downloadUrl;
     if (!url) return jsonResponse({ success: false, code: 'FILE_NOT_READY', message: '계약서 파일이 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.' }, 409);
-    return Response.redirect(url, 302);
+
+    // Stream the file through us with Content-Disposition: attachment, so "내려받기" saves a named PDF
+    // instead of the browser just displaying 모두싸인's URL.
+    const file = await fetch(url);
+    if (!file.ok || !file.body) throw new Error('모두싸인 파일 응답 ' + file.status);
+    const filename = contract.title.replace(/[\\/:*?"<>|]/g, '_') + '.pdf';
+    return new Response(file.body, {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="contract.pdf"; filename*=UTF-8''${encodeURIComponent(filename)}`,
+        'Cache-Control': 'private, no-store',
+        'X-Content-Type-Options': 'nosniff'
+      }
+    });
   } catch (error) {
     console.error('전자계약 파일 다운로드 오류:', error.status || '', JSON.stringify(error.detail || {}), error);
     return jsonResponse({ success: false, code: 'INTERNAL_SERVER_ERROR', message: '계약서 파일을 불러오지 못했습니다.' }, 500);

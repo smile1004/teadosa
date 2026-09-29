@@ -46,7 +46,7 @@
     }
     if (c.status === 'completed') {
       return '<div><strong>전자계약 완료</strong><span>' + esc(formatDate(c.completedAt)) + ' 서명이 완료되었습니다.</span></div>' +
-        '<a class="mypage-contract-button secondary" href="/api/contracts/' + c.id + '/download" target="_blank" rel="noopener">계약서 내려받기</a>';
+        '<a class="mypage-contract-button secondary" href="/api/contracts/' + c.id + '/download" download>계약서 내려받기</a>';
     }
     return '<div><strong>전자계약 ' + (c.status === 'rejected' ? '서명 거절' : '처리 실패') + '</strong><span>담당자에게 문의해 주세요.</span></div>';
   }
