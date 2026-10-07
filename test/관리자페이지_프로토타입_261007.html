@@ -1,0 +1,316 @@
+<title>태양광도사 관리자페이지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 왼쪽 관리자 메뉴, 오른쪽 화면(카드 → 목록 → 상세) */
+:root{
+  --bg:#f3f4f1; --panel:#ffffff; --side:#1f2a33; --side-fg:#c9d1d6; --side-on:#f2b632;
+  --fg:#1c2329; --muted:#5f6b73; --faint:#8b969d; --line:#dfe3e0; --soft:#eef1ee;
+  --accent:#1f6f8b; --accent-bg:#e3f0f4; --on-accent:#ffffff;
+  --ok:#2e7d4f; --ok-bg:#e4f2e8; --warn:#8a5a00; --warn-bg:#fbf0d6;
+  --pkg:#0f6e63; --pkg-bg:#dff3ef; --trk:#9a4a1c; --trk-bg:#fbe8dc;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#14191d; --panel:#1b2227; --side:#0f1417; --side-fg:#a9b4ba; --side-on:#f2b632;
+  --fg:#e6eaec; --muted:#a3adb3; --faint:#78838a; --line:#2c353b; --soft:#232b31;
+  --accent:#6fb8d2; --accent-bg:#1d3540; --on-accent:#0f1417;
+  --ok:#7fcf9c; --ok-bg:#1c3326; --warn:#f0c46a; --warn-bg:#3a2f15;
+  --pkg:#6fd3c3; --pkg-bg:#163631; --trk:#f2a578; --trk-bg:#3d2619; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14191d; --panel:#1b2227; --side:#0f1417; --side-fg:#a9b4ba; --side-on:#f2b632;
+  --fg:#e6eaec; --muted:#a3adb3; --faint:#78838a; --line:#2c353b; --soft:#232b31;
+  --accent:#6fb8d2; --accent-bg:#1d3540; --on-accent:#0f1417;
+  --ok:#7fcf9c; --ok-bg:#1c3326; --warn:#f0c46a; --warn-bg:#3a2f15;
+  --pkg:#6fd3c3; --pkg-bg:#163631; --trk:#f2a578; --trk-bg:#3d2619; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15.5px;line-height:1.55;padding-inline:16px;padding-block:16px 32px}
+.wrap{max-width:1320px;margin:0 auto;display:grid;gap:12px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:6px 16px}
+.top h1{font-size:21.5px;font-weight:600;margin:0;text-wrap:balance}
+.top p{margin:0;color:var(--muted);font-size:14px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr)}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}}
+.app{display:grid;grid-template-columns:190px minmax(0,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel);min-width:0}
+@media (max-width:640px){.app{grid-template-columns:minmax(0,1fr)}}
+.side{background:#102b4c;padding:12px 8px;display:flex;flex-direction:column;gap:1px}
+@media (max-width:640px){.side{flex-direction:row;flex-wrap:wrap;gap:4px}.side .grp,.side .logo{width:100%}}
+.logo{color:#fff;font-weight:600;font-size:15.5px;padding:4px 8px 10px;letter-spacing:.02em}
+.logo small{display:block;color:var(--side-fg);font-weight:400;font-size:13px;letter-spacing:.08em}
+.grp{font-size:13px;color:#829ab4;padding:10px 8px 3px;letter-spacing:.06em}
+.nv{display:block;width:100%;text-align:left;border:0;background:none;padding:6px 8px;border-radius:6px;font:inherit;font-size:15.5px;color:#dce6f0;cursor:pointer}
+@media (max-width:640px){.nv{width:auto;border:1px solid rgba(255,255,255,.2)}}
+.nv:hover{background:rgba(255,255,255,.12);color:#fff}.nv.on{background:rgba(255,255,255,.12);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #f19135}
+.nv.sub{padding-left:18px}
+.nv:focus-visible,.btn:focus-visible,.chip:focus-visible,.card-b:focus-visible,.lk:focus-visible,tr.rw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.main{padding:16px 18px;min-height:620px;min-width:0}
+.h{font-size:18.5px;font-weight:600;margin:0 0 2px;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.crumb{font-size:13px;color:var(--faint);margin-bottom:12px;display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.lk{font:inherit;font-size:13px;border:0;background:none;padding:0;color:var(--accent);cursor:pointer}
+.lk:hover{text-decoration:underline}
+.hint{font-size:13px;color:var(--faint);margin:-6px 0 12px}
+.sec-h{font-size:13px;font-weight:600;margin:16px 0 8px;color:var(--muted);letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center}
+.sec-h:first-of-type{margin-top:4px}
+.flt{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{font:inherit;font-size:13px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);cursor:pointer;background:none}
+.chip.on{background:var(--fg);color:var(--panel);border-color:var(--fg)}
+.chip em{font-style:normal;font-family:var(--mono);margin-left:4px;opacity:.75}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.card-b{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--panel);cursor:pointer;text-align:left;font:inherit;color:inherit;display:grid;gap:10px;align-content:start}
+.card-b:hover{border-color:var(--accent)}
+.card-b .nm{font-weight:600;font-size:15.5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card-b .nm i{font-style:normal;color:var(--faint);font-weight:400}
+.card-b .route{font-size:12.5px;color:var(--muted);line-height:1.5}
+.cnt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;text-align:center}
+.cnt div{background:var(--soft);border-radius:6px;padding:5px 0 4px;font-size:11.5px;color:var(--muted)}
+.cnt b{display:block;font-family:var(--mono);font-size:18.5px;font-weight:500;color:var(--fg);font-variant-numeric:tabular-nums}
+.cnt .n b{color:var(--accent)}
+.card-b .ft{font-size:12.5px;color:var(--faint)}
+.cust{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center}
+.av{width:36px;height:36px;border-radius:50%;background:var(--trk-bg);color:var(--trk);display:grid;place-items:center;font-weight:600;font-size:14px}
+.cust .who b{display:block;font-size:15.5px;font-weight:600}
+.cust .who span{font-size:13px;color:var(--muted)}
+.mini{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+.mini i{height:6px;border-radius:3px;background:var(--soft)}
+.mini i.d{background:var(--ok)}.mini i.c{background:var(--accent)}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th{font-size:11.5px;color:var(--muted);font-weight:500;letter-spacing:.04em}
+.no{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+tr.rw{cursor:pointer}tr.rw:hover td{background:var(--soft)}
+.b{font-size:11.5px;padding:1px 7px;border-radius:4px;display:inline-block;font-weight:500}
+.bi{background:var(--soft);color:var(--muted)}.bp{background:var(--pkg-bg);color:var(--pkg)}.bt{background:var(--trk-bg);color:var(--trk)}
+.sb{font-size:11.5px;padding:1px 8px;border-radius:999px;display:inline-block;font-weight:500}
+.s-n{background:var(--accent-bg);color:var(--accent)}.s-i{background:var(--warn-bg);color:var(--warn)}.s-d{background:var(--ok-bg);color:var(--ok)}
+.st{font-size:13px;color:var(--muted)}.ok{color:var(--ok)}.wait{color:var(--faint)}
+.bar{height:6px;border-radius:3px;background:var(--soft);overflow:hidden;width:64px;display:inline-block;vertical-align:middle;margin-right:6px}.bar i{display:block;height:100%;background:var(--accent)}
+.card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.ct{font-size:14px;font-weight:600;margin-bottom:8px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px 14px;font-size:14px}
+.kv span{color:var(--faint);display:block;font-size:11.5px}
+.btn{font:inherit;font-size:13px;padding:4px 10px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--fg);cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.p{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:9px 12px;font-size:14px;margin-bottom:10px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px}
+.stg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.stg div{text-align:center;font-size:12.5px;padding:6px 2px;border-radius:6px;border:1px solid var(--line);color:var(--muted)}
+.stg .d{background:var(--ok-bg);color:var(--ok);border-color:transparent}.stg .c{background:var(--accent-bg);color:var(--accent);border-color:var(--accent);font-weight:500}
+.log{font-size:14px;display:grid;gap:4px}.log span{color:var(--faint);margin-right:8px;font-family:var(--mono);font-size:13px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:6px}
+.mt{background:var(--soft);border-radius:8px;padding:10px 12px}.mt span{font-size:13px;color:var(--muted)}.mt b{display:block;font-size:24px;font-weight:500;font-family:var(--mono)}
+.empty{padding:24px;text-align:center;color:var(--faint);font-size:14px}
+.notes{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:1000px){.notes{position:static}}
+.notes h2{font-size:15.5px;font-weight:600;margin:0 0 2px}
+.notes .sub{font-size:13px;color:var(--faint);margin:0 0 10px}
+.notes ol{margin:0;padding-left:18px;display:grid;gap:8px;font-size:14px}
+.notes .tip{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.main>*{animation:in .18s ease-out}@keyframes in{from{opacity:.4}to{opacity:1}}}
+.flow{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(84px,1fr);gap:0;min-width:520px;padding:4px 0}
+.fs{position:relative;text-align:center;display:grid;gap:3px;justify-items:center;font-size:12px;color:var(--faint)}
+.fs::before{content:"";position:absolute;top:8px;left:-50%;width:100%;height:2px;background:var(--line);z-index:0}
+.fs:first-child::before{display:none}
+.fs i{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);background:var(--panel);position:relative;z-index:1}
+.fs b{font-weight:500;color:var(--muted);font-size:12.5px}
+.fs.d::before,.fs.c::before{background:var(--ok)}
+.fs.d i{background:var(--ok);border-color:var(--ok)}.fs.d b{color:var(--fg)}
+.fs.c i{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}.fs.c b{color:var(--accent);font-weight:600}
+.clg{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 20px}
+.clt{margin:0 0 6px;font-size:11.5px;color:var(--faint);letter-spacing:.04em}
+.cl{display:flex;gap:8px;align-items:center;padding:5px 0;font-size:13px;cursor:pointer}
+.cl input{width:16px;height:16px;accent-color:var(--ok);margin:0}
+.cl input:checked+span{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.sel,.ta{width:100%;font:inherit;font-size:13px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg)}
+a.btn{text-decoration:none;display:inline-block}
+</style>
+
+<div class="wrap">
+  <div class="layout">
+    <div class="app">
+      <nav class="side" aria-label="관리자 메뉴">
+        <div class="logo">관리자페이지</div>
+        <button class="nv on" data-act="home">대시보드</button>
+        <div class="grp">개별서비스 관리</div>
+        <button class="nv sub" data-act="svc" data-arg="pre">사전검토</button>
+        <button class="nv sub" data-act="svc" data-arg="lic">발전사업허가</button>
+        <button class="nv sub" data-act="svc" data-arg="dev">개발행위허가</button>
+        <button class="nv sub" data-act="svc" data-arg="ppa">한전PPA접수</button>
+        <button class="nv sub" data-act="svc" data-arg="con">공사계획신고</button>
+        <div class="grp">패키지 서비스</div>
+        <button class="nv sub" data-act="pkgl" data-arg="license">인허가 패키지</button>
+        <button class="nv sub" data-act="pkgl" data-arg="building">건물지원 패키지</button>
+        <button class="nv sub" data-act="pkgl" data-arg="finance">금융지원 패키지</button>
+        <div class="grp">턴키 서비스</div>
+        <button class="nv sub" data-act="trkh">턴키 서비스</button>
+      </nav>
+      <main class="main" id="main"><div class="empty">화면을 불러오는 중</div></main>
+    </div>
+  </div>
+</div>
+
+<script>
+const S={pre:'사전검토',lic:'발전사업허가',dev:'개발행위허가',ppa:'한전PPA접수',con:'공사계획신고',sup:'지원사업 신청',grid:'계통연계·상계 신청'};
+const SK=['pre','lic','dev','ppa','con'];
+const PK={license:['인허가 패키지','사전검토 → 발전사업허가 → 개발행위허가 (+ 한전PPA접수 선택)'],building:['건물지원 패키지','사전검토 → 지원사업 신청 → 계통연계·상계 신청 → 공사계획신고'],finance:['금융지원 패키지','사전검토 → 발전사업허가 → 개발행위허가 → 공사계획신고 → 한전PPA접수']};
+const STG=['사전검토','계약','인허가','공사'];
+const O=[
+{no:'TRK-20261002-000001',t:'턴키',cust:'박OO',addr:'전북 완주군 OO리 123',kw:'500kW',st:'진행중',own:'정팀장',date:'10.02',sg:2,amt:'6억 2천만원',qs:'계약서 서명완료',next:'인허가 완료 예정 11.20',items:[['pre','PRE-20261002-000002','완료'],['lic','LIC-20261002-000004','완료'],['dev','DEV-20261002-000002','협의중'],['con','','대기'],['ppa','','대기']]},
+{no:'TRK-20261001-000002',t:'턴키',cust:'송OO',addr:'전북 진안군 OO면 77',kw:'1MW',st:'상담중',own:'미배정',date:'10.01',sg:0,amt:'견적 준비중',qs:'상담 진행중',next:'현장 방문 10.08',items:[['pre','PRE-20261001-000005','검토중'],['lic','','대기'],['dev','','대기'],['con','','대기'],['ppa','','대기']]},
+{no:'TRK-20260815-000001',t:'턴키',cust:'장OO',addr:'전북 임실군 OO리 210',kw:'300kW',st:'진행중',own:'정팀장',date:'08.15',sg:3,amt:'3억 9천만원',qs:'계약서 서명완료',next:'모듈 설치 10.15 · 준공 후 한전PPA 접수',items:[['pre','PRE-20260815-000001','완료'],['lic','LIC-20260818-000002','완료'],['dev','DEV-20260820-000001','완료'],['con','CON-20260910-000002','완료'],['ppa','','대기']]},
+{no:'TRK-20260402-000003',t:'턴키',cust:'문OO',addr:'전북 순창군 OO면 15',kw:'200kW',st:'완료',own:'이대리',date:'04.02',sg:4,amt:'2억 7천만원',qs:'계약서 서명완료',next:'준공·상업운전 개시 09.10',items:[['pre','PRE-20260402-000001','완료'],['lic','LIC-20260405-000001','완료'],['dev','DEV-20260410-000002','완료'],['con','CON-20260601-000001','완료'],['ppa','PPA-20260820-000004','완료']]},
+{no:'PKG-20261002-000001',t:'패키지',pk:'license',cust:'김OO',addr:'전북 전주시 OO동 45',kw:'99kW',st:'진행중',own:'이대리',date:'10.02',quote:'3,300,000원',qs:'계약서 서명완료',items:[['pre','PRE-20261002-000001','완료'],['lic','LIC-20261002-000003','서류검토'],['dev','','대기'],['ppa','','미선택','opt']]},
+{no:'PKG-20261002-000003',t:'패키지',pk:'license',cust:'조OO',addr:'전북 완주군 OO읍 60',kw:'99kW',st:'접수',own:'미배정',date:'10.02',quote:'산정 전',qs:'상담 전',items:[['pre','PRE-20261002-000003','접수'],['lic','','대기'],['dev','','대기'],['ppa','','대기','opt']]},
+{no:'PKG-20260910-000001',t:'패키지',pk:'license',cust:'백OO',addr:'전북 정읍시 OO면 3',kw:'49kW',st:'완료',own:'정팀장',date:'09.10',quote:'3,400,000원',qs:'계약서 서명완료',items:[['pre','PRE-20260910-000001','완료'],['lic','LIC-20260912-000001','완료'],['dev','DEV-20260915-000002','완료'],['ppa','PPA-20260925-000001','완료','opt']]},
+{no:'PKG-20261001-000004',t:'패키지',pk:'building',cust:'한OO',addr:'전북 익산시 OO로 7 (공장 지붕)',kw:'150kW',st:'견적발송',own:'이대리',date:'10.01',quote:'4,800,000원',qs:'견적서 발송완료 · 고객 확인 대기',items:[['pre','PRE-20261001-000002','검토중'],['sup','','대기'],['grid','','대기'],['con','','대기']]},
+{no:'PKG-20260920-000002',t:'패키지',pk:'building',cust:'신OO',addr:'전북 군산시 OO로 88 (창고 지붕)',kw:'200kW',st:'진행중',own:'정팀장',date:'09.20',quote:'5,200,000원',qs:'계약서 서명완료',items:[['pre','PRE-20260920-000001','완료'],['sup','SUP-20260921-000001','완료'],['grid','GRD-20260928-000002','접수완료'],['con','','대기']]},
+{no:'PKG-20260929-000002',t:'패키지',pk:'finance',cust:'윤OO',addr:'전북 김제시 OO면 88',kw:'300kW',st:'진행중',own:'정팀장',date:'09.29',quote:'5,500,000원',qs:'계약서 발송완료 · 서명 대기',items:[['pre','PRE-20260929-000001','완료'],['lic','LIC-20260930-000002','완료'],['dev','DEV-20261001-000001','접수'],['con','','대기'],['ppa','','대기']]},
+{no:'PKG-20260801-000001',t:'패키지',pk:'finance',cust:'류OO',addr:'전북 부안군 OO리 40',kw:'100kW',st:'완료',own:'이대리',date:'08.01',quote:'4,100,000원',qs:'계약서 서명완료',items:[['pre','PRE-20260801-000001','완료'],['lic','LIC-20260803-000001','완료'],['dev','DEV-20260806-000001','완료'],['con','CON-20260810-000001','완료'],['ppa','PPA-20260820-000001','완료']]},
+{no:'ORD-20261002-000006',t:'개별',cust:'정OO',addr:'전북 무주군 OO면 2',kw:'99kW',st:'접수',own:'미배정',date:'10.02',items:[['pre','PRE-20261002-000004','접수']]},
+{no:'ORD-20261001-000003',t:'개별',cust:'최OO',addr:'전북 정읍시 OO동 9',kw:'49kW',st:'접수',own:'미배정',date:'10.01',items:[['pre','PRE-20261001-000003','접수']]},
+{no:'ORD-20260930-000005',t:'개별',cust:'강OO',addr:'전북 부안군 OO리 31',kw:'99kW',st:'완료',own:'이대리',date:'09.30',items:[['lic','LIC-20260930-000001','완료']]},
+{no:'ORD-20260928-000002',t:'개별',cust:'오OO',addr:'전북 고창군 OO리 5',kw:'200kW',st:'진행중',own:'정팀장',date:'09.28',items:[['dev','DEV-20260928-000001','보완요청']]},
+{no:'ORD-20260927-000001',t:'개별',cust:'서OO',addr:'전북 남원시 OO동 12',kw:'99kW',st:'진행중',own:'이대리',date:'09.27',items:[['ppa','PPA-20260927-000001','접수완료']]},
+{no:'ORD-20260925-000004',t:'개별',cust:'임OO',addr:'전북 군산시 OO로 40',kw:'100kW',st:'완료',own:'정팀장',date:'09.25',items:[['con','CON-20260925-000001','완료']]}];
+const PFX={pre:'PRE',lic:'LIC',dev:'DEV',ppa:'PPA',con:'CON',sup:'SUP',grid:'GRD'};
+const DOCS={pre:'사전검토 결과서.pdf',lic:'발전사업허가증.pdf',dev:'개발행위허가증.pdf',ppa:'전력수급계약서.pdf',con:'공사계획신고 수리증.pdf',sup:'지원사업 선정통지서.pdf',grid:'계통연계·상계거래 확인서.pdf'};
+const addDays=(md,n)=>{const d=new Date(Date.UTC(2026,+md.slice(0,2)-1,+md.slice(3)));d.setUTCDate(d.getUTCDate()+n);return String(d.getUTCMonth()+1).padStart(2,'0')+'.'+String(d.getUTCDate()).padStart(2,'0');};
+O.forEach(o=>{if(o.t==='개별')return;
+  o.st='완료';o.qs='계약서 서명완료';if(o.own==='미배정')o.own='이대리';if(o.quote==='산정 전')o.quote='3,300,000원';
+  if(o.t==='턴키'){o.sg=4;if(o.amt==='견적 준비중')o.amt='11억 5천만원';o.next='준공·상업운전 개시 완료';}
+  const ymd='2026'+o.date.replace('.','');
+  o.items.forEach((i,n)=>{if(!i[1])i[1]=`${PFX[i[0]]}-${ymd}-${String(900+n+1).padStart(6,'0')}`;i[2]='완료';i[4]=addDays(o.date,(n+1)*12);});
+});
+O.forEach(o=>{if(o.t==='개별')o.items.forEach(i=>{if(i[2]==='완료'&&!i[4])i[4]=addDays(o.date,14);});});
+const N={
+ home:['신청 통합관리','첫 화면: 서비스·패키지·턴키별 현황 카드',['카드에 보여줄 숫자로 신규·진행중·완료 3개가 적절한가? (보완요청, 지연 등 추가?)','카드 순서와 묶음(개별 5 · 패키지 3 · 턴키 1)이 업무 흐름과 맞는가?','상단 숫자 4개(오늘 신규, 미배정, 서류 대기, 대리작성 대기)가 매일 보는 지표로 맞는가?']],
+ svc:['개별서비스 관리','서비스당 화면 1개, 모든 출처의 건이 모임',['개별·패키지·턴키 건을 한 목록에 섞어 보는 방식이 실무에 맞는가?','출처 필터 외에 상태별 필터도 필요한가?','서비스마다 담당자가 고정인가, 건별 배정인가?']],
+ sd:['서비스 상세','기존 상세 화면 + 소속 안내 줄',['패키지·턴키 소속 건에서 고객 연락은 서비스 담당과 패키지 담당 중 누가 하는가?','여기서 상태를 바꾸면 패키지·턴키 진행표에 자동 반영되는 방식에 동의하는가?']],
+ pkgh:['패키지 관리','패키지 3종 카드 → 패키지별 관리 목록',['패키지별 포함 서비스(카드의 진행 순서)가 실제와 맞는가?','앞으로 추가할 패키지가 있는가? (농촌태양광, 영농형 등)','패키지 카드에 견적 대기 건수도 따로 보여줄까?']],
+ pkgl:['패키지별 관리','해당 패키지 신청만 모은 목록',['목록 컬럼(고객, 용량, 진행률, 상태, 담당)으로 충분한가?','신규 건 담당자 배정은 이 화면에서 바로 할 수 있어야 하는가?']],
+ pkg:['패키지 상세','3종 패키지가 함께 쓰는 상세 화면',['견적서·계약서는 파일 첨부 발송인가, 전자서명(모두싸인) 연동인가?','하위 서비스 신청서는 관리자 대리작성으로 충분한가?','금융지원 패키지에 대출 승인 금액 같은 전용 칸이 필요한가?']],
+ trkh:['턴키 프로젝트','고객 카드로 보는 통합 화면',['고객 카드에 꼭 보여야 할 정보는? (현재 단계, 다음 일정, PM, 계약금액)','신규 상담 건과 진행 건을 탭으로 나누는 방식이 맞는가?','카드 대신 단계별 칸반(부지검토~상업운전 열)도 필요한가?']],
+ trk:['턴키 상세','프로젝트 단계 + 인허가 하위 서비스 + 비용',['프로젝트 단계 6개(부지검토~상업운전)가 실제 업무 순서와 맞는가?','계약 확정 시 하위 서비스 신청 건을 자동 생성할 것인가?','비용 항목과 지급 상태를 관리자페이지에서 관리할 것인가?']]};
+const bc={'개별':'bi','패키지':'bp','턴키':'bt'};
+const cat=s=>['접수','상담중','견적발송'].includes(s)?'신규':s==='완료'?'완료':'진행중';
+const icat=s=>s==='접수'?'신규':s==='완료'?'완료':'진행중';
+const sb=c=>`<span class="sb ${c==='신규'?'s-n':c==='완료'?'s-d':'s-i'}">${c}</span>`;
+const src=o=>o.t==='개별'?'개별서비스':o.t==='턴키'?'턴키 서비스':PK[o.pk][0];
+const stc=s=>s==='완료'?'ok':(s==='대기'?'wait':'');
+const act=o=>o.items.filter(i=>i[2]!=='미선택');const done=o=>act(o).filter(i=>i[2]==='완료').length;
+const prog=o=>`<span class="bar"><i style="width:${Math.round(done(o)/act(o).length*100)}%"></i></span>${done(o)}/${act(o).length}`;
+const byNo=no=>O.find(o=>o.no===no);
+const cnt3=list=>{const c={신규:0,진행중:0,완료:0};list.forEach(x=>c[x]++);return `<div class="cnt"><div class="n"><b>${c['신규']}</b>신규</div><div><b>${c['진행중']}</b>진행중</div><div><b>${c['완료']}</b>완료</div></div>`;};
+const svcRows=k=>{const r=[];O.forEach(o=>o.items.forEach(i=>{if(i[0]===k&&i[1])r.push({o,i});}));return r;};
+const M=document.getElementById('main');const F={svc:'전체',pkgl:'전체',trkh:'전체',pkgh:'전체',pkghS:'전체'};
+function notes(){}
+function nav(act,arg){document.querySelectorAll('.nv').forEach(n=>n.classList.toggle('on',n.dataset.act===act&&(n.dataset.arg||'')===(arg||'')));}
+function crumb(parts){return '<nav class="crumb" aria-label="현재 위치">'+parts.map((p,i)=>(i?'<span>›</span>':'')+(Array.isArray(p)?`<button class="lk" data-act="${p[1]}" data-arg="${p[2]||''}">${p[0]}</button>`:`<span>${p}</span>`)).join('')+'</nav>';}
+function chips(act,arg,list,cur,firstLabel){return '<div class="flt" role="group" aria-label="목록 필터">'+list.map(([k,n])=>`<button class="chip ${k===cur?'on':''}" data-act="${act}" data-arg="${arg}" data-f="${k}" aria-pressed="${k===cur}">${k==='전체'&&firstLabel?firstLabel:k}<em>${n}</em></button>`).join('')+'</div>';}
+
+function home(){nav('home');notes('home');
+const wait=O.reduce((a,o)=>a+(o.t!=='개별'&&cat(o.st)!=='신규'?o.items.filter(i=>!i[1]).length:0),0);
+const trk=O.filter(o=>o.t==='턴키');
+M.innerHTML=`<p class="h">대시보드</p><p class="hint">카드를 누르면 해당 관리 화면으로 이동합니다</p>
+<div class="metrics"><div class="mt"><span>오늘 신규</span><b>${O.filter(o=>o.date==='10.02'&&cat(o.st)==='신규').length}</b></div><div class="mt"><span>미배정</span><b>${O.filter(o=>o.own==='미배정').length}</b></div><div class="mt"><span>서류 대기</span><b>3</b></div><div class="mt"><span>완료</span><b>${O.filter(o=>o.st==='완료').length}</b></div></div>
+<div class="sec-h">개별서비스</div><div class="cards">`+SK.map(k=>{const r=svcRows(k);const s=t=>r.filter(x=>x.o.t===t).length;
+return `<button class="card-b" data-act="svc" data-arg="${k}"><div class="nm">${S[k]}<i>${r.length}건</i></div>${cnt3(r.map(x=>icat(x.i[2])))}<div class="ft">개별 ${s('개별')} · 패키지 ${s('패키지')} · 턴키 ${s('턴키')}</div></button>`;}).join('')+`</div>
+<div class="sec-h">패키지 서비스</div><div class="cards">`+Object.keys(PK).map(pk=>{const l=O.filter(o=>o.pk===pk);
+return `<button class="card-b" data-act="pkgl" data-arg="${pk}"><div class="nm">${PK[pk][0]}<i>${l.length}건</i></div>${cnt3(l.map(o=>cat(o.st)))}<div class="route">${PK[pk][1]}</div></button>`;}).join('')+`</div>
+<div class="sec-h">턴키 서비스</div><div class="cards"><button class="card-b" data-act="trkh"><div class="nm">턴키 서비스<i>${trk.length}건</i></div>${cnt3(trk.map(o=>cat(o.st)))}<div class="route">사전검토 → 계약 → 인허가 → 공사</div></button></div>`;}
+
+function svc(k){nav('svc',k);notes('svc',S[k]+' 관리');const rows=svcRows(k);
+const c=t=>t==='전체'?rows.length:rows.filter(r=>r.o.t===t).length;const vis=rows.filter(r=>F.svc==='전체'||r.o.t===F.svc);
+M.innerHTML=`<p class="h">${S[k]} 관리</p>`+crumb([['대시보드','home'],'개별서비스',S[k]])+`<p class="hint">개별·패키지·턴키에서 들어온 ${S[k]} 건이 모두 모입니다</p>`+
+chips('svc',k,['전체','개별','패키지','턴키'].map(t=>[t,c(t)]),F.svc,'전체 서비스')+
+(vis.length?`<div class="tw"><table><tr><th>${S[k]} 번호</th><th>고객</th><th>서비스명</th><th>소속 신청번호</th><th>상태</th><th>세부상태</th></tr>`+
+vis.map(r=>`<tr class="rw" tabindex="0" data-act="sp" data-arg="${k}|${r.i[1]}"><td class="no">${r.i[1]}</td><td>${r.o.cust}</td><td><span class="b ${bc[r.o.t]}">${src(r.o)}</span></td><td class="no st">${r.o.no}</td><td>${sb(icat(r.i[2]))}</td><td class="st">${r.i[2]}</td></tr>`).join('')+'</table></div>':'<div class="empty">이 서비스에서 들어온 신청이 아직 없습니다</div>');}
+
+const STEPS={pre:['접수','검토중','검토완료','회원 공개'],lic:['접수','상담중','계약완료','서류준비','허가접수','허가완료'],dev:['접수','상담중','계약완료','현장확인','서류준비','허가접수','허가완료'],ppa:['접수','상담중','계약완료','서류준비','접수완료','완료'],con:['접수','상담중','계약완료','서류준비','접수완료','완료'],sup:['접수','서류준비','신청완료','선정완료'],grid:['접수','서류준비','접수완료','승인완료']};
+const MAPST={pre:{접수:0,검토중:1},lic:{접수:0,서류검토:3,보완요청:3},dev:{접수:0,협의중:5,보완요청:4},ppa:{접수:0,접수완료:4},con:{접수:0},sup:{접수:0},grid:{접수:0,접수완료:2}};
+const stepIdx=(k,st)=>st==='완료'?STEPS[k].length-1:(MAPST[k][st]??0);
+const CHK={
+ pre:{t:'사전검토 체크',g:[['검토 항목',['조례 검토 (이격거리·입지 제한)','한전 계통연계 검토 (변전소·MTR·선로 여유용량)','현장조건 검토 (음영·경사·진입로·구조)','예상 설치용량 산정 · 배치도']],['결과 공개',['종합의견 작성 · 종합 판정','신청 가능 서비스 · 추천 패키지 선택','회원 공개']]],f:[['검토자',o=>o.own],['종합 판정',(o,d)=>d?'진행 가능':'판정 전'],['공개일',(o,d,i)=>d?i[4]:'-']]},
+ lic:{t:'발전사업허가 체크',g:[['제출서류',['발전사업허가 신청서','사업계획서','송전관계 일람도','발전원가 명세서','부지 사용권 증빙 (등기부·임대차계약)','신청인 증빙 (사업자등록증·법인등기)']],['처리',['허가기관 접수','보완 대응','허가증 수령 · 고객 전달']]],f:[['허가기관',()=>'전북특별자치도'],['접수번호',(o,d)=>d?'2026-전력-0'+o.no.slice(-3):'-'],['허가일',(o,d,i)=>d?i[4]:'-'],['사업개시 기한',(o,d)=>d?'허가일로부터 3년':'-']]},
+ dev:{t:'개발행위허가 체크',g:[['사전 준비',['현장 확인','토목설계 도서 작성','관련 부서 협의 (농지·산지·도로·배수)']],['제출 · 처리',['개발행위허가 신청서 접수','보완 대응','허가증 수령 · 고객 전달']]],f:[['허가기관',o=>o.addr.split(' ')[1]+'청'],['협의 부서',()=>'농지 · 도로'],['허가일',(o,d,i)=>d?i[4]:'-'],['허가번호',(o,d)=>d?'제2026-'+o.no.slice(-3)+'호':'-']]},
+ ppa:{t:'한전PPA접수 체크',g:[['제출서류',['전력수급계약 신청서','발전사업허가증 사본','사용전검사 확인증','사업자등록증 · 통장 사본','계량기 설치 확인']],['처리',['한전 지사 접수','전력수급계약 체결','전력 거래 개시 확인']]],f:[['한전 지사',o=>o.addr.split(' ')[1].replace('시','').replace('군','')+'지사'],['계약일',(o,d,i)=>d?i[4]:'-'],['고객번호',(o,d)=>d?'01-'+o.no.slice(-4)+'-2026':'-'],['거래 개시일',(o,d,i)=>d?addDays(i[4],7):'-']]},
+ con:{t:'공사계획신고 체크',g:[['제출서류',['공사계획신고서','전기설계도서','감리원 배치 확인서','시공업체 서류']],['처리',['신고 접수','신고 수리','사용전검사 신청 안내']]],f:[['신고기관',()=>'전북특별자치도'],['감리업체',()=>'OO전기감리'],['수리일',(o,d,i)=>d?i[4]:'-'],['착공 예정일',(o,d,i)=>d?addDays(i[4],10):'-']]},
+ sup:{t:'지원사업 신청 체크',g:[['서류',['참여기업 확인','설치희망자 신청서','건축물 소유 증빙','자가사용 확인']],['처리',['공단 신청 접수','선정 통지 확인']]],f:[['공고명',()=>'2026 신재생에너지 건물지원'],['선정일',(o,d,i)=>d?i[4]:'-']]},
+ grid:{t:'계통연계 · 상계 신청 체크',g:[['서류',['계통연계 신청서','단선결선도','상계거래 신청서']],['처리',['한전 접수','연계 승인 확인']]],f:[['한전 지사',()=>'익산지사'],['승인일',(o,d,i)=>d?i[4]:'-']]}};
+function findIt(arg){const [k,no]=arg.split('|');const o=O.find(x=>x.items.some(i=>i[1]===no));return{k,no,o,it:o.items.find(i=>i[1]===no)};}
+function belong(o,k,no){const back=o.t==='턴키'?'trk':o.t==='패키지'?'pkg':null;
+ return back?`<div class="banner"><span>이 건은 ${o.t==='턴키'?'턴키 서비스':PK[o.pk][0]} <span class="no">${o.no}</span> 소속입니다</span><button class="btn" data-act="${back}" data-arg="${o.no}">${o.t==='턴키'?'프로젝트':'패키지'} 보기</button></div>`:'';}
+function sp(arg){const {k,no,o,it}=findIt(arg);nav('svc',k);const st=STEPS[k],ci=stepIdx(k,it[2]),done=it[2]==='완료';
+ const dates=st.map((_,j)=>j<=ci?(done&&j===st.length-1?it[4]:addDays(o.date,j*3)):'');
+ M.innerHTML=`<p class="h">${o.cust} · ${S[k]} 진행현황 ${sb(icat(it[2]))}</p>`+crumb([['대시보드','home'],[S[k]+' 관리','svc',k],o.cust+' 진행현황'])+belong(o,k,no)+
+ `<div class="card"><div class="ct">신청 요약 <button class="btn p" data-act="sd" data-arg="${k}|${no}">상세보기</button></div><div class="kv"><div><span>신청번호</span><span class="no" style="display:inline;color:inherit;font-size:inherit">${no}</span></div><div><span>고객</span>${o.cust}</div><div><span>부지주소</span>${o.addr}</div><div><span>용량</span>${o.kw}</div><div><span>담당</span>${o.own}</div><div><span>서비스명</span>${src(o)}</div></div></div>
+ <div class="card"><div class="ct">진행 단계 <span class="st">${ci+1}/${st.length} 단계${it[2]==='보완요청'?' · 보완요청 중':''}</span></div><div class="tw"><div class="flow">${st.map((s2,j)=>`<div class="fs ${j<ci||done?'d':j===ci?'c':''}"><i></i><b>${s2}</b><span>${dates[j]||'예정'}</span></div>`).join('')}</div></div></div>
+ <div class="card"><div class="ct">처리 이력</div><div class="log">${st.slice(0,ci+1).map((s2,j)=>`<div><span>${dates[j]}</span>${s2}${j===0?(o.t==='개별'?' · 고객 신청':' · 관리자 대리작성'):''}</div>`).reverse().join('')}</div></div>`;}
+function sd(arg){const {k,no,o,it}=findIt(arg);nav('svc',k);const c=CHK[k],st=STEPS[k],ci=stepIdx(k,it[2]),done=it[2]==='완료';
+ const all=c.g.flatMap(x=>x[1]);let n=0;const on=done?all.length:Math.round(all.length*ci/(st.length-1));
+ M.innerHTML=`<p class="h">${S[k]} 상세보기 <span class="no">${no}</span></p>`+crumb([['대시보드','home'],[S[k]+' 관리','svc',k],[o.cust+' 진행현황','sp',k+'|'+no],'상세보기'])+belong(o,k,no)+
+ `<div class="card"><div class="ct">기본정보</div><div class="kv"><div><span>고객</span>${o.cust}</div><div><span>부지주소</span>${o.addr}</div><div><span>용량</span>${o.kw}</div><div><span>신청 경로</span>${o.t==='개별'?'고객 직접 신청':'관리자 대리작성'}</div><div><span>접수일</span>${o.date}</div></div></div>
+ <div class="card"><div class="ct">${c.t} <span class="st">${on}/${all.length} 완료</span></div><div class="clg">${c.g.map(([gt,items])=>`<div><p class="clt">${gt}</p>${items.map(t=>{n++;return `<label class="cl"><input type="checkbox" ${n<=on?'checked':''}><span>${t}</span></label>`;}).join('')}</div>`).join('')}</div>
+ <div class="kv" style="margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)">${c.f.map(([l,fn])=>`<div><span>${l}</span>${fn(o,done,it)}</div>`).join('')}</div>${k==='pre'?'<div style="margin-top:10px"><a class="btn" href="https://claude.ai/artifact/9Wa8jEE59wt5s3PVHaL79V" target="_blank" rel="noopener">검토결과 작성 화면 열기</a></div>':''}</div>
+ <div class="card"><div class="ct">진행상태 관리 <button class="btn p">저장</button></div><div class="kv"><div><span>처리상태</span><select class="sel">${[...st,'보완요청','취소'].filter((v,i,a)=>a.indexOf(v)===i).map(s2=>`<option ${s2===(done?st.at(-1):st[ci])?'selected':''}>${s2}</option>`).join('')}</select></div><div><span>담당</span>${o.own}</div></div>
+ <div class="kv" style="margin-top:10px"><div style="grid-column:1/-1"><span>고객 안내</span><textarea class="ta" rows="2">${done?S[k]+' 절차가 완료되었습니다. 결과 문서는 마이페이지 서류함에서 확인하실 수 있습니다.':''}</textarea></div><div style="grid-column:1/-1"><span>관리자 내부 메모</span><textarea class="ta" rows="2"></textarea></div></div></div>
+ ${done?`<div class="card"><div class="ct">결과 문서 ${sb('완료')}</div><div class="log"><div><span>${it[4]}</span>${DOCS[k]} · 고객 공개</div></div></div>`:''}`;}
+
+function pkgh(){nav('pkgh');notes('pkgh');const all=O.filter(o=>o.t==='패키지');
+const byP=all.filter(o=>F.pkgh==='전체'||PK[o.pk][0]===F.pkgh);const vis=byP.filter(o=>F.pkghS==='전체'||cat(o.st)===F.pkghS);
+const cp=k=>k==='전체'?all.length:all.filter(o=>PK[o.pk][0]===k).length;const cs=k=>k==='전체'?byP.length:byP.filter(o=>cat(o.st)===k).length;
+const q=all.filter(o=>o.st==='견적발송').length,ua=all.filter(o=>o.own==='미배정').length,wt=all.reduce((a,o)=>a+(cat(o.st)!=='신규'?o.items.filter(i=>!i[1]).length:0),0);
+M.innerHTML=`<p class="h">패키지 서비스</p>`+crumb([['대시보드','home'],'패키지 서비스'])+
+`<div class="metrics"><div class="mt"><span>패키지 전체</span><b>${all.length}</b></div><div class="mt"><span>견적 확인 대기</span><b>${q}</b></div><div class="mt"><span>미배정</span><b>${ua}</b></div><div class="mt"><span>완료</span><b>${all.filter(o=>o.st==='완료').length}</b></div></div>
+<div class="sec-h">패키지별 현황</div><div class="cards">`+
+Object.keys(PK).map(pk=>{const l=all.filter(o=>o.pk===pk);
+return `<button class="card-b" data-act="pkgl" data-arg="${pk}"><div class="nm">${PK[pk][0]}<i>${l.length}건</i></div>${cnt3(l.map(o=>cat(o.st)))}<div class="route">${PK[pk][1]}</div><div class="ft">견적 확인 대기 ${l.filter(o=>o.st==='견적발송').length}건 · 미배정 ${l.filter(o=>o.own==='미배정').length}건</div></button>`;}).join('')+`</div>
+<div class="sec-h">패키지 신청 통합 목록</div>`+
+chips('pkgh','',['전체',...Object.keys(PK).map(k=>PK[k][0])].map(k=>[k,cp(k)]),F.pkgh,'전체 패키지')+
+chips('pkgh','',['전체','신규','진행중','완료'].map(k=>[k,cs(k)]),F.pkghS,'전체 상태').replace(/data-f=/g,'data-fk="pkghS" data-f=')+
+(vis.length?`<div class="tw"><table><tr><th>신청번호</th><th>패키지</th><th>고객</th><th>용량</th><th>진행률</th><th>상태</th><th>견적·계약</th><th>담당</th></tr>`+
+vis.map(o=>`<tr class="rw" tabindex="0" data-act="pkg" data-arg="${o.no}"><td class="no">${o.no}</td><td><span class="b bp">${PK[o.pk][0].replace(' 패키지','')}</span></td><td>${o.cust}</td><td>${o.kw}</td><td>${prog(o)}</td><td>${sb(cat(o.st))}</td><td class="st">${o.qs}</td><td class="${o.own==='미배정'?'wait':''}">${o.own}</td></tr>`).join('')+'</table></div>':'<div class="empty">조건에 맞는 패키지 신청이 없습니다</div>');}
+
+function pkgl(pk){nav('pkgl',pk);notes('pkgl',PK[pk][0]+' 관리');const l=O.filter(o=>o.pk===pk);
+const c=t=>t==='전체'?l.length:l.filter(o=>cat(o.st)===t).length;const vis=l.filter(o=>F.pkgl==='전체'||cat(o.st)===F.pkgl);
+M.innerHTML=`<p class="h">${PK[pk][0]} 관리</p>`+crumb([['대시보드','home'],['패키지 서비스','pkgh'],PK[pk][0]])+`<p class="hint">진행 순서: ${PK[pk][1]}</p>`+
+chips('pkgl',pk,['전체','신규','진행중','완료'].map(t=>[t,c(t)]),F.pkgl)+
+(vis.length?`<div class="tw"><table><tr><th>신청번호</th><th>고객</th><th>용량</th><th>진행률</th><th>상태</th><th>견적·계약</th><th>담당</th></tr>`+
+vis.map(o=>`<tr class="rw" tabindex="0" data-act="pkg" data-arg="${o.no}"><td class="no">${o.no}</td><td>${o.cust}</td><td>${o.kw}</td><td>${prog(o)}</td><td>${sb(cat(o.st))}</td><td class="st">${o.qs}</td><td class="${o.own==='미배정'?'wait':''}">${o.own}</td></tr>`).join('')+'</table></div>':'<div class="empty">해당 상태의 신청이 없습니다</div>');}
+
+function itemTable(o){return `<div class="tw"><table><tr><th>서비스</th><th>서비스 번호</th><th>상태</th><th></th></tr>`+
+o.items.map((i,n)=>`<tr><td>${n+1}. ${S[i[0]]}${i[3]?' <span class="b bi">선택</span>':''}</td><td class="no ${i[1]?'':'wait'}">${i[1]||(i[2]==='미선택'?'–':'미작성')}</td><td class="${stc(i[2])} ${i[2]==='미선택'?'wait':''}">${i[2]}</td><td>${i[1]?`<button class="btn" data-act="sp" data-arg="${i[0]}|${i[1]}">진행현황</button>`:i[2]==='미선택'?'<button class="btn">서비스 추가</button>':'<button class="btn p">신청서 대리작성</button>'}</td></tr>`).join('')+'</table></div>';}
+
+function pkg(no){const o=byNo(no);nav('pkgl',o.pk);notes('pkg',PK[o.pk][0]+' 상세');
+M.innerHTML=`<p class="h">${PK[o.pk][0]} 상세 <span class="no">${o.no}</span> ${sb(cat(o.st))}</p>`+crumb([['대시보드','home'],['패키지 서비스','pkgh'],[PK[o.pk][0],'pkgl',o.pk],o.cust])+`
+<div class="card"><div class="ct">기본정보 <button class="btn">담당자 변경</button></div><div class="kv"><div><span>패키지</span>${PK[o.pk][0]}</div><div><span>고객</span>${o.cust}</div><div><span>부지주소</span>${o.addr}</div><div><span>용량</span>${o.kw}</div><div><span>담당</span>${o.own}</div></div></div>
+<div class="card"><div class="ct">견적·계약 <span style="display:flex;gap:6px"><button class="btn">견적서 발송</button><button class="btn">계약서 발송</button></span></div><div class="kv"><div><span>견적금액</span>${o.quote}</div><div><span>진행 상태</span>${o.qs}</div></div></div>
+<div class="card"><div class="ct">하위 서비스 진행표 <span class="st">${done(o)}/${act(o).length} 완료</span></div>${itemTable(o)}</div>
+<div class="card"><div class="ct">서류 <button class="btn">서류 보완 요청</button></div><div class="log"><div><span>요청</span>토지대장 · 고객 미제출</div><div><span>제출</span>사업자등록증.pdf</div></div></div>
+<div class="card"><div class="ct">이력 <button class="btn">메모 작성</button></div><div class="log"><div><span>${o.date} 14:10</span>${o.qs} · 고객 공개</div><div><span>${o.date} 10:30</span>고객 통화 · 내부 메모</div></div></div>`;}
+
+function mini(o){return '<div class="mini" aria-hidden="true">'+STG.map((_,i)=>`<i class="${i<o.sg?'d':i===o.sg?'c':''}"></i>`).join('')+'</div>';}
+function trkh(){nav('trkh');notes('trkh');const l=O.filter(o=>o.t==='턴키');
+const c=t=>t==='전체'?l.length:l.filter(o=>cat(o.st)===t).length;const vis=l.filter(o=>F.trkh==='전체'||cat(o.st)===F.trkh);
+M.innerHTML=`<p class="h">턴키 서비스</p>`+crumb([['대시보드','home'],'턴키 서비스'])+`<p class="hint">고객 카드를 누르면 프로젝트 상세가 열립니다</p>`+
+chips('trkh','',['전체','신규','진행중','완료'].map(t=>[t,c(t)]),F.trkh)+
+(vis.length?'<div class="cards">'+vis.map(o=>`<button class="card-b" data-act="trk" data-arg="${o.no}"><div class="cust"><div class="av">${o.cust[0]}</div><div class="who"><b>${o.cust}</b><span>${o.kw} · ${o.addr.split(' ').slice(0,2).join(' ')}</span></div>${sb(cat(o.st))}</div>${mini(o)}<div class="meta"><span>${o.sg>=STG.length?'공사 완료':'현재 '+STG[o.sg]}</span><span>PM ${o.own}</span></div><div class="ft">${o.next}</div></button>`).join('')+'</div>':'<div class="empty">해당 상태의 프로젝트가 없습니다</div>');}
+
+function trk(no){const o=byNo(no);nav('trkh');notes('trk',o.cust+' 턴키 상세');
+M.innerHTML=`<p class="h">턴키 상세 <span class="no">${o.no}</span> ${sb(cat(o.st))}</p>`+crumb([['대시보드','home'],['턴키 서비스','trkh'],o.cust])+`
+<div class="card"><div class="ct">기본정보 <button class="btn">PM 변경</button></div><div class="kv"><div><span>고객</span>${o.cust}</div><div><span>부지</span>${o.addr}</div><div><span>용량</span>${o.kw}</div><div><span>PM</span>${o.own}</div></div></div>
+<div class="card"><div class="ct">견적·계약 <span style="display:flex;gap:6px"><button class="btn">견적서 발송</button><button class="btn">계약서 발송</button></span></div><div class="kv"><div><span>계약금액</span>${o.amt}</div><div><span>진행 상태</span>${o.qs}</div></div></div>
+<div class="card"><div class="ct">프로젝트 단계 <button class="btn">단계 완료 처리</button></div><div class="stg">${STG.map((s,i)=>`<div class="${i<o.sg?'d':i===o.sg?'c':''}">${s}</div>`).join('')}</div><div class="st" style="margin-top:6px">${o.sg>=STG.length?'전 단계 완료':'현재: '+STG[o.sg]} · ${o.next}</div></div>
+<div class="card"><div class="ct">인허가 하위 서비스 <span class="st">${done(o)}/${act(o).length} 완료</span></div>${itemTable(o)}</div>
+<div class="card"><div class="ct">비용</div><div class="kv"><div><span>계약금 (계약)</span>${o.sg>=2?'입금완료':'예정'}</div><div><span>중도금 (인허가 완료)</span>${o.sg>=3?'입금완료':'예정'}</div><div><span>잔금 (공사 완료)</span>${o.sg>=4?'입금완료':'예정'}</div></div></div>`;}
+
+const V={home,svc,sp,sd,pkgh,pkgl,pkg,trkh,trk};
+function run(el){const a=el.dataset.act,g=el.dataset.arg||'';
+if(el.dataset.f)F[el.dataset.fk||a]=el.dataset.f;else{if(F[a]!==undefined)F[a]='전체';if(a==='pkgh')F.pkghS='전체';}
+V[a](g);if(!el.dataset.f)M.scrollIntoView({block:'nearest'});}
+document.querySelector('.app').addEventListener('click',e=>{const el=e.target.closest('[data-act]');if(el)run(el);});
+document.querySelector('.app').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('tr.rw'))run(e.target);});
+home();
+</script>

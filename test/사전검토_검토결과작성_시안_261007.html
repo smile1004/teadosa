@@ -1,0 +1,370 @@
+<title>사전검토 검토결과 표준화</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* Layout: 실제 관리자 화면(admin/css/style.css)과 같은 남색 사이드바 + 흰 패널. 관리자 화면이 라이트 전용이라 단일 테마로 고정. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --sec:#fafbfc; --line:#e1e7ec; --line2:#dce2e8;
+  --fg:#16243a; --muted:#66758a; --faint:#8995a5;
+  --navy:#102b4c; --navy2:#163152; --orange:#e97625; --orange-bg:#fff4ea;
+  --green:#1f8d52; --green-bg:#eaf7ef; --red:#a42a2a; --red-bg:#fff4f4; --amber:#8c5900; --amber-bg:#fff3dd;
+  --sans:"Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:14px;line-height:1.55}
+.app{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100%}
+@media(max-width:820px){.app{grid-template-columns:minmax(0,1fr)}}
+.side{background:var(--navy);color:#fff;padding:22px 16px;display:flex;flex-direction:column;gap:4px}
+.brand{font-weight:800;font-size:15px;padding:0 8px 16px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:10px}
+.side p{margin:14px 10px 4px;color:#829ab4;font-size:11px;font-weight:800;letter-spacing:.12em}
+.side a{display:block;padding:10px 12px;border-radius:11px;color:#dce6f0;font-size:14px;font-weight:700;text-decoration:none}
+.side a.on{background:rgba(255,255,255,.12);color:#fff;box-shadow:inset 3px 0 0 #f19135}
+@media(max-width:820px){.side{flex-direction:row;flex-wrap:wrap}.side .brand,.side p{width:100%}}
+.work{min-width:0;padding-inline:16px;padding-block:20px 60px}
+@media(min-width:900px){.work{padding-inline:32px}}
+.inner{max-width:1040px;margin:0 auto;display:grid;gap:18px}
+.draft{background:var(--orange-bg);border:1px solid #f4cfae;color:#8a4310;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600}
+.head .eyebrow{margin:0 0 6px;color:var(--orange);font-size:11px;font-weight:800;letter-spacing:.16em}
+.head h1{margin:0;font-size:28px;letter-spacing:-.03em;text-wrap:balance}
+.head p{margin:8px 0 0;color:var(--muted)}
+.panel{background:var(--panel);border:1px solid #e0e6ed;border-radius:18px;padding:22px;box-shadow:0 9px 28px rgba(28,45,68,.05);display:grid;gap:16px}
+@media(max-width:620px){.panel{padding:16px}}
+.ptitle{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px}
+.ptitle .k{margin:0;color:var(--orange);font-size:11px;font-weight:800;letter-spacing:.16em}
+.ptitle h2{margin:3px 0 0;font-size:20px;letter-spacing:-.02em}
+.basic{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px 18px;margin:0}
+.basic dt{color:var(--faint);font-size:12px}.basic dd{margin:2px 0 0;font-weight:700}
+.sec{border:1px solid var(--line);border-radius:14px;background:var(--sec);padding:18px;display:grid;gap:14px}
+.st{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px}
+.st .t{display:flex;gap:12px;align-items:flex-start;min-width:0}
+.num{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--green-bg);color:var(--green);font-size:12px;font-weight:800;flex:0 0 auto}
+.st h3{margin:0 0 3px;font-size:16px}
+.st p{margin:0;color:#7b8593;font-size:12.5px}
+.new{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--orange-bg);color:var(--orange);font-size:11px;font-weight:800;vertical-align:2px}
+.same{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#eef2f6;color:var(--muted);font-size:11px;font-weight:700;vertical-align:2px}
+.box{background:#fff;border:1px solid #e6ebf0;border-radius:12px;padding:14px 16px;display:grid;gap:12px}
+.box h4{margin:0;font-size:13px;color:#354052;font-weight:800;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+label.f{display:grid;gap:6px;min-width:0;font-size:12.5px;font-weight:700;color:#435268}
+input[type=text],input[type=date],input[type=number],input[type=tel],select,textarea{width:100%;border:1px solid var(--line2);border-radius:10px;background:#fff;color:#172033;font:inherit;font-size:14px;padding:9px 12px;font-weight:400}
+textarea{resize:vertical;line-height:1.65}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#31825b;box-shadow:0 0 0 3px #eaf5ee}
+input[readonly]{background:#f6f8fa;color:#4b5868}
+.row{display:grid;grid-template-columns:minmax(120px,170px) minmax(0,1fr);gap:10px 14px;align-items:center;padding:10px 0;border-top:1px dashed #e6ebf0}
+.row:first-of-type{border-top:0}
+.row .lb{font-weight:700;font-size:13.5px}
+@media(max-width:620px){.row{grid-template-columns:minmax(0,1fr)}}
+.seg{display:inline-flex;flex-wrap:wrap;gap:6px}
+.seg label{position:relative}
+.seg input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.seg span{display:inline-block;padding:6px 14px;border:1px solid var(--line2);border-radius:999px;background:#fff;font-size:13px;font-weight:700;color:#4b5868;cursor:pointer}
+.seg input:focus-visible+span{box-shadow:0 0 0 3px #d6e9ff}
+.seg input:checked+span{background:var(--navy2);border-color:var(--navy2);color:#fff}
+.seg input[value=bad]:checked+span,.seg input[value=no]:checked+span{background:var(--red);border-color:var(--red)}
+.seg input[value=ok]:checked+span,.seg input[value=yes]:checked+span{background:var(--green);border-color:var(--green)}
+.seg input[value=wait]:checked+span{background:var(--amber);border-color:var(--amber)}
+.kepco{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.reveal{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;padding:12px;border-radius:10px;background:var(--red-bg);border:1px solid #f0caca}
+.reveal small{grid-column:1/-1;color:var(--red);font-size:12px;font-weight:700}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.chk{position:relative}
+.chk input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.chk span{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--line2);border-radius:10px;background:#fff;font-size:13.5px;font-weight:700;color:#4b5868;cursor:pointer}
+.chk span::before{content:"";width:14px;height:14px;border:1.5px solid #b9c3cf;border-radius:4px;background:#fff}
+.chk input:checked+span{border-color:var(--navy2);color:var(--navy2);background:#eef3f9}
+.chk input:checked+span::before{background:var(--navy2);border-color:var(--navy2);box-shadow:inset 0 0 0 2px #fff}
+.chk input:focus-visible+span{box-shadow:0 0 0 3px #d6e9ff}
+.details{display:grid;gap:10px}
+.detail{display:grid;gap:6px;padding:12px;border-radius:10px;background:#f7f9fb;border:1px solid #e6ebf0}
+.detail b{font-size:13px}
+.photos{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.photos figure{margin:0;width:120px;display:grid;gap:4px;font-size:11.5px;color:var(--muted)}
+.photos img,.ph{width:120px;height:84px;object-fit:cover;border-radius:8px;border:1px solid #e6ebf0;background:#eef2f6;display:grid;place-items:center;color:var(--faint);font-size:12px}
+.upl{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px dashed #9fb0c3;border-radius:10px;background:#fff;color:var(--navy2);font-weight:700;font-size:13px;cursor:pointer}
+.upl input{display:none}
+.calc2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}.calc2 .full{grid-column:1/-1}@media(max-width:620px){.calc2{grid-template-columns:minmax(0,1fr)}}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.final{padding:14px 16px;border-radius:12px;background:#edf7f1;border:1px solid #cde4d6;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.final b{font-size:22px;font-variant-numeric:tabular-nums}
+.btn{font:inherit;font-size:13px;font-weight:800;min-height:38px;padding:0 14px;border-radius:10px;border:1px solid #ccd6e1;background:#fff;color:#263a55;cursor:pointer}
+.btn.p{background:var(--navy2);border-color:var(--navy2);color:#fff}
+.btn:focus-visible{outline:2px solid #31825b;outline-offset:2px}
+.hint{font-size:12px;color:var(--faint);margin:0}
+.verdict{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.cond{display:grid;gap:12px;padding:14px 16px;border-radius:12px;border:1px solid #f1d9a8;background:#fffaf0}
+.cond h4{margin:0;font-size:13px;font-weight:800;color:var(--amber)}
+.pill{font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px}
+.p-in{background:#eef2f6;color:#526174}.p-out{background:var(--green-bg);color:var(--green)}
+.collapsed{color:var(--muted);font-size:13px}
+.actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.status-auto{font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:#eef2f6;color:#526174;white-space:nowrap}
+.status-auto.ok{background:var(--green-bg);color:var(--green)}.status-auto.bad{background:var(--red-bg);color:var(--red)}.status-auto.cond{background:var(--amber-bg);color:var(--amber)}
+@media (prefers-reduced-motion:no-preference){.reveal,.detail,.cond{animation:fade .16s ease-out}@keyframes fade{from{opacity:.3}to{opacity:1}}}
+.ss-toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.ss-bulk{display:flex;gap:8px}
+.ss-list{display:grid;gap:8px;padding:16px;background:#fff;border:1px solid #e1e9e5;border-radius:16px}
+.ss-item{display:grid;grid-template-columns:auto 46px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid #e6ebef;border-radius:10px;cursor:pointer}
+.ss-item.pk{grid-template-columns:auto minmax(0,1fr) auto}
+.ss-item:has(input:checked){border-color:#bfdccb;background:#f4faf6}
+.ss-item input{width:18px;height:18px;margin:0;accent-color:#31825b}
+.ss-item .code{display:inline-flex;justify-content:center;padding:3px 0;border-radius:999px;background:#eef1f4;font-size:12px;font-weight:800;color:#435466}
+.ss-item strong{font-size:14px;color:#172033}
+.ss-item small{display:block;font-size:12px;font-weight:500;color:#7b8593}
+.ss-item .price{font-size:13px;color:#435466;white-space:nowrap;text-align:right}
+.ss-sum{margin:0;font-size:13px;color:#206344;font-weight:700}
+@media(max-width:760px){.ss-item{grid-template-columns:auto 46px minmax(0,1fr)}.ss-item .price{grid-column:3;white-space:normal;text-align:left}.ss-item.pk{grid-template-columns:auto minmax(0,1fr)}.ss-item.pk .price{grid-column:2}}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+</style>
+
+<div class="app">
+  <nav class="side" aria-label="관리자 메뉴">
+    <div class="brand">관리자페이지</div>
+    <p>운영 관리</p>
+    <a href="#top">대시보드</a>
+    <a href="#top">회원관리</a>
+    <p>서비스 관리</p>
+    <a class="on" href="#top">사전검토 관리</a>
+    <a href="#top">발전사업허가 관리</a>
+    <a href="#top">개발행위허가 관리</a>
+    <a href="#top">한전PPA 관리</a>
+    <a href="#top">공사계획신고 관리</a>
+  </nav>
+
+  <div class="work" id="top">
+    <div class="inner">
+
+      <section class="head">
+        <p class="eyebrow">PRECHECK DETAIL</p>
+        <h1>사전검토 신청 상세</h1>
+        <p>신청내역을 확인하고 검토결과를 작성한 뒤 회원에게 공개할 수 있습니다.</p>
+      </section>
+
+      <section class="panel">
+        <div class="ptitle"><div><p class="k">REQUEST</p><h2>신청 기본정보</h2></div></div>
+        <dl class="basic">
+          <div><dt>신청번호</dt><dd>PRE-20261002-000007</dd></div>
+          <div><dt>신청인</dt><dd>아무개</dd></div>
+          <div><dt>부지주소</dt><dd>전북특별자치도 익산시 금마면 동고도리 123</dd></div>
+          <div><dt>부지 유형</dt><dd>토지형 · 임야</dd></div>
+          <div><dt>부지면적</dt><dd>2,400㎡</dd></div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <div class="ptitle">
+          <div><p class="k">REVIEW</p><h2>검토결과 작성</h2></div>
+        </div>
+
+
+        <!-- 01 조례 -->
+        <section class="sec" aria-labelledby="h-ord">
+          <div class="st">
+            <div class="t"><span class="num">01</span><div><h3 id="h-ord">조례 검토</h3><p>항목별로 적합·저촉·미해당을 고르면 상태가 자동으로 정해집니다. 저촉을 고르면 거리 입력칸이 열립니다.</p></div></div>
+            <span class="status-auto" id="ord-status">검토 전</span>
+          </div>
+
+          <div class="box">
+            <h4>기준 조례</h4>
+            <div class="grid">
+              <label class="f" style="grid-column:span 2">조례명<input id="ord-name" type="text" value="김제시 도시계획 조례"></label>
+              <label class="f">최종 개정일<input id="ord-rev" type="date" value="2025-07-15"></label>
+              <label class="f">검토일<input id="ord-date" type="date" value="2026-10-02"></label>
+            </div>
+          </div>
+
+          <div class="box" id="ord-items">
+            <h4>이격거리 항목</h4>
+            <div class="row" data-ord="도로"><span class="lb">도로 이격거리</span>
+              <div class="seg"><label><input type="radio" name="o1" value="ok" checked><span>적합</span></label><label><input type="radio" name="o1" value="bad"><span>저촉</span></label><label><input type="radio" name="o1" value="na"><span>미해당</span></label></div>
+            </div>
+            <div class="row" data-ord="주택"><span class="lb">주택 이격거리</span>
+              <div class="seg"><label><input type="radio" name="o2" value="ok"><span>적합</span></label><label><input type="radio" name="o2" value="bad" checked><span>저촉</span></label><label><input type="radio" name="o2" value="na"><span>미해당</span></label></div>
+            </div>
+            <div class="row" data-ord="관광지"><span class="lb">관광지</span>
+              <div class="seg"><label><input type="radio" name="o3" value="ok"><span>적합</span></label><label><input type="radio" name="o3" value="bad"><span>저촉</span></label><label><input type="radio" name="o3" value="na" checked><span>미해당</span></label></div>
+            </div>
+            <div class="row" data-ord="자연취락지구"><span class="lb">자연취락지구</span>
+              <div class="seg"><label><input type="radio" name="o4" value="ok" checked><span>적합</span></label><label><input type="radio" name="o4" value="bad"><span>저촉</span></label><label><input type="radio" name="o4" value="na"><span>미해당</span></label></div>
+            </div>
+            <label class="f">기타사항<input id="ord-etc" type="text" placeholder="조례 외 확인사항을 입력합니다"></label>
+          </div>
+        </section>
+
+        <!-- 02 계통 -->
+        <section class="sec" aria-labelledby="h-grid">
+          <div class="st">
+            <div class="t"><span class="num">02</span><div><h3 id="h-grid">한전 계통연계 검토</h3><p>연계상태와 선로 정보를 항목별로 입력합니다.</p></div></div>
+            <span class="status-auto" id="grid-status">검토 전</span>
+          </div>
+          <div class="box">
+            <div class="row"><span class="lb">연계상태</span>
+              <div class="seg" id="grid-state"><label><input type="radio" name="g" value="ok" checked><span>가능</span></label><label><input type="radio" name="g" value="bad"><span>불가 (용량 초과)</span></label><label><input type="radio" name="g" value="wait"><span>계획대기</span></label></div>
+            </div>
+            <div class="grid">
+              <label class="f">변전소<input type="text" value="김제 변전소"></label>
+              <label class="f">MTR<input type="text" value="#2 MTR"></label>
+              <label class="f">선로명<input type="text" value="OO D/L"></label>
+              <label class="f">여유용량 (MW)<input type="number" step="0.1" value="2.1"></label>
+            </div>
+            <div class="row"><span class="lb">기타조건</span>
+              <div class="checks" id="g-cond">
+                <label class="chk"><input type="checkbox" value="출력제어 조건부"><span>출력제어 조건부</span></label>
+                <label class="chk"><input type="checkbox" value="보강공사 필요"><span>보강공사 필요</span></label>
+                <label class="chk"><input type="checkbox" value="예상여부"><span>예상여부</span></label>
+              </div>
+            </div>
+            <div class="row"><span class="lb">한전 확인</span>
+              <div class="kepco">
+                <input type="text" aria-label="지사명" placeholder="지사명" value="김제지사">
+                <input type="tel" aria-label="연락처" placeholder="연락처" value="063-000-0000">
+                <input type="date" aria-label="검토일" value="2026-10-02">
+                <select aria-label="확인방법"><option>한전ON</option><option>전화</option></select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 03 현장 -->
+        <section class="sec" aria-labelledby="h-site">
+          <div class="st">
+            <div class="t"><span class="num">03</span><div><h3 id="h-site">현장조건 검토</h3><p>자주 나오는 장애요소를 체크합니다. 체크하면 세부 입력칸이 열리고, 문구는 수정할 수 있습니다.</p></div></div>
+            <span class="status-auto" id="site-status">검토 전</span>
+          </div>
+          <div class="box">
+            <div class="checks" id="site-checks">
+              <label class="chk"><input type="checkbox" value="shade" checked><span>음영발생</span></label>
+              <label class="chk"><input type="checkbox" value="slope"><span>경사도 과다</span></label>
+              <label class="chk"><input type="checkbox" value="road"><span>진입로 협소</span></label>
+              <label class="chk"><input type="checkbox" value="struct"><span>구조강화 필요</span></label>
+              <label class="chk"><input type="checkbox" value="none"><span>특이사항 없음</span></label>
+            </div>
+            <div class="details" id="site-details"></div>
+          </div>
+          <div class="box">
+            <h4>사진 첨부</h4>
+            <div class="photos" id="photos">
+              <figure><div class="ph">로드뷰</div></figure>
+              <figure><div class="ph">음영분석</div></figure>
+              <label class="upl"><input type="file" id="photo-in" accept="image/*" multiple>+ 사진 추가</label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 04 용량 -->
+        <section class="sec" aria-labelledby="h-cap">
+          <div class="st">
+            <div class="t"><span class="num">04</span><div><h3 id="h-cap">예상 설치용량</h3><p>부지면적을 기본으로 계산합니다. 상담시 배치도 요구시 파일을 첨부합니다.</p></div></div>
+          </div>
+          <div class="box">
+            <div class="calc2">
+              <label class="f">부지면적(㎡)<input id="c-area" type="number" value="2400"><small class="hint">신청서의 부지면적을 불러옵니다. 부지면적 미기입분은 직접 입력합니다.</small></label>
+              <label class="f">모듈면적(㎡) · 자동 입력<input type="text" value="2.700" readonly></label>
+              <label class="f">모듈수량(장) · 자동 계산<input id="c-cnt" type="text" readonly><small class="hint">부지면적 ÷ 모듈면적의 소수점 이하를 내립니다.</small></label>
+              <label class="f">모듈용량(W) · 자동 입력<input type="text" value="640" readonly></label>
+              <label class="f full">설치용량(kW) · 자동 계산<input id="c-inst" type="text" readonly><small class="hint">모듈수량 × 640W ÷ 1,000</small></label>
+              <label class="f">여유공간율(%) · 자동 입력<input type="text" value="30" readonly></label>
+              <label class="f">설치공간율(%) · 자동 입력<input type="text" value="70" readonly></label>
+              <div class="final full"><span>최종 계산값 · 예상 설치용량(kW)</span><b id="c-kw">–</b></div>
+              <label class="f full">산정 근거<textarea id="c-basis" rows="4"></textarea><small class="hint">계산 과정 아래에 추가 검토 내용을 작성할 수 있습니다.</small></label>
+              <div class="full"><b style="font-size:13px">현재 등록된 배치도</b><p class="hint" style="margin-top:4px">등록된 배치도가 없습니다.</p></div>
+              <label class="f full">배치도 등록 · 교체<input type="file" accept="image/jpeg,image/png,image/webp"><small class="hint">JPG·PNG·WEBP, 8MB 이하. 저장 시 웹용 이미지로 최적화됩니다.</small></label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 05 종합 -->
+        <section class="sec" aria-labelledby="h-op">
+          <div class="st">
+            <div class="t"><span class="num">05</span><div><h3 id="h-op">종합의견 · 종합 판정</h3><p>종합의견을 작성한 뒤 그 아래에서 종합 판정을 선택합니다. 회원 공개 시 둘 다 필수입니다.</p></div></div>
+          </div>
+          <label class="f">종합의견<textarea rows="6" placeholder="회원에게 제공할 종합 검토의견을 입력해 주세요."></textarea></label>
+          <div class="row" style="border-top:1px dashed #e6ebf0;padding-top:14px"><span class="lb">종합 판정</span>
+            <div class="seg"><label><input type="radio" name="verdict" value="none" checked><span>판정 전</span></label><label><input type="radio" name="verdict" value="ok"><span>진행 가능</span></label><label><input type="radio" name="verdict" value="wait"><span>조건부 가능</span></label><label><input type="radio" name="verdict" value="bad"><span>진행 어려움</span></label></div>
+          </div>
+        </section>
+
+        <!-- 06 07 -->
+        <section class="sec">
+          <div class="st"><div class="t"><span class="num">06</span><div><h3>신청 가능 서비스</h3><p>검토결과를 기준으로 신청 가능한 서비스를 체크합니다. 회원에게 공개되면 가능 서비스 확인 페이지에 표시됩니다.</p></div></div></div>
+          <div class="ss-toolbar">
+            <div class="seg" id="svc-type"><label><input type="radio" name="stype" value="land" checked><span>토지형</span></label><label><input type="radio" name="stype" value="building"><span>건물형</span></label></div>
+            <div class="ss-bulk"><button class="btn" type="button" data-all="svc">전체 선택</button><button class="btn" type="button" data-none="svc">전체 해제</button></div>
+          </div>
+          <div class="ss-list" id="svc-list"></div>
+          <p class="ss-sum" id="svc-sum"></p>
+        </section>
+        <section class="sec">
+          <div class="st"><div class="t"><span class="num">07</span><div><h3>추천 패키지</h3><p>신청 가능한 추천 패키지를 체크합니다. 06에서 선택한 서비스 유형(토지형/건물형) 기준의 패키지가 표시됩니다.</p></div></div></div>
+          <div class="ss-toolbar"><span></span><div class="ss-bulk"><button class="btn" type="button" data-all="pkg">전체 선택</button><button class="btn" type="button" data-none="pkg">전체 해제</button></div></div>
+          <div class="ss-list" id="pkg-list"></div>
+          <p class="ss-sum" id="pkg-sum"></p>
+        </section>
+
+        <div class="actions">
+          <button class="btn" type="button">임시저장</button>
+          <button class="btn p" type="button">검토완료 · 회원에게 공개</button>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const SITE={shade:'음영발생',slope:'경사도 과다',road:'진입로 협소',struct:'구조강화 필요'};
+const siteText={};
+function setStatus(sel,[cls,txt]){const el=$(sel);el.className='status-auto '+cls;el.textContent=txt;}
+function ordRows(){return $$('#ord-items .row').map(r=>({r,name:r.dataset.ord,v:(r.querySelector('input:checked')||{}).value}));}
+function renderOrd(){
+  ordRows().forEach(({r,name,v})=>{let rv=r.querySelector('.reveal');
+    if(v==='bad'&&!rv){rv=document.createElement('div');rv.className='reveal';
+      rv.innerHTML=`<small>${name} 이격거리 저촉 · 기준과 현재 거리를 입력합니다</small><label class="f">기준 거리 (m)<input type="number" inputmode="decimal" placeholder="예: 200"></label><label class="f">현재 거리 (m)<input type="number" inputmode="decimal" placeholder="예: 100"></label>`;r.appendChild(rv);}
+    if(v!=='bad'&&rv)rv.remove();});
+  const bad=ordRows().filter(x=>x.v==='bad').length;
+  setStatus('#ord-status',bad?['bad','저촉 '+bad+'건']:['ok','적합']);
+}
+function renderGrid(){const g=($('#grid-state input:checked')||{}).value;
+  setStatus('#grid-status',g==='bad'?['bad','불가']:g==='wait'?['cond','계획대기']:['ok','가능']);}
+function renderSite(){
+  const box=$('#site-details');const on=$$('#site-checks input:checked').map(i=>i.value).filter(v=>v!=='none');
+  box.querySelectorAll('.detail').forEach(d=>{if(!on.includes(d.dataset.k)){siteText[d.dataset.k]=d.querySelector('textarea').value;d.remove();}});
+  on.forEach(k=>{if(!box.querySelector(`[data-k=${k}]`)){const d=document.createElement('label');d.className='detail';d.dataset.k=k;
+    d.innerHTML=`<b>${SITE[k]} · 세부내용</b><textarea rows="2"></textarea>`;d.querySelector('textarea').value=siteText[k]||'';box.appendChild(d);}});
+  setStatus('#site-status',on.length?['cond','확인 '+on.length+'건']:$('#site-checks input[value=none]').checked?['ok','특이사항 없음']:['','검토 전']);
+}
+function calc(){const a=+$('#c-area').value||0,cnt=Math.floor(a/2.7),inst=Math.round(cnt*640)/1000,kw=Math.round(inst*0.7*100)/100;
+  $('#c-cnt').value=cnt?cnt.toLocaleString('ko-KR'):'';$('#c-inst').value=inst?inst.toLocaleString('ko-KR'):'';
+  $('#c-kw').textContent=kw?kw.toLocaleString('ko-KR')+' kW':'–';
+  $('#c-basis').value=cnt?`부지면적 ${a.toLocaleString('ko-KR')}㎡ ÷ 모듈면적 2.7㎡ = ${cnt.toLocaleString('ko-KR')}장\n${cnt.toLocaleString('ko-KR')}장 × 640W = ${inst.toLocaleString('ko-KR')}kW\n${inst.toLocaleString('ko-KR')}kW × 설치공간율 70% = ${kw.toLocaleString('ko-KR')}kW`:'';}
+function update(){renderOrd();renderGrid();renderSite();}
+document.addEventListener('change',e=>{
+  if(e.target.matches('#site-checks input')){
+    if(e.target.value==='none'&&e.target.checked)$$('#site-checks input').forEach(i=>{if(i.value!=='none')i.checked=false;});
+    else if(e.target.checked)$('#site-checks input[value=none]').checked=false;}
+  if(e.target.id==='photo-in'){[...e.target.files].forEach(f=>{const r=new FileReader();r.onload=()=>{const fig=document.createElement('figure');fig.innerHTML='<img alt="">';fig.querySelector('img').src=r.result;$('#photos').insertBefore(fig,$('.upl'));};r.readAsDataURL(f);});e.target.value='';}
+  update();});
+$('#c-area').addEventListener('input',calc);
+update();calc();
+
+const CAT={license:['발전사업 허가','발전사업 허가 신청 및 관련 행정절차 지원',500000,800000],development_land:['개발행위 허가','개발행위 허가 신청 및 협의 절차 지원 · 토목설계 포함',4000000,5000000],development_building:['개발행위 허가','건축물 상부 · 도면 유무에 따라 상이 (도면 없는 경우 실측 포함)',1500000,4000000],ppa:['한전PPA 접수','한전 전력수급계약 접수 절차 지원',300000,500000],construction_plan:['공사계획신고','발전설비 공사 전 신고 절차 지원 · 전기감리 포함',1500000,1700000],energy_agency:['에관공 설비 신청','발전설비 확인 및 등록 신청 지원',300000,400000],development_completion:['개발행위 준공','개발행위 준공검사 및 완료 절차 지원']};
+const TYPES={land:['토지형',['license','development_land','ppa','construction_plan','energy_agency','development_completion']],building:['건물형',['license','development_building','ppa','construction_plan','energy_agency','development_completion']]};
+const PKGS=[['basic','BASIC 기본형',2,.1],['standard','STANDARD 완료형',4,.12],['premium','PREMIUM 프리미엄형',6,.15]];
+const won=v=>Number(v||0).toLocaleString('ko-KR');
+let stype='land';const chk={land:{s:new Set(TYPES.land[1]),p:new Set(PKGS.map(p=>p[0]))},building:{s:new Set(TYPES.building[1]),p:new Set(PKGS.map(p=>p[0]))}};
+function svcList(){return TYPES[stype][1].map((k,i)=>({k,code:'A-'+(i+1),n:CAT[k][0],note:CAT[k][1],min:CAT[k][2],max:CAT[k][3]}));}
+function renderSS(){const L=svcList(),c=chk[stype];
+  $('#svc-list').innerHTML=L.map(x=>`<label class="ss-item"><input type="checkbox" data-s="${x.k}" ${c.s.has(x.k)?'checked':''}><span class="code">${x.code}</span><span><strong>${x.n}</strong><small>${x.note}</small></span><span class="price">${x.min!=null?won(x.min)+' ~ '+won(x.max)+'원':'별도 견적'}</span></label>`).join('');
+  $('#pkg-list').innerHTML=PKGS.map(([k,n,cnt,d])=>{const inc=L.slice(0,cnt),pr=inc.filter(x=>x.min!=null),up=inc.filter(x=>x.min==null),r=1-d;
+    const mn=Math.round(pr.reduce((a,x)=>a+x.min,0)*r/1000)*1000,mx=Math.round(pr.reduce((a,x)=>a+x.max,0)*r/1000)*1000;
+    return `<label class="ss-item pk"><input type="checkbox" data-p="${k}" ${c.p.has(k)?'checked':''}><span><strong>${n}</strong><small>${inc.map(x=>x.code).join(', ')}</small></span><span class="price">${won(mn)} ~ ${won(mx)}원${up.length?'<small>'+up.map(x=>x.n).join(', ')+' 별도 견적</small>':''}</span></label>`;}).join('');
+  const lb=TYPES[stype][0];$('#svc-sum').textContent=`${lb} · 신청 가능 ${c.s.size}개 / 전체 ${L.length}개`;$('#pkg-sum').textContent=`${lb} · 추천 패키지 ${c.p.size}개 / 전체 ${PKGS.length}개`;}
+document.addEventListener('change',e=>{const t=e.target;
+  if(t.name==='stype'){stype=t.value;renderSS();}
+  if(t.dataset.s){t.checked?chk[stype].s.add(t.dataset.s):chk[stype].s.delete(t.dataset.s);renderSS();}
+  if(t.dataset.p){t.checked?chk[stype].p.add(t.dataset.p):chk[stype].p.delete(t.dataset.p);renderSS();}});
+document.addEventListener('click',e=>{const a=e.target.dataset.all,n=e.target.dataset.none;if(!a&&!n)return;const c=chk[stype];
+  if(a==='svc')c.s=new Set(TYPES[stype][1]);if(n==='svc')c.s=new Set();if(a==='pkg')c.p=new Set(PKGS.map(p=>p[0]));if(n==='pkg')c.p=new Set();renderSS();});
+renderSS();
+</script>
