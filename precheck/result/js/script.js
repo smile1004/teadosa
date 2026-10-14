@@ -143,7 +143,9 @@
     }
     if (id === 'site' && detail.site) {
       const s = detail.site;
-      const typeRow = s.siteType ? '<dl class="rd-grid rd-sitetype">' + cell('현장 유형', '<span class="rd-tag rd-type">' + escapeHtml(s.siteType) + '</span>') + '</dl>' : '';
+      const typeRow = s.siteType ? '<div class="rd-sitetype"><span class="rd-st-label">현장 유형</span><div class="rd-st-seg">' +
+        ['토지형', '건물형'].map(function (t) { return '<span class="rd-st-opt' + (t === s.siteType ? ' on' : '') + '"' + (t === s.siteType ? ' aria-current="true"' : '') + '>' + (t === s.siteType ? '<i aria-hidden="true">✓</i>' : '') + t + '</span>'; }).join('') +
+        '</div></div>' : '';
       if (!(s.factors || []).length) {
         if (!s.none) return '';
         return typeRow + '<div class="result-item-content">현장 여건상 특이사항이 없습니다.</div>';
