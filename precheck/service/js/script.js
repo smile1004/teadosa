@@ -100,7 +100,7 @@
   }
 
   function possibilityLabel(value) {
-    return ({ possible: '진행 가능', conditional: '조건부 가능', not_possible: '진행 어려움', undetermined: '판정 전' })[value] || '-';
+    return ({ possible: '진행 가능', conditional: '조건부 진행 가능', not_possible: '진행 불가능', undetermined: '판정 전' })[value] || '-';
   }
   function setText(id, value) {
     const node = document.getElementById(id);

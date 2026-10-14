@@ -98,6 +98,7 @@
     renderExpectedCapacity(review);
 
     document.getElementById('overall-opinion-view').textContent = review.overallOpinion || '-';
+    renderVerdictTab(review.installationPossible);
 
     const noticeCard = document.getElementById('customer-notice-card');
     const notice = document.getElementById('customer-notice-view');
@@ -579,8 +580,19 @@
     const node = document.getElementById(id);
     if (node) node.textContent = value;
   }
+  // 종합 판정(관리자 탭 선택값)을 종합 의견 앞에 탭 단추로 표시합니다.
+  function renderVerdictTab(value) {
+    const tab = document.getElementById('overall-verdict-tab');
+    const box = document.getElementById('overall-opinion-box');
+    if (!tab || !box) return;
+    const known = ['possible', 'conditional', 'not_possible'].indexOf(value) !== -1;
+    box.className = 'verdict-box' + (known ? ' verdict-' + value : '');
+    tab.hidden = !known;
+    if (known) tab.innerHTML = '<span class="verdict-mark" aria-hidden="true">' + ({ possible: '✓', conditional: '!', not_possible: '✕' })[value] + '</span>종합 판정 · ' + escapeHtml(possibilityLabel(value));
+  }
+
   function possibilityLabel(value) {
-    return ({ undetermined: '판정 전', possible: '진행 가능', conditional: '조건부 가능', not_possible: '진행 어려움' })[value] || value || '-';
+    return ({ undetermined: '판정 전', possible: '진행 가능', conditional: '조건부 진행 가능', not_possible: '진행 불가능' })[value] || value || '-';
   }
   function itemStatusLabel(value) {
     return ({ info: '검토', ok: '적합/가능', conditional: '조건부', hold: '추가확인', not_possible: '어려움' })[value] || '검토';

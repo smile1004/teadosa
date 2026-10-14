@@ -676,3 +676,14 @@ a{color:inherit;text-decoration:none}
 .rd-lines{margin:0;padding-left:20px;display:grid;gap:4px;color:#344252;font-size:15px;line-height:1.75}
 @media(max-width:700px){.rd-cell dd,.rd-lines{font-size:14px}}
 @media(max-width:700px){.rd-grid{grid-template-columns:1fr 1fr}}
+
+/* ===== 종합 판정 탭 단추 ===== */
+.verdict-box{position:relative}
+.verdict-box.verdict-possible{--vd-c:#1f8d52;--vd-bg:#effaf3}
+.verdict-box.verdict-conditional{--vd-c:#c47a00;--vd-bg:#fff8ea}
+.verdict-box.verdict-not_possible{--vd-c:#a72e2e;--vd-bg:#fdf1f1}
+.verdict-box.verdict-possible,.verdict-box.verdict-conditional,.verdict-box.verdict-not_possible{margin-top:22px;padding:26px 18px 16px;border:1.5px solid var(--vd-c);border-left-width:5px;border-radius:0 12px 12px 12px;background:var(--vd-bg)}
+.verdict-tab{position:absolute;left:-5px;top:-17px;display:inline-flex;align-items:center;gap:8px;padding:6px 16px 6px 10px;border-radius:8px 8px 8px 0;background:var(--vd-c);color:#fff;font-size:15px;font-weight:800;line-height:1.3;box-shadow:0 2px 6px rgba(20,30,50,.15)}
+.verdict-tab[hidden]{display:none!important}
+.verdict-mark{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.28);font-size:12px;font-weight:900}
+.verdict-box #overall-opinion-view{margin:0;background:transparent!important;border:0!important;padding:0!important}

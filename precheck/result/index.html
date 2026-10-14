@@ -9,7 +9,7 @@
   <link href="common/css/shared-layout.css" rel="stylesheet">
   <link href="common/css/shared-menu.css" rel="stylesheet">
   <link href="common/css/common.css" rel="stylesheet">
-  <link href="precheck/result/css/style.css?v=4.8" rel="stylesheet">
+  <link href="precheck/result/css/style.css?v=4.9" rel="stylesheet">
 </head>
 <body>
   <script src="common/js/site-config.js"></script>
@@ -86,7 +86,10 @@
 
           <section class="card">
             <h2 id="overall-opinion-title">종합 의견</h2>
-            <div id="overall-opinion-view" class="note result-preline"></div>
+            <div id="overall-opinion-box" class="verdict-box">
+              <span id="overall-verdict-tab" class="verdict-tab" hidden></span>
+              <div id="overall-opinion-view" class="note result-preline"></div>
+            </div>
           </section>
 
           <section id="customer-notice-card" class="card notice-card" hidden>
@@ -105,6 +108,6 @@
 
   <script src="common/js/components/footer.js"></script>
   <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=994a8bd27a552e20d6853062c8e6fb27&libraries=services&autoload=false"></script>
-  <script src="precheck/result/js/script.js?v=4.4"></script>
+  <script src="precheck/result/js/script.js?v=4.5"></script>
 </body>
 </html>
