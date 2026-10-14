@@ -37,7 +37,8 @@
     }
 
     bindEvents();
-    await loadDetail();
+    await Promise.all([loadDetail(), loadPhrases()]);
+    refreshV4();
   }
 
   function mapElements() {
@@ -51,7 +52,7 @@
     el.supplementDate = document.getElementById('admin-supplement-date');
     el.supplementNote = document.getElementById('admin-supplement-note');
     el.publishStatus = document.getElementById('publish-status-badge');
-    el.installationPossible = document.getElementById('installation-possible');
+    el.verdictInputs = document.querySelectorAll('input[name="installation-possible"]');
     el.expectedCapacity = document.getElementById('expected-capacity');
     el.capacityArea = document.getElementById('capacity-area');
     el.capacityCalculation = document.getElementById('capacity-calculation');
@@ -114,6 +115,7 @@
     el.serviceUncheckAll.addEventListener('click', function () { setAllServices(false); });
     el.packageCheckAll.addEventListener('click', function () { setAllPackages(true); });
     el.packageUncheckAll.addEventListener('click', function () { setAllPackages(false); });
+    bindV4Events();
   }
 
   async function loadDetail() {
@@ -195,7 +197,7 @@
   function renderReview() {
     const review = state.review || {};
 
-    el.installationPossible.value = review.installationPossible || 'undetermined';
+    setVerdict(review.installationPossible || 'undetermined');
     el.expectedCapacity.value = review.expectedCapacity ?? '';
     const capacity = review.resultData?.capacityAssessment || {};
     el.capacityArea.value = capacity.areaM2 !== null && capacity.areaM2 !== undefined && capacity.areaM2 !== ''
@@ -220,9 +222,11 @@
       byId[item.id] = item;
     });
 
-    setFixedItem('ordinance', byId.ordinance || findByTitle(savedItems, '조례'));
-    setFixedItem('grid', byId.grid || findByTitle(savedItems, '한전'));
-    setFixedItem('site', byId.site || findByTitle(savedItems, '현장'));
+    const detail = review.resultData?.detail || null;
+    setFixedItem('ordinance', byId.ordinance || findByTitle(savedItems, '조례'), !detail);
+    setFixedItem('grid', byId.grid || findByTitle(savedItems, '한전'), !detail);
+    setFixedItem('site', byId.site || findByTitle(savedItems, '현장'), !detail);
+    fillDetail(detail);
 
     // Unsaved types start fully checked so the admin only unchecks what is not possible.
     const saved = services.normalizeServiceSelection(review.resultData?.serviceSelection);
@@ -287,11 +291,18 @@
     }) || null;
   }
 
-  function setFixedItem(key, item) {
+  function setFixedItem(key, item, legacy) {
     const section = el.items.querySelector('[data-review-key="' + key + '"]');
     if (!section) return;
     section.querySelector('.review-item-status').value = item?.status || 'info';
-    section.querySelector('.review-item-content').value = item?.content || '';
+    section.dataset.statusTouched = item?.status && item.status !== 'info' ? '1' : '';
+    // Reviews saved before V4 only have free text; keep it visible and keep it when nothing new is entered.
+    v4.legacy[key] = legacy ? (item?.content || '') : '';
+    const note = section.querySelector('[data-legacy]');
+    if (note) {
+      note.hidden = !v4.legacy[key];
+      note.textContent = v4.legacy[key] ? '이전 방식으로 입력된 내용 (새 항목을 입력하지 않으면 그대로 유지됩니다)\n' + v4.legacy[key] : '';
+    }
   }
 
   function collectItems() {
@@ -301,13 +312,15 @@
       ['site', '현장조건 검토']
     ];
 
+    const detail = collectDetail();
+    const texts = { ordinance: ordinanceText(detail.ordinance), grid: gridText(detail.grid), site: siteText(detail.site) };
     return specs.map(function (spec) {
       const section = el.items.querySelector('[data-review-key="' + spec[0] + '"]');
       return {
         id: spec[0],
         title: spec[1],
         status: section.querySelector('.review-item-status').value,
-        content: section.querySelector('.review-item-content').value.trim()
+        content: texts[spec[0]] || v4.legacy[spec[0]] || ''
       };
     });
   }
@@ -338,7 +351,7 @@
   async function saveReview(publish) {
     if (!updateCapacity()) { el.capacityArea.reportValidity(); return; }
     const payload = {
-      installationPossible: el.installationPossible.value,
+      installationPossible: getVerdict(),
       expectedCapacity: el.expectedCapacity.value === '' ? null : Number(el.expectedCapacity.value),
       capacityAssessment: {
         areaM2: el.capacityArea.value === '' ? null : Number(el.capacityArea.value),
@@ -347,6 +360,7 @@
         layoutImageName: state.capacityImageName
       },
       items: collectItems(),
+      detail: collectDetail(),
       serviceSelection: collectServiceSelection(),
       overallOpinion: el.overallOpinion.value.trim(),
       customerNotice: el.customerNotice.value.trim(),
@@ -498,6 +512,368 @@
     el.message.hidden = !message;
     el.message.classList.toggle('error', Boolean(error));
   }
+
+
+  /* ---------- V4: 선택형 표준화 입력 ---------- */
+  const v4 = { legacy: {}, phrases: {}, siteActive: null, sitePrev: [], siteKeep: {} };
+  const ORD_RESULT = { ok: '적합', conflict: '저촉', na: '미해당' };
+  const GRID_STATE = { possible: '가능', impossible: '불가 (용량 초과)', waiting: '계획대기' };
+  const SITE = { shade: '음영발생', slope: '경사도 과다', road: '진입로·배수로', struct: '건물 구조강화' };
+  const SITE_KEYS = ['shade', 'slope', 'road', 'struct'];
+  const STEP = { shade: [['siteType', '현장 유형', ['토지형', '건물형']], ['cause', '음영 원인', ['수목', '인접 건축물', '전신주·송전탑', '산·지형']], ['time', '음영 시간대', ['오전', '오후', '종일']]] };
+  const OPINION_GROUP = { possible: '진행 가능', conditional: '조건부 진행 가능', not_possible: '진행 불가능' };
+  const $ = function (selector, root) { return (root || document).querySelector(selector); };
+  const $$ = function (selector, root) { return Array.from((root || document).querySelectorAll(selector)); };
+  const api = window.TaeDoSAApi;
+
+  function getVerdict() { return ($('input[name="installation-possible"]:checked') || {}).value || 'undetermined'; }
+  function setVerdict(value) { el.verdictInputs.forEach(function (input) { input.checked = input.value === value; }); refreshOpinion(); }
+
+  async function loadPhrases() {
+    try {
+      const outcome = await api.request('/api/admin/precheck/phrases', { method: 'GET' });
+      if (!outcome.response.ok || !outcome.result.success) throw new Error(outcome.result.message);
+      v4.phrases = outcome.result.groups || {};
+    } catch (error) {
+      v4.phrases = {};
+      showActionMessage('표준 문장 목록을 불러오지 못했습니다. 문장은 직접 입력할 수 있습니다.', true);
+    }
+  }
+  function phraseList(category, group) { return v4.phrases[category + '.' + group] || []; }
+
+  function bindV4Events() {
+    const section = el.items;
+    section.addEventListener('change', function (event) {
+      const t = event.target;
+      if (t.matches('#site-checks input')) {
+        if (t.value === 'none' && t.checked) $$('#site-checks input').forEach(function (i) { if (i.value !== 'none') i.checked = false; });
+        else if (t.checked) $('#site-checks input[value="none"]').checked = false;
+      }
+      if (t.matches('.review-item-status')) t.closest('section').dataset.statusTouched = '1';
+      if (t.name === 'installation-possible') refreshOpinion();
+      refreshV4();
+    });
+    section.addEventListener('input', function (event) {
+      if (event.target.matches('.pr4-detail textarea')) { renderSitePreview(event.target.closest('.pr4-detail')); renderSiteTabs(); }
+      if (event.target.matches('.pr4-new')) { const m = event.target.closest('.pr4-reg').querySelector('.pr4-msg'); m.textContent = ''; }
+      if (event.target.closest('[data-review-key="ordinance"],[data-review-key="grid"]')) suggestStatus();
+    });
+    section.addEventListener('click', function (event) {
+      const t = event.target;
+      const tab = t.closest('.pr4-tab');
+      if (tab) { v4.siteActive = tab.dataset.tab; renderSiteTabs(); return; }
+      if (t.matches('.pr4-add')) { insertLine(t.closest('.pr4-detail')); return; }
+      if (t.id === 'op-add') { insertOpinion(); return; }
+      const reg = t.closest('.pr4-reg');
+      if (reg) handleRegister(event, reg);
+    });
+  }
+
+  function refreshV4() { renderOrdinance(); renderSite(); suggestStatus(); refreshOpinion(); }
+
+  /* 01 조례 */
+  function renderOrdinance() {
+    $$('#ord-items .pr4-row').forEach(function (row) {
+      const value = (row.querySelector('input:checked') || {}).value;
+      let box = row.querySelector('.pr4-conflict');
+      if (value === 'conflict' && !box) {
+        box = document.createElement('div');
+        box.className = 'pr4-conflict';
+        box.innerHTML = '<small>' + escapeHtml(row.dataset.label) + ' 저촉 · 기준과 현재 거리를 입력합니다</small>' +
+          '<label class="pr4-f">기준 거리 (m)<input type="number" class="ord-std" min="0" step="any" inputmode="decimal" placeholder="예: 200"></label>' +
+          '<label class="pr4-f">현재 거리 (m)<input type="number" class="ord-cur" min="0" step="any" inputmode="decimal" placeholder="예: 100"></label>';
+        row.appendChild(box);
+      }
+      if (value !== 'conflict' && box) box.remove();
+    });
+  }
+  function collectOrdinance() {
+    return {
+      name: $('#ord-name').value.trim(),
+      revisedAt: $('#ord-revised').value,
+      reviewedAt: $('#ord-reviewed').value,
+      etc: $('#ord-etc').value.trim(),
+      items: $$('#ord-items .pr4-row').map(function (row) {
+        const result = (row.querySelector('input:checked') || {}).value || '';
+        const item = { key: row.dataset.ord, label: row.dataset.label, result: result };
+        if (result === 'conflict') {
+          item.standardM = numberOrNull(($('.ord-std', row) || {}).value);
+          item.actualM = numberOrNull(($('.ord-cur', row) || {}).value);
+        }
+        return item;
+      })
+    };
+  }
+
+  /* 02 계통 */
+  function collectGrid() {
+    return {
+      state: ($('input[name="grid-state"]:checked') || {}).value || '',
+      substation: $('#grid-substation').value.trim(),
+      mtr: $('#grid-mtr').value.trim(),
+      line: $('#grid-line').value.trim(),
+      spareMw: numberOrNull($('#grid-spare').value),
+      conditions: $$('#grid-conditions input:checked').map(function (i) { return i.value; }),
+      kepco: { branch: $('#kepco-branch').value.trim(), phone: $('#kepco-phone').value.trim(), checkedAt: $('#kepco-date').value, method: $('#kepco-method').value }
+    };
+  }
+
+  /* 03 현장조건 */
+  function siteDetailHTML(k) {
+    const steps = (STEP[k] || []).map(function (step) {
+      return '<div class="pr4-srow"><span>' + step[1] + '</span><div class="pr4-seg">' + step[2].map(function (o) {
+        return '<label><input type="radio" name="' + k + '-' + step[0] + '" value="' + o + '"><span>' + o + '</span></label>';
+      }).join('') + '</div></div>';
+    }).join('');
+    return '<b>' + SITE[k] + ' · 세부내용</b>' + steps + (STEP[k] ? '<p class="pr4-sum"></p>' : '') +
+      '<div class="pr4-pick"><select class="pr4-std" aria-label="' + SITE[k] + ' 표준 문장"></select><button type="button" class="admin-button secondary pr4-add">문장 넣기</button></div>' +
+      '<textarea rows="3" maxlength="2000" placeholder="표준 문장을 넣거나 직접 입력합니다"></textarea>' +
+      '<div class="pr4-prev"><p>고객 마이페이지 표시 미리보기</p><dl></dl></div>' +
+      '<details class="pr4-reg" data-cat="site" data-group="' + k + '"><summary>+ 표준 문장 등록 · 관리</summary>' +
+      '<div class="pr4-pick"><input type="text" class="pr4-new" maxlength="300" placeholder="자주 쓰는 문장을 등록하면 표준 문장 선택 드롭다운에 등록됩니다"><button type="button" class="admin-button primary pr4-reg-btn">목록에 등록</button></div>' +
+      '<small class="pr4-msg" aria-live="polite"></small><div class="pr4-lib"></div></details>';
+  }
+  function stepValues(d) {
+    return (STEP[d.dataset.k] || []).map(function (step) {
+      return [step[0], step[1], ($('input[name="' + d.dataset.k + '-' + step[0] + '"]:checked', d) || {}).value || ''];
+    });
+  }
+  function composeShade(d) {
+    const v = stepValues(d).map(function (x) { return x[2]; });
+    if (v.some(function (x) { return !x; })) return '';
+    const cause = { '수목': '수목으로', '인접 건축물': '인접 건축물로', '전신주·송전탑': '전신주·송전탑으로', '산·지형': '산·지형으로' }[v[1]];
+    return '(' + v[0] + ') ' + cause + ' 인해 ' + (v[0] === '건물형' ? '지붕' : '부지') + ' 일부에 ' + (v[2] === '종일' ? '종일' : v[2] + ' 시간대') + ' 음영이 발생합니다.';
+  }
+  function linesOf(d) { return $('textarea', d).value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean); }
+  function fillSiteOptions(d) {
+    const sel = $('.pr4-std', d); const keep = sel.value; const k = d.dataset.k;
+    const auto = k === 'shade' ? composeShade(d) : '';
+    sel.innerHTML = '<option value="">표준 문장 선택</option>' + (auto ? '<option value="' + escapeAttr(auto) + '">[자동기입] ' + escapeHtml(auto) + '</option>' : '') +
+      phraseList('site', k).map(function (p) { return '<option value="' + escapeAttr(p.text) + '">' + escapeHtml(p.text) + '</option>'; }).join('');
+    if (Array.from(sel.options).some(function (o) { return o.value === keep; })) sel.value = keep;
+  }
+  function renderSitePreview(d) {
+    const sv = stepValues(d);
+    const sum = $('.pr4-sum', d);
+    if (sum) sum.innerHTML = '선택 항목 · ' + sv.map(function (x) { return escapeHtml(x[1]) + ' ' + (x[2] ? '<b>' + escapeHtml(x[2]) + '</b>' : '<span class="pr4-miss">미선택</span>'); }).join(' · ');
+    const lines = linesOf(d);
+    $('.pr4-prev dl', d).innerHTML = '<div><dt>검토 항목</dt><dd>' + SITE[d.dataset.k] + '</dd></div>' +
+      sv.map(function (x) { return '<div><dt>' + escapeHtml(x[1]) + '</dt><dd>' + (x[2] ? escapeHtml(x[2]) : '<span class="pr4-miss">미선택</span>') + '</dd></div>'; }).join('') +
+      '<div class="full"><dt>검토 내용</dt><dd>' + (lines.length ? '<ul>' + lines.map(function (x) { return '<li>' + escapeHtml(x) + '</li>'; }).join('') + '</ul>' : '<span class="pr4-miss">입력된 문장이 없습니다</span>') + '</dd></div>';
+  }
+  function checkedSite() { return $$('#site-checks input:checked').map(function (i) { return i.value; }).filter(function (v) { return v !== 'none'; }); }
+  function renderSite() {
+    const box = $('#site-details'); if (!box) return;
+    const on = checkedSite();
+    $$('.pr4-detail', box).forEach(function (d) { if (!on.includes(d.dataset.k)) { v4.siteKeep[d.dataset.k] = d; d.remove(); } });
+    on.forEach(function (k) {
+      let d = $('.pr4-detail[data-k="' + k + '"]', box);
+      if (!d) {
+        d = v4.siteKeep[k];
+        if (!d) { d = document.createElement('div'); d.className = 'pr4-detail'; d.dataset.k = k; d.innerHTML = siteDetailHTML(k); }
+        box.appendChild(d);
+      }
+      fillSiteOptions(d); renderSitePreview(d);
+      const reg = $('.pr4-reg', d); if (!$('.pr4-li.edit,.pr4-li.del', reg)) renderLib(reg);
+    });
+    const added = on.filter(function (k) { return !v4.sitePrev.includes(k); });
+    if (added.length) v4.siteActive = added[added.length - 1];
+    if (!on.includes(v4.siteActive)) v4.siteActive = on[0] || null;
+    v4.sitePrev = on;
+    renderSiteTabs();
+  }
+  function renderSiteTabs() {
+    const bar = $('#site-tabs'); if (!bar) return;
+    const on = checkedSite();
+    bar.hidden = on.length === 0;
+    bar.innerHTML = on.map(function (k, i) {
+      const d = $('#site-details .pr4-detail[data-k="' + k + '"]'); const n = d ? linesOf(d).length : 0;
+      return '<button type="button" role="tab" class="pr4-tab' + (k === v4.siteActive ? ' on' : '') + '" data-tab="' + k + '" aria-selected="' + (k === v4.siteActive) + '"><span class="sn">' + (i + 1) + '</span>' + SITE[k] + '<em class="' + (n ? 'has' : '') + '">' + (n ? n + '문장' : '미작성') + '</em></button>';
+    }).join('');
+    $$('#site-details .pr4-detail').forEach(function (d) { d.hidden = d.dataset.k !== v4.siteActive; });
+  }
+  function insertLine(d) {
+    const sel = $('.pr4-std', d); if (!sel.value) { sel.focus(); return; }
+    const ta = $('textarea', d); const lines = linesOf(d);
+    if (!lines.includes(sel.value)) lines.push(sel.value);
+    ta.value = lines.join('\n'); sel.value = '';
+    renderSitePreview(d); renderSiteTabs(); suggestStatus();
+  }
+  function collectSite() {
+    const none = Boolean(($('#site-checks input[value="none"]') || {}).checked);
+    return {
+      none: none,
+      factors: checkedSite().map(function (k) {
+        const d = $('#site-details .pr4-detail[data-k="' + k + '"]');
+        const f = { key: k, label: SITE[k], lines: d ? linesOf(d) : [] };
+        if (d) stepValues(d).forEach(function (x) { if (x[2]) f[x[0]] = x[2]; });
+        return f;
+      })
+    };
+  }
+
+  /* 05 종합 의견 */
+  function refreshOpinion() {
+    const sel = $('#op-std'), btn = $('#op-add'), ta = el.overallOpinion; if (!sel) return;
+    const v = getVerdict(); const label = OPINION_GROUP[v];
+    if (!label) {
+      sel.innerHTML = '<option value="">종합 판정을 먼저 선택해 주세요</option>'; sel.disabled = btn.disabled = true;
+      ta.placeholder = '종합 판정을 먼저 선택해 주세요.';
+    } else {
+      const list = phraseList('opinion', v); const keep = sel.value;
+      sel.disabled = btn.disabled = false;
+      sel.innerHTML = '<option value="">' + label + ' 표준 문장 선택 (' + list.length + '개)</option>' + list.map(function (p) { return '<option value="' + escapeAttr(p.text) + '">' + escapeHtml(p.text) + '</option>'; }).join('');
+      if (list.some(function (p) { return p.text === keep; })) sel.value = keep;
+      ta.placeholder = label + ' 판정에 맞는 문장을 기입해 주세요.';
+    }
+    const reg = $('.pr4-reg[data-cat="opinion"]'); if (reg && !$('.pr4-li.edit,.pr4-li.del', reg)) renderLib(reg);
+  }
+  function insertOpinion() {
+    const sel = $('#op-std'); if (!sel.value) { sel.focus(); return; }
+    const lines = el.overallOpinion.value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean);
+    if (!lines.includes(sel.value)) lines.push(sel.value);
+    el.overallOpinion.value = lines.join('\n'); sel.value = '';
+  }
+
+  /* 표준 문장 등록 · 수정 · 삭제 (관리자 전용 API) */
+  function regGroup(reg) { return reg.dataset.cat === 'opinion' ? getVerdict() : reg.dataset.group; }
+  function renderLib(reg) {
+    const box = $('.pr4-lib', reg); const cat = reg.dataset.cat; const group = regGroup(reg);
+    if (cat === 'opinion' && !OPINION_GROUP[group]) { box.innerHTML = '<p class="pr4-lib-h">종합 판정을 먼저 선택하면 해당 판정의 문장 목록이 나옵니다.</p>'; return; }
+    const list = phraseList(cat, group);
+    box.innerHTML = '<p class="pr4-lib-h">' + (cat === 'opinion' ? OPINION_GROUP[group] + ' · ' : '') + '등록된 표준 문장 ' + list.length + '개</p>' + list.map(function (p) {
+      return '<div class="pr4-li" data-id="' + p.id + '"><span class="lt">' + escapeHtml(p.text) + '</span><span class="la"><button type="button" class="admin-button secondary pr4-sm pr4-ed">수정</button><button type="button" class="admin-button secondary pr4-sm pr4-del">삭제</button></span></div>';
+    }).join('');
+  }
+  function say(reg, text, ok) { const m = $('.pr4-msg', reg); m.textContent = text; m.className = 'pr4-msg ' + (ok ? 'ok' : 'err'); }
+  function afterPhraseChange(reg) {
+    renderLib(reg);
+    if (reg.dataset.cat === 'opinion') refreshOpinion(); else $$('#site-details .pr4-detail').forEach(fillSiteOptions);
+  }
+  async function handleRegister(event, reg) {
+    const t = event.target; const cat = reg.dataset.cat; const group = regGroup(reg);
+    const key = cat + '.' + group;
+    if (t.matches('.pr4-reg-btn')) {
+      const input = $('.pr4-new', reg); const text = input.value.trim();
+      if (cat === 'opinion' && !OPINION_GROUP[group]) { say(reg, '종합 판정을 먼저 선택해 주세요. 선택한 판정의 목록에 등록됩니다.'); return; }
+      if (!text) { say(reg, '등록할 문장을 입력해 주세요.'); input.focus(); return; }
+      t.disabled = true;
+      try {
+        const out = await api.request('/api/admin/precheck/phrases', { method: 'POST', body: { category: cat, groupKey: group, text: text } });
+        if (!out.response.ok || !out.result.success) { say(reg, out.result.message || '문장을 등록하지 못했습니다.'); return; }
+        (v4.phrases[key] = v4.phrases[key] || []).push(out.result.phrase);
+        input.value = ''; afterPhraseChange(reg); say(reg, '목록에 등록했습니다. 다른 담당자도 같은 문장을 고를 수 있습니다.', true);
+      } catch (error) { say(reg, error.message || '문장을 등록하지 못했습니다.'); }
+      finally { t.disabled = false; }
+      return;
+    }
+    const li = t.closest('.pr4-li'); if (!li) return;
+    const id = Number(li.dataset.id); const list = v4.phrases[key] || []; const item = list.find(function (p) { return p.id === id; });
+    if (!item) return;
+    if (t.matches('.pr4-ed')) {
+      li.classList.add('edit');
+      li.innerHTML = '<input type="text" class="pr4-ed-in" maxlength="300" aria-label="문장 수정" value="' + escapeAttr(item.text) + '"><span class="la"><button type="button" class="admin-button primary pr4-sm pr4-ed-ok">저장</button><button type="button" class="admin-button secondary pr4-sm pr4-cancel">취소</button></span>';
+      $('.pr4-ed-in', li).focus();
+    } else if (t.matches('.pr4-cancel')) {
+      renderLib(reg);
+    } else if (t.matches('.pr4-ed-ok')) {
+      const text = $('.pr4-ed-in', li).value.trim();
+      if (!text) { say(reg, '문장을 입력해 주세요.'); return; }
+      t.disabled = true;
+      try {
+        const out = await api.request('/api/admin/precheck/phrases/' + id, { method: 'PUT', body: { text: text } });
+        if (!out.response.ok || !out.result.success) { say(reg, out.result.message || '문장을 수정하지 못했습니다.'); t.disabled = false; return; }
+        item.text = out.result.phrase.text; afterPhraseChange(reg); say(reg, '문장을 수정했습니다. 이미 입력칸에 넣은 문장은 바뀌지 않습니다.', true);
+      } catch (error) { say(reg, error.message || '문장을 수정하지 못했습니다.'); t.disabled = false; }
+    } else if (t.matches('.pr4-del')) {
+      li.classList.add('del');
+      $('.la', li).innerHTML = '<button type="button" class="admin-button primary pr4-sm pr4-warn pr4-del-ok">삭제 확인</button><button type="button" class="admin-button secondary pr4-sm pr4-cancel">취소</button>';
+    } else if (t.matches('.pr4-del-ok')) {
+      t.disabled = true;
+      try {
+        const out = await api.request('/api/admin/precheck/phrases/' + id, { method: 'DELETE' });
+        if (!out.response.ok || !out.result.success) { say(reg, out.result.message || '문장을 삭제하지 못했습니다.'); t.disabled = false; return; }
+        v4.phrases[key] = list.filter(function (p) { return p.id !== id; }); afterPhraseChange(reg);
+        say(reg, '목록에서 삭제했습니다. 이미 입력칸에 넣은 문장은 그대로 남습니다.', true);
+      } catch (error) { say(reg, error.message || '문장을 삭제하지 못했습니다.'); t.disabled = false; }
+    }
+  }
+
+  /* 상태 자동 제안 (담당자가 직접 바꾸면 유지) */
+  function suggestStatus() {
+    const d = collectDetail();
+    const ord = d.ordinance.items.filter(function (i) { return i.result; });
+    const suggestions = {
+      ordinance: !ord.length ? 'info' : (ord.some(function (i) { return i.result === 'conflict'; }) ? 'conditional' : 'ok'),
+      grid: ({ possible: 'ok', impossible: 'not_possible', waiting: 'hold' })[d.grid.state] || 'info',
+      site: d.site.factors.length ? 'conditional' : (d.site.none ? 'ok' : 'info')
+    };
+    Object.keys(suggestions).forEach(function (key) {
+      const section = el.items.querySelector('[data-review-key="' + key + '"]');
+      if (!section || section.dataset.statusTouched === '1') return;
+      section.querySelector('.review-item-status').value = suggestions[key];
+    });
+  }
+
+  function collectDetail() { return { ordinance: collectOrdinance(), grid: collectGrid(), site: collectSite() }; }
+
+  function fillDetail(detail) {
+    const o = detail?.ordinance || {}; const g = detail?.grid || {}; const s = detail?.site || {};
+    $('#ord-name').value = o.name || ''; $('#ord-revised').value = o.revisedAt || ''; $('#ord-reviewed').value = o.reviewedAt || ''; $('#ord-etc').value = o.etc || '';
+    $$('#ord-items .pr4-row').forEach(function (row) {
+      const saved = (o.items || []).find(function (i) { return i.key === row.dataset.ord; }) || {};
+      $$('input[type=radio]', row).forEach(function (i) { i.checked = i.value === saved.result; });
+    });
+    renderOrdinance();
+    $$('#ord-items .pr4-row').forEach(function (row) {
+      const saved = (o.items || []).find(function (i) { return i.key === row.dataset.ord; }) || {};
+      if (saved.result === 'conflict') { $('.ord-std', row).value = saved.standardM ?? ''; $('.ord-cur', row).value = saved.actualM ?? ''; }
+    });
+    $$('input[name="grid-state"]').forEach(function (i) { i.checked = i.value === g.state; });
+    $('#grid-substation').value = g.substation || ''; $('#grid-mtr').value = g.mtr || ''; $('#grid-line').value = g.line || '';
+    $('#grid-spare').value = g.spareMw ?? '';
+    $$('#grid-conditions input').forEach(function (i) { i.checked = (g.conditions || []).includes(i.value); });
+    const k = g.kepco || {};
+    $('#kepco-branch').value = k.branch || ''; $('#kepco-phone').value = k.phone || ''; $('#kepco-date').value = k.checkedAt || ''; $('#kepco-method').value = k.method || '';
+    v4.siteKeep = {}; v4.sitePrev = []; v4.siteActive = null; $('#site-details').innerHTML = '';
+    const factors = s.factors || [];
+    $$('#site-checks input').forEach(function (i) { i.checked = i.value === 'none' ? Boolean(s.none) : factors.some(function (f) { return f.key === i.value; }); });
+    renderSite();
+    factors.forEach(function (f) {
+      const d = $('#site-details .pr4-detail[data-k="' + f.key + '"]'); if (!d) return;
+      (STEP[f.key] || []).forEach(function (step) { $$('input[name="' + f.key + '-' + step[0] + '"]', d).forEach(function (i) { i.checked = i.value === f[step[0]]; }); });
+      $('textarea', d).value = (f.lines || []).join('\n');
+    });
+    renderSite();
+  }
+
+  /* 기존 화면·이전 버전 호환용 요약 문장 (items[].content) */
+  function ordinanceText(o) {
+    const rows = o.items.filter(function (i) { return i.result; }).map(function (i) {
+      return i.label + ': ' + ORD_RESULT[i.result] + (i.result === 'conflict' && (i.standardM !== null || i.actualM !== null) ? ' (기준 ' + (i.standardM ?? '-') + 'm / 현재 ' + (i.actualM ?? '-') + 'm)' : '');
+    });
+    const head = o.name ? '기준 조례: ' + o.name + ([o.revisedAt && '최종 개정 ' + o.revisedAt, o.reviewedAt && '검토일 ' + o.reviewedAt].filter(Boolean).length ? ' (' + [o.revisedAt && '최종 개정 ' + o.revisedAt, o.reviewedAt && '검토일 ' + o.reviewedAt].filter(Boolean).join(', ') + ')' : '') : '';
+    return [head].concat(rows, o.etc ? ['기타: ' + o.etc] : []).filter(Boolean).join('\n');
+  }
+  function gridText(g) {
+    const rows = [];
+    if (g.state) rows.push('연계상태: ' + GRID_STATE[g.state]);
+    const line = [g.substation && '변전소 ' + g.substation, g.mtr && 'MTR ' + g.mtr, g.line && '선로 ' + g.line].filter(Boolean).join(' · ');
+    if (line) rows.push(line);
+    if (g.spareMw !== null) rows.push('여유용량: ' + g.spareMw + 'MW');
+    if (g.conditions.length) rows.push('기타조건: ' + g.conditions.join(', '));
+    const k = g.kepco; const kk = [k.branch, k.checkedAt && '검토일 ' + k.checkedAt, k.method].filter(Boolean).join(' · ');
+    if (kk) rows.push('한전 확인: ' + kk);
+    return rows.join('\n');
+  }
+  function siteText(s) {
+    if (!s.factors.length) return s.none ? '현장 여건상 특이사항이 없습니다.' : '';
+    return s.factors.map(function (f) {
+      const steps = (STEP[f.key] || []).map(function (step) { return f[step[0]] ? step[1] + ' ' + f[step[0]] : ''; }).filter(Boolean).join(' · ');
+      return '[' + f.label + ']' + (steps ? ' ' + steps : '') + (f.lines.length ? '\n- ' + f.lines.join('\n- ') : '');
+    }).join('\n');
+  }
+  function numberOrNull(value) { const n = Number.parseFloat(value); return value === '' || value === undefined || !Number.isFinite(n) ? null : n; }
 
 
   function statusLabel(value) {
