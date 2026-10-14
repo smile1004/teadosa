@@ -61,9 +61,10 @@ export async function onRequestPut(context) {
     }
 
     const nowIso = new Date().toISOString();
-    const resultVersion = 'PRECHECK_RESULT_V3';
+    const resultVersion = 'PRECHECK_RESULT_V4';
     const serviceSelection = normalizeServiceSelection(body?.serviceSelection);
-    const resultData = JSON.stringify({ items, capacityAssessment, serviceSelection });
+    const detail = normalizeDetail(body?.detail);
+    const resultData = JSON.stringify(detail ? { items, capacityAssessment, serviceSelection, detail } : { items, capacityAssessment, serviceSelection });
 
     const existingReview = await env.DB.prepare('SELECT id, published_at FROM precheck_reviews WHERE request_id = ? LIMIT 1')
       .bind(requestId).first();
@@ -236,6 +237,42 @@ function normalizeCapacityAssessment(value) {
     basis: textValue(value?.basis, 2000),
     layoutImageDataUrl: validImage ? image : '',
     layoutImageName: textValue(value?.layoutImageName, 120)
+  };
+}
+// V4 선택형 상세 입력 (조례 · 계통 · 현장조건). 허용된 값만 저장합니다.
+const ORD_KEYS = { road: '도로 이격거리', house: '주택 이격거리', tourism: '관광지', village: '자연취락지구' };
+const ORD_RESULTS = ['ok', 'conflict', 'na'];
+const GRID_STATES = ['possible', 'impossible', 'waiting'];
+const GRID_CONDITIONS = ['출력제어 조건부', '보강공사 필요', '예상여부'];
+const KEPCO_METHODS = ['한전ON', '전화'];
+const SITE_FACTORS = { shade: '음영발생', slope: '경사도 과다', road: '진입로·배수로', struct: '건물 구조강화' };
+const SHADE_STEPS = { siteType: ['토지형', '건물형'], cause: ['수목', '인접 건축물', '전신주·송전탑', '산·지형'], time: ['오전', '오후', '종일'] };
+function dateValue(value) { return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : ''; }
+function numberValue(value) { const n = Number(value); return value === null || value === '' || value === undefined || !Number.isFinite(n) || n < 0 ? null : Math.round(n * 1000) / 1000; }
+function normalizeDetail(value) {
+  if (!value || typeof value !== 'object') return null;
+  const o = value.ordinance || {}; const g = value.grid || {}; const s = value.site || {}; const k = g.kepco || {};
+  const ordinanceItems = (Array.isArray(o.items) ? o.items : []).filter((i) => ORD_KEYS[i?.key]).map((i) => {
+    const result = ORD_RESULTS.includes(i.result) ? i.result : '';
+    const item = { key: i.key, label: ORD_KEYS[i.key], result };
+    if (result === 'conflict') { item.standardM = numberValue(i.standardM); item.actualM = numberValue(i.actualM); }
+    return item;
+  });
+  const factors = (Array.isArray(s.factors) ? s.factors : []).filter((f) => SITE_FACTORS[f?.key]).slice(0, 4).map((f) => {
+    const factor = { key: f.key, label: SITE_FACTORS[f.key], lines: (Array.isArray(f.lines) ? f.lines : []).map((l) => textValue(l, 300)).filter(Boolean).slice(0, 20) };
+    if (f.key === 'shade') Object.keys(SHADE_STEPS).forEach((step) => { if (SHADE_STEPS[step].includes(f[step])) factor[step] = f[step]; });
+    return factor;
+  });
+  return {
+    ordinance: { name: textValue(o.name, 120), revisedAt: dateValue(o.revisedAt), reviewedAt: dateValue(o.reviewedAt), etc: textValue(o.etc, 500), items: ordinanceItems },
+    grid: {
+      state: GRID_STATES.includes(g.state) ? g.state : '',
+      substation: textValue(g.substation, 60), mtr: textValue(g.mtr, 60), line: textValue(g.line, 60),
+      spareMw: numberValue(g.spareMw),
+      conditions: (Array.isArray(g.conditions) ? g.conditions : []).filter((c) => GRID_CONDITIONS.includes(c)),
+      kepco: { branch: textValue(k.branch, 60), phone: textValue(k.phone, 30), checkedAt: dateValue(k.checkedAt), method: KEPCO_METHODS.includes(k.method) ? k.method : '' }
+    },
+    site: { none: Boolean(s.none) && factors.length === 0, factors }
   };
 }
 function parseJson(value, fallback) {

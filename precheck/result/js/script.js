@@ -87,9 +87,10 @@
             '<h3>' + escapeHtml(item.title || '검토 항목') + '</h3>' +
             '<span class="result-status status-' + escapeHtml(item.status || 'info') + '">' + escapeHtml(itemStatusLabel(item.status)) + '</span>' +
           '</div>' +
-          '<div class="result-item-content' + (!item.content ? ' is-empty' : '') + '">' +
+          (detailBlock(review.resultData && review.resultData.detail, item.id) ||
+          ('<div class="result-item-content' + (!item.content ? ' is-empty' : '') + '">' +
             (item.content ? escapeHtml(item.content).replace(/\n/g, '<br>') : '세부 내용은 추가 확인이 필요합니다.') +
-          '</div>' +
+          '</div>')) +
         '</article>';
       }).join('');
     }
@@ -107,6 +108,53 @@
     } else {
       noticeCard.hidden = true;
     }
+  }
+
+  // V4 선택형 상세 결과 (조례 · 계통 · 현장조건). 상세 데이터가 없는 이전 결과는 기존 문장으로 표시합니다.
+  function detailBlock(detail, id) {
+    if (!detail) return '';
+    const cell = function (label, value, full) {
+      return '<div class="rd-cell' + (full ? ' full' : '') + '"><dt>' + escapeHtml(label) + '</dt><dd>' + value + '</dd></div>';
+    };
+    const plain = function (v) { return v ? escapeHtml(v) : '<span class="rd-miss">-</span>'; };
+    const rows = [];
+    if (id === 'ordinance' && detail.ordinance) {
+      const o = detail.ordinance;
+      const resultText = { ok: '적합', conflict: '저촉', na: '미해당' };
+      if (o.name) rows.push(cell('기준 조례', escapeHtml(o.name) + (o.revisedAt ? ' <small>(최종 개정 ' + escapeHtml(o.revisedAt) + ')</small>' : ''), true));
+      (o.items || []).filter(function (i) { return i.result; }).forEach(function (i) {
+        const extra = i.result === 'conflict' && (i.standardM != null || i.actualM != null) ? ' <small>기준 ' + (i.standardM ?? '-') + 'm / 현재 ' + (i.actualM ?? '-') + 'm</small>' : '';
+        rows.push(cell(i.label, '<span class="rd-tag rd-' + i.result + '">' + resultText[i.result] + '</span>' + extra));
+      });
+      if (o.reviewedAt) rows.push(cell('검토일', escapeHtml(o.reviewedAt)));
+      if (o.etc) rows.push(cell('기타사항', escapeHtml(o.etc), true));
+    }
+    if (id === 'grid' && detail.grid) {
+      const g = detail.grid;
+      const stateText = { possible: '가능', impossible: '불가 (용량 초과)', waiting: '계획대기' };
+      const stateTag = { possible: 'ok', impossible: 'conflict', waiting: 'wait' };
+      if (g.state) rows.push(cell('연계상태', '<span class="rd-tag rd-' + stateTag[g.state] + '">' + stateText[g.state] + '</span>'));
+      if (g.substation || g.mtr || g.line) rows.push(cell('변전소 · MTR · 선로', plain([g.substation, g.mtr, g.line].filter(Boolean).join(' · '))));
+      if (g.spareMw != null) rows.push(cell('여유용량', escapeHtml(String(g.spareMw)) + ' MW'));
+      if ((g.conditions || []).length) rows.push(cell('기타조건', escapeHtml(g.conditions.join(', '))));
+      const k = g.kepco || {};
+      if (k.branch || k.checkedAt) rows.push(cell('한전 확인', escapeHtml([k.branch, k.checkedAt, k.method].filter(Boolean).join(' · '))));
+    }
+    if (id === 'site' && detail.site) {
+      const s = detail.site;
+      if (!(s.factors || []).length) {
+        if (!s.none) return '';
+        return '<div class="result-item-content">현장 여건상 특이사항이 없습니다.</div>';
+      }
+      return '<div class="rd-factors">' + s.factors.map(function (f) {
+        const steps = [['siteType', '현장 유형'], ['cause', '음영 원인'], ['time', '음영 시간대']].filter(function (x) { return f[x[0]]; });
+        return '<div class="rd-factor"><h4>' + escapeHtml(f.label) + '</h4>' +
+          (steps.length ? '<dl class="rd-grid">' + steps.map(function (x) { return cell(x[1], escapeHtml(f[x[0]])); }).join('') + '</dl>' : '') +
+          ((f.lines || []).length ? '<ul class="rd-lines">' + f.lines.map(function (l) { return '<li>' + escapeHtml(l) + '</li>'; }).join('') + '</ul>' : (steps.length ? '' : '<p class="rd-miss">세부 내용은 추가 확인이 필요합니다.</p>')) +
+        '</div>';
+      }).join('') + '</div>';
+    }
+    return rows.length ? '<dl class="rd-grid">' + rows.join('') + '</dl>' : '';
   }
 
   function renderExpectedCapacity(review) {
