@@ -146,9 +146,9 @@
         if (!s.none) return '';
         return '<div class="result-item-content">현장 여건상 특이사항이 없습니다.</div>';
       }
-      return '<div class="rd-factors">' + s.factors.map(function (f) {
+      return '<div class="rd-factors">' + s.factors.map(function (f, i) {
         const steps = [['siteType', '현장 유형'], ['cause', '음영 원인'], ['time', '음영 시간대']].filter(function (x) { return f[x[0]]; });
-        return '<div class="rd-factor"><h4>' + escapeHtml(f.label) + '</h4>' +
+        return '<div class="rd-factor rd-k-' + escapeHtml(f.key) + '"><h4 class="rd-tab"><span class="rd-no">' + String(i + 1).padStart(2, '0') + '</span>' + escapeHtml(f.label) + '</h4>' +
           (steps.length ? '<dl class="rd-grid">' + steps.map(function (x) { return cell(x[1], escapeHtml(f[x[0]])); }).join('') + '</dl>' : '') +
           ((f.lines || []).length ? '<ul class="rd-lines">' + f.lines.map(function (l) { return '<li>' + escapeHtml(l) + '</li>'; }).join('') + '</ul>' : (steps.length ? '' : '<p class="rd-miss">세부 내용은 추가 확인이 필요합니다.</p>')) +
         '</div>';
