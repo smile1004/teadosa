@@ -87,3 +87,7 @@
 #site-checks input[value=struct]+span{--fc:#7a4fb3;--fbg:#f6f1fc}
 #site-checks input[value=shade]:checked+span,#site-checks input[value=slope]:checked+span,#site-checks input[value=road]:checked+span,#site-checks input[value=struct]:checked+span{border-color:var(--fc);color:var(--fc);background:var(--fbg)}
 #site-checks input[value=shade]:checked+span::before,#site-checks input[value=slope]:checked+span::before,#site-checks input[value=road]:checked+span::before,#site-checks input[value=struct]:checked+span::before{background:var(--fc);border-color:var(--fc)}
+/* 종합 판정 색상 — 고객 마이페이지 종합 의견 색 표시(초록·주황·빨강)와 동일 */
+.pr4-verdict input[value=possible]:checked+span{background:#1f8d52;border-color:#1f8d52;color:#fff}
+.pr4-verdict input[value=conditional]:checked+span{background:#e97625;border-color:#e97625;color:#fff}
+.pr4-verdict input[value=not_possible]:checked+span{background:#a72e2e;border-color:#a72e2e;color:#fff}
