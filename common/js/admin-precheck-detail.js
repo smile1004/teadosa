@@ -646,15 +646,14 @@
     const v = stepValues(d).map(function (x) { return x[2]; });
     if (!type || v.some(function (x) { return !x; })) return '';
     const cause = { '수목': '수목으로', '인접 건축물': '인접 건축물로', '전신주·송전탑': '전신주·송전탑으로', '산·지형': '산·지형으로' }[v[0]];
-    return '(' + type + ') ' + cause + ' 인해 ' + (type === '건물형' ? '지붕' : '부지') + ' 일부에 ' + (v[1] === '종일' ? '종일' : v[1] + ' 시간대') + ' 음영이 발생합니다.';
+    return cause + ' 인해 ' + (type === '건물형' ? '지붕' : '부지') + ' 일부에 ' + (v[1] === '종일' ? '종일' : v[1] + ' 시간대') + ' 음영이 발생합니다.';
   }
-  /* 현장 유형: 모든 결과 문장 앞에 (토지형)/(건물형)을 붙입니다. */
+  /* 현장 유형은 결과 상단에 따로 표시하므로 문장 앞의 (토지형)/(건물형) 표기는 지웁니다. */
   function getSiteType() { return ($('input[name="site-type"]:checked') || {}).value || ''; }
   function setSiteType(value) { $$('input[name="site-type"]').forEach(function (i) { i.checked = i.value === value; }); }
   function stripType(line) { return String(line).replace(/^\s*\((토지형|건물형)\)\s*/, ''); }
   function prefixLines(lines) {
-    const type = getSiteType();
-    return lines.map(function (line) { const body = stripType(line); return type ? '(' + type + ') ' + body : body; });
+    return lines.map(stripType);
   }
   function applySiteTypeToLines() {
     $$('#site-details .pr4-detail').concat(Object.values(v4.siteKeep)).forEach(function (d) {
