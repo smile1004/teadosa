@@ -39,6 +39,7 @@
     bindEvents();
     await Promise.all([loadDetail(), loadPhrases()]);
     refreshV4();
+    scrollToHash();
   }
 
   function mapElements() {
@@ -907,6 +908,15 @@
   }
   function numberOrNull(value) { const n = Number.parseFloat(value); return value === '' || value === undefined || !Number.isFinite(n) ? null : n; }
 
+
+  // 주소 끝에 #review-site 처럼 붙이면 해당 검토 항목 위치로 바로 이동합니다 (한글 문서 링크용).
+  function scrollToHash() {
+    const id = decodeURIComponent((window.location.hash || '').slice(1));
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    window.requestAnimationFrame(function () { target.scrollIntoView({ block: 'start' }); });
+  }
 
   function statusLabel(value) {
     return ({ received: '접수', reviewing: '검토중', supplement_required: '보완요청', completed: '검토완료' })[value] || value || '-';

@@ -80,7 +80,7 @@
   }
 
   function redirectToLogin(reason) {
-    const params = new URLSearchParams({ next: window.location.pathname + window.location.search, reason: reason });
+    const params = new URLSearchParams({ next: window.location.pathname + window.location.search + window.location.hash, reason: reason });
     window.location.replace('/login/?' + params.toString());
   }
 
