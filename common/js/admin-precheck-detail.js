@@ -875,7 +875,7 @@
     factors.forEach(function (f) {
       const d = $('#site-details .pr4-detail[data-k="' + f.key + '"]'); if (!d) return;
       (STEP[f.key] || []).forEach(function (step) { $$('input[name="' + f.key + '-' + step[0] + '"]', d).forEach(function (i) { i.checked = i.value === f[step[0]]; }); });
-      $('textarea', d).value = (f.lines || []).join('\n');
+      $('textarea', d).value = prefixLines(f.lines || []).join('\n');
     });
     renderSite();
   }
