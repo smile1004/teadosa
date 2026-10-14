@@ -246,6 +246,7 @@ const GRID_STATES = ['possible', 'impossible', 'waiting'];
 const GRID_CONDITIONS = ['출력제어 조건부', '보강공사 필요', '예상여부'];
 const KEPCO_METHODS = ['한전ON', '전화'];
 const SITE_FACTORS = { shade: '음영발생', slope: '경사도 과다', road: '진입로·배수로', struct: '건물 구조강화' };
+const SITE_TYPES = ['토지형', '건물형'];
 const SHADE_STEPS = { siteType: ['토지형', '건물형'], cause: ['수목', '인접 건축물', '전신주·송전탑', '산·지형'], time: ['오전', '오후', '종일'] };
 function dateValue(value) { return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : ''; }
 function numberValue(value) { const n = Number(value); return value === null || value === '' || value === undefined || !Number.isFinite(n) || n < 0 ? null : Math.round(n * 1000) / 1000; }
@@ -272,7 +273,7 @@ function normalizeDetail(value) {
       conditions: (Array.isArray(g.conditions) ? g.conditions : []).filter((c) => GRID_CONDITIONS.includes(c)),
       kepco: { branch: textValue(k.branch, 60), phone: textValue(k.phone, 30), checkedAt: dateValue(k.checkedAt), method: KEPCO_METHODS.includes(k.method) ? k.method : '' }
     },
-    site: { none: Boolean(s.none) && factors.length === 0, factors }
+    site: { siteType: SITE_TYPES.includes(s.siteType) ? s.siteType : '', none: Boolean(s.none) && factors.length === 0, factors }
   };
 }
 function parseJson(value, fallback) {

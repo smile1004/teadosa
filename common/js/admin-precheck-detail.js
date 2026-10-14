@@ -520,7 +520,8 @@
   const GRID_STATE = { possible: '가능', impossible: '불가 (용량 초과)', waiting: '계획대기' };
   const SITE = { shade: '음영발생', slope: '경사도 과다', road: '진입로·배수로', struct: '건물 구조강화' };
   const SITE_KEYS = ['shade', 'slope', 'road', 'struct'];
-  const STEP = { shade: [['siteType', '현장 유형', ['토지형', '건물형']], ['cause', '음영 원인', ['수목', '인접 건축물', '전신주·송전탑', '산·지형']], ['time', '음영 시간대', ['오전', '오후', '종일']]] };
+  const SITE_TYPES = ['토지형', '건물형'];
+  const STEP = { shade: [['cause', '음영 원인', ['수목', '인접 건축물', '전신주·송전탑', '산·지형']], ['time', '음영 시간대', ['오전', '오후', '종일']]] };
   const OPINION_GROUP = { possible: '진행 가능', conditional: '조건부 진행 가능', not_possible: '진행 불가능' };
   const $ = function (selector, root) { return (root || document).querySelector(selector); };
   const $$ = function (selector, root) { return Array.from((root || document).querySelectorAll(selector)); };
@@ -549,6 +550,8 @@
         if (t.value === 'none' && t.checked) $$('#site-checks input').forEach(function (i) { if (i.value !== 'none') i.checked = false; });
         else if (t.checked) $('#site-checks input[value="none"]').checked = false;
       }
+      if (t.name === 'site-type') applySiteTypeToLines();
+      if (t.matches('.pr4-detail textarea')) { t.value = prefixLines(linesOf(t.closest('.pr4-detail'))).join('\n'); renderSitePreview(t.closest('.pr4-detail')); }
       if (t.matches('.review-item-status')) t.closest('section').dataset.statusTouched = '1';
       if (t.name === 'installation-possible') refreshOpinion();
       refreshV4();
@@ -639,10 +642,28 @@
     });
   }
   function composeShade(d) {
+    const type = getSiteType();
     const v = stepValues(d).map(function (x) { return x[2]; });
-    if (v.some(function (x) { return !x; })) return '';
-    const cause = { '수목': '수목으로', '인접 건축물': '인접 건축물로', '전신주·송전탑': '전신주·송전탑으로', '산·지형': '산·지형으로' }[v[1]];
-    return '(' + v[0] + ') ' + cause + ' 인해 ' + (v[0] === '건물형' ? '지붕' : '부지') + ' 일부에 ' + (v[2] === '종일' ? '종일' : v[2] + ' 시간대') + ' 음영이 발생합니다.';
+    if (!type || v.some(function (x) { return !x; })) return '';
+    const cause = { '수목': '수목으로', '인접 건축물': '인접 건축물로', '전신주·송전탑': '전신주·송전탑으로', '산·지형': '산·지형으로' }[v[0]];
+    return '(' + type + ') ' + cause + ' 인해 ' + (type === '건물형' ? '지붕' : '부지') + ' 일부에 ' + (v[1] === '종일' ? '종일' : v[1] + ' 시간대') + ' 음영이 발생합니다.';
+  }
+  /* 현장 유형: 모든 결과 문장 앞에 (토지형)/(건물형)을 붙입니다. */
+  function getSiteType() { return ($('input[name="site-type"]:checked') || {}).value || ''; }
+  function setSiteType(value) { $$('input[name="site-type"]').forEach(function (i) { i.checked = i.value === value; }); }
+  function stripType(line) { return String(line).replace(/^\s*\((토지형|건물형)\)\s*/, ''); }
+  function prefixLines(lines) {
+    const type = getSiteType();
+    return lines.map(function (line) { const body = stripType(line); return type ? '(' + type + ') ' + body : body; });
+  }
+  function applySiteTypeToLines() {
+    $$('#site-details .pr4-detail').concat(Object.values(v4.siteKeep)).forEach(function (d) {
+      const ta = $('textarea', d); if (ta && ta.value.trim()) ta.value = prefixLines(linesOf(d)).join('\n');
+    });
+  }
+  function siteTypeFromRequest() {
+    const r = state.request || {}; const f = r.formData || {};
+    return ({ land: '토지형', building: '건물형' })[(f.site && f.site.siteType) || f.siteType || r.siteType] || '';
   }
   function linesOf(d) { return $('textarea', d).value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean); }
   function fillSiteOptions(d) {
@@ -657,13 +678,19 @@
     const sum = $('.pr4-sum', d);
     if (sum) sum.innerHTML = '선택 항목 · ' + sv.map(function (x) { return escapeHtml(x[1]) + ' ' + (x[2] ? '<b>' + escapeHtml(x[2]) + '</b>' : '<span class="pr4-miss">미선택</span>'); }).join(' · ');
     const lines = linesOf(d);
-    $('.pr4-prev dl', d).innerHTML = '<div><dt>검토 항목</dt><dd>' + SITE[d.dataset.k] + '</dd></div>' +
+    $('.pr4-prev dl', d).innerHTML = '<div><dt>현장 유형</dt><dd>' + (getSiteType() ? escapeHtml(getSiteType()) : '<span class="pr4-miss">미선택</span>') + '</dd></div>' +
+      '<div><dt>검토 항목</dt><dd>' + SITE[d.dataset.k] + '</dd></div>' +
       sv.map(function (x) { return '<div><dt>' + escapeHtml(x[1]) + '</dt><dd>' + (x[2] ? escapeHtml(x[2]) : '<span class="pr4-miss">미선택</span>') + '</dd></div>'; }).join('') +
       '<div class="full"><dt>검토 내용</dt><dd>' + (lines.length ? '<ul>' + lines.map(function (x) { return '<li>' + escapeHtml(x) + '</li>'; }).join('') + '</ul>' : '<span class="pr4-miss">입력된 문장이 없습니다</span>') + '</dd></div>';
   }
   function checkedSite() { return $$('#site-checks input:checked').map(function (i) { return i.value; }).filter(function (v) { return v !== 'none'; }); }
   function renderSite() {
     const box = $('#site-details'); if (!box) return;
+    const typed = Boolean(getSiteType());
+    const checks = $('#site-checks'); const hint = $('#site-type-hint');
+    if (checks) checks.classList.toggle('is-locked', !typed);
+    $$('#site-checks input').forEach(function (i) { i.disabled = !typed; });
+    if (hint) hint.hidden = typed;
     const on = checkedSite();
     $$('.pr4-detail', box).forEach(function (d) { if (!on.includes(d.dataset.k)) { v4.siteKeep[d.dataset.k] = d; d.remove(); } });
     on.forEach(function (k) {
@@ -694,18 +721,20 @@
   }
   function insertLine(d) {
     const sel = $('.pr4-std', d); if (!sel.value) { sel.focus(); return; }
-    const ta = $('textarea', d); const lines = linesOf(d);
-    if (!lines.includes(sel.value)) lines.push(sel.value);
+    const ta = $('textarea', d); const lines = prefixLines(linesOf(d));
+    const add = prefixLines([sel.value])[0];
+    if (!lines.includes(add)) lines.push(add);
     ta.value = lines.join('\n'); sel.value = '';
     renderSitePreview(d); renderSiteTabs(); suggestStatus();
   }
   function collectSite() {
     const none = Boolean(($('#site-checks input[value="none"]') || {}).checked);
     return {
+      siteType: getSiteType(),
       none: none,
       factors: checkedSite().map(function (k) {
         const d = $('#site-details .pr4-detail[data-k="' + k + '"]');
-        const f = { key: k, label: SITE[k], lines: d ? linesOf(d) : [] };
+        const f = { key: k, label: SITE[k], lines: d ? prefixLines(linesOf(d)) : [] };
         if (d) stepValues(d).forEach(function (x) { if (x[2]) f[x[0]] = x[2]; });
         return f;
       })
@@ -837,6 +866,8 @@
     $('#kepco-branch').value = k.branch || ''; $('#kepco-phone').value = k.phone || ''; $('#kepco-date').value = k.checkedAt || ''; $('#kepco-method').value = k.method || '';
     v4.siteKeep = {}; v4.sitePrev = []; v4.siteActive = null; $('#site-details').innerHTML = '';
     const factors = s.factors || [];
+    const legacyType = (factors.find(function (f) { return f.key === 'shade'; }) || {}).siteType;
+    setSiteType(s.siteType || legacyType || siteTypeFromRequest());
     $$('#site-checks input').forEach(function (i) { i.checked = i.value === 'none' ? Boolean(s.none) : factors.some(function (f) { return f.key === i.value; }); });
     renderSite();
     factors.forEach(function (f) {
@@ -867,8 +898,8 @@
     return rows.join('\n');
   }
   function siteText(s) {
-    if (!s.factors.length) return s.none ? '현장 여건상 특이사항이 없습니다.' : '';
-    return s.factors.map(function (f) {
+    if (!s.factors.length) return s.none ? (s.siteType ? '현장 유형: ' + s.siteType + '\n' : '') + '현장 여건상 특이사항이 없습니다.' : '';
+    return (s.siteType ? '현장 유형: ' + s.siteType + '\n' : '') + s.factors.map(function (f) {
       const steps = (STEP[f.key] || []).map(function (step) { return f[step[0]] ? step[1] + ' ' + f[step[0]] : ''; }).filter(Boolean).join(' · ');
       return '[' + f.label + ']' + (steps ? ' ' + steps : '') + (f.lines.length ? '\n- ' + f.lines.join('\n- ') : '');
     }).join('\n');

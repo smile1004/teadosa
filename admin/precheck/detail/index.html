@@ -7,7 +7,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>사전검토 신청 상세 | 태양광도사 관리자</title>
   <link href="admin/css/style.css?v=4.1" rel="stylesheet">
-  <link href="admin/css/precheck-review-v4.css?v=1.0" rel="stylesheet">
+  <link href="admin/css/precheck-review-v4.css?v=1.1" rel="stylesheet">
 <link rel="stylesheet" href="/common/css/application-actions.css?v=1.1">
 </head>
 <body class="admin-body">
@@ -149,11 +149,19 @@
                 </section>
 
                 <section class="review-fixed-section pr4-section" data-review-key="site">
-                  <div class="review-fixed-title"><span>03</span><div><h4>현장조건 검토</h4><p>자주 나오는 장애요소를 체크합니다. 체크하면 항목별 표준 문장을 골라 넣을 수 있고, 넣은 문장은 수정할 수 있습니다.</p></div></div>
+                  <div class="review-fixed-title"><span>03</span><div><h4>현장조건 검토</h4><p>현장 유형(토지형·건물형)을 먼저 선택한 뒤 장애요소를 체크합니다. 넣은 문장 앞에는 (토지형)·(건물형)이 자동으로 붙습니다.</p></div></div>
                   <select class="review-item-status" aria-label="현장조건 검토 상태">
                     <option value="info">검토</option><option value="ok">적합/가능</option><option value="conditional">조건부</option><option value="hold">추가확인</option><option value="not_possible">어려움</option>
                   </select>
                   <div class="pr4-body">
+                    <div class="pr4-row pr4-sitetype">
+                      <span class="pr4-lb">현장 유형 <em class="pr4-req">먼저 선택</em></span>
+                      <div class="pr4-seg" id="site-type">
+                        <label><input type="radio" name="site-type" value="토지형"><span>토지형</span></label>
+                        <label><input type="radio" name="site-type" value="건물형"><span>건물형</span></label>
+                      </div>
+                    </div>
+                    <p class="pr4-hint" id="site-type-hint">현장 유형을 먼저 선택해 주세요. 선택 후 항목을 체크할 수 있습니다.</p>
                     <div class="pr4-checks" id="site-checks">
                       <label class="pr4-chk"><input type="checkbox" value="shade"><span>음영발생</span></label>
                       <label class="pr4-chk"><input type="checkbox" value="slope"><span>경사도 과다</span></label>
@@ -253,7 +261,7 @@
   <script src="common/js/api.js?v=2.4"></script>
   <script src="common/js/auth.js?v=2.4"></script>
   <script src="common/js/admin-layout.js?v=2.8"></script>
-  <script src="common/js/admin-precheck-detail.js?v=5.0"></script>
+  <script src="common/js/admin-precheck-detail.js?v=5.1"></script>
 <script src="/common/js/application-actions.js?v=1.1"></script>
 </body>
 </html>

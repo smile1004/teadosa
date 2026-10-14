@@ -73,3 +73,27 @@
 @media(max-width:620px){.pr4-li{flex-wrap:wrap}.pr4-li .la{margin-left:auto}}
 .pr4-op{display:grid;gap:8px;padding-top:12px;border-top:1px dashed #e6ebf0}
 .overall-opinion-editor.pr4-section{grid-template-columns:minmax(0,1fr)}
+.pr4-sitetype{border-top:0;padding-top:0}
+.pr4-sitetype .pr4-seg span{padding:8px 20px;font-size:14px}
+.pr4-req{font-style:normal;margin-left:6px;padding:1px 7px;border-radius:999px;background:#fff1e6;color:#e97625;font-size:11px;font-weight:800}
+.pr4-hint{margin:0;padding:9px 12px;border-radius:10px;background:#fff7f0;border:1px dashed #f3c49c;color:#b25a12;font-size:12.5px;font-weight:700}
+.pr4-hint[hidden]{display:none!important}
+.pr4-checks.is-locked .pr4-chk{opacity:.45;pointer-events:none}
+/* 현장조건 항목 색상 — 고객 마이페이지 결과보기와 동일 */
+.pr4-tab[data-tab=shade],#site-checks input[value=shade]+span{--fc:#e97625;--fbg:#fff7f0}
+.pr4-tab[data-tab=slope],#site-checks input[value=slope]+span{--fc:#2f6db5;--fbg:#f0f6fd}
+.pr4-tab[data-tab=road],#site-checks input[value=road]+span{--fc:#1f8d52;--fbg:#effaf3}
+.pr4-tab[data-tab=struct],#site-checks input[value=struct]+span{--fc:#7a4fb3;--fbg:#f6f1fc}
+.pr4-tabs{gap:6px;border-bottom:2px solid #dfe6ee}
+.pr4-tab[data-tab]{border:1.5px solid var(--fc);border-bottom:0;border-radius:9px 9px 0 0;margin-bottom:0;color:var(--fc);background:var(--fbg)}
+.pr4-tab[data-tab] .sn{background:var(--fc);color:#fff}
+.pr4-tab[data-tab]:hover{background:var(--fbg);color:var(--fc);filter:brightness(.97)}
+.pr4-tab[data-tab].on{background:var(--fc);color:#fff;border-bottom-color:transparent}
+.pr4-tab[data-tab].on .sn{background:rgba(255,255,255,.28)}
+.pr4-tab[data-tab].on em{background:rgba(255,255,255,.22);color:#fff}
+#site-checks input[value=shade]:checked+span,#site-checks input[value=slope]:checked+span,#site-checks input[value=road]:checked+span,#site-checks input[value=struct]:checked+span{border-color:var(--fc);color:var(--fc);background:var(--fbg)}
+#site-checks input[value=shade]:checked+span::before,#site-checks input[value=slope]:checked+span::before,#site-checks input[value=road]:checked+span::before,#site-checks input[value=struct]:checked+span::before{background:var(--fc);border-color:var(--fc)}
+.pr4-detail[data-k=shade]{border-top:3px solid #e97625}
+.pr4-detail[data-k=slope]{border-top:3px solid #2f6db5}
+.pr4-detail[data-k=road]{border-top:3px solid #1f8d52}
+.pr4-detail[data-k=struct]{border-top:3px solid #7a4fb3}

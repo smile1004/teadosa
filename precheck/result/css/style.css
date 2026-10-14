@@ -698,3 +698,5 @@ a{color:inherit;text-decoration:none}
 @media(max-width:700px){.verdict-legend{font-size:12px;gap:4px 10px}}
 .verdict-mark{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.28);font-size:12px;font-weight:900}
 .verdict-box #overall-opinion-view{margin:0;background:transparent!important;border:0!important;padding:0!important}
+.rd-sitetype{margin-bottom:6px}
+.rd-tag.rd-type{background:#163152;color:#fff}
