@@ -588,7 +588,7 @@
     const known = ['possible', 'conditional', 'not_possible'].indexOf(value) !== -1;
     box.className = 'verdict-box' + (known ? ' verdict-' + value : '');
     tab.hidden = !known;
-    if (known) tab.innerHTML = '<span class="verdict-mark" aria-hidden="true">' + ({ possible: '✓', conditional: '!', not_possible: '✕' })[value] + '</span>종합 판정 · ' + escapeHtml(possibilityLabel(value));
+    if (known) tab.innerHTML = '<span class="verdict-mark" aria-hidden="true">' + ({ possible: '✓', conditional: '!', not_possible: '✕' })[value] + '</span><span class="verdict-label">종합 판정 결과</span><strong class="verdict-value">' + escapeHtml(possibilityLabel(value)) + '</strong>';
   }
 
   function possibilityLabel(value) {
