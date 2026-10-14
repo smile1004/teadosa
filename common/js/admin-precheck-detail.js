@@ -703,7 +703,9 @@
       const reg = $('.pr4-reg', d); if (!$('.pr4-li.edit,.pr4-li.del', reg)) renderLib(reg);
     });
     const added = on.filter(function (k) { return !v4.sitePrev.includes(k); });
-    if (added.length) v4.siteActive = added[added.length - 1];
+    // 처음 열 때(여러 항목이 한꺼번에 표시)는 1번 항목, 새로 체크한 항목은 그 항목 탭을 보여 줍니다.
+    if (added.length === 1 && v4.sitePrev.length) v4.siteActive = added[0];
+    else if (added.length) v4.siteActive = on[0];
     if (!on.includes(v4.siteActive)) v4.siteActive = on[0] || null;
     v4.sitePrev = on;
     renderSiteTabs();
